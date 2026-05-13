@@ -1,0 +1,9 @@
+export type IntegrationStatus = 
+  | "CONNECTED"
+  | "SIMULATED"
+  | "DISABLED"
+  | "PENDING_CREDENTIALS"
+  | "PENDING_PROVIDER"
+  | "PENDING_DEPLOY"
+  | "MISCONFIGURED"
+  | "ERROR";

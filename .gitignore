@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# env files
+.env.local
+.env.demo.local
+.env.mercadopago.sandbox.local
+*.local
+
+# Exception for examples
+!.env.demo.local.example
+!.env.mercadopago.sandbox.example
+
+# misc
+.DS_Store
+
+# build
+.next/
+dist/
+.turbo/
+
+# testing
+playwright-report/
+test-results/

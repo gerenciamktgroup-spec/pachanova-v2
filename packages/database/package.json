@@ -1,0 +1,24 @@
+{
+  "name": "@pachanova/database",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit push",
+    "demo:migrate": "drizzle-kit push",
+    "demo:seed": "tsx src/seed/demoSeed.ts",
+    "demo:reset": "tsx src/seed/demoReset.ts",
+    "test": "echo 'No database tests yet'"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.21.0"
+  }
+}

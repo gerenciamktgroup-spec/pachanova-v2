@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres-demo:
+    image: postgres:15-alpine
+    container_name: pachanova_demo_db
+    environment:
+      POSTGRES_USER: pachanova_demo
+      POSTGRES_PASSWORD: pachanova_demo
+      POSTGRES_DB: pachanova_demo
+    ports:
+      - "5433:5432"
+    volumes:
+      - pachanova_demo_data:/var/lib/postgresql/data
+
+volumes:
+  pachanova_demo_data:

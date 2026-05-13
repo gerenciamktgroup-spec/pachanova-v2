@@ -1,0 +1,13 @@
+{
+  "name": "@pachanova/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Skipping forge build (Foundry not ready)'",
+    "test": "echo 'Skipping forge test'",
+    "deploy": "forge script script/Deploy.s.sol:DeployScript --rpc-url ${NEXT_PUBLIC_RPC_URL} --broadcast"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}
