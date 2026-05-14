@@ -7,7 +7,13 @@ import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { visitorJourney } from "@/lib/navigation/userJourneys";
 
-export default function LandingPage() {
+import { createServerClient } from '@/utils/supabase/server';
+
+export default async function LandingPage() {
+  const supabase = await createServerClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const isAuth = !!session?.user;
+  const investorHref = isAuth ? "/dashboard/investor" : "/signup";
   return (
     <div className="min-h-screen bg-pn-bg text-pn-text selection:bg-pn-gold/30" data-testid="landing-page">
       <PublicHeader />
@@ -37,8 +43,8 @@ export default function LandingPage() {
               <Link href="/demo/showcase" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-text text-pn-bg hover:bg-pn-text/90">
                 Entrar al simulador
               </Link>
-              <Link href="/dashboard/investor" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-surface-strong text-pn-text hover:bg-pn-surface-strong/80 border border-pn-border">
-                Explorar panel inversor
+              <Link href={investorHref} className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-surface-strong text-pn-text hover:bg-pn-surface-strong/80 border border-pn-border">
+                {isAuth ? "Explorar panel inversor" : "Simular como Inversor"}
               </Link>
             </div>
           </div>

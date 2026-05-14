@@ -1,0 +1,228 @@
+export type AppRoute = {
+  id: string;
+  label: string;
+  path: string;
+  section: "demo" | "investor" | "admin" | "fideicomiso" | "operator" | "reports";
+  role: "public" | "investor" | "admin" | "fiduciario" | "operator";
+  icon: string;
+  status: "active" | "simulated" | "pending_credentials" | "pending_foundry" | "disabled" | "planned";
+  description: string;
+  primaryAction?: string;
+  secondaryAction?: string;
+};
+
+export const ROUTE_REGISTRY: AppRoute[] = [
+  // --- Demo Base ---
+  {
+    id: "demo-showcase",
+    label: "Showcase",
+    path: "/demo/showcase",
+    section: "demo",
+    role: "public",
+    icon: "play-square",
+    status: "active",
+    description: "Hub central de la Demo Local.",
+    primaryAction: "Enter Flow",
+  },
+  {
+    id: "demo-walkthrough",
+    label: "Walkthrough",
+    path: "/demo/walkthrough",
+    section: "demo",
+    role: "public",
+    icon: "book-open",
+    status: "active",
+    description: "Paso a paso de la inicialización de la Demo.",
+  },
+  {
+    id: "demo-design-system",
+    label: "Design System",
+    path: "/demo/design-system",
+    section: "demo",
+    role: "public",
+    icon: "palette",
+    status: "active",
+    description: "Playground de componentes Mission Control.",
+  },
+  {
+    id: "demo-scenarios",
+    label: "Escenarios",
+    path: "/demo/scenarios",
+    section: "demo",
+    role: "public",
+    icon: "test-tube",
+    status: "active",
+    description: "Panel para simular diferentes contextos de usuario.",
+  },
+  {
+    id: "demo-legal",
+    label: "Portal Legal",
+    path: "/demo/legal",
+    section: "demo",
+    role: "public",
+    icon: "scale",
+    status: "active",
+    description: "Disclaimers y términos del entorno Sandbox.",
+  },
+  
+  // --- Dashboard Inversor ---
+  {
+    id: "dashboard-investor",
+    label: "Panel Inversor",
+    path: "/dashboard/investor",
+    section: "investor",
+    role: "investor",
+    icon: "wallet",
+    status: "active",
+    description: "Panel principal del inversor (ProRataLandCard).",
+    primaryAction: "Simular Adquisición",
+  },
+  {
+    id: "investor-ledger",
+    label: "Ledger PACHA",
+    path: "/dashboard/investor/ledger",
+    section: "investor",
+    role: "investor",
+    icon: "list",
+    status: "active",
+    description: "Historial on-chain simulado de transferencias.",
+  },
+  {
+    id: "investor-genesis",
+    label: "Historial Genesis",
+    path: "/dashboard/investor/genesis",
+    section: "investor",
+    role: "investor",
+    icon: "history",
+    status: "active",
+    description: "Tracking de intentos de flujo Genesis.",
+  },
+  {
+    id: "investor-disclosures",
+    label: "Disclaimers",
+    path: "/dashboard/investor/disclosures",
+    section: "investor",
+    role: "investor",
+    icon: "alert-triangle",
+    status: "active",
+    description: "Términos y condiciones del entorno simulado.",
+  },
+
+  // --- Dashboard Administrador ---
+  {
+    id: "dashboard-admin",
+    label: "Consola Admin",
+    path: "/dashboard/admin",
+    section: "admin",
+    role: "admin",
+    icon: "layout-dashboard",
+    status: "active",
+    description: "Panel general de administración.",
+  },
+  {
+    id: "admin-users",
+    label: "Usuarios y KYC",
+    path: "/dashboard/admin/users",
+    section: "admin",
+    role: "admin",
+    icon: "users",
+    status: "active",
+    description: "Gestión profunda de usuarios y KYC simulado.",
+  },
+  {
+    id: "admin-audit",
+    label: "Auditoría",
+    path: "/dashboard/admin/audit",
+    section: "admin",
+    role: "admin",
+    icon: "file-search",
+    status: "active",
+    description: "Visualizador premium de logs de auditoría.",
+  },
+  {
+    id: "admin-integrations",
+    label: "Integraciones",
+    path: "/dashboard/admin/integrations",
+    section: "admin",
+    role: "admin",
+    icon: "activity",
+    status: "active",
+    description: "Gestión del estado de conexiones externas.",
+  },
+  {
+    id: "admin-token-orders",
+    label: "Órdenes Token",
+    path: "/dashboard/admin/token-orders",
+    section: "admin",
+    role: "admin",
+    icon: "shopping-cart",
+    status: "active",
+    description: "Supervisión de órdenes de adquisición simuladas.",
+  },
+
+  // --- Dashboard Fideicomiso ---
+  {
+    id: "dashboard-fideicomiso",
+    label: "Fideicomiso",
+    path: "/dashboard/fideicomiso",
+    section: "fideicomiso",
+    role: "fiduciario",
+    icon: "shield",
+    status: "active",
+    description: "Firma y control de operaciones RWA.",
+    primaryAction: "Firmar Operación",
+  },
+  {
+    id: "fideicomiso-operations",
+    label: "Operaciones pendientes",
+    path: "/dashboard/fideicomiso/operations",
+    section: "fideicomiso",
+    role: "fiduciario",
+    icon: "file-signature",
+    status: "active",
+    description: "Operaciones Multi-Sig pendientes de firma.",
+  },
+  {
+    id: "fideicomiso-signatures",
+    label: "Firmas",
+    path: "/dashboard/fideicomiso/signatures",
+    section: "fideicomiso",
+    role: "fiduciario",
+    icon: "pen-tool",
+    status: "active",
+    description: "Auditoría del estado del quórum.",
+  },
+  {
+    id: "fideicomiso-legal-backing",
+    label: "Respaldo Legal",
+    path: "/dashboard/fideicomiso/legal-backing",
+    section: "fideicomiso",
+    role: "fiduciario",
+    icon: "landmark",
+    status: "active",
+    description: "Detalles del inmueble y emisión subyacente.",
+  },
+  
+  // --- Operator / Technical ---
+  {
+    id: "demo-operator",
+    label: "Consola Operador",
+    path: "/demo/operator",
+    section: "operator",
+    role: "operator",
+    icon: "terminal",
+    status: "active",
+    description: "Herramientas de entorno local (Doctor, Reset, Seed).",
+    primaryAction: "Reset DB",
+  },
+  {
+    id: "demo-integrations",
+    label: "Estado de Integraciones",
+    path: "/demo/integrations",
+    section: "operator",
+    role: "operator",
+    icon: "puzzle",
+    status: "pending_credentials",
+    description: "Estado técnico de conexiones (MP, Foundry).",
+  },
+];

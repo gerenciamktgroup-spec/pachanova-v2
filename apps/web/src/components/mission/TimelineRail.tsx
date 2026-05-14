@@ -32,7 +32,7 @@ export function TimelineRail({ items, className }: { items: TimelineItem[], clas
               )}>
                 {item.title}
               </span>
-              {item.time && <span className="text-xs text-pn-text-soft pn-mono">{item.time}</span>}
+              {item.time && <span suppressHydrationWarning className="text-xs text-pn-text-soft pn-mono">{item.time}</span>}
             </div>
             {item.description && (
               <p className="mt-1 text-sm text-pn-text-soft">{item.description}</p>

@@ -1,41 +1,77 @@
-import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
-import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
-import { eq } from "drizzle-orm";
+import { RouteBreadcrumbs, SectionHeader, ErrorState } from "@/components/mission";
 import { Suspense } from "react";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
-
-// Dummy logged in user for demo purposes
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000123";
-
-async function fetchMarketplaceData() {
-  try {
-    const orders = await db.query.p2pOrders.findMany({
-      where: eq(schema.p2pOrders.status, "open"),
-      orderBy: (orders, { desc }) => [desc(orders.createdAt)],
-    });
-
-    const balance = await db.query.balances.findFirst({
-      where: eq(schema.balances.investorId, DEMO_USER_ID),
-    });
-
-    const user = await db.query.investors.findFirst({
-      where: eq(schema.investors.id, DEMO_USER_ID),
-    });
-
-    return { orders, balance, kycStatus: user?.kycStatus || 'pending' };
-  } catch (error) {
-    console.error("Error fetching P2P data:", error);
-    return null;
-  }
-}
+import { createServerClient } from "@/utils/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
 
 async function MarketplaceContent() {
-  const data = await fetchMarketplaceData();
+  const authClient = await createServerClient();
+  const { data: { user } } = await authClient.auth.getUser();
 
-  if (!data) {
-    return <ErrorState title="Error" message="No se pudo cargar el mercado P2P." />;
+  if (!user) redirect("/login");
+
+  // Use Service Role to bypass RLS since GoTrue users were recreated and auth.uid() mismatches
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: investor } = await supabase
+    .from("investors")
+    .select("id, kyc_status, first_name, last_name")
+    .eq("supabase_auth_id", user.id)
+    .single();
+
+  if (!investor) {
+    return <ErrorState title="Error" message={`No se pudo cargar el perfil de inversor para ${user.email}.`} />;
   }
+
+  // Get KYC from documents or fallback
+  const { data: kycDocs } = await supabase
+    .from("kyc_documents")
+    .select("status")
+    .eq("investor_id", investor.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending");
+
+  // Get balances
+  const { data: balance } = await supabase
+    .from("balances")
+    .select("available_usd, available_tokens")
+    .eq("investor_id", investor.id)
+    .single();
+
+  // Get open orders not belonging to user
+  const { data: openOrders } = await supabase
+    .from("p2p_orders")
+    .select(`
+      *,
+      investor:investors!p2p_orders_seller_investor_id_fkey(first_name, last_name),
+      property:properties(name)
+    `)
+    .eq("status", "open")
+    .neq("seller_investor_id", investor.id)
+    .order("created_at", { ascending: false });
+
+  const mappedOrders = openOrders?.map(order => ({
+    ...order,
+    investor: {
+      full_name: `${order.investor?.first_name || ''} ${order.investor?.last_name || ''}`.trim() || 'Usuario'
+    }
+  }));
+
+  // Get user's own active orders
+  const { data: myOrders } = await supabase
+    .from("p2p_orders")
+    .select(`*, property:properties(name)`)
+    .eq("seller_investor_id", investor.id)
+    .eq("status", "open")
+    .order("created_at", { ascending: false });
+
+  // Get first property for selling
+  const { data: property } = await supabase.from("properties").select("id").limit(1).single();
 
   return (
     <div className="space-y-6">
@@ -43,19 +79,21 @@ async function MarketplaceContent() {
         <RouteBreadcrumbs items={[
           { label: "Dashboard" },
           { label: "Panel Inversor", href: "/dashboard/investor" },
-          { label: "Mercado P2P Demo" }
+          { label: "Mercado Secundario (P2P)" }
         ]} className="mb-4" />
         <SectionHeader 
-          title="Mercado P2P Demo"
-          description="Compra y vende tokens PACHA simulados con otros usuarios de la red local."
+          title="Mercado Secundario P2P"
+          description="Compra y vende tokens PACHA directamente con otros miembros de la red."
         />
       </div>
 
       <P2PMarketplaceClient 
-        orders={data.orders} 
-        balance={data.balance || null} 
-        kycStatus={data.kycStatus}
-        currentUserId={DEMO_USER_ID}
+        availableOrders={mappedOrders || []}
+        myOrders={myOrders || []}
+        balance={balance}
+        kycStatus={kycStatus}
+        currentUserId={investor.id}
+        propertyId={property?.id || "00000000-0000-0000-0000-000000000000"}
       />
     </div>
   );
@@ -63,7 +101,7 @@ async function MarketplaceContent() {
 
 export default function MarketplacePage() {
   return (
-    <Suspense fallback={<div>Cargando mercado...</div>}>
+    <Suspense fallback={<div className="p-12 text-center text-pn-text-muted">Cargando mercado...</div>}>
       <MarketplaceContent />
     </Suspense>
   );

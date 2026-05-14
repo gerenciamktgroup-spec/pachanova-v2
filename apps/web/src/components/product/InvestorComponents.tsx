@@ -113,7 +113,7 @@ export function InvestorLedgerPanel({ view }: { view: InvestorDashboardView }) {
             <DataGridRow key={tx.id}>
               <DataGridCell><span className="text-xs font-medium px-2 py-1 bg-pn-surface-strong rounded border border-pn-border">{tx.operationType}</span></DataGridCell>
               <DataGridCell><TokenAmount amount={tx.amount} /></DataGridCell>
-              <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString()}</span></DataGridCell>
+              <DataGridCell><span suppressHydrationWarning className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString()}</span></DataGridCell>
               <DataGridCell>
                 <span className="font-mono text-[10px] text-pn-text-soft truncate max-w-[120px] block">
                   {tx.txHash || "PENDING"}
@@ -230,7 +230,9 @@ export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardVie
       <div className="space-y-4">
         <div className="p-3 bg-pn-surface-strong rounded border border-pn-border">
           <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible</p>
-          <p className="text-xl font-medium text-pn-gold">${Number(view.investor.balance.availableUsd).toLocaleString()}</p>
+          <p className="text-xl font-medium text-pn-gold" suppressHydrationWarning>
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(view.investor.balance.availableUsd))}
+          </p>
         </div>
 
         <div className="space-y-2 mt-4 pt-4 border-t border-pn-border">

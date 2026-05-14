@@ -245,7 +245,7 @@ export function IntegrationEventsPanel({ view }: { view: AdminDashboardView }) {
                 </div>
                 <p className="text-xs text-pn-text-soft">{ev.event}</p>
               </div>
-              <span className="text-[10px] font-mono text-pn-text-muted">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+              <span suppressHydrationWarning className="text-[10px] font-mono text-pn-text-muted">{new Date(ev.timestamp).toLocaleTimeString()}</span>
             </div>
           ))}
         </div>
