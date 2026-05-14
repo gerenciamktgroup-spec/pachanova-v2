@@ -1,30 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  /* PachaNova Base Colors */
-  --pn-bg: #050505;
-  --pn-bg-soft: #0A0A0A;
-  --pn-surface: rgba(255, 255, 255, 0.035);
-  --pn-surface-strong: rgba(255, 255, 255, 0.06);
-  --pn-border: rgba(255, 255, 255, 0.10);
-  --pn-border-strong: rgba(255, 255, 255, 0.18);
+  /* Fondos — Light Banking */
+  --pn-bg:             #FFFFFF;
+  --pn-bg-soft:        #F8FAFC;
+  --pn-surface:        #F8FAFC;
+  --pn-surface-strong: #F1F5F9;
+  --pn-surface-dark:   #0F172A;
 
-  /* PachaNova Typography Colors */
-  --pn-text: #EDEDED;
-  --pn-text-muted: #A3A3A3;
-  --pn-text-soft: #737373;
+  /* Bordes */
+  --pn-border:         #E2E8F0;
+  --pn-border-strong:  #CBD5E1;
 
-  /* PachaNova Accents */
-  --pn-gold: #C9A77B;
-  --pn-sand: #D8C3A5;
-  --pn-terracotta: #B46A4C;
-  --pn-sage: #7A9A7E;
-  --pn-blue: #4B8FF0;
+  /* Textos */
+  --pn-text:           #0F172A;
+  --pn-text-soft:      #475569;
+  --pn-text-muted:     #94A3B8;
+  --pn-text-inverse:   #FFFFFF;
 
-  /* Status Colors */
-  --pn-success: #10B981;
-  --pn-warning: #F59E0B;
-  --pn-danger: #EF4444;
+  /* Brand — Azul bancario (reemplaza dorado, alias pn-gold para compatibilidad) */
+  --pn-gold:           #1D4ED8;
+  --pn-brand:          #1D4ED8;
+  --pn-brand-dark:     #1E3A8A;
+  --pn-brand-light:    #DBEAFE;
+
+  /* Legacy compat tokens */
+  --pn-sand:           #CBD5E1;
+  --pn-terracotta:     #DC2626;
+  --pn-sage:           #059669;
+  --pn-blue:           #1D4ED8;
+
+  /* Semánticos */
+  --pn-success:        #059669;
+  --pn-success-light:  #D1FAE5;
+  --pn-warning:        #D97706;
+  --pn-warning-light:  #FEF3C7;
+  --pn-error:          #DC2626;
+  --pn-error-light:    #FEE2E2;
+  --pn-danger:         #DC2626;
+
+  /* Tipografía */
+  --font-sans:         'Inter', 'DM Sans', system-ui, sans-serif;
+  --font-mono:         'JetBrains Mono', monospace;
 
   --background: var(--pn-bg);
   --foreground: var(--pn-text);
@@ -33,20 +50,25 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
   /* Expose custom colors to Tailwind classes */
   --color-pn-bg: var(--pn-bg);
   --color-pn-bg-soft: var(--pn-bg-soft);
   --color-pn-surface: var(--pn-surface);
   --color-pn-surface-strong: var(--pn-surface-strong);
+  --color-pn-surface-dark: var(--pn-surface-dark);
   --color-pn-border: var(--pn-border);
   --color-pn-border-strong: var(--pn-border-strong);
   --color-pn-text: var(--pn-text);
-  --color-pn-text-muted: var(--pn-text-muted);
   --color-pn-text-soft: var(--pn-text-soft);
+  --color-pn-text-muted: var(--pn-text-muted);
+  --color-pn-text-inverse: var(--pn-text-inverse);
   --color-pn-gold: var(--pn-gold);
+  --color-pn-brand: var(--pn-brand);
+  --color-pn-brand-dark: var(--pn-brand-dark);
+  --color-pn-brand-light: var(--pn-brand-light);
   --color-pn-sand: var(--pn-sand);
   --color-pn-terracotta: var(--pn-terracotta);
   --color-pn-sage: var(--pn-sage);
@@ -54,6 +76,7 @@
   --color-pn-success: var(--pn-success);
   --color-pn-warning: var(--pn-warning);
   --color-pn-danger: var(--pn-danger);
+  --color-pn-error: var(--pn-error);
 }
 
 body {
@@ -73,10 +96,24 @@ body {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
   }
   .pn-card {
-    @apply rounded-xl border border-pn-border bg-pn-surface backdrop-blur-md overflow-hidden;
+    background: var(--pn-bg);
+    border: 1px solid var(--pn-border);
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    overflow: hidden;
   }
   .pn-card-hover {
-    @apply transition-all duration-300 hover:border-pn-border-strong hover:bg-pn-surface-strong;
+    @apply transition-all duration-300;
+  }
+  .pn-card-hover:hover {
+    border-color: var(--pn-border-strong);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  .pn-card-elevated {
+    background: var(--pn-bg);
+    border: 1px solid var(--pn-border);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   }
   .pn-glow-soft {
     box-shadow: 0 0 24px -8px var(--pn-border);
@@ -85,14 +122,57 @@ body {
     @apply font-mono tabular-nums tracking-tight;
   }
   .pn-focus {
-    @apply focus:outline-none focus:ring-2 focus:ring-pn-border-strong focus:ring-offset-2 focus:ring-offset-pn-bg;
+    @apply focus:outline-none focus:ring-2 focus:ring-pn-brand focus:ring-offset-2 focus:ring-offset-pn-bg;
   }
   .pn-grid-bg {
-    background-image: linear-gradient(to right, var(--pn-surface) 1px, transparent 1px),
-                      linear-gradient(to bottom, var(--pn-surface) 1px, transparent 1px);
-    background-size: 24px 24px;
+    display: none !important;
   }
   .pn-gradient-radial {
-    background: radial-gradient(circle at top, var(--pn-surface-strong) 0%, transparent 60%);
+    background: radial-gradient(ellipse at top, #EFF6FF 0%, #FFFFFF 60%) !important;
   }
 }
+
+/* Component classes */
+.pn-btn-primary {
+  background: var(--pn-brand);
+  color: white;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pn-btn-primary:hover { background: var(--pn-brand-dark); }
+
+.pn-btn-secondary {
+  background: transparent;
+  border: 2px solid var(--pn-border-strong);
+  color: var(--pn-text);
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-weight: 500;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pn-btn-secondary:hover {
+  border-color: var(--pn-brand);
+  color: var(--pn-brand);
+}
+
+/* Animaciones de entrada */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pn-animate-fade-up { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
