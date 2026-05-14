@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { CommandButton, MissionCard, RouteBreadcrumbs, SectionHeader } from "@/components/mission";
+import { DemoOnboardingModal } from "@/components/ui/DemoOnboardingModal";
 
 export default function DemoStartPage() {
   return (
     <div className="space-y-12 pb-24 max-w-3xl mx-auto mt-12">
+      <DemoOnboardingModal />
       <div>
         <RouteBreadcrumbs items={[{ label: "Demo" }, { label: "Start" }]} className="mb-4" />
         <SectionHeader 
