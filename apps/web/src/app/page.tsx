@@ -1,196 +1,275 @@
-import { PublicHeader, PublicFooter } from "@/components/public/LandingComponents";
-import { MissionCard, IntegrationStatusBadge, SafeActionButton } from "@/components/mission";
-import { Activity, ShieldCheck, Database, LayoutDashboard, Eye, CheckCircle2, CircleDashed, Link as LinkIcon, LandPlot, Coins, UserCheck, Wallet, ArrowRightLeft } from "lucide-react";
 import Link from "next/link";
-import { InfoHint } from "@/components/product/InfoHint";
-import { NextStepCard } from "@/components/product/NextStepCard";
-import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
-import { visitorJourney } from "@/lib/navigation/userJourneys";
+import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, Shield, BarChart3 } from "lucide-react";
 
-import { createServerClient } from '@/utils/supabase/server';
-
-export default async function LandingPage() {
-  const supabase = await createServerClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  const isAuth = !!session?.user;
-  const investorHref = isAuth ? "/dashboard/investor" : "/signup";
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-pn-bg text-pn-text selection:bg-pn-gold/30" data-testid="landing-page">
-      <PublicHeader />
-
-      <main className="w-full">
-        {/* Rail de Progreso Visitante */}
-        <JourneyProgressRail journey={visitorJourney} currentStepId="v1" />
-
-        {/* 1. Hero Institucional */}
-        <section className="relative py-16 md:py-24 overflow-hidden border-b border-pn-border">
-          <div className="absolute inset-0 pn-grid-bg opacity-30 pointer-events-none"></div>
-          <div className="absolute inset-0 pn-gradient-radial pointer-events-none"></div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-pn-surface-strong border border-pn-border text-pn-text-muted">Demo local</span>
+    <div className="min-h-screen bg-white text-slate-900">
+      {/* ═══ NAV ═══ */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="font-bold text-xl tracking-tight text-slate-900">
+              PACHA<span className="text-blue-700">NOVA</span>
+            </Link>
+            <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
+              <a href="#como-funciona" className="hover:text-blue-700 transition-colors">Cómo funciona</a>
+              <a href="#activo" className="hover:text-blue-700 transition-colors">El activo</a>
             </div>
-            <h1 className="text-4xl md:text-5xl font-light tracking-tight text-pn-text max-w-4xl mx-auto mb-6">
-              PachaNova: infraestructura para tokenizar activos inmobiliarios
-            </h1>
-            <p className="text-lg text-pn-text-soft max-w-2xl mx-auto mb-10">
-              Una plataforma RWA para estructurar, adquirir y transferir participaciones digitales sobre activos inmobiliarios bajo trazabilidad fiduciaria.
-            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-sm text-slate-600 hover:text-blue-700 transition-colors hidden sm:block">
+              Iniciar sesión
+            </Link>
+            <Link href="/demo/start" className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
+              Explorar Demo
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* ═══ SECCIÓN 1: HERO ═══ */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-white to-white pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
+          {/* Badge */}
+          <div className="pn-animate-fade-up inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
+            <Mountain className="w-4 h-4" />
+            RWA · Tierra Real Tokenizada · Perú 2024
+          </div>
+
+          {/* H1 */}
+          <h1 className="pn-animate-fade-up delay-100 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6 max-w-3xl mx-auto leading-tight">
+            Invertí en tierra real.
+            <br />
+            <span className="text-blue-700">Desde $10 USD.</span>
+          </h1>
+
+          {/* Sub */}
+          <p className="pn-animate-fade-up delay-200 text-lg text-slate-600 max-w-xl mx-auto mb-10 leading-relaxed">
+            PachaNova convierte hectáreas verificadas en tokens respaldados por fideicomiso legal. Transparente, auditable y accesible para todos.
+          </p>
+
+          {/* CTAs */}
+          <div className="pn-animate-fade-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <Link href="/demo/start" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3.5 rounded-xl text-base transition-colors flex items-center gap-2 shadow-lg shadow-blue-700/20">
+              Explorar el Demo <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link href="/demo/showcase" className="bg-white border-2 border-slate-300 hover:border-blue-400 text-slate-700 hover:text-blue-700 font-semibold px-8 py-3.5 rounded-xl text-base transition-all">
+              Ver Showcase
+            </Link>
+          </div>
+
+          {/* Stat cards */}
+          <div className="pn-animate-fade-up delay-400 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <StatCard value="500,000 m²" label="Superficie tokenizada" />
+            <StatCard value="USD $10" label="Precio por token" />
+            <StatCard value="8.5% APY" label="Rendimiento estimado" />
+            <StatCard value="2/3 Quórum" label="Gobernanza fiduciaria" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN 2: CÓMO FUNCIONA ═══ */}
+      <section id="como-funciona" className="bg-slate-50 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">4 pasos simples</h2>
+          <p className="text-slate-500 text-center mb-16 max-w-lg mx-auto">Desde la verificación hasta el cobro de rendimientos, todo en una sola plataforma.</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <StepCard num={1} icon={<MapPin className="w-6 h-6" />} title="Elegís el activo" desc="Revisás el dossier legal y la ubicación verificada." />
+            <StepCard num={2} icon={<Coins className="w-6 h-6" />} title="Comprás tokens" desc="Desde $10 USD por token. Sin montos mínimos prohibitivos." />
+            <StepCard num={3} icon={<TrendingUp className="w-6 h-6" />} title="Cobrás rendimientos" desc="8.5% APY estimado sobre el valor del activo." />
+            <StepCard num={4} icon={<Vote className="w-6 h-6" />} title="Votás y vendés" desc="Quórum 2/3 en el fideicomiso. Liquidez P2P." />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN 3: EL ACTIVO ═══ */}
+      <section id="activo" className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
+            {/* Left — Info */}
+            <div className="lg:col-span-3 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-3 py-1 rounded-full">
+                <Check className="w-4 h-4" /> Proyecto verificado
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Proyecto San Bartolo</h2>
+              <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
+                5 hectáreas de tierra en San Bartolo, Perú. Registro SUNARP activo, fideicomiso notarial constituido y auditoría de tokens en cadena.
+              </p>
+              <div className="space-y-4">
+                <FeatureRow text="Registro SUNARP activo" />
+                <FeatureRow text="Fideicomiso notarial constituido" />
+                <FeatureRow text="Auditoría de tokens en cadena" />
+              </div>
+            </div>
+
+            {/* Right — Premium Card */}
+            <div className="lg:col-span-2">
+              <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-2xl">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="font-bold text-lg tracking-tight">PACHA</span>
+                  <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Genesis Round</span>
+                </div>
+                <div className="mb-6">
+                  <p className="text-slate-400 text-sm mb-1">Precio por token</p>
+                  <p className="text-4xl font-bold">$10.00 <span className="text-lg font-normal text-slate-400">USD</span></p>
+                </div>
+                <div className="mb-6">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-slate-400">Genesis: 45% vendido</span>
+                    <span className="text-blue-400 font-medium">225,000 / 500,000</span>
+                  </div>
+                  <div className="w-full bg-slate-800 rounded-full h-2.5">
+                    <div className="bg-blue-500 h-2.5 rounded-full" style={{width: '45%'}} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4 mb-8 text-center">
+                  <div>
+                    <p className="text-xl font-bold">100K</p>
+                    <p className="text-xs text-slate-400">Disponibles</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">8.5%</p>
+                    <p className="text-xs text-slate-400">APY est.</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">PE</p>
+                    <p className="text-xs text-slate-400">Perú</p>
+                  </div>
+                </div>
+                <Link href="/demo/start" className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-3.5 rounded-xl transition-colors">
+                  Comprar tokens <ArrowRight className="inline w-4 h-4 ml-1" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN 4: ROLES ═══ */}
+      <section className="bg-blue-950 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">¿Cuál es tu rol?</h2>
+          <p className="text-blue-300 mb-16 max-w-lg mx-auto">Cada participante tiene un panel dedicado con herramientas específicas para su función.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <RoleCard emoji="🏦" title="Inversor" desc="Comprá tokens y cobrá rendimientos sobre activos reales verificados." href="/demo/start" badge="Principal" />
+            <RoleCard emoji="⚙️" title="Administrador" desc="Gestioná el activo, los inversores y la auditoría de la plataforma." href="/dashboard/admin" badge="Staff" />
+            <RoleCard emoji="📜" title="Fideicomiso" desc="Firmá operaciones con quórum legal y controlá la emisión de tokens." href="/dashboard/fideicomiso" badge="Legal" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN 5: CTA FINAL ═══ */}
+      <section className="py-24">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-slate-900 rounded-3xl p-12 text-center shadow-2xl">
+            <h2 className="text-3xl font-bold text-white mb-4">Probá el sistema completo hoy</h2>
+            <p className="text-slate-400 mb-8">Demo interactivo, sin registro obligatorio, datos simulados en entorno seguro.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/demo/start" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-gold text-pn-bg hover:bg-pn-gold/90">
-                Empezar demo guiada
+              <Link href="/demo/start" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors flex items-center gap-2">
+                Iniciar Demo <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/demo/showcase" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-text text-pn-bg hover:bg-pn-text/90">
-                Entrar al simulador libre
-              </Link>
-              <Link href={investorHref} className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-surface-strong text-pn-text hover:bg-pn-surface-strong/80 border border-pn-border">
-                {isAuth ? "Explorar panel inversor" : "Simular como Inversor"}
+              <Link href="/demo/showcase" className="border-2 border-slate-600 hover:border-slate-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
+                Ver documentación
               </Link>
             </div>
           </div>
-        </section>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
-          
-          {/* Proyecto San Bartolo */}
-          <section id="activo" className="bg-pn-surface-strong border border-pn-border rounded-xl p-8 pn-glow-soft">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-pn-bg border border-pn-border rounded-lg">
-                <LandPlot className="w-8 h-8 text-pn-gold" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-pn-gold uppercase tracking-widest">Activo Subyacente</h2>
-                <h3 className="text-2xl font-light text-pn-text">Proyecto San Bartolo</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <p className="text-sm text-pn-text-muted mb-1">Superficie</p>
-                <p className="text-xl font-medium">5 Hectáreas</p>
-                <p className="text-xs text-pn-text-muted">50,000 m²</p>
-              </div>
-              <div>
-                <p className="text-sm text-pn-text-muted mb-1">Unidades</p>
-                <p className="text-xl font-medium">500,000 PACHA</p>
-              </div>
-              <div>
-                <p className="text-sm text-pn-text-muted mb-1">Equivalencia</p>
-                <p className="text-xl font-medium">1 PACHA</p>
-                <p className="text-xs text-pn-text-muted">= 0.1 m²</p>
-              </div>
-              <div>
-                <p className="text-sm text-pn-text-muted mb-1">Respaldo</p>
-                <p className="text-xl font-medium">Fideicomiso</p>
-                <p className="text-xs text-pn-text-muted">Quórum 2/3 simulado</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Modelo en 4 pasos */}
-          <section id="modelo">
-            <div className="text-center mb-12">
-              <h2 className="text-sm font-semibold text-pn-gold uppercase tracking-widest mb-3">Modelo Operativo</h2>
-              <h3 className="text-3xl font-light">Flujo de participación en 4 pasos</h3>
-              <p className="text-pn-text-muted mt-4 max-w-2xl mx-auto">Explora el ciclo de vida de la tokenización a través de nuestra demostración simulada.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-              <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-pn-border/50 -z-10 hidden md:block"></div>
-              
-              <MissionCard className="p-6 bg-pn-bg">
-                <div className="w-12 h-12 bg-pn-surface-strong border border-pn-border rounded-full flex items-center justify-center mb-4 mx-auto text-xl font-bold">1</div>
-                <h4 className="text-center font-medium mb-2">Verifica tu perfil</h4>
-                <p className="text-sm text-pn-text-muted text-center">Cumplimiento normativo simulado (KYC).</p>
-                <UserCheck className="w-8 h-8 mx-auto mt-4 text-pn-text-soft" />
-              </MissionCard>
-
-              <MissionCard className="p-6 bg-pn-bg">
-                <div className="w-12 h-12 bg-pn-surface-strong border border-pn-border rounded-full flex items-center justify-center mb-4 mx-auto text-xl font-bold">2</div>
-                <h4 className="text-center font-medium mb-2">Deposita fondos</h4>
-                <p className="text-sm text-pn-text-muted text-center">Carga saldo virtual para operar simuladamente.</p>
-                <Wallet className="w-8 h-8 mx-auto mt-4 text-pn-text-soft" />
-              </MissionCard>
-
-              <MissionCard className="p-6 bg-pn-bg border-pn-gold/30 shadow-[0_0_15px_rgba(255,215,0,0.05)]">
-                <div className="w-12 h-12 bg-pn-gold/10 border border-pn-gold/30 text-pn-gold rounded-full flex items-center justify-center mb-4 mx-auto text-xl font-bold">3</div>
-                <h4 className="text-center font-medium mb-2">Adquiere PACHA</h4>
-                <p className="text-sm text-pn-text-muted text-center">Compra tokens en la ronda Genesis demo.</p>
-                <Coins className="w-8 h-8 mx-auto mt-4 text-pn-gold" />
-              </MissionCard>
-
-              <MissionCard className="p-6 bg-pn-bg">
-                <div className="w-12 h-12 bg-pn-surface-strong border border-pn-border rounded-full flex items-center justify-center mb-4 mx-auto text-xl font-bold">4</div>
-                <h4 className="text-center font-medium mb-2">Opera P2P</h4>
-                <p className="text-sm text-pn-text-muted text-center">Compra y vende tokens en mercado secundario demo.</p>
-                <ArrowRightLeft className="w-8 h-8 mx-auto mt-4 text-pn-text-soft" />
-              </MissionCard>
-            </div>
-            
-            <div className="mt-12 text-center">
-              <SafeActionButton label="Iniciar Business Flow Stepper" href="/demo/business-flow" variant="primary" />
-            </div>
-          </section>
-
-          {/* Generación de Valor & Roles */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-light mb-6">Generación de valor operativo</h3>
-              <ul className="space-y-4">
-                <li className="flex gap-3"><ShieldCheck className="w-5 h-5 text-pn-gold shrink-0" /> <div><strong>Estructuración fiduciaria</strong><p className="text-sm text-pn-text-muted">Respaldo legal de los activos subyacentes.</p></div></li>
-                <li className="flex gap-3"><Database className="w-5 h-5 text-pn-gold shrink-0" /> <div><strong>Trazabilidad inmutable</strong><p className="text-sm text-pn-text-muted">Auditoría completa a través del Ledger local.</p></div></li>
-                <li className="flex gap-3"><ArrowRightLeft className="w-5 h-5 text-pn-gold shrink-0" /> <div><strong>Liquidez P2P futura</strong><p className="text-sm text-pn-text-muted">Mercado secundario para transferencia de valor.</p></div></li>
-              </ul>
-            </div>
-            <div className="bg-pn-surface-strong p-8 rounded-xl border border-pn-border">
-              <h3 className="text-2xl font-light mb-6">Roles en la plataforma</h3>
-              <ul className="space-y-4">
-                <li className="border-b border-pn-border pb-4">
-                  <div className="flex items-center justify-between mb-1"><strong>Inversor</strong> <Link href="/dashboard/investor" className="text-xs text-pn-gold hover:underline">Ver panel</Link></div>
-                  <p className="text-sm text-pn-text-muted">Adquiere y transfiere participaciones PACHA en entorno simulado.</p>
-                </li>
-                <li className="border-b border-pn-border pb-4">
-                  <div className="flex items-center justify-between mb-1"><strong>Administrador</strong> <Link href="/dashboard/admin" className="text-xs text-pn-gold hover:underline">Ver panel</Link></div>
-                  <p className="text-sm text-pn-text-muted">Audita transacciones, gestiona liquidez y aprueba perfiles KYC demo.</p>
-                </li>
-                <li>
-                  <div className="flex items-center justify-between mb-1"><strong>Fideicomiso</strong> <Link href="/dashboard/fideicomiso" className="text-xs text-pn-gold hover:underline">Ver panel</Link></div>
-                  <p className="text-sm text-pn-text-muted">Entidad jurídica que custodia el activo y autoriza la emisión de tokens.</p>
-                </li>
-              </ul>
-            </div>
-          </section>
-
-          {/* Qué está simulado vs Qué se conectará después */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-8" data-testid="landing-how-to-read-demo">
-            <MissionCard className="p-8 border-pn-border">
-              <CircleDashed className="w-8 h-8 text-pn-text-muted mb-6" />
-              <h3 className="text-xl font-medium mb-4" data-testid="landing-what-is-simulated">Qué puedes probar ahora <InfoHint termKey="Simulated" inline /></h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Aprobar KYC demo</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Simular depósito de fondos</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Simular compra Genesis y ver tokens</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Crear órdenes y operar P2P demo</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Revisar Ledger y auditoría</span></li>
-              </ul>
-            </MissionCard>
-
-            <MissionCard className="p-8 border-pn-blue/20 bg-pn-blue/5">
-              <LinkIcon className="w-8 h-8 text-pn-blue mb-6" />
-              <h3 className="text-xl font-medium mb-4" data-testid="landing-what-connects-later">Qué se conectará después <InfoHint termKey="External-ready" inline /></h3>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><div className="w-4 h-4 rounded-full border border-pn-blue/50" /> <span>MercadoPago Sandbox (Pagos externos)</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><div className="w-4 h-4 rounded-full border border-pn-blue/50" /> <span>Foundry / Anvil (Blockchain Local)</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><div className="w-4 h-4 rounded-full border border-pn-blue/50" /> <span>Proveedor KYC Real</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><div className="w-4 h-4 rounded-full border border-pn-blue/50" /> <span>Oráculo Dinámico</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><div className="w-4 h-4 rounded-full border border-pn-blue/50" /> <span>Cloud Demo Privado</span></li>
-              </ul>
-            </MissionCard>
-          </section>
-
         </div>
-      </main>
+      </section>
 
-      <PublicFooter />
+      {/* ═══ FOOTER ═══ */}
+      <footer className="bg-slate-50 border-t border-slate-200 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            <div className="md:col-span-1">
+              <Link href="/" className="font-bold text-lg tracking-tight text-slate-900 block mb-3">
+                PACHA<span className="text-blue-700">NOVA</span>
+              </Link>
+              <p className="text-sm text-slate-500">Infraestructura para tokenizar activos inmobiliarios con respaldo fiduciario.</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Producto</h4>
+              <ul className="space-y-2 text-sm text-slate-500">
+                <li><Link href="/demo/start" className="hover:text-blue-700 transition-colors">Demo Guiada</Link></li>
+                <li><Link href="/demo/showcase" className="hover:text-blue-700 transition-colors">Showcase</Link></li>
+                <li><Link href="/dashboard/investor" className="hover:text-blue-700 transition-colors">Panel Inversor</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm text-slate-500">
+                <li><Link href="/demo/legal" className="hover:text-blue-700 transition-colors">Disclaimers</Link></li>
+                <li><Link href="/dashboard/investor/disclosures" className="hover:text-blue-700 transition-colors">Términos</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Contacto</h4>
+              <ul className="space-y-2 text-sm text-slate-500">
+                <li>info@pachanova.io</li>
+                <li>Lima, Perú</li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-slate-200 text-xs text-slate-400 text-center">
+            © {new Date().getFullYear()} PachaNova Labs. Simulación de software — no constituye oferta pública. Todos los derechos reservados.
+          </div>
+        </div>
+      </footer>
     </div>
+  );
+}
+
+/* ─── Sub-components ─── */
+
+function StatCard({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
+      <p className="text-xl font-bold text-slate-900">{value}</p>
+      <p className="text-xs text-slate-500 mt-1">{label}</p>
+    </div>
+  );
+}
+
+function StepCard({ num, icon, title, desc }: { num: number; icon: React.ReactNode; title: string; desc: string }) {
+  return (
+    <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+      <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center font-bold text-lg mb-5">
+        {String(num).padStart(2, '0')}
+      </div>
+      <div className="text-blue-700 mb-3">{icon}</div>
+      <h3 className="font-bold text-lg text-slate-900 mb-2">{title}</h3>
+      <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+function FeatureRow({ text }: { text: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+        <Check className="w-4 h-4 text-green-600" />
+      </div>
+      <span className="text-slate-700">{text}</span>
+    </div>
+  );
+}
+
+function RoleCard({ emoji, title, desc, href, badge }: { emoji: string; title: string; desc: string; href: string; badge: string }) {
+  return (
+    <Link href={href} className="group block">
+      <div className="bg-blue-900/80 border border-blue-800 rounded-2xl p-8 text-left hover:bg-blue-800 transition-colors h-full">
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-3xl">{emoji}</span>
+          <span className="bg-blue-700/50 text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">{badge}</span>
+        </div>
+        <h3 className="font-bold text-xl text-white mb-2">{title}</h3>
+        <p className="text-sm text-blue-300 leading-relaxed mb-4">{desc}</p>
+        <span className="text-blue-400 group-hover:text-white text-sm font-medium flex items-center gap-1 transition-colors">
+          Acceder <ArrowRight className="w-4 h-4" />
+        </span>
+      </div>
+    </Link>
   );
 }
