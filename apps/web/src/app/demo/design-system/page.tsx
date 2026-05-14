@@ -83,7 +83,7 @@ export default function DesignSystemPreview() {
               <ReportLinkCard 
                 title="Integration Readiness Report" 
                 desc="Auditoría de conexiones externas"
-                href="#"
+                href="/demo/reports"
               />
             </div>
           </div>

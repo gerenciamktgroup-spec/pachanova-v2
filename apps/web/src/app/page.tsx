@@ -37,11 +37,11 @@ export default async function LandingPage() {
               Una plataforma RWA para estructurar, adquirir y transferir participaciones digitales sobre activos inmobiliarios bajo trazabilidad fiduciaria.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/demo/business-flow" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-gold text-pn-bg hover:bg-pn-gold/90">
-                Ver cómo funciona
+              <Link href="/demo/start" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-gold text-pn-bg hover:bg-pn-gold/90">
+                Empezar demo guiada
               </Link>
               <Link href="/demo/showcase" className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-text text-pn-bg hover:bg-pn-text/90">
-                Entrar al simulador
+                Entrar al simulador libre
               </Link>
               <Link href={investorHref} className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pn-gold bg-pn-surface-strong text-pn-text hover:bg-pn-surface-strong/80 border border-pn-border">
                 {isAuth ? "Explorar panel inversor" : "Simular como Inversor"}
