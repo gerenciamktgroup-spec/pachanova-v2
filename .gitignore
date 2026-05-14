@@ -4,6 +4,8 @@ node_modules/
 # env files
 .env.local
 .env.demo.local
+apps/web/.env.local
+apps/dashboard/.env.local
 .env.mercadopago.sandbox.local
 *.local
 
@@ -22,3 +24,5 @@ dist/
 # testing
 playwright-report/
 test-results/
+test-*.mjs
+verify-*.mjs
