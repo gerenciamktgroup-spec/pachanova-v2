@@ -75,7 +75,7 @@ async function AdminDashboardContent() {
   const data = await fetchAdminData();
 
   if (!data) {
-    return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel de administrador." />;
+    return <ErrorState title="Error de carga" message="No se pudo cargar la consola de administración." />;
   }
 
   return (
@@ -98,9 +98,9 @@ async function AdminDashboardContent() {
       <NextStepCard 
         dataTestId="next-step-card-admin"
         contextLabel="Consola Admin"
-        title="Control Operativo Simulado"
-        explanation="Estás en la consola de control operativo demo. Aquí puedes auditar los logs locales, gestionar los usuarios simulados y revisar los tokens generados."
-        nextStep="Revisa el módulo 'Usuarios y KYC' para interactuar con la revisión de inversores."
+        title="Control operativo"
+        explanation="Inversores activos son cuentas con al menos 1 token y KYC aprobado. Los tokens emitidos no pueden aumentarse sin aprobación del fideicomiso. Las alertas de auditoría muestran discrepancias entre balance de tokens en BD y registros del fideicomiso."
+        nextStep="Revisá el módulo 'Usuarios y KYC' para interactuar con la revisión de inversores."
         primaryAction={{ label: "Ir a Usuarios y KYC", href: "/dashboard/admin/users", intent: "navigate" }}
         secondaryAction={{ label: "Ver Auditoría", href: "/dashboard/admin/audit", intent: "navigate" }}
         status="GO"
