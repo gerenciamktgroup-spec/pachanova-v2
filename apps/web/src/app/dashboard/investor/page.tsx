@@ -123,7 +123,7 @@ async function InvestorDashboardContent() {
   const view = await fetchInvestorData();
 
   if (!view) {
-    return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del inversor." />;
+    return <ErrorState title="Error de carga" message="No pudimos cargar tu portafolio. Verificá tu identidad antes de operar. Son 5 minutos →" />;
   }
 
   return (
@@ -145,9 +145,9 @@ async function InvestorDashboardContent() {
       <NextStepCard 
         dataTestId="next-step-card-investor"
         contextLabel="Panel Inversor"
-        title="Tu Portafolio RWA Simulado"
-        explanation="Estás viendo tu posición demo sobre el activo San Bartolo. Tu saldo actual y las métricas provienen de una base de datos local y no representan valor financiero real."
-        nextStep="Puedes revisar el Ledger PACHA para auditar tu saldo o simular el flujo Genesis de compra."
+        title="Tu portafolio de inversión"
+        explanation="Acá ves tus tokens PACHA (cada uno vale proporcionalmente a la valoración actual del activo), tu rendimiento acumulado (distribuciones aprobadas por el fideicomiso) y tus órdenes P2P activas."
+        nextStep="Explorá la ronda Genesis para comprar tokens o revisá el Ledger para auditar cada movimiento."
         primaryAction={{ label: "Simular Flujo Genesis", href: "/dashboard/investor/genesis", intent: "navigate" }}
         secondaryAction={{ label: "Revisar Ledger", href: "/dashboard/investor/ledger", intent: "navigate" }}
         status="GO"

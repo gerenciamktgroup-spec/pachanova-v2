@@ -66,7 +66,7 @@ async function FideicomisoDashboardContent() {
   const view = await fetchFideicomisoData();
 
   if (!view) {
-    return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del Fideicomiso." />;
+    return <ErrorState title="Error de carga" message="No se pudo cargar el panel del fideicomiso." />;
   }
 
   return (
@@ -88,9 +88,9 @@ async function FideicomisoDashboardContent() {
       <NextStepCard 
         dataTestId="next-step-card-fideicomiso"
         contextLabel="Fideicomiso"
-        title="Panel Multi-Sig Simulado"
-        explanation="Estás en el módulo fiduciario demo. Aquí puedes revisar el respaldo legal RWA de San Bartolo y simular una autorización de emisión de tokens mediante un quórum 2/3."
-        nextStep="Puedes revisar el respaldo legal o proceder a las operaciones pendientes para firmar."
+        title="Panel fiduciario"
+        explanation="Las operaciones pendientes esperan tu firma. Sin quórum 2/3 no se procesan. El quórum actual muestra cuántos fideicomisarios firmaron (se necesitan 2 de 3 para ejecutar)."
+        nextStep="Revisá el respaldo legal o procedé a las operaciones pendientes para firmar."
         primaryAction={{ label: "Ver Operaciones", href: "/dashboard/fideicomiso/operations", intent: "navigate" }}
         secondaryAction={{ label: "Respaldo Legal", href: "/dashboard/fideicomiso/legal-backing", intent: "navigate" }}
         status="GO"
