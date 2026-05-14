@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, Shield, BarChart3 } from "lucide-react";
+import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, CheckCircle } from "lucide-react";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { FAQAccordion, faqData } from "@/components/ui/FAQAccordion";
 
 export default function LandingPage() {
   return (
@@ -14,6 +16,7 @@ export default function LandingPage() {
             <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
               <a href="#como-funciona" className="hover:text-blue-700 transition-colors">Cómo funciona</a>
               <a href="#activo" className="hover:text-blue-700 transition-colors">El activo</a>
+              <a href="#faq" className="hover:text-blue-700 transition-colors">FAQ</a>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -37,20 +40,20 @@ export default function LandingPage() {
             RWA · Tierra Real Tokenizada · Perú 2024
           </div>
 
-          {/* H1 */}
+          {/* H1 — CAMBIO 4A */}
           <h1 className="pn-animate-fade-up delay-100 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6 max-w-3xl mx-auto leading-tight">
-            Invertí en tierra real.
+            Tu primer metro cuadrado en Perú.
             <br />
-            <span className="text-blue-700">Desde $10 USD.</span>
+            <span className="text-blue-700">Por $10.</span>
           </h1>
 
-          {/* Sub */}
+          {/* Sub — CAMBIO 4A */}
           <p className="pn-animate-fade-up delay-200 text-lg text-slate-600 max-w-xl mx-auto mb-10 leading-relaxed">
-            PachaNova convierte hectáreas verificadas en tokens respaldados por fideicomiso legal. Transparente, auditable y accesible para todos.
+            Comprás una participación real sobre tierra verificada. Sin banco. Sin mínimos. Con respaldo legal notarial.
           </p>
 
           {/* CTAs */}
-          <div className="pn-animate-fade-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          <div className="pn-animate-fade-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <Link href="/demo/start" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3.5 rounded-xl text-base transition-colors flex items-center gap-2 shadow-lg shadow-blue-700/20">
               Explorar el Demo <ArrowRight className="w-4 h-4" />
             </Link>
@@ -59,27 +62,55 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* Stat cards */}
-          <div className="pn-animate-fade-up delay-400 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            <StatCard value="500,000 m²" label="Superficie tokenizada" />
-            <StatCard value="USD $10" label="Precio por token" />
-            <StatCard value="8.5% APY" label="Rendimiento estimado" />
-            <StatCard value="2/3 Quórum" label="Gobernanza fiduciaria" />
+          {/* CAMBIO 4B — Trust badges */}
+          <div className="pn-animate-fade-up delay-400 flex flex-wrap items-center justify-center gap-6 mb-16">
+            <span className="flex items-center gap-1.5 text-sm text-slate-500">
+              <CheckCircle className="w-4 h-4 text-green-500" /> Sin comisiones de entrada
+            </span>
+            <span className="flex items-center gap-1.5 text-sm text-slate-500">
+              <CheckCircle className="w-4 h-4 text-green-500" /> Datos reales en la demo
+            </span>
+            <span className="flex items-center gap-1.5 text-sm text-slate-500">
+              <CheckCircle className="w-4 h-4 text-green-500" /> No requiere registro
+            </span>
+          </div>
+
+          {/* Stat cards — CAMBIO 4D con Tooltips */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <StatCard value="500,000 m²" label="Superficie tokenizada" tooltip="Total de metros cuadrados del Proyecto San Bartolo representados en tokens verificados." />
+            <StatCard value="USD $10" label="Precio por token" tooltip="Precio fijo en la ronda Génesis. Cada token representa una fracción proporcional del fideicomiso." />
+            <StatCard value="8.5% APY" label="Rendimiento estimado" tooltip="Proyección anual basada en valorización del activo. No garantizado. Ver disclaimer legal." />
+            <StatCard value="2/3 Quórum" label="Gobernanza fiduciaria" tooltip="Toda operación mayor requiere firma de 2 de 3 fideicomisarios. Tu voto tiene peso legal real." />
           </div>
         </div>
       </section>
 
-      {/* ═══ SECCIÓN 2: CÓMO FUNCIONA ═══ */}
+      {/* ═══ SECCIÓN SOCIAL PROOF — CAMBIO 4C ═══ */}
+      <section className="bg-white border-y border-slate-100 py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <ProofStat value="$5,000,000 USD" label="Valoración del activo San Bartolo" />
+            <ProofStat value="47 inversores" label="En la ronda Génesis" />
+            <ProofStat value="100%" label="Transacciones auditadas on-chain" />
+            <ProofStat value="SUNARP" label="Registro público verificable" />
+          </div>
+          <p className="text-xs text-slate-400 text-center mt-8">
+            Datos del Proyecto San Bartolo · Mayo 2026 · Simulación de demo
+          </p>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN 2: CÓMO FUNCIONA — CAMBIO 4E ═══ */}
       <section id="como-funciona" className="bg-slate-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">4 pasos simples</h2>
-          <p className="text-slate-500 text-center mb-16 max-w-lg mx-auto">Desde la verificación hasta el cobro de rendimientos, todo en una sola plataforma.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">4 pasos. Sin tecnicismos.</h2>
+          <p className="text-slate-500 text-center mb-16 max-w-lg mx-auto">Desde tu primera visita hasta el cobro de rendimientos, todo pasa en un solo lugar.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <StepCard num={1} icon={<MapPin className="w-6 h-6" />} title="Elegís el activo" desc="Revisás el dossier legal y la ubicación verificada." />
-            <StepCard num={2} icon={<Coins className="w-6 h-6" />} title="Comprás tokens" desc="Desde $10 USD por token. Sin montos mínimos prohibitivos." />
-            <StepCard num={3} icon={<TrendingUp className="w-6 h-6" />} title="Cobrás rendimientos" desc="8.5% APY estimado sobre el valor del activo." />
-            <StepCard num={4} icon={<Vote className="w-6 h-6" />} title="Votás y vendés" desc="Quórum 2/3 en el fideicomiso. Liquidez P2P." />
+            <StepCard num={1} icon={<MapPin className="w-6 h-6" />} title="Revisás antes de invertir un peso" desc="Revisás el dossier legal y la ubicación verificada." />
+            <StepCard num={2} icon={<Coins className="w-6 h-6" />} title="Tu participación, en tokens" desc="Desde $10 USD por token. Sin montos mínimos prohibitivos." />
+            <StepCard num={3} icon={<TrendingUp className="w-6 h-6" />} title="El activo trabaja por vos" desc="8.5% APY estimado sobre el valor del activo." />
+            <StepCard num={4} icon={<Vote className="w-6 h-6" />} title="Tu voz tiene peso legal" desc="Quórum 2/3 en el fideicomiso. Liquidez P2P." />
           </div>
         </div>
       </section>
@@ -97,6 +128,8 @@ export default function LandingPage() {
               <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
                 5 hectáreas de tierra en San Bartolo, Perú. Registro SUNARP activo, fideicomiso notarial constituido y auditoría de tokens en cadena.
               </p>
+              {/* CAMBIO 4F */}
+              <h3 className="text-xl font-semibold text-slate-800">Tu dinero protegido por ley, no por promesas.</h3>
               <div className="space-y-4">
                 <FeatureRow text="Registro SUNARP activo" />
                 <FeatureRow text="Fideicomiso notarial constituido" />
@@ -158,6 +191,15 @@ export default function LandingPage() {
             <RoleCard emoji="⚙️" title="Administrador" desc="Gestioná el activo, los inversores y la auditoría de la plataforma." href="/dashboard/admin" badge="Staff" />
             <RoleCard emoji="📜" title="Fideicomiso" desc="Firmá operaciones con quórum legal y controlá la emisión de tokens." href="/dashboard/fideicomiso" badge="Legal" />
           </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN FAQ — CAMBIO 4G ═══ */}
+      <section id="faq" className="bg-white py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-4">Preguntas frecuentes</h2>
+          <p className="text-slate-500 text-center mb-12">Las que más nos hacen antes de invertir.</p>
+          <FAQAccordion items={faqData} />
         </div>
       </section>
 
@@ -223,11 +265,22 @@ export default function LandingPage() {
 
 /* ─── Sub-components ─── */
 
-function StatCard({ value, label }: { value: string; label: string }) {
+function StatCard({ value, label, tooltip }: { value: string; label: string; tooltip: string }) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
-      <p className="text-xl font-bold text-slate-900">{value}</p>
+      <Tooltip content={tooltip} position="top">
+        <p className="text-xl font-bold text-slate-900 cursor-help border-b border-dashed border-slate-300">{value}</p>
+      </Tooltip>
       <p className="text-xs text-slate-500 mt-1">{label}</p>
+    </div>
+  );
+}
+
+function ProofStat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <p className="text-2xl md:text-3xl font-bold text-slate-900">{value}</p>
+      <p className="text-sm text-slate-500 mt-1">{label}</p>
     </div>
   );
 }
