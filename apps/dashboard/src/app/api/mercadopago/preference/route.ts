@@ -48,6 +48,9 @@ export async function POST(req: Request) {
     const pricePerToken = 8.40; // Preventa fijo
     const orderId = crypto.randomUUID();
 
+    const property = await db.query.properties.findFirst();
+    if (!property) return NextResponse.json({ success: false, error: 'Property not found' }, { status: 404 });
+
     // 1. Integrations Check
     const registry = createIntegrationRegistry();
     const paymentsStatus = registry.getStatus('payments');
@@ -63,7 +66,8 @@ export async function POST(req: Request) {
     // 2. Create order in database
     await db.insert(schema.tokenOrders).values({
       id: orderId,
-      userId: investorId,
+      investorId: investorId,
+      propertyId: property.id,
       quantity: quantity.toString(),
       unitPrice: pricePerToken.toString(),
       totalAmount: (quantity * pricePerToken).toString(),
@@ -78,20 +82,21 @@ export async function POST(req: Request) {
        const provider = new MercadoPagoSandboxProvider(accessToken, process.env.MERCADOPAGO_WEBHOOK_SECRET || '');
        
        try {
-         const mpData = await provider.createPreference({
-           orderId,
-           userId: investorId,
-           quantity,
-           unitPrice: pricePerToken,
-           metadata: {
-             orderId,
-             userId: investorId,
-             quantity,
-             unitPrice: pricePerToken,
-             totalAmount: quantity * pricePerToken,
-             demoMode: true
-           }
-         });
+          const mpData = await provider.createPreference({
+            orderId,
+            investorId: investorId,
+            quantity,
+            unitPrice: pricePerToken,
+            metadata: {
+              orderId,
+              investorId: investorId,
+              propertyId: property.id,
+              quantity,
+              unitPrice: pricePerToken,
+              totalAmount: quantity * pricePerToken,
+              demoMode: true
+            }
+          });
          preferenceData = { id: mpData.id, init_point: mpData.init_point! };
        } catch (mpError: unknown) {
          console.error("MercadoPago API Error:", (mpError as Error).message);

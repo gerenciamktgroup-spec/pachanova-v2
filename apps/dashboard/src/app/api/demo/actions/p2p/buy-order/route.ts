@@ -62,19 +62,20 @@ export async function POST(req: Request) {
 
       // 5. Update Order and Create Trade
       await tx.update(schema.p2pOrders)
-        .set({ status: 'completed' })
+        .set({ status: 'filled' })
         .where(eq(schema.p2pOrders.id, orderId));
 
       const tradeId = crypto.randomUUID();
       await tx.insert(schema.p2pTrades).values({
         id: tradeId,
         orderId: order.id,
+        propertyId: order.propertyId,
         buyerInvestorId,
         sellerInvestorId: order.sellerInvestorId,
         quantity: order.quantity,
         pricePerToken: order.pricePerToken,
         totalAmount: order.totalAmount,
-        simulated: true,
+        isDemo: true,
       });
 
       // 6. Token Ledgers

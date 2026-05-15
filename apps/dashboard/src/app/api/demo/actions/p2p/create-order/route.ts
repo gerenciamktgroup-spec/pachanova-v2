@@ -43,16 +43,20 @@ export async function POST(req: Request) {
         })
         .where(eq(schema.balances.investorId, sellerInvestorId));
 
+      const property = await tx.query.properties.findFirst();
+      if (!property) throw new Error("No property found");
+
       // 3. Create Order
       const orderId = crypto.randomUUID();
       await tx.insert(schema.p2pOrders).values({
         id: orderId,
         sellerInvestorId,
+        propertyId: property.id,
         quantity: quantity.toString(),
         pricePerToken: pricePerToken.toString(),
         totalAmount: totalAmount.toString(),
         status: 'open',
-        simulated: true,
+        isDemo: true,
       });
 
       // 4. Audit

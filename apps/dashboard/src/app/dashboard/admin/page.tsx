@@ -7,7 +7,7 @@ import {
   AuditLogTimeline, 
   IntegrationEventsPanel 
 } from "@/components/product";
-import { AdminDashboardView, UserAdminView } from "@/types/product";
+import { AdminDashboardView, UserAdminView, IntegrationEventView } from "@/types/product";
 import { Suspense } from "react";
 import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
@@ -164,7 +164,7 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
       provider: ev.provider as any,
       event: ev.event_type,
       timestamp: ev.timestamp,
-      status: (ev.status === "error" ? "error" : "success") as "error" | "success"
+      status: ev.status as IntegrationEventView['status']
     }));
 
     // OPCIÓN B — Query directo a token_orders para treasury metrics
