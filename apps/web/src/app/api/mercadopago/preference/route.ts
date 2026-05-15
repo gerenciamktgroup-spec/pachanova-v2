@@ -48,6 +48,9 @@ export async function POST(req: Request) {
     const pricePerToken = 8.40; // Preventa fijo
     const orderId = crypto.randomUUID();
 
+    const property = await db.query.properties.findFirst();
+    if (!property) return NextResponse.json({ success: false, error: 'Property not found' }, { status: 404 });
+
     // 1. Integrations Check
     const registry = createIntegrationRegistry();
     const paymentsStatus = registry.getStatus('payments');
@@ -63,7 +66,8 @@ export async function POST(req: Request) {
     // 2. Create order in database
     await db.insert(schema.tokenOrders).values({
       id: orderId,
-      userId: investorId,
+      investorId: investorId,
+      propertyId: property.id,
       quantity: quantity.toString(),
       unitPrice: pricePerToken.toString(),
       totalAmount: (quantity * pricePerToken).toString(),

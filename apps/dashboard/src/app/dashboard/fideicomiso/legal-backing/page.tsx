@@ -1,6 +1,9 @@
 import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
+import { requireRole } from "@/utils/auth/requireRole";
 
-export default function FideicomisoLegalBackingPage() {
+export default async function FideicomisoLegalBackingPage() {
+  await requireRole(["admin", "fiduciario", "fideicomiso"]);
+  
   return (
     <div className="space-y-8 pb-24">
       <div>
