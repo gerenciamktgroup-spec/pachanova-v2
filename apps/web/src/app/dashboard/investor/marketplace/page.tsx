@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs, SectionHeader, ErrorState } from "@/components/mission";
 import { Suspense } from "react";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";

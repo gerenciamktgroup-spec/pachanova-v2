@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell, ProductEmptyState, TokenAmount } from "@/components/product/SharedComponents";
 import { createClient } from "@supabase/supabase-js";
