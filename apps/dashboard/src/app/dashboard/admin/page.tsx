@@ -164,8 +164,31 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
       provider: ev.provider as any,
       event: ev.event_type,
       timestamp: ev.timestamp,
-      status: ev.status === "error" ? "error" : "success" // Map DB status to UI
+      status: (ev.status === "error" ? "error" : "success") as "error" | "success"
     }));
+
+    // OPCIÓN B — Query directo a token_orders para treasury metrics
+    const { data: tokenOrders } = await supabaseAdmin
+      .from("token_orders")
+      .select("quantity, total_amount")
+      .eq("status", "filled");
+
+    const tokensSold = tokenOrders?.reduce(
+      (acc: number, o: any) => acc + Number(o.quantity), 0
+    ) ?? 0;
+
+    const usdRaised = tokenOrders?.reduce(
+      (acc: number, o: any) => acc + Number(o.total_amount), 0
+    ) ?? 0;
+
+    const treasurySummary = {
+      totalUsdRaised: new Intl.NumberFormat("en-US", {
+        style: "currency", currency: "USD"
+      }).format(usdRaised),
+      totalTokensIssued: tokensSold.toString(),
+      totalTokensAvailable: (500000 - tokensSold).toString(),
+      fideicomisoStatus: "PENDING" as "PENDING"
+    };
 
     const view: AdminDashboardView = {
       overview: {
@@ -174,12 +197,7 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
         totalTokensDistributed: totalTokens.toString(),
         systemHealth: "GO"
       },
-      treasury: {
-        totalUsdRaised: "$0.00",
-        totalTokensIssued: "0",
-        totalTokensAvailable: (500000 - totalTokens).toString(),
-        fideicomisoStatus: "PENDING"
-      },
+      treasury: treasurySummary,
       recentAuditLogs,
       recentIntegrationEvents
     };

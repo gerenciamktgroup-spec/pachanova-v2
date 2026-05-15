@@ -150,7 +150,7 @@ export async function POST(req: Request) {
 
       // Verify User KYC
       const user = await db.query.investors.findFirst({
-         where: eq(schema.investors.id, order.userId)
+         where: eq(schema.investors.id, order.investorId)
       });
 
       if (!user || user.kycStatus === 'pending') {

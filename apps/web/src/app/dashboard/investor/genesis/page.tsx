@@ -2,8 +2,11 @@ import { createServerClient } from "@/utils/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { InvestorGenesisClient } from "./GenesisClient";
+import { requireRole } from "@/utils/auth/requireRole";
 
 export default async function InvestorGenesisPage() {
+  await requireRole(["investor"]);
+  
   const authClient = await createServerClient();
   const { data: { user } } = await authClient.auth.getUser();
 

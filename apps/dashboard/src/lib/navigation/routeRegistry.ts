@@ -2,7 +2,7 @@ export type AppRoute = {
   id: string;
   label: string;
   path: string;
-  section: "investor" | "experto";
+  section: "investor" | "experto" | "demo";
   role: "public" | "investor" | "admin" | "fiduciario" | "operator";
   icon: string;
   status: "active" | "simulated" | "pending_credentials" | "pending_foundry" | "disabled" | "planned";

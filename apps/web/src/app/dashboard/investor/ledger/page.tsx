@@ -1,6 +1,16 @@
-import { RouteBreadcrumbs, SectionHeader, MissionCard, EmptyState, SafeActionButton } from "@/components/mission";
+import { RouteBreadcrumbs, SectionHeader, ErrorState, SafeActionButton } from "@/components/mission";
+import { InvestorLedgerPanel } from "@/components/product";
+import { fetchInvestorData } from "@/lib/data/fetchInvestorData";
+import { requireRole } from "@/utils/auth/requireRole";
 
-export default function InvestorLedgerPage() {
+export default async function InvestorLedgerPage() {
+  await requireRole(["investor"]);
+  const view = await fetchInvestorData();
+
+  if (!view) {
+    return <ErrorState title="Error de carga" message="No pudimos cargar el ledger. Verificá tu identidad antes de operar." />;
+  }
+
   return (
     <div className="space-y-8 pb-24">
       <div>
@@ -16,14 +26,9 @@ export default function InvestorLedgerPage() {
         />
       </div>
 
-      <MissionCard>
-        <EmptyState 
-          title="No hay transacciones"
-          description="Aún no has recibido tokens PACHA en este entorno."
-        />
-      </MissionCard>
+      <InvestorLedgerPanel view={view} />
       
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-4">
         <SafeActionButton label="Volver al Panel" href="/dashboard/investor" variant="ghost" />
       </div>
     </div>

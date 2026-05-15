@@ -3,8 +3,23 @@ import { SectionHeader } from "@/components/mission/SectionHeader";
 import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBadge";
 import { CommandButton } from "@/components/mission/CommandButton";
 import Link from "next/link";
+import { createServerClient } from "@/utils/supabase/server";
+import { KycSimulationActions } from "./ControlRoomActions";
 
-export default function ControlRoomPage() {
+export default async function ControlRoomPage() {
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let targetInvestorId = "";
+  if (user) {
+    const { data: inv } = await supabase
+      .from("investors")
+      .select("id")
+      .eq("supabase_auth_id", user.id)
+      .single();
+    if (inv) targetInvestorId = inv.id;
+  }
+
   return (
     <div className="space-y-8" data-testid="demo-control-room-page">
       <SectionHeader 
@@ -45,7 +60,9 @@ export default function ControlRoomPage() {
               Restaura la base de datos a su estado demo inicial. Esta acción eliminará todas las transacciones simuladas previas.
             </p>
             <div className="flex gap-4 items-center" data-testid="control-room-reset-action">
-              <CommandButton variant="danger" disabled>Reset Demo Database</CommandButton>
+              <div title="Requiere endpoint /api/demo/scenario — Sprint 8">
+                <CommandButton variant="danger" disabled>Reset Demo Database</CommandButton>
+              </div>
               <span className="text-xs text-pn-text-muted">(Requiere implementar /api/demo/scenario)</span>
             </div>
           </MissionCard>
@@ -53,22 +70,12 @@ export default function ControlRoomPage() {
 
         <div className="space-y-8">
           <MissionCard title="Escenarios Simulados" data-testid="control-room-scenario-grid">
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong">
-                <h4 className="text-sm font-medium text-pn-text mb-2">Investor KYC: Approved</h4>
-                <p className="text-xs text-pn-text-soft mb-4">Simula que el inversor predeterminado ha sido aprobado para participar en la Genesis.</p>
-                <CommandButton variant="outline" disabled>Simular Approved</CommandButton>
-              </div>
+            <KycSimulationActions targetInvestorId={targetInvestorId} />
 
-              <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong">
-                <h4 className="text-sm font-medium text-pn-text mb-2">Investor KYC: Pending</h4>
-                <p className="text-xs text-pn-text-soft mb-4">Simula que el inversor predeterminado sigue en evaluación.</p>
-                <CommandButton variant="outline" disabled>Simular Pending</CommandButton>
-              </div>
-
-              <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong">
-                <h4 className="text-sm font-medium text-pn-text mb-2">Oracle Trigger</h4>
-                <p className="text-xs text-pn-text-soft mb-4">Envía un evento de oráculo simulado para actualizar precios o metadatos.</p>
+            <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong mt-4">
+              <h4 className="text-sm font-medium text-pn-text mb-2">Oracle Trigger</h4>
+              <p className="text-xs text-pn-text-soft mb-4">Envía un evento de oráculo simulado para actualizar precios o metadatos.</p>
+              <div title="Requiere conexión a Chainlink — disponible en producción">
                 <CommandButton variant="outline" disabled>Lanzar Oracle Demo</CommandButton>
               </div>
             </div>

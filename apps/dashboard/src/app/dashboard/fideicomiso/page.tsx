@@ -12,6 +12,7 @@ import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { fiduciarioJourney } from "@/lib/navigation/userJourneys";
 import { db } from "@/server/db";
+import { requireRole } from "@/utils/auth/requireRole";
 
 async function fetchFideicomisoData(): Promise<FideicomisoDashboardView | null> {
   try {
@@ -63,6 +64,7 @@ async function fetchFideicomisoData(): Promise<FideicomisoDashboardView | null> 
 }
 
 async function FideicomisoDashboardContent() {
+  await requireRole(["admin", "fiduciario", "fideicomiso"]);
   const view = await fetchFideicomisoData();
 
   if (!view) {

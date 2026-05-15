@@ -40,6 +40,9 @@ export async function POST(req: Request) {
 
       const orderId = crypto.randomUUID();
 
+      const property = await tx.query.properties.findFirst();
+      if (!property) throw new Error("No property found");
+
       // 3. Deduct USD, add PACHA
       await tx.update(schema.balances)
         .set({
@@ -48,10 +51,10 @@ export async function POST(req: Request) {
         })
         .where(eq(schema.balances.investorId, investorId));
 
-      // 4. Create Token Order (completed)
       await tx.insert(schema.tokenOrders).values({
         id: orderId,
-        userId: investorId,
+        investorId: investorId,
+        propertyId: property.id,
         quantity: quantity.toString(),
         unitPrice: unitPrice.toString(),
         totalAmount: totalAmount.toString(),

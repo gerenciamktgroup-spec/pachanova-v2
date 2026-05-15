@@ -4,8 +4,10 @@ import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
 import { createServerClient } from "@/utils/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { requireRole } from "@/utils/auth/requireRole";
 
 async function MarketplaceContent() {
+  await requireRole(["investor"]);
   const authClient = await createServerClient();
   const { data: { user } } = await authClient.auth.getUser();
 
