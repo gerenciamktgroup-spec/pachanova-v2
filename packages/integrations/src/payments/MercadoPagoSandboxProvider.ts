@@ -24,7 +24,7 @@ export class MercadoPagoSandboxProvider implements PaymentProvider {
         ],
         external_reference: order.orderId,
         metadata: {
-          userId: order.userId,
+          userId: order.investorId,
           quantity: order.quantity,
           unitPrice: order.unitPrice,
           orderId: order.orderId,

@@ -90,11 +90,14 @@ export async function signup(formData: FormData) {
     }
     investorId = newInvestor!.id
 
-    // INSERT balances
+    // INSERT balances (all notNull fields must be explicit for raw Supabase insert)
     await supabaseAdmin.from('balances').insert({
       investor_id: investorId,
       available_usd: '0',
+      locked_usd: '0',
       available_tokens: '0',
+      locked_tokens: '0',
+      reserved_tokens: '0',
     })
 
     // INSERT kyc_documents

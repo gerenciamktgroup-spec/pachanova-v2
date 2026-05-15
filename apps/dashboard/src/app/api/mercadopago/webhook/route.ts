@@ -150,7 +150,7 @@ export async function POST(req: Request) {
 
       // Verify User KYC
       const user = await db.query.investors.findFirst({
-         where: eq(schema.investors.id, order.userId)
+         where: eq(schema.investors.id, order.investorId)
       });
 
       if (!user || user.kycStatus === 'pending') {
@@ -177,7 +177,7 @@ export async function POST(req: Request) {
            id: crypto.randomUUID(),
            investorId: user.id,
            amount: quantityStr,
-           operation: 'GENESIS_PURCHASE',
+           operation: 'mint',
            previousHash: 'pending',
            currentHash: `sim_${paymentId.toString()}`,
            txHash: paymentId.toString()

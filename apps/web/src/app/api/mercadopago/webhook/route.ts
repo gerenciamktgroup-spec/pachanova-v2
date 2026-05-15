@@ -177,7 +177,7 @@ export async function POST(req: Request) {
            id: crypto.randomUUID(),
            investorId: user.id,
            amount: quantityStr,
-           operation: 'GENESIS_PURCHASE',
+           operation: 'mint',
            previousHash: 'pending',
            currentHash: `sim_${paymentId.toString()}`,
            txHash: paymentId.toString()

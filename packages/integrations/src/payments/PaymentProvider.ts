@@ -1,6 +1,6 @@
 export interface PaymentOrder {
   orderId: string;
-  userId: string;
+  investorId: string;
   quantity: number;
   unitPrice: number;
   totalAmount?: number;

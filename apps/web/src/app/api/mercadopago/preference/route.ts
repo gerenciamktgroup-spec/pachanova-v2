@@ -84,12 +84,12 @@ export async function POST(req: Request) {
        try {
          const mpData = await provider.createPreference({
            orderId,
-           userId: investorId,
+           investorId: investorId,
            quantity,
            unitPrice: pricePerToken,
            metadata: {
              orderId,
-             userId: investorId,
+             investorId: investorId,
              quantity,
              unitPrice: pricePerToken,
              totalAmount: quantity * pricePerToken,
