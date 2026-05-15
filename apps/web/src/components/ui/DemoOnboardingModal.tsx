@@ -1,26 +1,30 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function DemoOnboardingModal() {
-  const [shown, setShown] = useState(() => {
-    try { return sessionStorage.getItem("pn-onboarding") === "1"; }
-    catch { return false; }
-  });
+  // ✅ Start as false (server-safe). sessionStorage is read only in useEffect (client-only).
+  const [shown, setShown] = useState(false);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
-    if (!shown) {
+    // ✅ Safe: sessionStorage only accessed on client, inside useEffect
+    const alreadySeen = (() => {
+      try { return sessionStorage.getItem("pn-onboarding") === "1"; }
+      catch { return false; }
+    })();
+    setShown(alreadySeen);
+    if (!alreadySeen) {
       const t = setTimeout(() => setOpen(true), 600);
       return () => clearTimeout(t);
     }
-  }, [shown]);
+  }, []);
 
   const dismiss = () => {
     setOpen(false);
