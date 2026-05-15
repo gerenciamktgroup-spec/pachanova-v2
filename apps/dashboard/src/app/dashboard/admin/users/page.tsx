@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
 import { AdminUsersDataGrid } from "@/components/product/AdminComponents";
 import { createClient } from "@supabase/supabase-js";

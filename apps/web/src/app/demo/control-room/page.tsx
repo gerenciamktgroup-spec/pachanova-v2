@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { MissionCard } from "@/components/mission/MissionCard";
 import { SectionHeader } from "@/components/mission/SectionHeader";
 import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBadge";

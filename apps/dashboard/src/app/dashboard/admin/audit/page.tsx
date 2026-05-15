@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
 import { AuditLogTimeline } from "@/components/product";
 import { AuditLogView } from "@/types/product";

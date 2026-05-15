@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { 
