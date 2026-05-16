@@ -307,6 +307,9 @@ importers:
         specifier: ^3.4.9
         version: 3.4.9
     devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.40
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
