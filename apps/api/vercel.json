@@ -2,13 +2,7 @@
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm --filter api build",
   "outputDirectory": "dist",
-  "functions": {
-    "dist/src/index.js": {
-      "memory": 512,
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/dist/src/index" }
+    { "source": "/(.*)", "destination": "/api/index" }
   ]
 }
