@@ -59,6 +59,9 @@ importers:
       '@pachanova/integrations':
         specifier: workspace:*
         version: link:../../packages/integrations
+      '@types/node':
+        specifier: ^20
+        version: 20.19.40
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1
@@ -68,10 +71,6 @@ importers:
       hono:
         specifier: ^4.6.12
         version: 4.12.18
-    devDependencies:
-      '@types/node':
-        specifier: ^20
-        version: 20.19.40
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
