@@ -34,17 +34,22 @@ export const supabase = createClient(
 );
 
 // Export Drizzle ORM client (lazy)
-let _db: ReturnType<typeof drizzle> | null = null;
+let _db: ReturnType<typeof drizzle<typeof schema>> | null = null;
+
+function getDb(): ReturnType<typeof drizzle<typeof schema>> {
+  if (!_db) {
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL no está configurada en las variables de entorno.');
+    }
+    const queryClient = postgres(databaseUrl, { prepare: false });
+    _db = drizzle(queryClient, { schema });
+  }
+  return _db;
+}
 
 export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
   get(_target, prop) {
-    if (!_db) {
-      if (!databaseUrl) {
-        throw new Error('DATABASE_URL no está configurada en las variables de entorno.');
-      }
-      const queryClient = postgres(databaseUrl, { prepare: false });
-      _db = drizzle(queryClient, { schema });
-    }
-    return (_db as Record<string | symbol, unknown>)[prop];
+    const instance = getDb();
+    return (instance as unknown as Record<string | symbol, unknown>)[prop];
   }
 });
