@@ -11,7 +11,7 @@ await build({
   target: 'node20',
   format: 'esm',
   outfile: resolve(__dirname, 'dist/index.mjs'),
-  external: ['postgres'],
+  external: ['postgres', '@neondatabase/serverless'],
   banner: {
     js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`
   }
