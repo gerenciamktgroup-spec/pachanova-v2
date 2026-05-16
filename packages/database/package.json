@@ -22,6 +22,7 @@
     "test": "echo 'No database tests yet'"
   },
   "devDependencies": {
+    "@types/node": "^20",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.21.0"
