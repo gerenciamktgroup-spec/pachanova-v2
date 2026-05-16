@@ -18,39 +18,26 @@ app.use('*', cors({
 }))
 
 app.use('/api/*', async (c, next) => {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!serviceRoleKey || serviceRoleKey.startsWith('[')) {
-    return next()
-  }
-  const authHeader = c.req.header('Authorization')
-  if (!authHeader || authHeader !== `Bearer ${serviceRoleKey}`) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!key || key.startsWith('[')) return next()
+  const auth = c.req.header('Authorization')
+  if (auth !== `Bearer ${key}`) return c.json({ error: 'Unauthorized' }, 401)
   return next()
 })
 
 app.route('/api/investors', investors)
 app.route('/api/properties', properties)
 
-app.get('/health', (c) => {
-  const dbUrl = process.env.DATABASE_URL
-  const supaUrl = process.env.SUPABASE_URL
-  const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  return c.json({
-    status: 'ok',
-    ts: new Date().toISOString(),
-    env: {
-      DATABASE_URL: dbUrl ? (dbUrl.includes('[') ? '❌ placeholder' : '✅ ok') : '❌ ausente',
-      SUPABASE_URL: supaUrl ? '✅ ok' : '❌ ausente',
-      SUPABASE_SERVICE_ROLE_KEY: svcKey && !svcKey.startsWith('[') ? '✅ ok' : '❌ ausente',
-    }
-  })
-})
-
-app.get('/', (c) => c.json({
+app.get('/health', (c) => c.json({
   status: 'ok',
-  message: 'PachaNova API running',
-  ts: new Date().toISOString()
+  ts: new Date().toISOString(),
+  env: {
+    DATABASE_URL: process.env.DATABASE_URL ? '✅' : '❌',
+    SUPABASE_URL: process.env.SUPABASE_URL ? '✅' : '❌',
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅' : '❌',
+  }
 }))
+
+app.get('/', (c) => c.json({ status: 'ok', message: 'PachaNova API', ts: new Date().toISOString() }))
 
 export default app
