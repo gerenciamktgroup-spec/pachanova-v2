@@ -1,3 +1,5 @@
-// Este archivo es reemplazado por api/index.mjs en el build.
-// Vercel usará index.mjs cuando type:module esté configurado.
-export default {};
+// Generado por build.mjs - este archivo es sobreescrito en cada build
+// Si ves esto, el build no se ejecutó correctamente
+module.exports = (req, res) => {
+  res.status(503).json({ error: 'Build not executed - run node build.mjs first' })
+}

@@ -9,16 +9,13 @@ await build({
   bundle: true,
   platform: 'node',
   target: 'node20',
-  format: 'esm',
-  outfile: resolve(__dirname, 'api/index.mjs'),
-  // No externals - bundle todo para que funcione en serverless
-  external: [],
-  banner: {
-    js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`
-  },
+  format: 'cjs',           // CommonJS - Vercel lo resuelve sin problema con cualquier extension
+  outfile: resolve(__dirname, 'api/index.js'),
+  external: ['node:*'],    // Solo excluir built-ins de Node, bundlear TODO lo demás
   define: {
     'process.env.NODE_ENV': JSON.stringify('production')
-  }
+  },
+  logLevel: 'info'
 })
 
-console.log('Build completado! -> api/index.mjs')
+console.log('✅ Build OK -> api/index.js')
