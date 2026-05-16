@@ -11,11 +11,12 @@ await build({
   target: 'node20',
   format: 'esm',
   outfile: resolve(__dirname, 'api/index.mjs'),
-  external: ['node:*'],
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production')
-  },
-  logLevel: 'info'
+  // Solo excluir built-ins de Node - bundlear todo lo demas
+  external: ['node:http', 'node:https', 'node:net', 'node:tls', 'node:fs', 'node:path',
+             'node:crypto', 'node:stream', 'node:buffer', 'node:url', 'node:util',
+             'node:events', 'node:os', 'node:zlib', 'node:child_process'],
+  define: { 'process.env.NODE_ENV': JSON.stringify('production') },
+  logLevel: 'info',
 })
 
 console.log('✅ Build OK -> api/index.mjs')
