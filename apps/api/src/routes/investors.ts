@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
-import { db, schema } from '@pachanova/database'
-import { eq } from 'drizzle-orm'
+import { db, schema, eq } from '@pachanova/database'
 
 export const investors = new Hono()
 
