@@ -14,7 +14,7 @@ app.use('*', cors({
     'http://localhost:3000',
     'http://localhost:3002',
     'https://pachanova-v2.vercel.app',
-    /\.vercel\.app$/
+    'https://pachanova-v2-git-main-gerenciamktgroup-7296s-projects.vercel.app'
   ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
@@ -46,5 +46,5 @@ app.get('/', (c) => c.json({
 
 app.get('/health', (c) => c.json({ status: 'healthy' }))
 
-// Vercel serverless handler (CJS compatible via hono/vercel)
-module.exports = handle(app)
+// Export para Vercel serverless (ESM)
+export default handle(app)
