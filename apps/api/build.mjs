@@ -11,9 +11,13 @@ await build({
   target: 'node20',
   format: 'esm',
   outfile: resolve(__dirname, 'api/index.mjs'),
-  external: ['postgres', '@neondatabase/serverless'],
+  // No externals - bundle todo para que funcione en serverless
+  external: [],
   banner: {
     js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production')
   }
 })
 
