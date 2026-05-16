@@ -41,7 +41,13 @@ function getDb(): ReturnType<typeof drizzle<typeof schema>> {
     if (!databaseUrl) {
       throw new Error('DATABASE_URL no está configurada en las variables de entorno.');
     }
-    const queryClient = postgres(databaseUrl, { prepare: false });
+    const queryClient = postgres(databaseUrl, {
+      prepare: false,
+      ssl: 'require',
+      max: 1,
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
     _db = drizzle(queryClient, { schema });
   }
   return _db;
