@@ -1,34 +1,49 @@
 import { Hono } from 'hono'
-import { db, schema } from '@pachanova/database'
+import { getDb, schema } from '@pachanova/database'
 import { eq } from 'drizzle-orm'
 
 export const investors = new Hono()
 
 investors.get('/', async (c) => {
-  const allInvestors = await db.query.investors.findMany()
-  return c.json(allInvestors)
+  try {
+    const db = getDb()
+    const all = await db.query.investors.findMany()
+    return c.json(all)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[investors GET /]', msg)
+    return c.json({ error: msg }, 500)
+  }
 })
 
 investors.get('/:id', async (c) => {
-  const id = c.req.param('id')
-  const investor = await db.query.investors.findFirst({
-    // @ts-ignore
-    where: eq(schema.investors.id, id)
-  })
-  return c.json(investor || { error: 'Not found' }, investor ? 200 : 404)
+  try {
+    const db = getDb()
+    const id = c.req.param('id')
+    const investor = await db.query.investors.findFirst({
+      where: eq(schema.investors.id, id)
+    })
+    return c.json(investor || { error: 'Not found' }, investor ? 200 : 404)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[investors GET /:id]', msg)
+    return c.json({ error: msg }, 500)
+  }
 })
 
 investors.put('/:id', async (c) => {
-  const id = c.req.param('id')
-  const body = await c.req.json()
-  // @ts-ignore
-  const updated = await db.update(schema.investors).set(body).where(eq(schema.investors.id, id)).returning()
-  return c.json(updated[0])
-})
-
-investors.get('/:id/portfolio', async (c) => {
-  const id = c.req.param('id')
-  // @ts-ignore
-  const balances = await db.query.balances.findMany({ where: eq(schema.balances.investorId, id) })
-  return c.json({ balances, tokens: [], roi: 0 })
+  try {
+    const db = getDb()
+    const id = c.req.param('id')
+    const body = await c.req.json()
+    const updated = await db.update(schema.investors)
+      .set(body)
+      .where(eq(schema.investors.id, id))
+      .returning()
+    return c.json(updated[0] || { error: 'Not found' }, updated.length ? 200 : 404)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[investors PUT /:id]', msg)
+    return c.json({ error: msg }, 500)
+  }
 })

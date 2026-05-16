@@ -8,7 +8,6 @@ export const config = { runtime: 'nodejs' }
 
 const app = new Hono().basePath('/')
 
-// CORS
 app.use('*', cors({
   origin: [
     'http://localhost:3000',
@@ -21,7 +20,6 @@ app.use('*', cors({
   credentials: true,
 }))
 
-// Auth middleware
 app.use('/api/*', async (c, next) => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceRoleKey || serviceRoleKey.startsWith('[')) {
@@ -38,13 +36,29 @@ app.use('/api/*', async (c, next) => {
 app.route('/api/investors', investors)
 app.route('/api/properties', properties)
 
+// Health check con diagnostico completo
+app.get('/health', (c) => {
+  const dbUrl = process.env.DATABASE_URL
+  const supaUrl = process.env.SUPABASE_URL
+  const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  return c.json({
+    status: 'ok',
+    ts: new Date().toISOString(),
+    env: {
+      DATABASE_URL: dbUrl
+        ? (dbUrl.includes('[TU_PASSWORD]') ? '❌ placeholder no configurado' : '✅ configurado')
+        : '❌ ausente',
+      SUPABASE_URL: supaUrl ? '✅ configurado' : '❌ ausente',
+      SUPABASE_SERVICE_ROLE_KEY: svcKey && !svcKey.startsWith('[') ? '✅ configurado' : '❌ ausente o placeholder',
+    }
+  })
+})
+
 app.get('/', (c) => c.json({
   status: 'ok',
-  message: 'PachaNova API is running!',
+  message: 'PachaNova API running',
   ts: new Date().toISOString()
 }))
 
-app.get('/health', (c) => c.json({ status: 'healthy' }))
-
-// Export para Vercel serverless (ESM)
 export default handle(app)
