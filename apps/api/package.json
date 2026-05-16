@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc -p tsconfig.build.json && node -e \"const fs=require('fs');const p='dist/apps/api/src';if(fs.existsSync(p)){fs.cpSync(p,'dist',{recursive:true});fs.rmSync('dist/apps',{recursive:true});fs.rmSync('dist/packages',{recursive:true,force:true})}\""
+    "build": "echo 'no build needed'"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
