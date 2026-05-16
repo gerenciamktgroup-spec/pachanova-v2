@@ -1,5 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { investors } from './routes/investors'
+import { properties } from './routes/properties'
 
 const app = new Hono()
 
@@ -28,13 +30,8 @@ app.use('/api/*', async (c, next) => {
   return next()
 })
 
-// Rutas (import dinámico para que Vercel las resuelva bien)
-import('./routes/investors').then(({ investors }) => {
-  app.route('/api/investors', investors)
-})
-import('./routes/properties').then(({ properties }) => {
-  app.route('/api/properties', properties)
-})
+app.route('/api/investors', investors)
+app.route('/api/properties', properties)
 
 app.get('/', (c) => {
   return c.json({ status: 'ok', message: 'PachaNova API is running!' })
