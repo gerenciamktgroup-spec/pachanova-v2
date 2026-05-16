@@ -10,22 +10,41 @@ const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const databaseUrl = process.env.DATABASE_URL || '';
 
-if (!supabaseUrl || !databaseUrl) {
-  console.warn('⚠️ Missing Database or Supabase URL in environment variables.');
+if (!supabaseUrl) {
+  console.warn('⚠️ SUPABASE_URL no configurada.');
+}
+if (!databaseUrl) {
+  console.warn('⚠️ DATABASE_URL no configurada.');
 }
 
 // Detect if we are in demo mode
 export const isDemo = process.env.IS_DEMO === 'true';
 
-// Export Supabase Client
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false
+// Export Supabase Client (lazy - solo falla si realmente se usa sin URL)
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseServiceKey || 'placeholder',
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false
+    }
+  }
+);
+
+// Export Drizzle ORM client (lazy)
+let _db: ReturnType<typeof drizzle> | null = null;
+
+export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+  get(_target, prop) {
+    if (!_db) {
+      if (!databaseUrl) {
+        throw new Error('DATABASE_URL no está configurada en las variables de entorno.');
+      }
+      const queryClient = postgres(databaseUrl, { prepare: false });
+      _db = drizzle(queryClient, { schema });
+    }
+    return (_db as Record<string | symbol, unknown>)[prop];
   }
 });
-
-// Export Drizzle ORM client
-const queryClient = postgres(databaseUrl, { prepare: false });
-export const db = drizzle(queryClient, { schema });
