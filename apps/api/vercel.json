@@ -1,7 +1,6 @@
 {
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter api build",
-  "outputDirectory": "dist",
+  "buildCommand": "echo 'no build needed'",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
   ]
