@@ -9,13 +9,13 @@ await build({
   bundle: true,
   platform: 'node',
   target: 'node20',
-  format: 'cjs',           // CommonJS - Vercel lo resuelve sin problema con cualquier extension
-  outfile: resolve(__dirname, 'api/index.js'),
-  external: ['node:*'],    // Solo excluir built-ins de Node, bundlear TODO lo demás
+  format: 'esm',
+  outfile: resolve(__dirname, 'api/index.mjs'),
+  external: ['node:*'],
   define: {
     'process.env.NODE_ENV': JSON.stringify('production')
   },
   logLevel: 'info'
 })
 
-console.log('✅ Build OK -> api/index.js')
+console.log('✅ Build OK -> api/index.mjs')

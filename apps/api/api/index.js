@@ -1,5 +1,3 @@
-// Generado por build.mjs - este archivo es sobreescrito en cada build
-// Si ves esto, el build no se ejecutó correctamente
-module.exports = (req, res) => {
-  res.status(503).json({ error: 'Build not executed - run node build.mjs first' })
-}
+// Stub - Vercel detecta api/index.mjs automaticamente cuando existe
+// Este archivo no se usa si index.mjs existe
+exports.default = (req, res) => res.status(503).json({ error: 'use index.mjs' })
