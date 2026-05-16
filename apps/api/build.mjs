@@ -10,11 +10,11 @@ await build({
   platform: 'node',
   target: 'node20',
   format: 'esm',
-  outfile: resolve(__dirname, 'dist/index.mjs'),
+  outfile: resolve(__dirname, 'api/index.mjs'),
   external: ['postgres', '@neondatabase/serverless'],
   banner: {
     js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`
   }
 })
 
-console.log('Build completado!')
+console.log('Build completado! -> api/index.mjs')
