@@ -1,26 +1,16 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import { createClient } from '@supabase/supabase-js';
-import * as schema from './schema';
+import { drizzle as drizzleNeon } from 'drizzle-orm/neon-http'
+import { neon } from '@neondatabase/serverless'
+import { createClient } from '@supabase/supabase-js'
+import * as schema from './schema'
 
-export * as schema from './schema';
+export * as schema from './schema'
 
-// Connection details from env
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const databaseUrl = process.env.DATABASE_URL || '';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || ''
+const databaseUrl = process.env.DATABASE_URL || ''
 
-if (!supabaseUrl) {
-  console.warn('⚠️ SUPABASE_URL no configurada.');
-}
-if (!databaseUrl) {
-  console.warn('⚠️ DATABASE_URL no configurada.');
-}
+export const isDemo = process.env.IS_DEMO === 'true'
 
-// Detect if we are in demo mode
-export const isDemo = process.env.IS_DEMO === 'true';
-
-// Export Supabase Client (lazy - solo falla si realmente se usa sin URL)
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseServiceKey || 'placeholder',
@@ -31,31 +21,21 @@ export const supabase = createClient(
       detectSessionInUrl: false
     }
   }
-);
+)
 
-// Export Drizzle ORM client (lazy)
-let _db: ReturnType<typeof drizzle<typeof schema>> | null = null;
-
-function getDb(): ReturnType<typeof drizzle<typeof schema>> {
-  if (!_db) {
-    if (!databaseUrl) {
-      throw new Error('DATABASE_URL no está configurada en las variables de entorno.');
-    }
-    const queryClient = postgres(databaseUrl, {
-      prepare: false,
-      ssl: 'require',
-      max: 1,
-      idle_timeout: 20,
-      connect_timeout: 10,
-    });
-    _db = drizzle(queryClient, { schema });
+function getDb() {
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL no est\u00e1 configurada en las variables de entorno.')
   }
-  return _db;
+  // Usar neon HTTP driver - funciona en Vercel Edge/Serverless sin conexiones TCP
+  const sql = neon(databaseUrl)
+  return drizzleNeon(sql, { schema })
 }
 
-export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+// Lazy proxy - solo conecta cuando se usa realmente
+export const db = new Proxy({} as ReturnType<typeof getDb>, {
   get(_target, prop) {
-    const instance = getDb();
-    return (instance as unknown as Record<string | symbol, unknown>)[prop];
+    const instance = getDb()
+    return (instance as unknown as Record<string | symbol, unknown>)[prop]
   }
-});
+})
