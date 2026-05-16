@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, numeric, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, numeric, timestamp, boolean } from "drizzle-orm/pg-core";
 import { investors } from "./investors";
 import { properties } from "./properties";
 import { p2pStatusEnum } from "./enums";
