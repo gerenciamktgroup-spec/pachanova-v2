@@ -6,8 +6,7 @@ export const investors = new Hono()
 
 investors.get('/', async (c) => {
   try {
-    const db = getDb()
-    const all = await db.query.investors.findMany()
+    const all = await getDb().query.investors.findMany()
     return c.json(all)
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -18,12 +17,11 @@ investors.get('/', async (c) => {
 
 investors.get('/:id', async (c) => {
   try {
-    const db = getDb()
     const id = c.req.param('id')
-    const investor = await db.query.investors.findFirst({
+    const investor = await getDb().query.investors.findFirst({
       where: eq(schema.investors.id, id)
     })
-    return c.json(investor || { error: 'Not found' }, investor ? 200 : 404)
+    return c.json(investor ?? { error: 'Not found' }, investor ? 200 : 404)
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[investors GET /:id]', msg)
@@ -33,14 +31,13 @@ investors.get('/:id', async (c) => {
 
 investors.put('/:id', async (c) => {
   try {
-    const db = getDb()
     const id = c.req.param('id')
     const body = await c.req.json()
-    const updated = await db.update(schema.investors)
+    const updated = await getDb().update(schema.investors)
       .set(body)
       .where(eq(schema.investors.id, id))
       .returning()
-    return c.json(updated[0] || { error: 'Not found' }, updated.length ? 200 : 404)
+    return c.json(updated[0] ?? { error: 'Not found' }, updated.length ? 200 : 404)
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[investors PUT /:id]', msg)
