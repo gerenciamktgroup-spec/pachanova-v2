@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { handle } from 'hono/vercel'
 import { investors } from './routes/investors'
 import { properties } from './routes/properties'
+import type { IncomingMessage, ServerResponse } from 'node:http'
 
 export const config = { runtime: 'nodejs' }
 
@@ -23,7 +23,6 @@ app.use('*', cors({
 app.use('/api/*', async (c, next) => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceRoleKey || serviceRoleKey.startsWith('[')) {
-    console.warn('⚠️  SUPABASE_SERVICE_ROLE_KEY no configurada — auth desactivada')
     return next()
   }
   const authHeader = c.req.header('Authorization')
@@ -36,29 +35,44 @@ app.use('/api/*', async (c, next) => {
 app.route('/api/investors', investors)
 app.route('/api/properties', properties)
 
-// Health check con diagnostico completo
 app.get('/health', (c) => {
   const dbUrl = process.env.DATABASE_URL
   const supaUrl = process.env.SUPABASE_URL
   const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
   return c.json({
     status: 'ok',
     ts: new Date().toISOString(),
     env: {
-      DATABASE_URL: dbUrl
-        ? (dbUrl.includes('[TU_PASSWORD]') ? '❌ placeholder no configurado' : '✅ configurado')
-        : '❌ ausente',
-      SUPABASE_URL: supaUrl ? '✅ configurado' : '❌ ausente',
-      SUPABASE_SERVICE_ROLE_KEY: svcKey && !svcKey.startsWith('[') ? '✅ configurado' : '❌ ausente o placeholder',
+      DATABASE_URL: dbUrl ? (dbUrl.includes('[') ? '❌ placeholder' : '✅ ok') : '❌ ausente',
+      SUPABASE_URL: supaUrl ? '✅ ok' : '❌ ausente',
+      SUPABASE_SERVICE_ROLE_KEY: svcKey && !svcKey.startsWith('[') ? '✅ ok' : '❌ ausente',
     }
   })
 })
 
-app.get('/', (c) => c.json({
-  status: 'ok',
-  message: 'PachaNova API running',
-  ts: new Date().toISOString()
-}))
+app.get('/', (c) => c.json({ status: 'ok', message: 'PachaNova API running', ts: new Date().toISOString() }))
 
-export default handle(app)
+// Handler nativo para Vercel Serverless (Node.js runtime)
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
+  const chunks: Buffer[] = []
+  for await (const chunk of req) {
+    chunks.push(chunk as Buffer)
+  }
+  const body = chunks.length ? Buffer.concat(chunks) : undefined
+
+  const host = req.headers.host || 'localhost'
+  const url = `https://${host}${req.url}`
+
+  const request = new Request(url, {
+    method: req.method || 'GET',
+    headers: req.headers as HeadersInit,
+    body: body?.length ? body : undefined,
+  })
+
+  const response = await app.fetch(request)
+
+  res.statusCode = response.status
+  response.headers.forEach((value, key) => res.setHeader(key, value))
+  const responseBody = await response.arrayBuffer()
+  res.end(Buffer.from(responseBody))
+}
