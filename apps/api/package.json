@@ -2,21 +2,20 @@
   "name": "api",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "node api/index.mjs",
+    "dev": "tsx src/index.ts",
+    "start": "node api/index.js",
     "build": "node build.mjs"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@pachanova/database": "workspace:*",
-    "@pachanova/integrations": "workspace:*",
+    "@neondatabase/serverless": "^0.10.0",
+    "@supabase/supabase-js": "^2.105.4",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.2",
     "esbuild": "^0.25.0",
     "hono": "^4.6.12",
-    "postgres": "^3.4.9",
     "typescript": "^5",
     "tsx": "^4.21.0",
     "@types/node": "^20"
