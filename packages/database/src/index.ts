@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as schema from './schema'
 
 export * as schema from './schema'
+export type DrizzleDB = ReturnType<typeof drizzle<typeof schema>>
 
 export const isDemo = process.env.IS_DEMO === 'true'
 
@@ -16,27 +17,15 @@ export const supabase = createClient(
   { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
 )
 
-let _db: ReturnType<typeof drizzle> | null = null
+let _db: DrizzleDB | null = null
 
-export function getDb() {
+export function getDb(): DrizzleDB {
   if (_db) return _db
-
   const dbUrl = process.env.DATABASE_URL
   if (!dbUrl || dbUrl.includes('[TU_PASSWORD]') || dbUrl.includes('placeholder')) {
-    throw new Error(
-      'DATABASE_URL no configurada correctamente en Vercel. ' +
-      'Ve a: Dashboard -> Settings -> Environment Variables'
-    )
+    throw new Error('DATABASE_URL no configurada en Vercel -> Settings -> Environment Variables')
   }
-
   const sql = neon(dbUrl)
   _db = drizzle(sql, { schema })
   return _db
 }
-
-export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
-  get(_t, prop) {
-    const instance = getDb()
-    return Reflect.get(instance, prop)
-  }
-})
