@@ -17,6 +17,12 @@ export default function OnboardingWizard() {
 
   useEffect(() => {
     async function loadUser() {
+      // Demo mode: bypass Supabase, use mock investor ID
+      if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
+        setInvestorId('demo-investor-001');
+        setLoading(false);
+        return;
+      }
       const id = await getInvestorId()
       if (id) {
         setInvestorId(id)

@@ -34,7 +34,7 @@ export default function DemoStartPage() {
         <div className="space-y-6 mt-4">
           <Step num={1} title="Crear cuenta demo" path="/signup" />
           <Step num={2} title="Completar onboarding" path="/dashboard/investor/onboarding" />
-          <Step num={3} title="Depositar fondos simulados" path="/dashboard/investor/onboarding" />
+          <Step num={3} title="Depositar fondos simulados" path="/dashboard/investor/deposit" />
           <Step num={4} title="Comprar tokens PACHA en Genesis" path="/dashboard/investor/genesis" />
           <Step num={5} title="Ver mi portfolio" path="/dashboard/investor" />
           <Step num={6} title="Operar en Marketplace P2P" path="/dashboard/investor/marketplace" />

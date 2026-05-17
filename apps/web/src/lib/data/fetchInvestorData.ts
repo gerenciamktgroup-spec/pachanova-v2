@@ -2,7 +2,16 @@ import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { InvestorDashboardView } from "@/types/product";
 
+/**
+ * Returns demo mock data when NEXT_PUBLIC_IS_DEMO is true,
+ * otherwise fetches real investor data from Supabase.
+ */
 export async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
+  // Demo mode: return simulated data without auth
+  if (process.env.NEXT_PUBLIC_IS_DEMO === "true") {
+    return getDemoInvestorData();
+  }
+
   try {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -100,4 +109,64 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
     console.error("Error fetching investor view model:", error);
     return null;
   }
+}
+
+/** Static mock data for demo mode — no Supabase calls required */
+function getDemoInvestorData(): InvestorDashboardView {
+  return {
+    investor: {
+      id: "demo-investor-001",
+      fullName: "Inversor Demo",
+      email: "demo@pachanova.com",
+      kycStatus: "approved",
+      isVerified: true,
+      balance: {
+        investorId: "demo-investor-001",
+        availableTokens: "1500.00",
+        lockedTokens: "250.00",
+        availableUsd: "15000.00",
+        lockedUsd: "2500.00",
+        lastUpdated: new Date().toISOString()
+      }
+    },
+    recentTransactions: [
+      {
+        id: "demo-tx-001",
+        operationType: "GENESIS_PURCHASE",
+        amount: "1000.00",
+        timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
+        txHash: "0xdemo...abc1",
+        status: "confirmed"
+      },
+      {
+        id: "demo-tx-002",
+        operationType: "GENESIS_PURCHASE",
+        amount: "500.00",
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
+        txHash: "0xdemo...abc2",
+        status: "confirmed"
+      },
+      {
+        id: "demo-tx-003",
+        operationType: "TRANSFER",
+        amount: "250.00",
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        txHash: "0xdemo...abc3",
+        status: "pending"
+      }
+    ],
+    kycVerificationProvider: "SIMULATED",
+    paymentsReadiness: {
+      provider: "MERCADOPAGO",
+      status: "SIMULATED",
+      lastPing: new Date().toISOString(),
+      message: "Sandbox mode — simulado para demo"
+    },
+    contractReadiness: {
+      provider: "FOUNDRY",
+      status: "SIMULATED",
+      lastPing: new Date().toISOString(),
+      message: "Smart contract simulado — demo local"
+    }
+  };
 }

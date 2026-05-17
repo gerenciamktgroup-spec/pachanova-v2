@@ -7,6 +7,11 @@ export async function requireRole(
   allowedRoles: Role[],
   redirectTo = "/unauthorized"
 ): Promise<{ userId: string; role: Role; email: string }> {
+  // Demo mode: bypass auth entirely
+  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
+    return { userId: 'demo-user-001', role: allowedRoles[0], email: 'demo@pachanova.com' };
+  }
+
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
