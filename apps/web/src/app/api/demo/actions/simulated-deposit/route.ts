@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/server/db';
-import { schema } from '@pachanova/database';
-import { eq, sql } from 'drizzle-orm';
-import { validateDemoDatabaseUrl } from '@pachanova/database/utils/demoValidation';
+import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
 const bodySchema = z.object({
@@ -14,7 +11,6 @@ export async function POST(req: Request) {
   try {
     const isDemo = process.env.DEMO_MODE === 'true' || process.env.NEXT_PUBLIC_IS_DEMO === 'true';
     if (!isDemo) return NextResponse.json({ error: 'DEMO_MODE=true required' }, { status: 403 });
-    validateDemoDatabaseUrl(process.env.DATABASE_URL || '');
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
@@ -30,14 +26,11 @@ export async function POST(req: Request) {
       });
     }
 
-    // Use Supabase Service Role
-    const { createClient } = require('@supabase/supabase-js');
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // 1. Fetch existing balance
     const { data: existing } = await supabase
       .from('balances')
       .select('*')

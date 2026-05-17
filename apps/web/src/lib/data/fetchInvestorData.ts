@@ -7,7 +7,6 @@ import { InvestorDashboardView } from "@/types/product";
  * otherwise fetches real investor data from Supabase.
  */
 export async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
-  // Demo mode: return simulated data without auth
   if (process.env.NEXT_PUBLIC_IS_DEMO === "true") {
     return getDemoInvestorData();
   }
@@ -20,7 +19,6 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       redirect("/login");
     }
 
-    // 1. Investor
     const { data: investor, error: investorError } = await supabase
       .from("investors")
       .select("*")
@@ -32,14 +30,12 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       return null;
     }
 
-    // 2. Balance
     const { data: balance } = await supabase
       .from("balances")
       .select("*")
       .eq("investor_id", investor.id)
       .single();
 
-    // 3. Transactions
     const { data: transactions } = await supabase
       .from("transactions")
       .select("*")
@@ -47,7 +43,6 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       .order("created_at", { ascending: false })
       .limit(10);
 
-    // 4. Token Ledger (using transactions as proxy for ledger view for now)
     const { data: tokenLedger } = await supabase
       .from("token_ledger")
       .select("*")
@@ -55,7 +50,6 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       .order("created_at", { ascending: false })
       .limit(10);
 
-    // 5. KYC (check kyc_documents, fallback to investor status)
     const { data: kycDocs } = await supabase
       .from("kyc_documents")
       .select("status")
@@ -83,7 +77,7 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
           lastUpdated: balance?.last_updated_at || new Date().toISOString()
         }
       },
-      recentTransactions: rawTxs.map((tx: any) => ({
+      recentTransactions: rawTxs.map((tx: { id: string; type?: string; amount?: string | number; created_at: string; tx_hash?: string; status?: string }) => ({
         id: tx.id,
         operationType: tx.type || "TRANSFER",
         amount: tx.amount?.toString() || "0",
@@ -111,7 +105,6 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
   }
 }
 
-/** Static mock data for demo mode — no Supabase calls required */
 function getDemoInvestorData(): InvestorDashboardView {
   return {
     investor: {

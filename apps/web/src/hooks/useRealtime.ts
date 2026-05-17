@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
-export function useRealtimeNotifications(investorId: string, onNotification: (payload: any) => void) {
+export function useRealtimeNotifications(
+  investorId: string,
+  onNotification: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void
+) {
   useEffect(() => {
     if (!investorId) return
 
@@ -29,7 +33,10 @@ export function useRealtimeNotifications(investorId: string, onNotification: (pa
   }, [investorId, onNotification])
 }
 
-export function useRealtimeBalances(investorId: string, onBalanceChange: (payload: any) => void) {
+export function useRealtimeBalances(
+  investorId: string,
+  onBalanceChange: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void
+) {
   useEffect(() => {
     if (!investorId) return
 

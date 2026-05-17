@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/server/db';
-import { schema } from '@pachanova/database';
-import { eq, sql } from 'drizzle-orm';
-import { validateDemoDatabaseUrl } from '@pachanova/database/utils/demoValidation';
+import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import crypto from 'crypto';
 
@@ -35,11 +32,9 @@ export async function POST(req: Request) {
       });
     }
 
-    // Use Supabase Service Role
-    const { createClient } = require('@supabase/supabase-js');
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
     const { data: currentBalance } = await supabase
@@ -52,7 +47,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Fondos insuficientes' }, { status: 400 });
     }
 
-    // a) INSERT en token_orders
     const { data: newOrderData } = await supabase.from('token_orders').insert({
       investor_id: investorId,
       property_id: propertyId,
@@ -65,7 +59,6 @@ export async function POST(req: Request) {
       metadata: { source: 'genesis_wizard' },
     }).select().single();
 
-    // b) UPDATE balances
     await supabase.from('balances').update({
       available_tokens: (Number(currentBalance.available_tokens || 0) + quantity).toString(),
       available_usd: (Number(currentBalance.available_usd || 0) - totalAmount).toString(),
@@ -77,7 +70,6 @@ export async function POST(req: Request) {
       .eq('investor_id', investorId)
       .single();
 
-    // c) INSERT en token_ledger
     const randomHash = crypto.randomUUID().replace(/-/g, '');
     await supabase.from('token_ledger').insert({
       investor_id: investorId,
@@ -88,7 +80,6 @@ export async function POST(req: Request) {
       current_hash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
     });
 
-    // d) INSERT en audit_logs
     await supabase.from('audit_logs').insert({
       action: 'GENESIS_ORDER_COMPLETED',
       details: `Investor ${investorId} purchased ${quantity} PACHA tokens at $${unitPrice}`,
@@ -96,7 +87,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, orderId: newOrderData?.id, newBalance: updatedBalance?.available_tokens || '0' });
   } catch (error) {
-    console.error("Genesis order error:", error);
+    console.error('Genesis order error:', error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

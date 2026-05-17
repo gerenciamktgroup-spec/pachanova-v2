@@ -6,6 +6,19 @@ import { CommandButton } from "@/components/mission/CommandButton";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
 import { useRouter } from "next/navigation";
 
+interface P2POrder {
+  id: string;
+  quantity: string | number;
+  price_per_token: string | number;
+  investor?: { full_name?: string; first_name?: string; last_name?: string };
+  property?: { name?: string };
+}
+
+interface P2PBalance {
+  available_usd?: string | number;
+  available_tokens?: string | number;
+}
+
 export function P2PMarketplaceClient({ 
   availableOrders, 
   myOrders, 
@@ -14,9 +27,9 @@ export function P2PMarketplaceClient({
   currentUserId,
   propertyId
 }: { 
-  availableOrders: any[]; 
-  myOrders: any[]; 
-  balance: any | null; 
+  availableOrders: P2POrder[]; 
+  myOrders: P2POrder[]; 
+  balance: P2PBalance | null; 
   kycStatus: string; 
   currentUserId: string; 
   propertyId: string;
@@ -115,7 +128,6 @@ export function P2PMarketplaceClient({
 
   return (
     <div className="space-y-8">
-      {/* Tab Navigation */}
       <div className="flex border-b border-pn-border">
         <button 
           onClick={() => setActiveTab("buy")}
@@ -137,14 +149,12 @@ export function P2PMarketplaceClient({
         </div>
       )}
 
-      {/* COMPRAR TOKENS TAB */}
       {activeTab === "buy" && (
         <MissionCard title="Libro de Órdenes de Venta">
           <div className="mb-4 text-sm flex justify-between items-center bg-pn-surface-strong p-3 rounded-md border border-pn-border">
             <span>Tu balance USD disponible:</span>
             <span className="font-mono text-pn-gold">${availableUsd.toFixed(2)}</span>
           </div>
-
           {availableOrders.length === 0 ? (
             <div className="p-8 text-center text-pn-text-muted border border-pn-border border-dashed rounded-lg">
               No hay órdenes de venta activas de otros usuarios.
@@ -187,7 +197,6 @@ export function P2PMarketplaceClient({
         </MissionCard>
       )}
 
-      {/* VENDER TOKENS TAB */}
       {activeTab === "sell" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <MissionCard title="Publicar Oferta de Venta">
@@ -196,7 +205,6 @@ export function P2PMarketplaceClient({
                 <span>Tokens Disponibles:</span>
                 <span className="font-medium text-pn-text">{availableTokens} PACHA</span>
               </div>
-              
               <div className="space-y-1">
                 <label className="text-sm text-pn-text-muted">Cantidad a vender</label>
                 <input 
@@ -205,7 +213,6 @@ export function P2PMarketplaceClient({
                   className="w-full bg-pn-bg border border-pn-border rounded px-3 py-2 text-sm focus:outline-none focus:border-pn-gold"
                 />
               </div>
-
               <div className="space-y-1">
                 <label className="text-sm text-pn-text-muted">Precio por PACHA (USD)</label>
                 <input 
@@ -214,7 +221,6 @@ export function P2PMarketplaceClient({
                   className="w-full bg-pn-bg border border-pn-border rounded px-3 py-2 text-sm focus:outline-none focus:border-pn-gold"
                 />
               </div>
-
               <div className="pt-2">
                 <p className="text-xs text-pn-text-soft mb-2">Total estimado: ${(sellQuantity * sellPrice).toFixed(2)} USD</p>
                 <CommandButton 
@@ -229,8 +235,6 @@ export function P2PMarketplaceClient({
               </div>
             </div>
           </MissionCard>
-
-          {/* MIS ÓRDENES */}
           <MissionCard title="Mis Órdenes Activas">
             {myOrders.length === 0 ? (
               <div className="p-8 text-center text-pn-text-muted border border-pn-border border-dashed rounded-lg">
