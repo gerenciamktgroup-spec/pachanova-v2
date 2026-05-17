@@ -1,6 +1,8 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, ErrorState } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { ErrorState } from "@/components/mission/StateComponents";
 import { Suspense } from "react";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
 import { createServerClient } from "@/utils/supabase/server";

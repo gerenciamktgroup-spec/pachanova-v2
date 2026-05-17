@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MissionCard, CommandButton } from "@/components/mission";
+import { MissionCard } from "@/components/mission/MissionCard";
+import { CommandButton } from "@/components/mission/CommandButton";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
 import { useRouter } from "next/navigation";
 

@@ -1,6 +1,9 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, ErrorState, SafeActionButton } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { ErrorState } from "@/components/mission/StateComponents";
+import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { InvestorLedgerPanel } from "@/components/product";
 import { fetchInvestorData } from "@/lib/data/fetchInvestorData";
 import { requireRole } from "@/utils/auth/requireRole";

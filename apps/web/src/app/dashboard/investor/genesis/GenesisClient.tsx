@@ -1,6 +1,10 @@
 "use client";
 
-import { RouteBreadcrumbs, SectionHeader, MissionCard, CommandButton, IntegrationStatusBadge } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { MissionCard } from "@/components/mission/MissionCard";
+import { CommandButton } from "@/components/mission/CommandButton";
+import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBadge";
 import { WorkflowStepper, TransactionReviewPanel, WorkflowResultNotice } from "@/components/product/ActionComponents";
 import { TokenMathExplainer, GenesisExplainer } from "@/components/public/ExplainerComponents";
 import { useState } from "react";
