@@ -9,19 +9,25 @@ export function GuidedModeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("pn_guided_mode");
-    if (stored !== null) {
-      setIsGuided(stored === "true");
+    // Safe localStorage access - wrapped in try/catch for sandbox/SSR safety
+    try {
+      const stored = localStorage.getItem("pn_guided_mode");
+      if (stored !== null) {
+        setIsGuided(stored === "true");
+      }
+    } catch {
+      // localStorage blocked (sandbox, private mode) — use default state
     }
   }, []);
 
   const toggle = () => {
     const next = !isGuided;
     setIsGuided(next);
-    localStorage.setItem("pn_guided_mode", String(next));
-    // Dispatch an event so other components (like NextStepCard) can listen if needed,
-    // though React context would be better for complex state. 
-    // For now, simple state is enough if components are wrapped or if we just use a class on body.
+    try {
+      localStorage.setItem("pn_guided_mode", String(next));
+    } catch {
+      // localStorage blocked — state still works in-memory
+    }
     if (next) {
       document.body.classList.remove("expert-mode");
     } else {
@@ -29,7 +35,14 @@ export function GuidedModeToggle() {
     }
   };
 
-  if (!mounted) return null;
+  // Render a placeholder during SSR so layout doesn't shift
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-pn-border bg-transparent opacity-0 pointer-events-none" aria-hidden="true">
+        <HelpCircle className="w-4 h-4" />
+      </div>
+    );
+  }
 
   return (
     <button 

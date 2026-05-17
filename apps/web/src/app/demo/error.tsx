@@ -1,55 +1,36 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-interface ErrorProps {
+export default function DemoError({
+  error,
+  reset,
+}: {
   error: Error & { digest?: string };
   reset: () => void;
-}
-
-export default function DemoError({ error, reset }: ErrorProps) {
+}) {
   useEffect(() => {
-    console.error('[Demo Error Boundary]', error);
+    console.error("[Demo Error]", error);
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-pn-bg flex items-center justify-center p-8">
-      <div className="pn-card max-w-md w-full p-8 text-center">
-        <div className="w-12 h-12 rounded-full bg-pn-error/10 flex items-center justify-center mx-auto mb-4">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-pn-error">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-        </div>
-
-        <h2 className="text-lg font-semibold text-pn-text mb-2">
-          Algo salió mal
-        </h2>
-        <p className="text-sm text-pn-text-soft mb-1">
-          Ocurrió un error al cargar esta sección del demo.
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
+      <div className="text-5xl">⚠️</div>
+      <div>
+        <h2 className="text-xl font-semibold text-pn-text mb-2">Algo salió mal en el demo</h2>
+        <p className="text-sm text-pn-text-muted max-w-md">
+          {error?.message || "Error inesperado al cargar esta sección de la demo."}
         </p>
         {error?.digest && (
-          <p className="text-xs text-pn-text-muted mb-6 font-mono">
-            ID: {error.digest}
-          </p>
+          <p className="text-xs text-pn-text-soft mt-1 font-mono">digest: {error.digest}</p>
         )}
-
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={reset}
-            className="pn-btn-primary text-sm px-5 py-2"
-          >
-            Reintentar
-          </button>
-          <a
-            href="/demo/start"
-            className="pn-btn-secondary text-sm px-5 py-2"
-          >
-            Volver al inicio
-          </a>
-        </div>
       </div>
+      <button
+        onClick={reset}
+        className="px-4 py-2 rounded-md bg-pn-gold text-pn-bg text-sm font-medium hover:bg-pn-gold/80 transition-colors"
+      >
+        Reintentar
+      </button>
     </div>
   );
 }
