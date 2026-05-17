@@ -2,6 +2,17 @@ import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { InvestorDashboardView } from "@/types/product";
 
+type OperationType = "GENESIS_PURCHASE" | "TRANSFER" | "BURN" | "MINT";
+
+const VALID_OPERATION_TYPES: OperationType[] = ["GENESIS_PURCHASE", "TRANSFER", "BURN", "MINT"];
+
+function toOperationType(value?: string): OperationType {
+  if (value && (VALID_OPERATION_TYPES as string[]).includes(value)) {
+    return value as OperationType;
+  }
+  return "TRANSFER";
+}
+
 /**
  * Returns demo mock data when NEXT_PUBLIC_IS_DEMO is true,
  * otherwise fetches real investor data from Supabase.
@@ -79,7 +90,7 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       },
       recentTransactions: rawTxs.map((tx: { id: string; type?: string; amount?: string | number; created_at: string; tx_hash?: string; status?: string }) => ({
         id: tx.id,
-        operationType: tx.type || "TRANSFER",
+        operationType: toOperationType(tx.type),
         amount: tx.amount?.toString() || "0",
         timestamp: tx.created_at,
         txHash: tx.tx_hash || null,
