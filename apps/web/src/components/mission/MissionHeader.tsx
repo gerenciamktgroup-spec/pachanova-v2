@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { DemoStatusRibbon } from "./DemoStatusRibbon";
 import { RoleSwitcherDemo } from "@/components/product/RoleSwitcherDemo";
