@@ -10,7 +10,7 @@ export interface MissionShellProps {
 
 export function MissionShell({ children, header, sidebar, className }: MissionShellProps) {
   return (
-    <div className={cn("pn-page pn-grid-bg flex flex-col", className)}>
+    <div className={cn("pn-page flex flex-col", className)}>
       {header}
       <div className="flex flex-1 overflow-hidden">
         {sidebar}
