@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq, sql } from 'drizzle-orm';
-import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
+import { validateDemoDatabaseUrl } from '@pachanova/database/utils/demoValidation';
 import { z } from 'zod';
 
 const bodySchema = z.object({
