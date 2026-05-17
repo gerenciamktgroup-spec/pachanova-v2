@@ -7,6 +7,18 @@ import { InvestorGenesisClient } from "./GenesisClient";
 import { requireRole } from "@/utils/auth/requireRole";
 
 export default async function InvestorGenesisPage() {
+  // Demo mode: bypass all Supabase calls and render with mock data
+  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
+    return (
+      <InvestorGenesisClient
+        kycStatus="approved"
+        availableUsd={15000}
+        investorId="demo-investor-001"
+        propertyId="demo-property-001"
+      />
+    );
+  }
+
   await requireRole(["investor"]);
   
   const authClient = await createServerClient();

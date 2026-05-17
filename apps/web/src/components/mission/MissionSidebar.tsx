@@ -7,8 +7,11 @@ import { ROUTE_REGISTRY, AppRoute } from "@/lib/navigation/routeRegistry";
 import { 
   PlaySquare, BookOpen, Wallet, LayoutDashboard, Shield, 
   Activity, List, Users, FileSearch, FileSignature, 
-  Terminal, Puzzle, Palette, LucideIcon 
+  Terminal, Puzzle, Palette, History, AlertTriangle,
+  FlaskConical, Scale, ShoppingCart, PenTool, Landmark,
+  LucideIcon 
 } from "lucide-react";
+import { useMobileSidebar } from "./MobileSidebarContext";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   "play-square": PlaySquare,
@@ -24,10 +27,18 @@ const ICON_MAP: Record<string, LucideIcon> = {
   "file-signature": FileSignature,
   "terminal": Terminal,
   "puzzle": Puzzle,
+  "history": History,
+  "alert-triangle": AlertTriangle,
+  "test-tube": FlaskConical,
+  "scale": Scale,
+  "shopping-cart": ShoppingCart,
+  "pen-tool": PenTool,
+  "landmark": Landmark,
 };
 
 export function MissionSidebar() {
   const pathname = usePathname();
+  const { isOpen, close } = useMobileSidebar();
 
   // Agrupar rutas por sección
   const sections: Record<string, AppRoute[]> = {};
@@ -39,7 +50,17 @@ export function MissionSidebar() {
   });
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-pn-border bg-pn-bg/50 backdrop-blur-sm lg:flex overflow-y-auto" data-testid="mission-sidebar">
+    <aside
+      className={cn(
+        // Desktop: always visible as a static sidebar
+        "w-64 flex-col border-r border-pn-border bg-pn-bg/95 backdrop-blur-sm overflow-y-auto",
+        // Desktop: show normally
+        "hidden lg:flex",
+        // Mobile: fixed drawer overlay
+        isOpen && "!fixed inset-y-0 left-0 z-50 !flex shadow-2xl"
+      )}
+      data-testid="mission-sidebar"
+    >
       <div className="flex-1 py-6 px-4 space-y-6">
         {Object.entries(sections).map(([sectionName, routes]) => (
           <div key={sectionName} className="space-y-1">
@@ -65,6 +86,7 @@ export function MissionSidebar() {
                   ) : (
                     <Link
                       href={route.path}
+                      onClick={close}
                       className={cn(
                         "flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                         isActive 

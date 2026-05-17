@@ -40,23 +40,23 @@ export function DemoOnboardingModal() {
   if (!mounted || !open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-pn-bg/60 backdrop-blur-sm">
       <div
-        className="bg-white rounded-3xl max-w-lg w-full mx-4 p-8 shadow-2xl relative animate-in zoom-in-95 fade-in duration-150"
+        className="bg-pn-surface rounded-3xl max-w-lg w-full mx-4 p-8 shadow-2xl relative animate-in zoom-in-95 fade-in duration-150 border border-pn-border"
       >
         <button
           onClick={dismiss}
           aria-label="Cerrar"
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition-colors"
+          className="absolute top-4 right-4 text-pn-text-muted hover:text-pn-text transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Bienvenido al demo de PachaNova</h2>
-        <p className="text-slate-600 mb-8 leading-relaxed">
+        <h2 className="text-2xl font-bold text-pn-text mb-2">Bienvenido al demo de PachaNova</h2>
+        <p className="text-pn-text-muted mb-8 leading-relaxed">
           En los próximos 3 minutos vas a simular lo que haría un inversor real en PachaNova.
           <br />
-          <span className="text-slate-500">Sin registro. Sin dinero real. Con datos del Proyecto San Bartolo.</span>
+          <span className="text-pn-text-muted/70">Sin registro. Sin dinero real. Con datos del Proyecto San Bartolo.</span>
         </p>
 
         <div className="space-y-3 mb-6">
@@ -67,7 +67,7 @@ export function DemoOnboardingModal() {
 
         <button
           onClick={dismiss}
-          className="text-sm text-slate-500 hover:text-blue-700 transition-colors flex items-center gap-1 mx-auto"
+          className="text-sm text-pn-text-muted hover:text-pn-gold transition-colors flex items-center gap-1 mx-auto"
         >
           Explorar sin elegir rol <ArrowRight className="w-3.5 h-3.5" />
         </button>
@@ -81,14 +81,14 @@ function RoleCard({ emoji, title, desc, onClick }: { emoji: string; title: strin
   return (
     <button
       onClick={onClick}
-      className="w-full text-left flex items-start gap-4 p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all group"
+      className="w-full text-left flex items-start gap-4 p-4 rounded-xl border border-pn-border hover:border-pn-gold/50 hover:bg-pn-surface-strong/50 transition-all group"
     >
       <span className="text-2xl shrink-0 mt-0.5">{emoji}</span>
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">{title}</h3>
-        <p className="text-sm text-slate-500">{desc}</p>
+        <h3 className="font-semibold text-pn-text group-hover:text-pn-gold transition-colors">{title}</h3>
+        <p className="text-sm text-pn-text-muted">{desc}</p>
       </div>
-      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 mt-1 shrink-0 transition-colors" />
+      <ArrowRight className="w-4 h-4 text-pn-text-muted group-hover:text-pn-gold mt-1 shrink-0 transition-colors" />
     </button>
   );
 }

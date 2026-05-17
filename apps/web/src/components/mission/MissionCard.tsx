@@ -6,12 +6,13 @@ import { motion, HTMLMotionProps } from "framer-motion";
 import { softScale } from "./motion";
 
 export interface MissionCardProps extends HTMLAttributes<HTMLDivElement> {
+  title?: string;
   variant?: "default" | "elevated" | "warning" | "success" | "danger" | "data";
   animated?: boolean;
 }
 
 export const MissionCard = forwardRef<HTMLDivElement, MissionCardProps>(
-  ({ className, variant = "default", animated = false, children, ...props }, ref) => {
+  ({ className, variant = "default", animated = false, title, children, ...props }, ref) => {
     const classes = cn(
       "pn-card p-6",
       {
@@ -34,6 +35,7 @@ export const MissionCard = forwardRef<HTMLDivElement, MissionCardProps>(
           className={classes}
           {...(props as HTMLMotionProps<"div">)}
         >
+          {title && <h3 className="text-sm font-semibold text-pn-text mb-4">{title}</h3>}
           {children}
         </motion.div>
       );
@@ -41,6 +43,7 @@ export const MissionCard = forwardRef<HTMLDivElement, MissionCardProps>(
 
     return (
       <div ref={ref} className={classes} {...props}>
+        {title && <h3 className="text-sm font-semibold text-pn-text mb-4">{title}</h3>}
         {children}
       </div>
     );

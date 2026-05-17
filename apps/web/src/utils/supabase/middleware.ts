@@ -14,6 +14,11 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 
+  // Demo mode: bypass auth for dashboard routes so visitors can explore without Supabase
+  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
+    return supabaseResponse
+  }
+
   // Guard: if Supabase env vars are missing, redirect to login instead of crashing
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
