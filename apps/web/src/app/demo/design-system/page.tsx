@@ -1,9 +1,15 @@
-import { 
-  MissionCard, MetricTile, 
-  RiskBadge, IntegrationStatusBadge, SectionHeader, TimelineRail, 
-  EmptyState, LoadingState, ErrorState, LegalTrustCard, 
-  ExternalReadyNotice, ReportLinkCard, CommandButton, RouteBreadcrumbs 
-} from "@/components/mission";
+import { MissionCard } from "@/components/mission/MissionCard";
+import { MetricTile } from "@/components/mission/MetricTile";
+import { RiskBadge } from "@/components/mission/RiskBadge";
+import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBadge";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { TimelineRail } from "@/components/mission/TimelineRail";
+import { EmptyState, LoadingState, ErrorState } from "@/components/mission/StateComponents";
+import { LegalTrustCard } from "@/components/mission/LegalTrustCard";
+import { ExternalReadyNotice } from "@/components/mission/ExternalReadyNotice";
+import { ReportLinkCard } from "@/components/mission/ReportLinkCard";
+import { CommandButton } from "@/components/mission/CommandButton";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
 import { ShieldCheck, Activity } from "lucide-react";
 
 export default function DesignSystemPreview() {

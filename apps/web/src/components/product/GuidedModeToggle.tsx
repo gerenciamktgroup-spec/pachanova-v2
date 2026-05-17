@@ -9,7 +9,6 @@ export function GuidedModeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    // Safe localStorage access - wrapped in try/catch for sandbox/SSR safety
     try {
       const stored = localStorage.getItem("pn_guided_mode");
       if (stored !== null) {
@@ -28,18 +27,25 @@ export function GuidedModeToggle() {
     } catch {
       // localStorage blocked — state still works in-memory
     }
-    if (next) {
-      document.body.classList.remove("expert-mode");
-    } else {
-      document.body.classList.add("expert-mode");
+    try {
+      if (next) {
+        document.body.classList.remove("expert-mode");
+      } else {
+        document.body.classList.add("expert-mode");
+      }
+    } catch {
+      // document unavailable in edge runtime
     }
   };
 
-  // Render a placeholder during SSR so layout doesn't shift
+  // Hydration-safe: render invisible placeholder with same DOM structure instead of null
   if (!mounted) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-pn-border bg-transparent opacity-0 pointer-events-none" aria-hidden="true">
         <HelpCircle className="w-4 h-4" />
+        <span className="text-xs font-medium hidden sm:inline">
+          Modo Guiado
+        </span>
       </div>
     );
   }
