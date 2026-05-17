@@ -1,4 +1,6 @@
-import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { MissionCard } from "@/components/mission/MissionCard";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 
 export default function DemoScenariosPage() {

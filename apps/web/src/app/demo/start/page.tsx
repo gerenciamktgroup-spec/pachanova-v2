@@ -1,11 +1,17 @@
 import Link from "next/link";
-import { CommandButton, MissionCard, RouteBreadcrumbs, SectionHeader } from "@/components/mission";
+import { Suspense } from "react";
+import { CommandButton } from "@/components/mission/CommandButton";
+import { MissionCard } from "@/components/mission/MissionCard";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
 import { DemoOnboardingModal } from "@/components/ui/DemoOnboardingModal";
 
 export default function DemoStartPage() {
   return (
     <div className="space-y-12 pb-24 max-w-3xl mx-auto mt-12">
-      <DemoOnboardingModal />
+      <Suspense fallback={null}>
+        <DemoOnboardingModal />
+      </Suspense>
       <div>
         <RouteBreadcrumbs items={[{ label: "Demo" }, { label: "Start" }]} className="mb-4" />
         <SectionHeader 
