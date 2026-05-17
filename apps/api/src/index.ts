@@ -2,14 +2,17 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { investors } from './routes/investors'
 import { properties } from './routes/properties'
+import { demoRouter } from './routes/demo'
 
 const app = new Hono()
 
+// CORS
 app.use('*', cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:3002',
     'https://pachanova-v2.vercel.app',
+    'https://pachanova-v2-web.vercel.app',
     'https://pachanova-v2-git-main-gerenciamktgroup-7296s-projects.vercel.app'
   ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -17,27 +20,46 @@ app.use('*', cors({
   credentials: true,
 }))
 
-app.use('/api/*', async (c, next) => {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!key || key.startsWith('[')) return next()
-  const auth = c.req.header('Authorization')
-  if (auth !== `Bearer ${key}`) return c.json({ error: 'Unauthorized' }, 401)
-  return next()
-})
-
+// Rutas reales (DB)
 app.route('/api/investors', investors)
 app.route('/api/properties', properties)
 
-app.get('/health', (c) => c.json({
-  status: 'ok',
-  ts: new Date().toISOString(),
-  env: {
-    DATABASE_URL: process.env.DATABASE_URL ? '✅' : '❌',
-    SUPABASE_URL: process.env.SUPABASE_URL ? '✅' : '❌',
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅' : '❌',
-  }
-}))
+// Rutas demo (mock, sin DB)
+app.route('/demo', demoRouter)
 
-app.get('/', (c) => c.json({ status: 'ok', message: 'PachaNova API', ts: new Date().toISOString() }))
+// Health robusto
+app.get('/health', (c) => {
+  const envChecks = {
+    DATABASE_URL: !!process.env.DATABASE_URL,
+    SUPABASE_URL: !!process.env.SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  }
+  const allOk = Object.values(envChecks).every(Boolean)
+  return c.json({
+    status: allOk ? 'ok' : 'degraded',
+    ts: new Date().toISOString(),
+    version: '2.0.0',
+    env: Object.fromEntries(
+      Object.entries(envChecks).map(([k, v]) => [k, v ? '✅' : '❌'])
+    )
+  }, allOk ? 200 : 200)
+})
+
+app.get('/', (c) => c.json({
+  status: 'ok',
+  message: 'PachaNova API v2',
+  ts: new Date().toISOString(),
+  endpoints: [
+    'GET /health',
+    'GET /demo/properties',
+    'GET /demo/investors',
+    'GET /demo/tokens',
+    'GET /demo/orders',
+    'POST /demo/kyc',
+    'POST /demo/deposit',
+    'GET /api/properties',
+    'GET /api/investors',
+  ]
+}))
 
 export default app
