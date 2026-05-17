@@ -1,6 +1,6 @@
 import { PublicHeader, PublicFooter } from "@/components/public/LandingComponents";
 import { FAQAccordion } from "@/components/public/ExplainerComponents";
-import { SectionHeader } from "@/components/mission";
+import { SectionHeader } from "@/components/mission/SectionHeader";
 
 export default function FAQPage() {
   const faqItems = [

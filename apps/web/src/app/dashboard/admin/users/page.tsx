@@ -1,6 +1,9 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
+import { SectionHeader } from "@/components/mission/SectionHeader";
+import { MissionCard } from "@/components/mission/MissionCard";
+import { ErrorState } from "@/components/mission/StateComponents";
 import { AdminUsersDataGrid } from "@/components/product/AdminComponents";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";

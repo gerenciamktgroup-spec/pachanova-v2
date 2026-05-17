@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { PublicHeader, PublicFooter } from "@/components/public/LandingComponents";
 import { CheckCircle2, Circle, ArrowRight, UserCheck, Wallet, Coins, LayoutDashboard, ArrowRightLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { SafeActionButton } from "@/components/mission";
+import { SafeActionButton } from "@/components/mission/SafeActionButton";
 
 const steps = [
   {
