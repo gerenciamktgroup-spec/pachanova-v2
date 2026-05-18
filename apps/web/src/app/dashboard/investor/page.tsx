@@ -9,7 +9,8 @@ import {
   InvestorLedgerPanel, 
   InvestorKycStatusPanel, 
   GenesisDemoActionCard, 
-  InvestorWalletStatusPanel 
+  InvestorWalletStatusPanel,
+  ROICalculator
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
 import { Suspense } from "react";
@@ -51,10 +52,10 @@ async function InvestorDashboardContent() {
         dataTestId="next-step-card-investor"
         contextLabel="Panel Inversor"
         title="Tu portafolio de inversión"
-        explanation="Acá ves tus tokens PACHA (cada uno vale proporcionalmente a la valoración actual del activo), tu rendimiento acumulado (distribuciones aprobadas por el fideicomiso) y tus órdenes P2P activas."
-        nextStep="Explorá la ronda Genesis para comprar tokens o revisá el Ledger para auditar cada movimiento."
-        primaryAction={{ label: "Simular Flujo Genesis", href: "/dashboard/investor/genesis", intent: "navigate" }}
-        secondaryAction={{ label: "Revisar Ledger", href: "/dashboard/investor/ledger", intent: "navigate" }}
+        explanation="Acá ves tus Fracciones (PACHA) que representan tu participación en la propiedad, la plusvalía estimada, y tus órdenes P2P activas."
+        nextStep="Explorá la ronda Genesis para comprar fracciones o usa la Calculadora de ROI para proyectar ganancias."
+        primaryAction={{ label: "Comprar Fracciones", href: "/dashboard/investor/genesis", intent: "navigate" }}
+        secondaryAction={{ label: "Liquidar Posición", href: "#", intent: "none" }} // Placeholder for Phase 3 Liquidar concept
         status="GO"
       />
 
@@ -62,6 +63,7 @@ async function InvestorDashboardContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
+          <ROICalculator />
           <ProRataLandCardV2 view={view} />
           <InvestorLedgerPanel view={view} />
         </div>

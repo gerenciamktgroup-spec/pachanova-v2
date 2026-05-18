@@ -72,6 +72,17 @@ export async function POST(req: Request) {
       details: `Investor ${investorId} cancelled order ${orderId}`,
     });
 
+    // 6. INSERT token_ledger para trazabilidad de liberación (ESCROW_RELEASE)
+    const { randomUUID } = await import('crypto');
+    await supabase.from('token_ledger').insert({
+      investor_id: investorId,
+      operation: 'ESCROW_RELEASE',
+      amount: quantity.toString(), // Vuelven al balance disponible
+      tx_hash: 'DEMO_ESC_REL_' + randomUUID().slice(0, 8).toUpperCase(),
+      previous_hash: 'DEMO_PREV_' + randomUUID().replace(/-/g, ''),
+      current_hash: 'DEMO_CURR_' + randomUUID().replace(/-/g, ''),
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("P2P cancel error:", error);

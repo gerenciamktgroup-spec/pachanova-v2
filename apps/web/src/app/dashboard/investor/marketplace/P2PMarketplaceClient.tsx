@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MissionCard } from "@/components/mission/MissionCard";
 import { CommandButton } from "@/components/mission/CommandButton";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
+import { EducationalTooltip } from "@/components/product/EducationalTooltip";
 import { useRouter } from "next/navigation";
 
 interface P2POrder {
@@ -75,7 +76,7 @@ export function P2PMarketplaceClient({
   };
 
   const handleBuyOrder = async (orderId: string, quantityToBuy: number) => {
-    if (!window.confirm("¿Confirmar la compra de estos tokens?")) return;
+    if (!window.confirm("¿Confirmar la compra de estas fracciones?")) return;
     setIsSubmitting(true);
     setMessage(null);
     try {
@@ -103,7 +104,7 @@ export function P2PMarketplaceClient({
   };
 
   const handleCancelOrder = async (orderId: string) => {
-    if (!window.confirm("¿Seguro que deseas cancelar esta orden y recuperar tus tokens?")) return;
+    if (!window.confirm("¿Seguro que deseas cancelar esta orden y recuperar tus fracciones?")) return;
     setIsSubmitting(true);
     setMessage(null);
     try {
@@ -133,13 +134,13 @@ export function P2PMarketplaceClient({
           onClick={() => setActiveTab("buy")}
           className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "buy" ? "border-pn-gold text-pn-text" : "border-transparent text-pn-text-muted hover:text-pn-text"}`}
         >
-          Comprar Tokens
+          Comprar Fracciones
         </button>
         <button 
           onClick={() => setActiveTab("sell")}
           className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "sell" ? "border-pn-gold text-pn-text" : "border-transparent text-pn-text-muted hover:text-pn-text"}`}
         >
-          Vender Tokens
+          Vender Fracciones
         </button>
       </div>
 
@@ -202,7 +203,7 @@ export function P2PMarketplaceClient({
           <MissionCard title="Publicar Oferta de Venta">
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-pn-surface-strong p-3 rounded-md border border-pn-border text-sm">
-                <span>Tokens Disponibles:</span>
+                <EducationalTooltip term="Fracciones Disponibles" definition="Parte de tu capital que no está bloqueado en otras órdenes y puede ser puesto a la venta." position="bottom" />
                 <span className="font-medium text-pn-text">{availableTokens} PACHA</span>
               </div>
               <div className="space-y-1">
@@ -214,7 +215,7 @@ export function P2PMarketplaceClient({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm text-pn-text-muted">Precio por PACHA (USD)</label>
+                <label className="text-sm text-pn-text-muted">Precio por Fracción (USD)</label>
                 <input 
                   type="number" step="0.01" min={0.01} 
                   value={sellPrice} onChange={e => setSellPrice(Number(e.target.value))}

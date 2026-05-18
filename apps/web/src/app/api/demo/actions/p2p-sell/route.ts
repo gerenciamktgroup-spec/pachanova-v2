@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     const totalAmount = quantity * pricePerToken;
 
     // 2. INSERT p2p_orders
-    const { data: newOrder } = await supabase.from('p2p_orders').insert({
+    const { data: newOrder, error: insertError } = await supabase.from('p2p_orders').insert({
       seller_investor_id: sellerInvestorId,
       property_id: propertyId,
       quantity: quantity.toString(),
@@ -57,6 +57,11 @@ export async function POST(req: Request) {
       status: 'open',
       is_demo: true
     }).select().single();
+
+    if (insertError || !newOrder) {
+      console.error("Error inserting P2P order:", insertError);
+      return NextResponse.json({ error: 'No se pudo crear la oferta. Propiedad inválida o error de sistema.' }, { status: 400 });
+    }
 
     // 3. UPDATE balances: available_tokens -= quantity, locked_tokens += quantity
     await supabase.from('balances').update({
@@ -68,6 +73,17 @@ export async function POST(req: Request) {
     await supabase.from('audit_logs').insert({
       action: 'P2P_ORDER_CREATED',
       details: `Investor ${sellerInvestorId} listed ${quantity} tokens for sale`,
+    });
+
+    // 5. INSERT token_ledger para trazabilidad de bloqueo (ESCROW_LOCK)
+    const { randomUUID } = await import('crypto');
+    await supabase.from('token_ledger').insert({
+      investor_id: sellerInvestorId,
+      operation: 'ESCROW_LOCK',
+      amount: '-' + quantity.toString(), // Representa que salen del balance disponible
+      tx_hash: 'DEMO_ESCROW_' + randomUUID().slice(0, 8).toUpperCase(),
+      previous_hash: 'DEMO_PREV_' + randomUUID().replace(/-/g, ''),
+      current_hash: 'DEMO_CURR_' + randomUUID().replace(/-/g, ''),
     });
 
     return NextResponse.json({ success: true, orderId: newOrder?.id });
