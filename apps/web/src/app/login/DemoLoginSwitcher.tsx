@@ -69,8 +69,8 @@ export function DemoLoginSwitcher() {
         return;
       }
 
-      router.refresh();
-      router.push("/dashboard/investor");
+      // Hard navigation ensures cookies are sent to the server
+      window.location.href = "/dashboard/investor";
     } catch {
       setError("Error de red. Verifica que el servidor esté corriendo.");
     } finally {
