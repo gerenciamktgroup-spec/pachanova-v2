@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     const { data: treasury } = await supabase
       .from('balances')
       .select('available_tokens')
-      .eq('investor_id', 'PACHANOVA_TREASURY')
+      .eq('investor_id', '00000000-0000-0000-0000-000000000000')
       .maybeSingle();
 
     const treasuryStock = Number(treasury?.available_tokens || 0);
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     // Descontar de la bóveda maestra
     await supabase.from('balances').update({
       available_tokens: (treasuryStock - quantity).toString(),
-    }).eq('investor_id', 'PACHANOVA_TREASURY');
+    }).eq('investor_id', '00000000-0000-0000-0000-000000000000');
 
     // Registrar en ledger con hash simulado
     const txHash = 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase();
