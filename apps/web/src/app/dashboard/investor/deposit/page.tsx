@@ -6,9 +6,29 @@ import { redirect } from 'next/navigation';
 import { DepositClient } from './DepositClient';
 
 export default async function DepositPage() {
-  const authClient = await createServerClient();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) redirect('/login');
+  const isDemo = process.env.NEXT_PUBLIC_IS_DEMO === 'true';
+
+  let user = null;
+  try {
+    const authClient = await createServerClient();
+    const res = await authClient.auth.getUser();
+    user = res.data.user;
+  } catch (e) {
+    console.warn("Supabase auth failed on deposit page:", e);
+  }
+
+  if (!user) {
+    if (isDemo) {
+      return (
+        <DepositClient
+          investorId="demo-investor-001"
+          currentUsd={15000}
+          currentTokens={1500}
+        />
+      );
+    }
+    redirect('/login');
+  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

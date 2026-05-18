@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, CheckCircle } from "lucide-react";
+import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, CheckCircle, Info } from "lucide-react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { FAQAccordion, faqData } from "@/components/ui/FAQAccordion";
 
@@ -111,6 +111,48 @@ export default function LandingPage() {
             <StepCard num={2} icon={<Coins className="w-6 h-6" />} title="Tu participación, en tokens" desc="Desde $10 USD por token. Sin montos mínimos prohibitivos." />
             <StepCard num={3} icon={<TrendingUp className="w-6 h-6" />} title="El activo trabaja por vos" desc="8.5% APY estimado sobre el valor del activo." />
             <StepCard num={4} icon={<Vote className="w-6 h-6" />} title="Tu voz tiene peso legal" desc="Quórum 2/3 en el fideicomiso. Liquidez P2P." />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECCIÓN EDUCACIONAL SANDBOX — CAMBIO 4H ═══ */}
+      <section className="bg-slate-900 text-white py-20 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">Guía de Entorno: Modo Demo Sandbox</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">Esta plataforma es un entorno de demostración interactivo diseñado para simular el ecosistema completo.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div data-testid="landing-how-to-read-demo" className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-all">
+              <div className="w-12 h-12 bg-blue-900/50 text-blue-400 rounded-xl flex items-center justify-center mb-6">
+                <Coins className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Cómo interpretar la Demo</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Todas las operaciones, saldos y tokens que ves son simulaciones aisladas que operan localmente en tiempo real sobre una base de datos segura y auditada.
+              </p>
+            </div>
+
+            <div data-testid="landing-what-is-simulated" className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-all">
+              <div className="w-12 h-12 bg-blue-900/50 text-blue-400 rounded-xl flex items-center justify-center mb-6">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Elementos Simulados</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                La adquisición de tokens Genesis, la carga de identidad (KYC), el saldo en USD y las transferencias P2P se guardan en el historial local para auditoría.
+              </p>
+            </div>
+
+            <div data-testid="landing-what-connects-later" className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-8 hover:border-blue-500/50 transition-all">
+              <div className="w-12 h-12 bg-blue-900/50 text-blue-400 rounded-xl flex items-center justify-center mb-6">
+                <Vote className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">Conexiones Futuras</h3>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Una vez activada la producción, esta infraestructura se conectará de manera transparente con las credenciales de MercadoPago y contratos inteligentes de Foundry.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -267,9 +309,12 @@ export default function LandingPage() {
 
 function StatCard({ value, label, tooltip }: { value: string; label: string; tooltip: string }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm relative">
       <Tooltip content={tooltip} position="top">
-        <p className="text-xl font-bold text-slate-900 cursor-help border-b border-dashed border-slate-300">{value}</p>
+        <div className="flex items-center justify-center gap-1 cursor-help">
+          <p className="text-xl font-bold text-slate-900 border-b border-dashed border-slate-300">{value}</p>
+          <Info className="w-4 h-4 text-slate-400 shrink-0" />
+        </div>
       </Tooltip>
       <p className="text-xs text-slate-500 mt-1">{label}</p>
     </div>

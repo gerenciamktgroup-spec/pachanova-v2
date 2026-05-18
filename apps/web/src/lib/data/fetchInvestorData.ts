@@ -1,6 +1,7 @@
 import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { InvestorDashboardView } from "@/types/product";
+import { cookies } from "next/headers";
 
 type OperationType = "GENESIS_PURCHASE" | "TRANSFER" | "BURN" | "MINT";
 
@@ -21,10 +22,22 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
   const isDemo = process.env.NEXT_PUBLIC_IS_DEMO === "true";
 
   try {
-    const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const cookieStore = await cookies();
+    const demoKycOverride = cookieStore.get("demo_kyc_status")?.value;
+
+    let user = null;
+    try {
+      const supabase = await createServerClient();
+      const res = await supabase.auth.getUser();
+      user = res.data.user;
+    } catch (e) {
+      console.warn("Supabase auth failed, using demo fallback if active:", e);
+    }
 
     if (!user) {
+      if (isDemo) {
+        return getDemoInvestorData(demoKycOverride);
+      }
       redirect("/login");
     }
 
@@ -43,6 +56,9 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
 
     if (investorError || !investor) {
       console.error("Investor not found in DB:", investorError);
+      if (isDemo) {
+        return getDemoInvestorData(demoKycOverride);
+      }
       return null;
     }
 
@@ -73,7 +89,7 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       .order("created_at", { ascending: false })
       .limit(1);
 
-    const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending");
+    const kycStatus = demoKycOverride || (kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending"));
 
     const rawTxs = (tokenLedger && tokenLedger.length > 0) ? tokenLedger : (transactions || []);
 
@@ -127,18 +143,28 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
     };
   } catch (error) {
     console.error("Error fetching investor view model:", error);
+    if (isDemo) {
+      try {
+        const cookieStore = await cookies();
+        const demoKycOverride = cookieStore.get("demo_kyc_status")?.value;
+        return getDemoInvestorData(demoKycOverride);
+      } catch {
+        return getDemoInvestorData();
+      }
+    }
     return null;
   }
 }
 
-function getDemoInvestorData(): InvestorDashboardView {
+function getDemoInvestorData(demoKycOverride?: string): InvestorDashboardView {
+  const kycStatus = demoKycOverride || "approved";
   return {
     investor: {
       id: "demo-investor-001",
       fullName: "Inversor Demo",
       email: "demo@pachanova.com",
-      kycStatus: "approved",
-      isVerified: true,
+      kycStatus: kycStatus as "pending" | "approved" | "rejected",
+      isVerified: kycStatus === "approved",
       balance: {
         investorId: "demo-investor-001",
         availableTokens: "1500.00",

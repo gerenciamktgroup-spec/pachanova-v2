@@ -33,6 +33,7 @@ export async function POST(req: Request) {
       password,
       email_confirm: true,
       user_metadata: { full_name: fullName, first_name: firstName, last_name: lastName },
+      app_metadata: { role: 'investor' },
     });
 
     if (adminError) {

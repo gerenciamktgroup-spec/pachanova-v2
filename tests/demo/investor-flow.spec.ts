@@ -44,17 +44,13 @@ test.describe('PachaNova V2.0 Demo Mirror Acceptance E2E', () => {
   });
 
   test('10. Usuario KYC PENDING no puede comprar Genesis', async ({ page }) => {
-    // Modify the API response to return KYC pending
-    await page.route('/api/token-balance', async route => {
-      await route.fulfill({
-        json: {
-          availableTokens: "1,500",
-          availableUsd: "US$ 12,600",
-          investorName: "Demo User",
-          kycStatus: "pending"
-        }
-      });
-    });
+    // Set cookie override for KYC pending
+    await page.context().addCookies([{
+      name: 'demo_kyc_status',
+      value: 'pending',
+      domain: 'localhost',
+      path: '/'
+    }]);
     
     await page.goto('/dashboard/investor');
     

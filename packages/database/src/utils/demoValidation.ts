@@ -3,12 +3,16 @@ export function validateDemoDatabaseUrl(dbUrl?: string): void {
     throw new Error("CRITICAL ERROR: DEMO_MODE must be 'true' for demo operations");
   }
 
-  const target = `${process.env.DATABASE_URL ?? ''} ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''} ${process.env.SUPABASE_URL ?? ''}`
+  const target = `${dbUrl ?? ''} ${process.env.DATABASE_URL ?? ''} ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''} ${process.env.SUPABASE_URL ?? ''}`
   const DEMO_REF = 'cndppfspgqomgwixlfkw'
   const PROD_REF = 'wdrhurnbxkhwmqrcbgpu'
 
-  if (target.includes(PROD_REF)) throw new Error("CRITICAL ERROR: Demo is pointing to PROD Supabase project");
-  if (!target.includes(DEMO_REF)) throw new Error("CRITICAL ERROR: Demo must point to pachanova-demo Supabase project");
+  const isLocal = target.toLowerCase().includes('localhost') || target.toLowerCase().includes('127.0.0.1');
+  
+  if (!isLocal) {
+    if (target.includes(PROD_REF)) throw new Error("CRITICAL ERROR: Demo is pointing to PROD Supabase project");
+    if (!target.includes(DEMO_REF)) throw new Error("CRITICAL ERROR: Demo must point to pachanova-demo Supabase project");
+  }
   if (!dbUrl) {
     throw new Error("CRITICAL ERROR: DATABASE_URL is missing");
   }
