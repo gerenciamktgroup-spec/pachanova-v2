@@ -13034,6 +13034,11 @@ var require_main3 = __commonJS({
   }
 });
 
+// ../../node_modules/.pnpm/hono@4.12.18/node_modules/hono/dist/adapter/vercel/handler.js
+var handle = (app2) => (req) => {
+  return app2.fetch(req);
+};
+
 // ../../node_modules/.pnpm/hono@4.12.18/node_modules/hono/dist/compose.js
 var compose = (middleware, onError, onNotFound) => {
   return (context, next) => {
@@ -13046,16 +13051,16 @@ var compose = (middleware, onError, onNotFound) => {
       index = i;
       let res;
       let isError = false;
-      let handler2;
+      let handler;
       if (middleware[i]) {
-        handler2 = middleware[i][0][0];
+        handler = middleware[i][0][0];
         context.req.routeIndex = i;
       } else {
-        handler2 = i === middleware.length && next || void 0;
+        handler = i === middleware.length && next || void 0;
       }
-      if (handler2) {
+      if (handler) {
         try {
-          res = await handler2(context, () => dispatch(i + 1));
+          res = await handler(context, () => dispatch(i + 1));
         } catch (err) {
           if (err instanceof Error && onError) {
             context.error = err;
@@ -14126,8 +14131,8 @@ var Hono = class _Hono {
         } else {
           this.#addRoute(method, this.#path, args1);
         }
-        args.forEach((handler2) => {
-          this.#addRoute(method, this.#path, handler2);
+        args.forEach((handler) => {
+          this.#addRoute(method, this.#path, handler);
         });
         return this;
       };
@@ -14136,8 +14141,8 @@ var Hono = class _Hono {
       for (const p2 of [path].flat()) {
         this.#path = p2;
         for (const m2 of [method].flat()) {
-          handlers.map((handler2) => {
-            this.#addRoute(m2.toUpperCase(), this.#path, handler2);
+          handlers.map((handler) => {
+            this.#addRoute(m2.toUpperCase(), this.#path, handler);
           });
         }
       }
@@ -14150,8 +14155,8 @@ var Hono = class _Hono {
         this.#path = "*";
         handlers.unshift(arg1);
       }
-      handlers.forEach((handler2) => {
-        this.#addRoute(METHOD_NAME_ALL, this.#path, handler2);
+      handlers.forEach((handler) => {
+        this.#addRoute(METHOD_NAME_ALL, this.#path, handler);
       });
       return this;
     };
@@ -14193,14 +14198,14 @@ var Hono = class _Hono {
   route(path, app2) {
     const subApp = this.basePath(path);
     app2.routes.map((r) => {
-      let handler2;
+      let handler;
       if (app2.errorHandler === errorHandler) {
-        handler2 = r.handler;
+        handler = r.handler;
       } else {
-        handler2 = async (c, next) => (await compose([], app2.errorHandler)(c, () => r.handler(c, next))).res;
-        handler2[COMPOSED_HANDLER] = r.handler;
+        handler = async (c, next) => (await compose([], app2.errorHandler)(c, () => r.handler(c, next))).res;
+        handler[COMPOSED_HANDLER] = r.handler;
       }
-      subApp.#addRoute(r.method, r.path, handler2);
+      subApp.#addRoute(r.method, r.path, handler);
     });
     return this;
   }
@@ -14238,8 +14243,8 @@ var Hono = class _Hono {
    * })
    * ```
    */
-  onError = (handler2) => {
-    this.errorHandler = handler2;
+  onError = (handler) => {
+    this.errorHandler = handler;
     return this;
   };
   /**
@@ -14257,8 +14262,8 @@ var Hono = class _Hono {
    * })
    * ```
    */
-  notFound = (handler2) => {
-    this.#notFoundHandler = handler2;
+  notFound = (handler) => {
+    this.#notFoundHandler = handler;
     return this;
   };
   /**
@@ -14328,21 +14333,21 @@ var Hono = class _Hono {
         return new Request(url, request);
       };
     })();
-    const handler2 = async (c, next) => {
+    const handler = async (c, next) => {
       const res = await applicationHandler(replaceRequest(c.req.raw), ...getOptions(c));
       if (res) {
         return res;
       }
       await next();
     };
-    this.#addRoute(METHOD_NAME_ALL, mergePath(path, "*"), handler2);
+    this.#addRoute(METHOD_NAME_ALL, mergePath(path, "*"), handler);
     return this;
   }
-  #addRoute(method, path, handler2) {
+  #addRoute(method, path, handler) {
     method = method.toUpperCase();
     path = mergePath(this._basePath, path);
-    const r = { basePath: this._basePath, path, method, handler: handler2 };
-    this.router.add(method, path, [handler2, r]);
+    const r = { basePath: this._basePath, path, method, handler };
+    this.router.add(method, path, [handler, r]);
     this.routes.push(r);
   }
   #handleError(err, c) {
@@ -14731,7 +14736,7 @@ var RegExpRouter = class {
     this.#middleware = { [METHOD_NAME_ALL]: /* @__PURE__ */ Object.create(null) };
     this.#routes = { [METHOD_NAME_ALL]: /* @__PURE__ */ Object.create(null) };
   }
-  add(method, path, handler2) {
+  add(method, path, handler) {
     const middleware = this.#middleware;
     const routes = this.#routes;
     if (!middleware || !routes) {
@@ -14762,14 +14767,14 @@ var RegExpRouter = class {
       Object.keys(middleware).forEach((m2) => {
         if (method === METHOD_NAME_ALL || method === m2) {
           Object.keys(middleware[m2]).forEach((p2) => {
-            re.test(p2) && middleware[m2][p2].push([handler2, paramCount]);
+            re.test(p2) && middleware[m2][p2].push([handler, paramCount]);
           });
         }
       });
       Object.keys(routes).forEach((m2) => {
         if (method === METHOD_NAME_ALL || method === m2) {
           Object.keys(routes[m2]).forEach(
-            (p2) => re.test(p2) && routes[m2][p2].push([handler2, paramCount])
+            (p2) => re.test(p2) && routes[m2][p2].push([handler, paramCount])
           );
         }
       });
@@ -14783,7 +14788,7 @@ var RegExpRouter = class {
           routes[m2][path2] ||= [
             ...findMiddleware(middleware[m2], path2) || findMiddleware(middleware[METHOD_NAME_ALL], path2) || []
           ];
-          routes[m2][path2].push([handler2, paramCount - len + i + 1]);
+          routes[m2][path2].push([handler, paramCount - len + i + 1]);
         }
       });
     }
@@ -14828,11 +14833,11 @@ var SmartRouter = class {
   constructor(init) {
     this.#routers = init.routers;
   }
-  add(method, path, handler2) {
+  add(method, path, handler) {
     if (!this.#routes) {
       throw new Error(MESSAGE_MATCHER_IS_ALREADY_BUILT);
     }
-    this.#routes.push([method, path, handler2]);
+    this.#routes.push([method, path, handler]);
   }
   match(method, path) {
     if (!this.#routes) {
@@ -14889,17 +14894,17 @@ var Node2 = class _Node2 {
   #patterns;
   #order = 0;
   #params = emptyParams;
-  constructor(method, handler2, children) {
+  constructor(method, handler, children) {
     this.#children = children || /* @__PURE__ */ Object.create(null);
     this.#methods = [];
-    if (method && handler2) {
+    if (method && handler) {
       const m2 = /* @__PURE__ */ Object.create(null);
-      m2[method] = { handler: handler2, possibleKeys: [], score: 0 };
+      m2[method] = { handler, possibleKeys: [], score: 0 };
       this.#methods = [m2];
     }
     this.#patterns = [];
   }
-  insert(method, path, handler2) {
+  insert(method, path, handler) {
     this.#order = ++this.#order;
     let curNode = this;
     const parts = splitRoutingPath(path);
@@ -14925,7 +14930,7 @@ var Node2 = class _Node2 {
     }
     curNode.#methods.push({
       [method]: {
-        handler: handler2,
+        handler,
         possibleKeys: possibleKeys.filter((v2, i, a2) => a2.indexOf(v2) === i),
         score: this.#order
       }
@@ -15046,7 +15051,7 @@ var Node2 = class _Node2 {
         return a2.score - b.score;
       });
     }
-    return [handlerSets.map(({ handler: handler2, params }) => [handler2, params])];
+    return [handlerSets.map(({ handler, params }) => [handler, params])];
   }
 };
 
@@ -15057,15 +15062,15 @@ var TrieRouter = class {
   constructor() {
     this.#node = new Node2();
   }
-  add(method, path, handler2) {
+  add(method, path, handler) {
     const results = checkOptionalParameter(path);
     if (results) {
       for (let i = 0, len = results.length; i < len; i++) {
-        this.#node.insert(method, results[i], handler2);
+        this.#node.insert(method, results[i], handler);
       }
       return;
     }
-    this.#node.insert(method, path, handler2);
+    this.#node.insert(method, path, handler);
   }
   match(method, path) {
     return this.#node.search(method, path);
@@ -36812,35 +36817,9 @@ app.get("/", (c) => c.json({
 var index_default = app;
 
 // src/server.ts
-async function handler(req, res) {
-  try {
-    const host = req.headers["host"] ?? "localhost";
-    const proto = "https";
-    const url = `${proto}://${host}${req.url ?? "/"}`;
-    const chunks = [];
-    for await (const chunk of req) chunks.push(chunk);
-    const body = chunks.length > 0 ? Buffer.concat(chunks) : void 0;
-    const method = req.method ?? "GET";
-    const hasBody = body && body.length > 0 && !["GET", "HEAD", "OPTIONS"].includes(method);
-    const webReq = new Request(url, {
-      method,
-      headers: req.headers,
-      body: hasBody ? body : void 0
-    });
-    const webRes = await index_default.fetch(webReq);
-    res.statusCode = webRes.status;
-    webRes.headers.forEach((val, key) => res.setHeader(key, val));
-    const buf = Buffer.from(await webRes.arrayBuffer());
-    res.end(buf);
-  } catch (err) {
-    console.error("Handler error:", err);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: String(err) }));
-  }
-}
+var server_default = handle(index_default);
 export {
-  handler as default
+  server_default as default
 };
 /*! Bundled license information:
 
