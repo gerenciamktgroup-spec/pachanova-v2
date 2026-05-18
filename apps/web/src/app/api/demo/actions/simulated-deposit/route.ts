@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
+// Acepta cualquier string (UUID o ID interno de Pachanova)
 const bodySchema = z.object({
-  investorId: z.string().uuid(),
+  investorId: z.string().min(1),
   amountUsd: z.number().positive(),
 });
 
@@ -18,11 +19,11 @@ export async function POST(req: Request) {
 
     const { investorId, amountUsd } = result.data;
 
-    // Mock bypass: if Supabase env vars are missing, return simulated success
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({
         success: true,
-        message: `Deposited ${amountUsd} USD (mock)`,
+        message: `Deposited ${amountUsd} USD (mock - no Supabase)`,
+        newBalance: amountUsd,
       });
     }
 
@@ -35,12 +36,16 @@ export async function POST(req: Request) {
       .from('balances')
       .select('*')
       .eq('investor_id', investorId)
-      .single();
+      .maybeSingle();
 
     if (!existing) {
       await supabase.from('balances').insert({
         investor_id: investorId,
-        available_usd: amountUsd.toString()
+        available_usd: amountUsd.toString(),
+        locked_usd: '0',
+        available_tokens: '0',
+        locked_tokens: '0',
+        reserved_tokens: '0',
       });
     } else {
       await supabase.from('balances').update({
@@ -48,20 +53,25 @@ export async function POST(req: Request) {
       }).eq('investor_id', investorId);
     }
 
+    const newUsd = existing
+      ? Number(existing.available_usd || 0) + amountUsd
+      : amountUsd;
+
     await supabase.from('audit_logs').insert({
       action: 'DEMO_SIMULATED_DEPOSIT',
-      details: `Simulated deposit of ${amountUsd} USD for investor ${investorId}`,
+      details: `Simulated deposit of $${amountUsd} USD for investor ${investorId}. New balance: $${newUsd}`,
     });
 
     await supabase.from('integration_events').insert({
       provider: 'DEMO_SYSTEM',
       event_type: 'SIMULATED_DEPOSIT',
-      payload: { investorId, amountUsd },
+      payload: { investorId, amountUsd, newBalance: newUsd },
       simulated: true,
     });
 
-    return NextResponse.json({ success: true, message: `Deposited ${amountUsd} USD` });
+    return NextResponse.json({ success: true, message: `Depositado $${amountUsd} USD`, newBalance: newUsd });
   } catch (error) {
+    console.error('simulated-deposit error:', error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
