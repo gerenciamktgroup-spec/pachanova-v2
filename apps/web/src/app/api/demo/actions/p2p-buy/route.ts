@@ -116,6 +116,30 @@ export async function POST(req: Request) {
       details: `Trade executed: ${quantity} tokens for order ${orderId}`,
     });
 
+    // 9. INSERT token_ledger para rastreabilidad (Blockchain-like tracking)
+    const { randomUUID } = await import('crypto');
+    const txHash = 'DEMO_P2P_' + randomUUID().slice(0, 8).toUpperCase();
+    
+    // Ledger entry para el comprador (TRANSFER_IN)
+    await supabase.from('token_ledger').insert({
+      investor_id: buyerInvestorId,
+      operation: 'TRANSFER',
+      amount: quantity.toString(),
+      tx_hash: txHash,
+      previous_hash: 'DEMO_PREV_' + randomUUID().replace(/-/g, ''),
+      current_hash: 'DEMO_CURR_' + randomUUID().replace(/-/g, ''),
+    });
+
+    // Ledger entry para el vendedor (TRANSFER_OUT)
+    await supabase.from('token_ledger').insert({
+      investor_id: order.seller_investor_id,
+      operation: 'TRANSFER',
+      amount: '-' + quantity.toString(),
+      tx_hash: txHash,
+      previous_hash: 'DEMO_PREV_' + randomUUID().replace(/-/g, ''),
+      current_hash: 'DEMO_CURR_' + randomUUID().replace(/-/g, ''),
+    });
+
     // Return the new buyer balance
     const { data: updatedBuyerBalance } = await supabase
       .from('balances')
