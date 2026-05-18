@@ -2,7 +2,19 @@ import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
 import { SectionHeader } from "@/components/mission/SectionHeader";
 import { MissionCard } from "@/components/mission/MissionCard";
 
-export default function FideicomisoLegalBackingPage() {
+import { createServerClient } from "@/utils/supabase/server";
+import { LegalPortalClient } from "./LegalPortalClient";
+
+export default async function FideicomisoLegalBackingPage() {
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let isAdmin = false;
+  if (user) {
+    const { data: inv } = await supabase.from('investors').select('role').eq('supabase_auth_id', user.id).single();
+    isAdmin = inv?.role === 'admin';
+  }
+
   return (
     <div className="space-y-8 pb-24">
       <div>
@@ -50,6 +62,8 @@ export default function FideicomisoLegalBackingPage() {
           </div>
         </div>
       </MissionCard>
+
+      <LegalPortalClient isAdmin={isAdmin} />
     </div>
   );
 }
