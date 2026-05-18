@@ -78,7 +78,6 @@ export type {
   CreateInvestorInput,
   UpdateInvestorInput,
   CreateTokenOrderInput,
-  CreateP2pOrderInput,
 } from './database'
 
 // ── ViewModels legacy (product.ts) ────────────────────────────────────────────
