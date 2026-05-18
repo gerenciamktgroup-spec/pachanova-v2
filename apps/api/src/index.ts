@@ -1,10 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
 import { investors } from './routes/investors.js'
 import { properties } from './routes/properties.js'
 import { demoRouter } from './routes/demo.js'
 
 const app = new Hono()
+
+// Logger global
+app.use('*', logger())
 
 // CORS
 app.use('*', cors({
@@ -13,12 +17,22 @@ app.use('*', cors({
     'http://localhost:3002',
     'https://pachanova-v2.vercel.app',
     'https://pachanova-v2-web.vercel.app',
-    'https://pachanova-v2-git-main-gerenciamktgroup-7296s-projects.vercel.app'
+    'https://pachanova-v2-git-main-gerenciamktgroup-7296s-projects.vercel.app',
   ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }))
+
+// Error handler global — nunca rompe la serverless function
+app.onError((err, c) => {
+  console.error('[PachaNova API Error]', err)
+  return c.json({
+    error: 'Internal Server Error',
+    message: err.message ?? String(err),
+    ts: new Date().toISOString(),
+  }, 500)
+})
 
 // Rutas reales (DB)
 app.route('/api/investors', investors)
@@ -27,7 +41,7 @@ app.route('/api/properties', properties)
 // Rutas demo (mock, sin DB)
 app.route('/demo', demoRouter)
 
-// Health robusto
+// Health
 app.get('/health', (c) => {
   const envChecks = {
     DATABASE_URL: !!process.env.DATABASE_URL,
@@ -41,8 +55,8 @@ app.get('/health', (c) => {
     version: '2.0.0',
     env: Object.fromEntries(
       Object.entries(envChecks).map(([k, v]) => [k, v ? '✅' : '❌'])
-    )
-  }, allOk ? 200 : 200)
+    ),
+  })
 })
 
 app.get('/', (c) => c.json({
@@ -59,7 +73,7 @@ app.get('/', (c) => c.json({
     'POST /demo/deposit',
     'GET /api/properties',
     'GET /api/investors',
-  ]
+  ],
 }))
 
 export default app
