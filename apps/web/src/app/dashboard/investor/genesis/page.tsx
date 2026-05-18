@@ -1,81 +1,81 @@
 export const dynamic = 'force-dynamic';
 
-import { createServerClient } from "@/utils/supabase/server";
-import { createClient } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-import { InvestorGenesisClient } from "./GenesisClient";
-import { requireRole } from "@/utils/auth/requireRole";
+import { createServerClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+import { redirect } from 'next/navigation';
+import { InvestorGenesisClient } from './GenesisClient';
 
 export default async function InvestorGenesisPage() {
-  // Demo mode: bypass all Supabase calls and render with mock data
-  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
-    return (
-      <InvestorGenesisClient
-        kycStatus="approved"
-        availableUsd={15000}
-        investorId="demo-investor-001"
-        propertyId="demo-property-001"
-      />
-    );
-  }
-
-  await requireRole(["investor"]);
-  
+  // Siempre traer el usuario real — nunca hardcodear ID
   const authClient = await createServerClient();
   const { data: { user } } = await authClient.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
-  }
+  if (!user) redirect('/login');
 
-  // Use Service Role to bypass RLS since GoTrue users were recreated and auth.uid() mismatches
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // 1. Get Investor
-  const { data: investor } = await supabase
-    .from("investors")
-    .select("id, kyc_status")
-    .eq("email", user.email)
-    .single();
+  // Buscar inversor por supabase_auth_id primero, luego por email como fallback
+  let investor: { id: string; kyc_status?: string } | null = null;
 
-  if (!investor) {
-    // If no investor record, fallback gracefully (or redirect)
-    return <div className="p-8 text-center text-pn-danger">Error: Perfil de inversor no encontrado para {user.email}.</div>;
+  const { data: byAuthId } = await supabase
+    .from('investors')
+    .select('id, kyc_status')
+    .eq('supabase_auth_id', user.id)
+    .maybeSingle();
+
+  if (byAuthId) {
+    investor = byAuthId;
+  } else {
+    const { data: byEmail } = await supabase
+      .from('investors')
+      .select('id, kyc_status')
+      .eq('email', user.email)
+      .maybeSingle();
+    investor = byEmail;
   }
 
-  // 2. Get KYC Status (Check documents first, fallback to investor.kyc_status)
+  if (!investor) {
+    return (
+      <div className="p-8 text-center text-red-400">
+        <p className="text-lg font-medium">Perfil de inversor no encontrado.</p>
+        <p className="text-sm text-pn-text-muted mt-2">Registrate en <a href="/signup" className="text-pn-gold underline">/signup</a> para crear tu cuenta.</p>
+      </div>
+    );
+  }
+
+  // KYC: verificar documentos
   const { data: kycDocs } = await supabase
-    .from("kyc_documents")
-    .select("status")
-    .eq("investor_id", investor.id)
-    .order("created_at", { ascending: false })
+    .from('kyc_documents')
+    .select('status')
+    .eq('investor_id', investor.id)
+    .order('created_at', { ascending: false })
     .limit(1);
 
-  const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending");
+  const kycStatus = kycDocs?.[0]?.status || investor.kyc_status || 'pending';
 
-  // 3. Get Balance
+  // Balance — maybeSingle para no crashear si no existe
   const { data: balance } = await supabase
-    .from("balances")
-    .select("available_usd")
-    .eq("investor_id", investor.id)
-    .single();
+    .from('balances')
+    .select('available_usd')
+    .eq('investor_id', investor.id)
+    .maybeSingle();
 
-  const availableUsd = balance?.available_usd ? Number(balance.available_usd) : 0;
+  const availableUsd = Number(balance?.available_usd || 0);
 
-  // 4. Get first property ID for the demo
+  // Property ID — buscar primero, fallback a UUID null válido
   const { data: property } = await supabase
-    .from("properties")
-    .select("id")
+    .from('properties')
+    .select('id')
     .limit(1)
-    .single();
+    .maybeSingle();
 
-  const propertyId = property?.id || "00000000-0000-0000-0000-000000000000";
+  const propertyId = property?.id || '00000000-0000-0000-0000-000000000001';
 
   return (
-    <InvestorGenesisClient 
+    <InvestorGenesisClient
       kycStatus={kycStatus}
       availableUsd={availableUsd}
       investorId={investor.id}

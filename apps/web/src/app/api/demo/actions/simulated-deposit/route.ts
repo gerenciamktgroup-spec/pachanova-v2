@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
 const bodySchema = z.object({
-  investorId: z.string().uuid(),
-  amountUsd: z.number().positive(),
+  investorId: z.string().min(1),  // No forzar UUID — puede ser cualquier ID de Supabase
+  amountUsd: z.number().positive().max(1000000),
 });
 
 export async function POST(req: Request) {
@@ -14,15 +14,17 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
-    if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
+    if (!result.success) {
+      return NextResponse.json({ error: 'Parámetros inválidos', details: result.error }, { status: 400 });
+    }
 
     const { investorId, amountUsd } = result.data;
 
-    // Mock bypass: if Supabase env vars are missing, return simulated success
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({
         success: true,
-        message: `Deposited ${amountUsd} USD (mock)`,
+        message: `Depósito de $${amountUsd} USD procesado (modo offline)`,
+        newBalance: amountUsd,
       });
     }
 
@@ -31,37 +33,60 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
+    // maybeSingle — no crashea si el registro no existe
     const { data: existing } = await supabase
       .from('balances')
       .select('*')
       .eq('investor_id', investorId)
-      .single();
+      .maybeSingle();
+
+    let newBalance: number;
 
     if (!existing) {
-      await supabase.from('balances').insert({
+      // Crear balance si no existe
+      newBalance = amountUsd;
+      const { error: insertError } = await supabase.from('balances').insert({
         investor_id: investorId,
-        available_usd: amountUsd.toString()
+        available_usd: amountUsd.toString(),
+        locked_usd: '0',
+        available_tokens: '0',
+        locked_tokens: '0',
+        reserved_tokens: '0',
       });
+      if (insertError) {
+        return NextResponse.json({ error: 'Error al crear balance: ' + insertError.message }, { status: 500 });
+      }
     } else {
-      await supabase.from('balances').update({
-        available_usd: (Number(existing.available_usd || 0) + amountUsd).toString()
-      }).eq('investor_id', investorId);
+      newBalance = Number(existing.available_usd || 0) + amountUsd;
+      const { error: updateError } = await supabase
+        .from('balances')
+        .update({ available_usd: newBalance.toString() })
+        .eq('investor_id', investorId);
+      if (updateError) {
+        return NextResponse.json({ error: 'Error al actualizar balance: ' + updateError.message }, { status: 500 });
+      }
     }
 
     await supabase.from('audit_logs').insert({
       action: 'DEMO_SIMULATED_DEPOSIT',
-      details: `Simulated deposit of ${amountUsd} USD for investor ${investorId}`,
+      details: `Depósito simulado de $${amountUsd} USD para inversor ${investorId}. Nuevo saldo: $${newBalance} USD.`,
     });
 
+    // integration_events — ignorar si la tabla no existe
     await supabase.from('integration_events').insert({
-      provider: 'DEMO_SYSTEM',
-      event_type: 'SIMULATED_DEPOSIT',
-      payload: { investorId, amountUsd },
+      provider: 'DEMO_PAYMENT_GATEWAY',
+      event_type: 'SIMULATED_DEPOSIT_COMPLETED',
+      payload: { investorId, amountUsd, newBalance },
       simulated: true,
-    });
+    }).then(() => {}).catch(() => {});
 
-    return NextResponse.json({ success: true, message: `Deposited ${amountUsd} USD` });
+    return NextResponse.json({
+      success: true,
+      message: `Depósito de $${amountUsd} USD acreditado exitosamente.`,
+      newBalance,
+    });
   } catch (error) {
+    console.error('Simulated deposit error:', error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
