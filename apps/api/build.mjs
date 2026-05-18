@@ -10,7 +10,7 @@ await build({
   platform: 'node',
   target: 'node20',
   format: 'esm',
-  outfile: resolve(__dirname, 'api/index.mjs'),
+  outfile: resolve(__dirname, 'index.mjs'),
   external: [
     'node:http', 'node:https', 'node:net', 'node:tls', 'node:fs', 'node:path',
     'node:crypto', 'node:stream', 'node:buffer', 'node:url', 'node:util',
@@ -20,4 +20,4 @@ await build({
   logLevel: 'info',
 })
 
-console.log('✅ Build OK -> api/index.mjs')
+console.log('✅ Build OK -> index.mjs')
