@@ -1,132 +1,100 @@
+export const dynamic = 'force-dynamic';
+
 import { RouteBreadcrumbs } from "@/components/mission/RouteBreadcrumbs";
-import { ErrorState, LoadingState } from "@/components/mission/StateComponents";
+import { LoadingState, ErrorState } from "@/components/mission/StateComponents";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
-import { 
-  AdminMissionOverview, 
-  TreasuryMetricsPanel, 
-  AdminUsersDataGrid, 
-  AuditLogTimeline, 
-  IntegrationEventsPanel 
-} from "@/components/product";
-import { AdminDashboardView, UserAdminView } from "@/types/product";
 import { Suspense } from "react";
-import { NextStepCard } from "@/components/product/NextStepCard";
-import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
-import { adminJourney } from "@/lib/navigation/userJourneys";
+import { createClient } from '@supabase/supabase-js';
+import { AdminOverviewClient } from "@/components/product/AdminMasterPanel";
 
-async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: UserAdminView[] } | null> {
+const TREASURY_ID = 'PACHANOVA_TREASURY';
+
+async function fetchAdminOverviewData() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    
-    // Simulate fetching various data.
-    // En el futuro esto llamará a /api/admin/users, /api/treasury, etc.
-    const view: AdminDashboardView = {
-      overview: {
-        totalUsers: 1,
-        activeUsers: 1,
-        totalTokensDistributed: "0",
-        systemHealth: "GO"
-      },
-      treasury: {
-        totalUsdRaised: "$0.00",
-        totalTokensIssued: "0",
-        totalTokensAvailable: "500,000",
-        fideicomisoStatus: "PENDING"
-      },
-      recentAuditLogs: [
-        {
-          id: "log-1",
-          action: "System Initialization",
-          details: "Demo Sandbox started and ready.",
-          timestamp: new Date().toISOString(),
-          actor: "System"
-        }
-      ],
-      recentIntegrationEvents: []
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return {
+        totalUsers: 0,
+        kycPending: 0,
+        kycApproved: 0,
+        totalUsdRaised: '0',
+        treasuryAvailable: '500000',
+        treasurySold: '0',
+        recentAuditLogs: [],
+        users: [],
+      };
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const [investorsRes, treasuryRes, auditRes, balancesRes] = await Promise.all([
+      supabase.from('investors').select('id, first_name, last_name, email, kyc_status, is_verified, created_at'),
+      supabase.from('balances').select('available_tokens, available_usd').eq('investor_id', TREASURY_ID).maybeSingle(),
+      supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(10),
+      supabase.from('balances').select('investor_id, available_usd, available_tokens').neq('investor_id', TREASURY_ID),
+    ]);
+
+    const investors = investorsRes.data || [];
+    const treasury = treasuryRes.data;
+    const auditLogs = auditRes.data || [];
+    const allBalances = balancesRes.data || [];
+
+    const balanceMap = Object.fromEntries(allBalances.map(b => [b.investor_id, b]));
+
+    const users = investors.map(inv => ({
+      id: inv.id,
+      fullName: `${inv.first_name} ${inv.last_name}`,
+      email: inv.email,
+      kycStatus: inv.kyc_status as 'pending' | 'approved' | 'rejected',
+      isVerified: inv.is_verified,
+      createdAt: inv.created_at,
+      availableUsd: balanceMap[inv.id]?.available_usd || '0',
+      availableTokens: balanceMap[inv.id]?.available_tokens || '0',
+    }));
+
+    const totalUsdRaised = allBalances.reduce((acc, b) => acc + Number(b.available_usd || 0), 0);
+    const treasurySold = 500000 - Number(treasury?.available_tokens || 500000);
+
+    return {
+      totalUsers: investors.length,
+      kycPending: investors.filter(i => i.kyc_status === 'pending').length,
+      kycApproved: investors.filter(i => i.kyc_status === 'approved').length,
+      totalUsdRaised: totalUsdRaised.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+      treasuryAvailable: (Number(treasury?.available_tokens || 500000)).toLocaleString(),
+      treasurySold: treasurySold.toLocaleString(),
+      recentAuditLogs: auditLogs,
+      users,
     };
-
-    const users: UserAdminView[] = [
-      {
-        id: "demo-investor-123",
-        fullName: "Inversor Demo",
-        email: "investor@pachanova.local",
-        kycStatus: "pending",
-        isVerified: false,
-        role: "INVESTOR",
-        status: "ACTIVE",
-        balance: {
-          investorId: "demo-investor-123",
-          availableTokens: "0",
-          lockedTokens: "0",
-          availableUsd: "0",
-          lockedUsd: "0",
-          lastUpdated: new Date().toISOString()
-        }
-      }
-    ];
-
-    return { view, users };
   } catch (error) {
-    console.error("Error fetching admin view model:", error);
+    console.error('fetchAdminOverviewData error:', error);
     return null;
   }
 }
 
-async function AdminDashboardContent() {
-  const data = await fetchAdminData();
-
-  if (!data) {
-    return <ErrorState title="Error de carga" message="No se pudo cargar la consola de administración." />;
-  }
-
-  return (
-    <div className="space-y-8 pb-24">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-        <RouteBreadcrumbs items={[
-          { label: "Dashboard" },
-          { label: "Consola Admin" }
-        ]} />
-        <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="Usuarios y KYC" href="/dashboard/admin/users" variant="ghost" />
-          <SafeActionButton label="Órdenes Token" href="/dashboard/admin/token-orders" variant="ghost" />
-          <SafeActionButton label="Auditoría" href="/dashboard/admin/audit" variant="ghost" />
-          <SafeActionButton label="Integraciones" href="/dashboard/admin/integrations" variant="ghost" />
-        </div>
-      </div>
-
-      <JourneyProgressRail journey={adminJourney} currentStepId="a1" />
-
-      <NextStepCard 
-        dataTestId="next-step-card-admin"
-        contextLabel="Consola Admin"
-        title="Control operativo"
-        explanation="Inversores activos son cuentas con al menos 1 token y KYC aprobado. Los tokens emitidos no pueden aumentarse sin aprobación del fideicomiso. Las alertas de auditoría muestran discrepancias entre balance de tokens en BD y registros del fideicomiso."
-        nextStep="Revisá el módulo 'Usuarios y KYC' para interactuar con la revisión de inversores."
-        primaryAction={{ label: "Ir a Usuarios y KYC", href: "/dashboard/admin/users", intent: "navigate" }}
-        secondaryAction={{ label: "Ver Auditoría", href: "/dashboard/admin/audit", intent: "navigate" }}
-        status="GO"
-      />
-      <AdminMissionOverview view={data.view} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <TreasuryMetricsPanel view={data.view} />
-          <AdminUsersDataGrid users={data.users} />
-        </div>
-        
-        <div className="space-y-8">
-          <AuditLogTimeline view={data.view} />
-          <IntegrationEventsPanel view={data.view} />
-        </div>
-      </div>
-    </div>
-  );
+async function AdminContent() {
+  const data = await fetchAdminOverviewData();
+  if (!data) return <ErrorState title="Error" message="No se pudo cargar el panel de control" />;
+  return <AdminOverviewClient data={data} />;
 }
 
 export default function AdminDashboardPage() {
   return (
-    <Suspense fallback={<LoadingState message="Cargando panel de control de administrador..." />}>
-      <AdminDashboardContent />
-    </Suspense>
+    <div className="space-y-6 pb-24">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <RouteBreadcrumbs items={[{ label: "Dashboard" }, { label: "Panel Maestro" }]} />
+        <div className="flex flex-wrap gap-2">
+          <SafeActionButton label="KYC Review" href="/dashboard/admin/kyc-review" variant="primary" />
+          <SafeActionButton label="Saldos" href="/dashboard/admin/balances" variant="ghost" />
+          <SafeActionButton label="Tesorería" href="/dashboard/admin/treasury" variant="ghost" />
+          <SafeActionButton label="Avisos" href="/dashboard/admin/announcements" variant="ghost" />
+          <SafeActionButton label="Auditoría" href="/dashboard/admin/audit" variant="ghost" />
+        </div>
+      </div>
+      <Suspense fallback={<LoadingState message="Cargando panel maestro..." />}>
+        <AdminContent />
+      </Suspense>
+    </div>
   );
 }
