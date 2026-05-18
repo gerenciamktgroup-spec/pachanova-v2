@@ -11,21 +11,16 @@ import { KycSimulationActions } from "./ControlRoomActions";
 export default async function ControlRoomPage() {
   let targetInvestorId = "";
 
-  // Demo mode: bypass Supabase auth, use demo investor ID
-  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
-    targetInvestorId = "demo-investor-001";
-  } else {
-    const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-      const { data: inv } = await supabase
-        .from("investors")
-        .select("id")
-        .eq("supabase_auth_id", user.id)
-        .single();
-      if (inv) targetInvestorId = inv.id;
-    }
+  if (user) {
+    const { data: inv } = await supabase
+      .from("investors")
+      .select("id")
+      .eq("supabase_auth_id", user.id)
+      .single();
+    if (inv) targetInvestorId = inv.id;
   }
 
   return (
