@@ -20,8 +20,8 @@ async function fetchAdminOverview() {
     sb.from('investors').select('id', { count: 'exact', head: true }),
     sb.from('kyc_documents').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     sb.from('kyc_documents').select('id', { count: 'exact', head: true }).eq('status', 'approved'),
-    sb.from('balances').select('available_usd').neq('investor_id', 'PACHANOVA_TREASURY'),
-    sb.from('balances').select('available_tokens').eq('investor_id', 'PACHANOVA_TREASURY').maybeSingle(),
+    sb.from('balances').select('available_usd').neq('investor_id', '00000000-0000-0000-0000-000000000000'),
+    sb.from('balances').select('available_tokens').eq('investor_id', '00000000-0000-0000-0000-000000000000').maybeSingle(),
     sb.from('audit_logs').select('action,details,created_at').order('created_at', { ascending: false }).limit(8),
   ]);
 

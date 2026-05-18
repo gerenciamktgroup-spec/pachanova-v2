@@ -11,7 +11,7 @@ async function fetchTreasuryData() {
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   const [treasury, orders] = await Promise.all([
-    sb.from('balances').select('available_tokens').eq('investor_id', 'PACHANOVA_TREASURY').maybeSingle(),
+    sb.from('balances').select('available_tokens').eq('investor_id', '00000000-0000-0000-0000-000000000000').maybeSingle(),
     sb.from('token_orders').select('quantity,unit_price,total_amount,created_at,investor_id').order('created_at', { ascending: false }).limit(20),
   ]);
 

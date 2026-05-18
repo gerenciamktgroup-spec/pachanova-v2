@@ -22,7 +22,7 @@ async function fetchAllBalances() {
       locked_tokens,
       investors(id, first_name, last_name, email, role)
     `)
-    .neq('investor_id', 'PACHANOVA_TREASURY')
+    .neq('investor_id', '00000000-0000-0000-0000-000000000000')
     .order('available_tokens', { ascending: false });
 
   return data || [];
