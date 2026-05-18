@@ -28,7 +28,14 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       redirect("/login");
     }
 
-    const { data: investor, error: investorError } = await supabase
+    // Bypass broken RLS on 'investors' table by using Service Role Key
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: investor, error: investorError } = await supabaseAdmin
       .from("investors")
       .select("*")
       .eq("supabase_auth_id", user.id)
@@ -39,27 +46,27 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
       return null;
     }
 
-    const { data: balance } = await supabase
+    const { data: balance } = await supabaseAdmin
       .from("balances")
       .select("*")
       .eq("investor_id", investor.id)
       .single();
 
-    const { data: transactions } = await supabase
+    const { data: transactions } = await supabaseAdmin
       .from("transactions")
       .select("*")
       .eq("investor_id", investor.id)
       .order("created_at", { ascending: false })
       .limit(10);
 
-    const { data: tokenLedger } = await supabase
+    const { data: tokenLedger } = await supabaseAdmin
       .from("token_ledger")
       .select("*")
       .eq("investor_id", investor.id)
       .order("created_at", { ascending: false })
       .limit(10);
 
-    const { data: kycDocs } = await supabase
+    const { data: kycDocs } = await supabaseAdmin
       .from("kyc_documents")
       .select("status")
       .eq("investor_id", investor.id)

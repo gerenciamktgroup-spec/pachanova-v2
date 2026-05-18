@@ -59,10 +59,12 @@ export async function POST(req: Request) {
     const { data: userList } = await supabaseAdmin.auth.admin.listUsers();
     const existingUser = userList?.users?.find((u: { email?: string }) => u.email === email);
 
+    let userId = existingUser?.id;
+
     if (!existingUser) {
       // Crear usuario demo si no existe
       const nameParts = label.split(' —')[0].split(' ');
-      await supabaseAdmin.auth.admin.createUser({
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
@@ -72,6 +74,43 @@ export async function POST(req: Request) {
           last_name: nameParts[1] || 'Demo',
         },
       });
+      if (createError) throw createError;
+      userId = newUser.user?.id;
+    }
+
+    if (userId) {
+      // Garantizar que exista el registro en public.investors
+      const { data: inv } = await supabaseAdmin.from('investors').select('id').eq('supabase_auth_id', userId).single();
+      let investorId = inv?.id;
+      
+      if (!inv) {
+        const nameParts = label.split(' —')[0].split(' ');
+        const { data: newInv, error: invError } = await supabaseAdmin.from('investors').insert({
+          supabase_auth_id: userId,
+          email,
+          first_name: nameParts[0],
+          last_name: nameParts[1] || 'Demo',
+          kyc_status: persona === 'diego' ? 'pending' : 'approved',
+          is_verified: persona !== 'diego'
+        }).select('id').single();
+        
+        if (invError) throw invError;
+        investorId = newInv?.id;
+      }
+
+      if (investorId) {
+        // Garantizar que tenga registro en balances
+        const { data: bal } = await supabaseAdmin.from('balances').select('id').eq('investor_id', investorId).single();
+        if (!bal) {
+          await supabaseAdmin.from('balances').insert({
+            investor_id: investorId,
+            available_tokens: persona === 'ana' ? 500 : (persona === 'roberto' ? 2000 : 0),
+            available_usd: persona === 'diego' ? 15000 : 5000,
+            locked_tokens: 0,
+            locked_usd: 0
+          });
+        }
+      }
     }
 
     // Generar magic link de acceso instantáneo
