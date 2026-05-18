@@ -22,7 +22,6 @@ export async function POST(req: Request) {
     const { investorId, propertyId, quantity, unitPrice } = result.data;
     const totalAmount = quantity * unitPrice;
 
-    // Mock bypass: if Supabase env vars are missing, return simulated success
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json({
         success: true,
@@ -37,16 +36,56 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
+    // Buscar balance del inversor (maybeSingle para no crashear si no existe)
     const { data: currentBalance } = await supabase
       .from('balances')
       .select('*')
       .eq('investor_id', investorId)
-      .single();
+      .maybeSingle();
 
-    if (!currentBalance || Number(currentBalance.available_usd || 0) < totalAmount) {
-      return NextResponse.json({ error: 'Fondos insuficientes' }, { status: 400 });
+    // Si no existe el balance, crearlo con 0
+    if (!currentBalance) {
+      await supabase.from('balances').insert({
+        investor_id: investorId,
+        available_usd: '0',
+        locked_usd: '0',
+        available_tokens: '0',
+        locked_tokens: '0',
+        reserved_tokens: '0',
+      });
+      return NextResponse.json({
+        error: 'Fondos insuficientes. Realizá un depósito primero.',
+        available: 0,
+        required: totalAmount,
+      }, { status: 400 });
     }
 
+    const availableUsd = Number(currentBalance.available_usd || 0);
+    if (availableUsd < totalAmount) {
+      return NextResponse.json({
+        error: 'Fondos insuficientes',
+        available: availableUsd,
+        required: totalAmount,
+      }, { status: 400 });
+    }
+
+    // Verificar stock en la bóveda maestra
+    const { data: treasury } = await supabase
+      .from('balances')
+      .select('available_tokens')
+      .eq('investor_id', 'PACHANOVA_TREASURY')
+      .maybeSingle();
+
+    const treasuryStock = Number(treasury?.available_tokens || 0);
+    if (treasuryStock < quantity) {
+      return NextResponse.json({
+        error: 'Stock insuficiente en bóveda. Contactar a Pachanova.',
+        available: treasuryStock,
+        required: quantity,
+      }, { status: 400 });
+    }
+
+    // Registrar la orden
     const { data: newOrderData } = await supabase.from('token_orders').insert({
       investor_id: investorId,
       property_id: propertyId,
@@ -59,33 +98,44 @@ export async function POST(req: Request) {
       metadata: { source: 'genesis_wizard' },
     }).select().single();
 
+    // Actualizar balance del inversor
+    const newTokenBalance = (Number(currentBalance.available_tokens || 0) + quantity).toString();
+    const newUsdBalance = (availableUsd - totalAmount).toString();
+
     await supabase.from('balances').update({
-      available_tokens: (Number(currentBalance.available_tokens || 0) + quantity).toString(),
-      available_usd: (Number(currentBalance.available_usd || 0) - totalAmount).toString(),
+      available_tokens: newTokenBalance,
+      available_usd: newUsdBalance,
     }).eq('investor_id', investorId);
 
-    const { data: updatedBalance } = await supabase
-      .from('balances')
-      .select('available_tokens')
-      .eq('investor_id', investorId)
-      .single();
+    // Descontar de la bóveda maestra
+    await supabase.from('balances').update({
+      available_tokens: (treasuryStock - quantity).toString(),
+    }).eq('investor_id', 'PACHANOVA_TREASURY');
 
-    const randomHash = crypto.randomUUID().replace(/-/g, '');
+    // Registrar en ledger con hash simulado
+    const txHash = 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase();
     await supabase.from('token_ledger').insert({
       investor_id: investorId,
       operation: 'GENESIS_PURCHASE',
       amount: quantity.toString(),
-      tx_hash: 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase(),
-      previous_hash: 'DEMO_PREV_' + randomHash,
+      tx_hash: txHash,
+      previous_hash: 'DEMO_PREV_' + crypto.randomUUID().replace(/-/g, ''),
       current_hash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
     });
 
+    // Registrar en audit_logs
     await supabase.from('audit_logs').insert({
       action: 'GENESIS_ORDER_COMPLETED',
-      details: `Investor ${investorId} purchased ${quantity} PACHA tokens at $${unitPrice}`,
+      details: `Investor ${investorId} purchased ${quantity} PACHA tokens at $${unitPrice} each. Total: $${totalAmount}. TX: ${txHash}`,
     });
 
-    return NextResponse.json({ success: true, orderId: newOrderData?.id, newBalance: updatedBalance?.available_tokens || '0' });
+    return NextResponse.json({
+      success: true,
+      orderId: newOrderData?.id,
+      newBalance: newTokenBalance,
+      txHash,
+      message: `Compraste ${quantity} tokens PACHA exitosamente.`,
+    });
   } catch (error) {
     console.error('Genesis order error:', error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
