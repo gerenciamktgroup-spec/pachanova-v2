@@ -22,7 +22,7 @@ async function fetchKycData() {
       status,
       uploaded_at,
       created_at,
-      investors!inner(id, first_name, last_name, email)
+      investors:investors!kyc_documents_investor_id_fkey!inner(id, first_name, last_name, email)
     `)
     .order('created_at', { ascending: false });
 
