@@ -14,7 +14,6 @@
     "postgres": "^3.4.9"
   },
   "scripts": {
-    "build": "echo 'No build needed - consumed as source'",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit push",
     "demo:migrate": "drizzle-kit push",
