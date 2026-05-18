@@ -1,5 +1,5 @@
 // Entrypoint para Vercel - convierte IncomingMessage a Web Request
-import app from './index'
+import app from './index.js'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {

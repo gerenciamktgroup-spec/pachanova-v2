@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { investors } from './routes/investors'
-import { properties } from './routes/properties'
-import { demoRouter } from './routes/demo'
+import { investors } from './routes/investors.js'
+import { properties } from './routes/properties.js'
+import { demoRouter } from './routes/demo.js'
 
 const app = new Hono()
 
