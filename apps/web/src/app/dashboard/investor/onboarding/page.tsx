@@ -2,31 +2,25 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import { CheckCircle2 } from 'lucide-react'
-
 import { getInvestorId } from '@/app/signup/actions'
 
-// Utilizar un client componente para el wizard y usar fetch para comunicarse con las APIs
 export default function OnboardingWizard() {
   const [step, setStep] = useState(1)
   const [investorId, setInvestorId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [depositAmount, setDepositAmount] = useState(10000)
+  const [kycStatus, setKycStatus] = useState<'pending' | 'approved'>('pending')
   const router = useRouter()
 
   useEffect(() => {
     async function loadUser() {
-      // Demo mode: bypass Supabase, use mock investor ID
-      if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
-        setInvestorId('demo-investor-001');
-        setLoading(false);
-        return;
-      }
       const id = await getInvestorId()
-      if (id) {
-        setInvestorId(id)
+      if (!id) {
+        router.push('/signup')
+        return
       }
+      setInvestorId(id)
       setLoading(false)
     }
     loadUser()
@@ -36,12 +30,18 @@ export default function OnboardingWizard() {
     if (!investorId) return
     setLoading(true)
     try {
-      await fetch('/api/demo/actions/approve-kyc', {
+      const res = await fetch('/api/demo/actions/approve-kyc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ investorId })
       })
-      setStep(2)
+      if (res.ok) {
+        setKycStatus('approved')
+        setStep(2)
+      } else {
+        const err = await res.json()
+        console.error('KYC approve error:', err)
+      }
     } catch (e) {
       console.error(e)
     } finally {
@@ -53,12 +53,17 @@ export default function OnboardingWizard() {
     if (!investorId) return
     setLoading(true)
     try {
-      await fetch('/api/demo/actions/simulated-deposit', {
+      const res = await fetch('/api/demo/actions/simulated-deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ investorId, amountUsd: depositAmount })
       })
-      setStep(3)
+      if (res.ok) {
+        setStep(3)
+      } else {
+        const err = await res.json()
+        console.error('Deposit error:', err)
+      }
     } catch (e) {
       console.error(e)
     } finally {
@@ -66,74 +71,148 @@ export default function OnboardingWizard() {
     }
   }
 
-  if (loading && step === 1 && !investorId) {
-    return <div className="flex justify-center items-center h-screen"><p className="text-pn-text">Cargando...</p></div>
+  if (loading && !investorId) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-pn-text animate-pulse">Cargando tu cuenta...</p>
+      </div>
+    )
   }
 
   return (
     <div className="max-w-2xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+      {/* Progress bar */}
+      <div className="flex items-center justify-between mb-10">
+        {[1, 2, 3].map((s) => (
+          <React.Fragment key={s}>
+            <div className={`flex flex-col items-center gap-1`}>
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all ${
+                step > s
+                  ? 'bg-pn-gold border-pn-gold text-pn-bg'
+                  : step === s
+                  ? 'border-pn-gold text-pn-gold bg-transparent'
+                  : 'border-pn-border text-pn-text-muted bg-transparent'
+              }`}>
+                {step > s ? '✓' : s}
+              </div>
+              <span className={`text-xs ${ step >= s ? 'text-pn-text' : 'text-pn-text-muted' }`}>
+                {s === 1 ? 'Identidad' : s === 2 ? 'Fondos' : 'Listo'}
+              </span>
+            </div>
+            {s < 3 && (
+              <div className={`flex-1 h-0.5 mx-2 transition-all ${ step > s ? 'bg-pn-gold' : 'bg-pn-border' }`} />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
       <div className="bg-pn-surface-strong border border-pn-border rounded-xl p-8 pn-glow-soft">
+
+        {/* STEP 1: KYC */}
         {step === 1 && (
           <div className="text-center space-y-6">
-            <h2 className="text-2xl font-light text-pn-gold">Paso 1: Verificación de Identidad</h2>
-            <p className="text-pn-text-muted">Tu cuenta fue creada. KYC status: <span className="font-bold text-yellow-500">PENDING</span>.</p>
-            <p className="text-sm text-pn-text-soft">En el entorno demo, tu KYC será aprobado automáticamente.</p>
-            <button 
+            <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto">
+              <span className="text-3xl">📋</span>
+            </div>
+            <h2 className="text-2xl font-light text-pn-gold">Verificación de Identidad</h2>
+            <p className="text-pn-text-muted">
+              Tu cuenta fue creada exitosamente. Tu documentación KYC está siendo revisada.
+            </p>
+            <div className="bg-pn-bg rounded-lg p-4 border border-yellow-500/30 text-sm text-yellow-400">
+              ⏳ Estado actual: <strong>PENDIENTE DE REVISIÓN</strong>
+            </div>
+            <p className="text-xs text-pn-text-soft">
+              En el entorno demo, el administrador puede aprobar tu KYC de inmediato.
+              Hacé click en el botón para simular la aprobación.
+            </p>
+            <button
               onClick={handleApproveKyc}
               disabled={loading}
-              className="bg-pn-gold hover:bg-pn-gold/90 text-pn-bg font-medium px-6 py-3 rounded-md transition-colors"
+              className="bg-pn-gold hover:bg-pn-gold/90 text-pn-bg font-medium px-8 py-3 rounded-md transition-colors disabled:opacity-50"
             >
-              {loading ? 'Aprobando...' : 'Aprobar KYC Demo'}
+              {loading ? 'Procesando...' : '✅ Aprobar KYC (Demo)'}
             </button>
           </div>
         )}
 
+        {/* STEP 2: Depósito simulado */}
         {step === 2 && (
           <div className="text-center space-y-6">
-            <h2 className="text-2xl font-light text-pn-gold">Paso 2: Fondos Simulados</h2>
-            <p className="text-pn-text-muted">Deposita fondos simulados para comenzar a invertir.</p>
-            
-            <div className="flex flex-col items-center gap-2 max-w-xs mx-auto">
-              <label htmlFor="amount" className="text-sm text-pn-text-soft self-start">Monto (USD):</label>
-              <input 
-                id="amount"
-                type="number" 
+            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
+              <span className="text-3xl">💵</span>
+            </div>
+            <h2 className="text-2xl font-light text-pn-gold">Fondos Simulados</h2>
+            <div className="bg-pn-bg rounded-lg p-3 border border-green-500/30 text-sm text-green-400 mb-2">
+              ✅ KYC aprobado — ya podés invertir
+            </div>
+            <p className="text-pn-text-muted">
+              Depositá fondos simulados para comenzar a comprar tokens PACHA.
+            </p>
+
+            <div className="flex flex-col items-center gap-3 max-w-xs mx-auto">
+              <label className="text-sm text-pn-text-soft self-start">Monto a depositar (USD):</label>
+              <input
+                type="range"
+                min={1000}
+                max={100000}
+                step={1000}
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(Number(e.target.value))}
-                className="w-full bg-pn-bg border border-pn-border text-pn-text p-3 rounded focus:outline-none focus:border-pn-gold"
+                className="w-full accent-pn-gold"
+              />
+              <div className="text-3xl font-light text-pn-gold">
+                ${depositAmount.toLocaleString()} USD
+              </div>
+              <input
+                type="number"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(Number(e.target.value))}
+                className="w-full bg-pn-bg border border-pn-border text-pn-text p-2 rounded text-center focus:outline-none focus:border-pn-gold text-sm"
               />
             </div>
 
-            <button 
+            <button
               onClick={handleDeposit}
               disabled={loading}
-              className="bg-pn-gold hover:bg-pn-gold/90 text-pn-bg font-medium px-6 py-3 rounded-md transition-colors"
+              className="bg-pn-gold hover:bg-pn-gold/90 text-pn-bg font-medium px-8 py-3 rounded-md transition-colors disabled:opacity-50"
             >
-              {loading ? 'Procesando...' : 'Depositar'}
+              {loading ? 'Procesando pago...' : '💳 Simular Depósito'}
             </button>
           </div>
         )}
 
+        {/* STEP 3: Listo */}
         {step === 3 && (
           <div className="text-center space-y-6">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
-            <h2 className="text-2xl font-light text-pn-text">¡Estás listo para invertir!</h2>
-            <div className="bg-pn-bg p-4 rounded border border-pn-border text-left inline-block w-full max-w-sm">
-              <p className="flex justify-between border-b border-pn-border pb-2 mb-2">
-                <span className="text-pn-text-soft">KYC:</span>
-                <span className="text-green-500 font-bold">APPROVED ✅</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="text-pn-text-soft">Balance (USD):</span>
+            <CheckCircle2 className="w-20 h-20 text-green-500 mx-auto" />
+            <h2 className="text-2xl font-light text-pn-text">¡Todo listo para invertir!</h2>
+            <p className="text-pn-text-muted text-sm">Tu cuenta está configurada y con fondos disponibles.</p>
+            <div className="bg-pn-bg p-5 rounded-lg border border-pn-border text-left space-y-3 max-w-sm mx-auto">
+              <div className="flex justify-between">
+                <span className="text-pn-text-soft text-sm">Estado KYC</span>
+                <span className="text-green-500 font-bold text-sm">APROBADO ✅</span>
+              </div>
+              <div className="border-t border-pn-border pt-3 flex justify-between">
+                <span className="text-pn-text-soft text-sm">Saldo USD</span>
                 <span className="text-pn-gold font-bold">${depositAmount.toLocaleString()}</span>
-              </p>
+              </div>
+              <div className="border-t border-pn-border pt-3 flex justify-between">
+                <span className="text-pn-text-soft text-sm">Tokens PACHA</span>
+                <span className="text-pn-text font-bold">0 (comprá en Genesis)</span>
+              </div>
             </div>
-            <div>
-              <button 
-                onClick={() => router.push('/dashboard/investor')}
-                className="bg-pn-surface hover:bg-pn-surface/80 border border-pn-border text-pn-text font-medium px-6 py-3 rounded-md transition-colors w-full max-w-sm mt-4"
+            <div className="flex flex-col gap-3 max-w-sm mx-auto">
+              <button
+                onClick={() => router.push('/dashboard/investor/genesis')}
+                className="bg-pn-gold hover:bg-pn-gold/90 text-pn-bg font-medium px-6 py-3 rounded-md transition-colors w-full"
               >
-                Ir a mi Dashboard
+                🪙 Comprar Tokens Genesis
+              </button>
+              <button
+                onClick={() => router.push('/dashboard/investor')}
+                className="bg-pn-surface hover:bg-pn-surface/80 border border-pn-border text-pn-text font-medium px-6 py-3 rounded-md transition-colors w-full"
+              >
+                Ver mi Dashboard
               </button>
             </div>
           </div>
