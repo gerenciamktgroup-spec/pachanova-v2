@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 await build({
-  entryPoints: [resolve(__dirname, 'src/server.ts')],
+  entryPoints: [resolve(__dirname, 'core/server.ts')],
   bundle: true,
   platform: 'node',
   target: 'node20',

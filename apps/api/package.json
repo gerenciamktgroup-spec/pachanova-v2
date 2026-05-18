@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "echo 'No build step needed — @vercel/node compiles at deploy time'"
+    "dev": "tsx watch core/server.ts",
+    "build": "node build.mjs"
   },
   "dependencies": {
     "@pachanova/database": "workspace:*",
