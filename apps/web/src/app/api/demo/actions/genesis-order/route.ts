@@ -114,10 +114,22 @@ export async function POST(req: Request) {
 
     // Registrar en ledger con hash simulado
     const txHash = 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase();
+    
+    // Ledger entry for buyer
     await supabase.from('token_ledger').insert({
       investor_id: investorId,
       operation: 'GENESIS_PURCHASE',
       amount: quantity.toString(),
+      tx_hash: txHash,
+      previous_hash: 'DEMO_PREV_' + crypto.randomUUID().replace(/-/g, ''),
+      current_hash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
+    });
+
+    // Ledger entry for Treasury
+    await supabase.from('token_ledger').insert({
+      investor_id: '00000000-0000-0000-0000-000000000000',
+      operation: 'TRANSFER',
+      amount: '-' + quantity.toString(),
       tx_hash: txHash,
       previous_hash: 'DEMO_PREV_' + crypto.randomUUID().replace(/-/g, ''),
       current_hash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
