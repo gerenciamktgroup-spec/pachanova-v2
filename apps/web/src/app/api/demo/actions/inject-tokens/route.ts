@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 const bodySchema = z.object({
   investorId: z.string().uuid(),
-  status: z.enum(['approved', 'pending', 'rejected']),
+  amount: z.number().positive(),
 });
 
 export async function POST(req: Request) {
@@ -16,10 +16,10 @@ export async function POST(req: Request) {
     const result = bodySchema.safeParse(body);
     if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
 
-    const { investorId, status } = result.data;
+    const { investorId, amount } = result.data;
 
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return NextResponse.json({ success: true, investorId, status, message: 'KYC status updated (mock)' });
+      return NextResponse.json({ success: true, message: 'Tokens inyectados (mock)' });
     }
 
     const supabaseAdmin = createClient(
@@ -27,24 +27,27 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // Update investor status
-    await supabaseAdmin
-      .from('investors')
-      .update({ kyc_status: status, is_verified: status === 'approved' })
-      .eq('id', investorId);
+    // Get current balance
+    const { data: balance } = await supabaseAdmin
+      .from('balances')
+      .select('available_tokens')
+      .eq('investor_id', investorId)
+      .single();
 
-    // Update kyc_documents status
+    const newTokens = (Number(balance?.available_tokens || 0) + amount).toString();
+
+    // Update balance
     await supabaseAdmin
-      .from('kyc_documents')
-      .update({ status: status })
+      .from('balances')
+      .update({ available_tokens: newTokens })
       .eq('investor_id', investorId);
 
     await supabaseAdmin.from('audit_logs').insert({
-      action: 'DEMO_KYC_STATUS_UPDATED',
-      details: `Investor ${investorId} KYC status set to ${status}`,
+      action: 'DEMO_TOKENS_INJECTED',
+      details: `Injected ${amount} PACHA tokens to Investor ${investorId}`,
     });
 
-    return NextResponse.json({ success: true, investorId, status });
+    return NextResponse.json({ success: true, newTokens });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }

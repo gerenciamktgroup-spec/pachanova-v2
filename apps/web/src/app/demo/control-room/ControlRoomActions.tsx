@@ -35,6 +35,32 @@ export function KycSimulationActions({ targetInvestorId }: { targetInvestorId: s
     }
   };
 
+  const handleTokenInjection = async () => {
+    setKycLoading("tokens");
+    setKycMessage("");
+    try {
+      const res = await fetch("/api/demo/actions/inject-tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          investorId: targetInvestorId,
+          amount: 500,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setKycMessage(`500 PACHA inyectados exitosamente.`);
+        router.refresh();
+      } else {
+        setKycMessage(data.error ?? "Error al inyectar tokens.");
+      }
+    } catch {
+      setKycMessage("Error de red.");
+    } finally {
+      setKycLoading(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong">
@@ -58,6 +84,18 @@ export function KycSimulationActions({ targetInvestorId }: { targetInvestorId: s
           disabled={kycLoading !== null || !targetInvestorId}
         >
           {kycLoading === "pending" ? "..." : "Simular Pending"}
+        </CommandButton>
+      </div>
+
+      <div className="p-4 rounded-lg border border-pn-border bg-pn-surface-strong">
+        <h4 className="text-sm font-medium text-pn-text mb-2">Token Holder (500 PACHA)</h4>
+        <p className="text-xs text-pn-text-soft mb-4">Inyecta 500 tokens directamente al balance de tu cuenta actual para pruebas.</p>
+        <CommandButton
+          variant="outline"
+          onClick={handleTokenInjection}
+          disabled={kycLoading !== null || !targetInvestorId}
+        >
+          {kycLoading === "tokens" ? "..." : "Inyectar 500 PACHA"}
         </CommandButton>
       </div>
 
