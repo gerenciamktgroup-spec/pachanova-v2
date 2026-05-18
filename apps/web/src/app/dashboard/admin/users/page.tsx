@@ -5,34 +5,46 @@ import { SectionHeader } from "@/components/mission/SectionHeader";
 import { MissionCard } from "@/components/mission/MissionCard";
 import { ErrorState } from "@/components/mission/StateComponents";
 import { AdminUsersDataGrid } from "@/components/product/AdminComponents";
-import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
-import { eq } from "drizzle-orm";
+import { createServerClient } from "@/utils/supabase/server";
 import { UserAdminView } from "@/types/product";
 
 export default async function AdminUsersPage() {
   const users: UserAdminView[] = [];
+  
   try {
-    const dbUsers = await db.query.investors.findMany();
-    for (const u of dbUsers) {
-      const balance = await db.query.balances.findFirst({
-        where: eq(schema.balances.investorId, u.id)
-      });
+    const supabase = await createServerClient();
+    
+    // Fetch all users except the treasury
+    const { data: dbUsers, error: usersError } = await supabase
+      .from('investors')
+      .select('*')
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+      
+    if (usersError) throw usersError;
+    
+    const { data: balancesData, error: balancesError } = await supabase
+      .from('balances')
+      .select('*');
+      
+    if (balancesError) throw balancesError;
+    
+    for (const u of (dbUsers || [])) {
+      const balance = (balancesData || []).find(b => b.investor_id === u.id);
       users.push({
         id: u.id,
-        fullName: `${u.firstName} ${u.lastName}`,
+        fullName: `${u.first_name} ${u.last_name}`,
         email: u.email,
-        kycStatus: u.kycStatus as "pending" | "approved" | "rejected",
-        isVerified: u.kycStatus === 'approved',
+        kycStatus: u.kyc_status as "pending" | "approved" | "rejected",
+        isVerified: u.kyc_status === 'approved',
         role: "INVESTOR",
         status: "ACTIVE",
         balance: {
           investorId: u.id,
-          availableTokens: balance?.availableTokens || "0",
-          lockedTokens: balance?.lockedTokens || "0",
-          availableUsd: balance?.availableUsd || "0",
-          lockedUsd: balance?.lockedUsd || "0",
-          lastUpdated: new Date().toISOString()
+          availableTokens: balance?.available_tokens?.toString() || "0",
+          lockedTokens: balance?.locked_tokens?.toString() || "0",
+          availableUsd: balance?.available_usd?.toString() || "0",
+          lockedUsd: balance?.locked_usd?.toString() || "0",
+          lastUpdated: balance?.last_updated_at || new Date().toISOString()
         }
       });
     }
