@@ -56,7 +56,7 @@ async function MarketplaceContent() {
     .from("p2p_orders")
     .select(`
       *,
-      investor:investors!p2p_orders_seller_investor_id_fkey(first_name, last_name),
+      investor:investors(first_name, last_name),
       property:properties(name)
     `)
     .eq("status", "open")
