@@ -12,15 +12,15 @@ const DEMO_PERSONAS: Record<string, { email: string; password: string; label: st
     password: 'Demo2026!',
     label: 'Ana Torres — Inversora · KYC Aprobado',
   },
-  carlos: {
-    email: 'carlos.ruiz@demo.pachanova.io',
+  diego: {
+    email: 'diego.ramirez@demo.pachanova.io',
     password: 'Demo2026!',
-    label: 'Carlos Ruiz — Inversor · KYC Aprobado',
+    label: 'Diego Ramírez — Inversor · KYC Pendiente',
   },
-  maria: {
-    email: 'maria.gomez@demo.pachanova.io',
+  roberto: {
+    email: 'roberto.silva@demo.pachanova.io',
     password: 'Demo2026!',
-    label: 'María Gómez — Inversora · KYC Pendiente',
+    label: 'Roberto Silva — Inversor · KYC Aprobado',
   },
   admin: {
     email: 'admin@pachanova.io',
