@@ -73,7 +73,24 @@ export default function SignupPage() {
         throw new Error(err.error || 'Error al crear la cuenta')
       }
 
-      const { investorId } = await signupRes.json()
+      const signupData = await signupRes.json()
+      const { investorId } = signupData
+
+      // Autenticar en el cliente para establecer la sesión en las cookies
+      const { createClient } = await import('@/utils/supabase/client')
+      const supabase = createClient()
+      
+      // Cerrar sesión previa si existía alguna
+      await supabase.auth.signOut()
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password
+      })
+
+      if (signInError) {
+        throw new Error("Inicio de sesión automático fallido: " + signInError.message)
+      }
 
       // 2. Subir el documento KYC
       const kycFD = new FormData()

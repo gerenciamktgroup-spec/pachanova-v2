@@ -13,7 +13,7 @@ import { validateDemoDatabaseUrl } from "../utils/demoValidation";
 const dbUrl = process.env.DATABASE_URL;
 validateDemoDatabaseUrl(dbUrl);
 
-const client = postgres(dbUrl);
+const client = postgres(dbUrl as string);
 const db = drizzle(client, { schema });
 
 async function seed() {

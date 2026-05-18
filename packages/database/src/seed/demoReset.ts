@@ -24,7 +24,7 @@ async function reset() {
   if (demoUserIds.length > 0) {
     await db.delete(schema.balances).where(inArray(schema.balances.investorId, demoUserIds));
     await db.delete(schema.genesisPurchases).where(inArray(schema.genesisPurchases.investorId, demoUserIds));
-    await db.delete(schema.tokenOrders).where(inArray(schema.tokenOrders.userId, demoUserIds));
+    await db.delete(schema.tokenOrders).where(inArray(schema.tokenOrders.investorId, demoUserIds));
     await db.delete(schema.auditLogs).where(inArray(schema.auditLogs.userId, demoUserIds));
     // Fideicomiso actions by demo users
     await db.delete(schema.fideicomisoSignatures).where(inArray(schema.fideicomisoSignatures.signerId, demoUserIds));
