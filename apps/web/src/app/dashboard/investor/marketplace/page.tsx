@@ -11,59 +11,7 @@ import { redirect } from "next/navigation";
 import { requireRole } from "@/utils/auth/requireRole";
 
 async function MarketplaceContent() {
-  // Demo mode: bypass all Supabase calls and render with mock order book
-  if (process.env.NEXT_PUBLIC_IS_DEMO === 'true') {
-    const mockOrders = [
-      {
-        id: 'order-demo-001',
-        quantity: '200',
-        price_per_token: '10.50',
-        status: 'open',
-        investor: { full_name: 'María González' },
-        property: { name: 'San Bartolo Phase 1' },
-      },
-      {
-        id: 'order-demo-002',
-        quantity: '500',
-        price_per_token: '10.00',
-        status: 'open',
-        investor: { full_name: 'Roberto Díaz' },
-        property: { name: 'San Bartolo Phase 1' },
-      },
-      {
-        id: 'order-demo-003',
-        quantity: '150',
-        price_per_token: '11.00',
-        status: 'open',
-        investor: { full_name: 'Ana Martínez' },
-        property: { name: 'San Bartolo Phase 1' },
-      },
-    ];
 
-    return (
-      <div className="space-y-6">
-        <div>
-          <RouteBreadcrumbs items={[
-            { label: "Dashboard" },
-            { label: "Panel Inversor", href: "/dashboard/investor" },
-            { label: "Mercado Secundario (P2P)" }
-          ]} className="mb-4" />
-          <SectionHeader 
-            title="Mercado Secundario P2P"
-            description="Compra y vende tokens PACHA directamente con otros miembros de la red."
-          />
-        </div>
-        <P2PMarketplaceClient
-          availableOrders={mockOrders}
-          myOrders={[]}
-          balance={{ available_usd: '15000.00', available_tokens: '1500.00' }}
-          kycStatus="approved"
-          currentUserId="demo-investor-001"
-          propertyId="demo-property-001"
-        />
-      </div>
-    );
-  }
 
   await requireRole(["investor"]);
   const authClient = await createServerClient();

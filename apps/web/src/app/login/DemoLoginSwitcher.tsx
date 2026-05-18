@@ -55,6 +55,20 @@ export function DemoLoginSwitcher() {
         return;
       }
 
+      // Log in with Supabase Client
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+      
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: 'Demo2026!'
+      });
+
+      if (signInError) {
+        setError("Error autenticando: " + signInError.message);
+        return;
+      }
+
       router.refresh();
       router.push("/dashboard/investor");
     } catch {

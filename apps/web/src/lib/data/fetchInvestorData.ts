@@ -18,9 +18,7 @@ function toOperationType(value?: string): OperationType {
  * otherwise fetches real investor data from Supabase.
  */
 export async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
-  if (process.env.NEXT_PUBLIC_IS_DEMO === "true") {
-    return getDemoInvestorData();
-  }
+  const isDemo = process.env.NEXT_PUBLIC_IS_DEMO === "true";
 
   try {
     const supabase = await createServerClient();
@@ -97,13 +95,23 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
         status: tx.status || "confirmed"
       })),
       kycVerificationProvider: "SIMULATED",
-      paymentsReadiness: {
+      paymentsReadiness: isDemo ? {
+        provider: "MERCADOPAGO",
+        status: "SIMULATED",
+        lastPing: new Date().toISOString(),
+        message: "Sandbox mode — simulado para demo"
+      } : {
         provider: "MERCADOPAGO",
         status: "PENDING_CREDENTIALS",
         lastPing: null,
         message: "No credentials"
       },
-      contractReadiness: {
+      contractReadiness: isDemo ? {
+        provider: "FOUNDRY",
+        status: "SIMULATED",
+        lastPing: new Date().toISOString(),
+        message: "Smart contract simulado — demo local"
+      } : {
         provider: "FOUNDRY",
         status: "PENDING_FOUNDRY",
         lastPing: null,
