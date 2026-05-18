@@ -33,24 +33,32 @@ export async function POST(req: Request) {
     const provider = new MercadoPagoSandboxProvider(accessToken, secret, allowUnsigned);
     
     if (process.env.DEMO_PROFILE === 'sandbox' && (!headersRecord['x-signature'] || !headersRecord['x-request-id'])) {
-       await db.insert(schema.integrationEvents).values({
-         provider: 'MERCADOPAGO',
-         eventType: 'WEBHOOK_SIGNATURE_INVALID',
-         payload: { headers: headersRecord },
-         simulated: paymentsStatus.simulated
-       });
+       try {
+         await db.insert(schema.integrationEvents).values({
+           provider: 'MERCADOPAGO',
+           eventType: 'WEBHOOK_SIGNATURE_INVALID',
+           payload: { headers: headersRecord },
+           simulated: paymentsStatus.simulated
+         });
+       } catch (e) {
+         console.warn("DB telemetry failed for Missing signature headers", e);
+       }
        return NextResponse.json({ success: false, error: 'Missing signature headers' }, { status: 401 });
     }
 
     const isValid = provider.verifyWebhookSignature(headersRecord, rawBody);
 
     if (!isValid) {
-      await db.insert(schema.integrationEvents).values({
-        provider: 'MERCADOPAGO',
-        eventType: 'WEBHOOK_SIGNATURE_INVALID',
-        payload: { headers: headersRecord, error: 'Signature mismatch' },
-        simulated: paymentsStatus.simulated
-      });
+      try {
+        await db.insert(schema.integrationEvents).values({
+          provider: 'MERCADOPAGO',
+          eventType: 'WEBHOOK_SIGNATURE_INVALID',
+          payload: { headers: headersRecord, error: 'Signature mismatch' },
+          simulated: paymentsStatus.simulated
+        });
+      } catch (e) {
+        console.warn("DB telemetry failed for Invalid Signature", e);
+      }
       return NextResponse.json({ success: false, error: 'Invalid Signature' }, { status: 401 });
     }
 
@@ -131,6 +139,11 @@ export async function POST(req: Request) {
       }
 
       // Buscar order
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(external_reference)) {
+         return NextResponse.json({ success: false, error: 'Unknown orderId' }, { status: 404 });
+      }
+
       const order = await db.query.tokenOrders.findFirst({
          where: eq(schema.tokenOrders.id, external_reference)
       });

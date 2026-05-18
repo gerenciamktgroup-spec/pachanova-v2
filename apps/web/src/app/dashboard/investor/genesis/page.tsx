@@ -6,11 +6,34 @@ import { redirect } from 'next/navigation';
 import { InvestorGenesisClient } from './GenesisClient';
 
 export default async function InvestorGenesisPage() {
-  // Siempre traer el usuario real — nunca hardcodear ID
-  const authClient = await createServerClient();
-  const { data: { user } } = await authClient.auth.getUser();
+  const isDemo = process.env.NEXT_PUBLIC_IS_DEMO === 'true';
 
-  if (!user) redirect('/login');
+  let user = null;
+  try {
+    const authClient = await createServerClient();
+    const res = await authClient.auth.getUser();
+    user = res.data.user;
+  } catch (e) {
+    console.warn("Supabase auth failed on genesis page:", e);
+  }
+
+  if (!user) {
+    if (isDemo) {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      const demoKycOverride = cookieStore.get("demo_kyc_status")?.value;
+      const kycStatus = demoKycOverride || 'approved';
+      return (
+        <InvestorGenesisClient
+          kycStatus={kycStatus}
+          availableUsd={15000}
+          investorId="demo-investor-001"
+          propertyId="00000000-0000-0000-0000-000000000001"
+        />
+      );
+    }
+    redirect('/login');
+  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

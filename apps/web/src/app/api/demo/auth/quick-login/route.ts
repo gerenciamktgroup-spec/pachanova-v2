@@ -73,12 +73,20 @@ export async function POST(req: Request) {
           first_name: nameParts[0],
           last_name: nameParts[1] || 'Demo',
         },
+        app_metadata: {
+          role: persona === 'admin' ? 'admin' : 'investor'
+        }
       });
       if (createError) throw createError;
       userId = newUser.user?.id;
     }
 
     if (userId) {
+      // Garantizar que tenga el rol correcto en app_metadata
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        app_metadata: { role: persona === 'admin' ? 'admin' : 'investor' }
+      });
+
       // Garantizar que exista el registro en public.investors
       const { data: inv } = await supabaseAdmin.from('investors').select('id').eq('supabase_auth_id', userId).single();
       let investorId = inv?.id;

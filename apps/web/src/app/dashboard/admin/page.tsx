@@ -1,44 +1,208 @@
-export const dynamic = 'force-dynamic';
-
 import { Suspense } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { RouteBreadcrumbs } from '@/components/mission/RouteBreadcrumbs';
 import { LoadingState } from '@/components/mission/StateComponents';
+import { NextStepCard } from "@/components/product/NextStepCard";
+import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
+import { adminJourney } from "@/lib/navigation/userJourneys";
+import { AdminUsersDataGrid } from '@/components/product/AdminComponents';
+import { UserAdminView } from '@/types/product';
+import { createServerClient } from '@/utils/supabase/server';
+
+function getMockUsersList(): UserAdminView[] {
+  return [
+    {
+      id: "demo-user-1",
+      fullName: "Lihue Alejandro",
+      email: "lihue@example.com",
+      kycStatus: "approved",
+      isVerified: true,
+      role: "INVESTOR",
+      status: "ACTIVE",
+      balance: {
+        investorId: "demo-user-1",
+        availableTokens: "1500.00",
+        lockedTokens: "0",
+        availableUsd: "5000.00",
+        lockedUsd: "0",
+        lastUpdated: new Date().toISOString()
+      }
+    },
+    {
+      id: "demo-user-2",
+      fullName: "Esteban Nova",
+      email: "esteban@example.com",
+      kycStatus: "pending",
+      isVerified: false,
+      role: "INVESTOR",
+      status: "ACTIVE",
+      balance: {
+        investorId: "demo-user-2",
+        availableTokens: "0",
+        lockedTokens: "0",
+        availableUsd: "12000.00",
+        lockedUsd: "0",
+        lastUpdated: new Date().toISOString()
+      }
+    },
+    {
+      id: "demo-user-3",
+      fullName: "Sofía Fiduciaria",
+      email: "sofia@example.com",
+      kycStatus: "approved",
+      isVerified: true,
+      role: "INVESTOR",
+      status: "ACTIVE",
+      balance: {
+        investorId: "demo-user-3",
+        availableTokens: "500.00",
+        lockedTokens: "0",
+        availableUsd: "8000.00",
+        lockedUsd: "0",
+        lastUpdated: new Date().toISOString()
+      }
+    }
+  ];
+}
 
 async function fetchAdminOverview() {
+  const isDemo = process.env.NEXT_PUBLIC_IS_DEMO === 'true';
+
+  if (isDemo) {
+    try {
+      const { db } = await import('@/server/db');
+      const { investors, balances, auditLogs } = await import('@pachanova/database');
+      const { count, eq, neq } = await import('drizzle-orm');
+
+      // Run Drizzle queries locally
+      const totalUsersRes = await db.select({ count: count() }).from(investors).where(neq(investors.id, '00000000-0000-0000-0000-000000000000'));
+      const kycPendingRes = await db.select({ count: count() }).from(investors).where(eq(investors.kycStatus, 'pending'));
+      const kycApprovedRes = await db.select({ count: count() }).from(investors).where(eq(investors.kycStatus, 'approved'));
+      
+      const balancesRes = await db.select().from(balances).where(neq(balances.investorId, '00000000-0000-0000-0000-000000000000'));
+      const treasuryRes = await db.select().from(balances).where(eq(balances.investorId, '00000000-0000-0000-0000-000000000000')).limit(1);
+      
+      const recentLogsRes = await db.select().from(auditLogs).order(auditLogs.createdAt, { direction: 'desc' }).limit(8);
+
+      const totalUsd = balancesRes.reduce((acc, b) => acc + Number(b.availableUsd || 0), 0);
+      const treasuryTokens = Number(treasuryRes[0]?.availableTokens || 500000);
+
+      const dbUsers = await db.select().from(investors).where(neq(investors.id, '00000000-0000-0000-0000-000000000000'));
+      const balancesData = await db.select().from(balances);
+
+      const usersList: UserAdminView[] = [];
+      for (const u of dbUsers) {
+        const balance = balancesData.find(b => b.investorId === u.id);
+        usersList.push({
+          id: u.id,
+          fullName: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Inversor Demo',
+          email: u.email,
+          kycStatus: u.kycStatus as "pending" | "approved" | "rejected",
+          isVerified: u.kycStatus === 'approved',
+          role: "INVESTOR",
+          status: "ACTIVE",
+          balance: {
+            investorId: u.id,
+            availableTokens: balance?.availableTokens?.toString() || "0",
+            lockedTokens: balance?.lockedTokens?.toString() || "0",
+            availableUsd: balance?.availableUsd?.toString() || "0",
+            lockedUsd: balance?.lockedUsd?.toString() || "0",
+            lastUpdated: balance?.lastUpdatedAt?.toISOString() || new Date().toISOString()
+          }
+        });
+      }
+
+      return {
+        overview: {
+          totalUsers: totalUsersRes[0]?.count || 0,
+          kycPending: kycPendingRes[0]?.count || 0,
+          kycApproved: kycApprovedRes[0]?.count || 0,
+          totalUsdDeposited: totalUsd,
+          totalTokensSold: 500000 - treasuryTokens,
+          treasuryAvailable: treasuryTokens,
+          recentActions: recentLogsRes.map(log => ({
+            action: log.action,
+            details: log.details,
+            created_at: log.createdAt || new Date().toISOString()
+          })),
+        },
+        users: usersList.length > 0 ? usersList : getMockUsersList()
+      };
+    } catch (e) {
+      console.error("Local Drizzle admin overview query failed, falling back to mock:", e);
+      return {
+        overview: {
+          totalUsers: 3, kycPending: 1, kycApproved: 2,
+          totalUsdDeposited: 25000, totalTokensSold: 1200,
+          treasuryAvailable: 498800, recentActions: [],
+        },
+        users: getMockUsersList(),
+      };
+    }
+  }
+
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return {
-      totalUsers: 3, kycPending: 1, kycApproved: 2,
-      totalUsdDeposited: 25000, totalTokensSold: 1200,
-      treasuryAvailable: 498800, recentActions: [],
+      overview: {
+        totalUsers: 3, kycPending: 1, kycApproved: 2,
+        totalUsdDeposited: 25000, totalTokensSold: 1200,
+        treasuryAvailable: 498800, recentActions: [],
+      },
+      users: getMockUsersList(),
     };
   }
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  const [investors, kycPend, kycApproved, balances, treasury, recentLogs] = await Promise.all([
-    sb.from('investors').select('id', { count: 'exact', head: true }),
+  const [investorsRes, kycPend, kycApproved, balancesData, treasury, recentLogs] = await Promise.all([
+    sb.from('investors').select('*').neq('id', '00000000-0000-0000-0000-000000000000'),
     sb.from('kyc_documents').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     sb.from('kyc_documents').select('id', { count: 'exact', head: true }).eq('status', 'approved'),
-    sb.from('balances').select('available_usd').neq('investor_id', '00000000-0000-0000-0000-000000000000'),
+    sb.from('balances').select('*'),
     sb.from('balances').select('available_tokens').eq('investor_id', '00000000-0000-0000-0000-000000000000').maybeSingle(),
     sb.from('audit_logs').select('action,details,created_at').order('created_at', { ascending: false }).limit(8),
   ]);
 
-  const totalUsd = (balances.data || []).reduce((acc, b) => acc + Number(b.available_usd || 0), 0);
+  const totalUsd = (balancesData.data || []).reduce((acc, b) => b.investor_id !== '00000000-0000-0000-0000-000000000000' ? acc + Number(b.available_usd || 0) : acc, 0);
+
+  const usersList: UserAdminView[] = [];
+  for (const u of (investorsRes.data || [])) {
+    const balance = (balancesData.data || []).find(b => b.investor_id === u.id);
+    usersList.push({
+      id: u.id,
+      fullName: `${u.first_name || ''} ${u.last_name || ''}`.trim() || 'Inversor',
+      email: u.email,
+      kycStatus: u.kyc_status as "pending" | "approved" | "rejected",
+      isVerified: u.kyc_status === 'approved',
+      role: "INVESTOR",
+      status: "ACTIVE",
+      balance: {
+        investorId: u.id,
+        availableTokens: balance?.available_tokens?.toString() || "0",
+        lockedTokens: balance?.locked_tokens?.toString() || "0",
+        availableUsd: balance?.available_usd?.toString() || "0",
+        lockedUsd: balance?.locked_usd?.toString() || "0",
+        lastUpdated: balance?.last_updated_at || new Date().toISOString()
+      }
+    });
+  }
+
   return {
-    totalUsers: investors.count || 0,
-    kycPending: kycPend.count || 0,
-    kycApproved: kycApproved.count || 0,
-    totalUsdDeposited: totalUsd,
-    totalTokensSold: 500000 - Number(treasury.data?.available_tokens || 500000),
-    treasuryAvailable: Number(treasury.data?.available_tokens || 500000),
-    recentActions: recentLogs.data || [],
+    overview: {
+      totalUsers: investorsRes.data?.length || 0,
+      kycPending: kycPend.count || 0,
+      kycApproved: kycApproved.count || 0,
+      totalUsdDeposited: totalUsd,
+      totalTokensSold: 500000 - Number(treasury.data?.available_tokens || 500000),
+      treasuryAvailable: Number(treasury.data?.available_tokens || 500000),
+      recentActions: recentLogs.data || [],
+    },
+    users: usersList.length > 0 ? usersList : getMockUsersList()
   };
 }
 
 async function AdminOverviewContent() {
-  const data = await fetchAdminOverview();
+  const { overview: data, users } = await fetchAdminOverview();
 
   const metricCards = [
     { label: 'Inversores registrados', value: data.totalUsers, icon: '👥', href: '/dashboard/admin/users', color: 'border-blue-500/30' },
@@ -75,6 +239,19 @@ async function AdminOverviewContent() {
           ))}
         </div>
       </div>
+
+      <JourneyProgressRail journey={adminJourney} currentStepId="a1" />
+
+      <NextStepCard 
+        dataTestId="next-step-card-admin"
+        contextLabel="Administrador"
+        title="Consola Maestra de Operaciones"
+        explanation="Acá tenés control total sobre las cuentas de inversores, la aprobación de KYC, la auditoría inmutable de transacciones y el saldo de la Bóveda del Fideicomiso."
+        nextStep="Aprobá los KYC pendientes de los nuevos inversores o auditá las transacciones del token ledger."
+        primaryAction={{ label: "Ver Inversores", href: "/dashboard/admin/users", intent: "navigate" }}
+        secondaryAction={{ label: "Revisar KYC", href: "/dashboard/admin/kyc-review", intent: "navigate" }}
+        status="GO"
+      />
 
       {/* Alerta KYC pendiente */}
       {data.kycPending > 0 && (
@@ -113,8 +290,14 @@ async function AdminOverviewContent() {
         ))}
       </div>
 
-      {/* Actividad reciente */}
+      {/* Directorio de Inversores Integrado */}
       <div className="bg-pn-surface-strong border border-pn-border rounded-xl p-6">
+        <h3 className="text-sm font-medium text-pn-text-muted uppercase tracking-wider mb-4">Directorio de Inversores</h3>
+        <AdminUsersDataGrid users={users} />
+      </div>
+
+      {/* Actividad reciente */}
+      <div data-testid="audit-log-timeline" className="bg-pn-surface-strong border border-pn-border rounded-xl p-6">
         <h3 className="text-sm font-medium text-pn-text-muted uppercase tracking-wider mb-4">Últimas operaciones auditadas</h3>
         {data.recentActions.length === 0 ? (
           <p className="text-pn-text-muted text-sm">Sin actividad aún.</p>

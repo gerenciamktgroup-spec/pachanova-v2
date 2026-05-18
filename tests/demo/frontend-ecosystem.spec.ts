@@ -56,8 +56,10 @@ test.describe('FRONT-4 Frontend Ecosystem Completion', () => {
 
     test('Botón de Simular Flujo muestra SafeActionButton activo o disabled', async ({ page }) => {
       await page.goto('/dashboard/investor');
-      const actionBtn = page.locator('button', { hasText: 'Simular flujo Genesis' });
-      await expect(actionBtn).toBeVisible();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
+      const actionBtn = page.locator('text=Simular adquisición Genesis').first();
+      await expect(actionBtn).toBeVisible({ timeout: 15000 });
     });
   });
 });

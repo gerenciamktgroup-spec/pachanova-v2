@@ -21,6 +21,7 @@ async function seed() {
 
   // 1. Seed Users
   const users = await db.insert(schema.investors).values([
+    { id: "00000000-0000-0000-0000-000000000000", firstName: "PachaNova", lastName: "Treasury", email: "treasury@pachanova.io", role: "admin", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Admin", email: "demo.admin@pachanova.local", role: "admin", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Investor", email: "demo.investor.approved@pachanova.local", role: "investor", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Holder", email: "demo.investor.holder@pachanova.local", role: "investor", kycStatus: "approved", isVerified: true },
@@ -56,10 +57,55 @@ async function seed() {
     });
   }
 
+  // Seed Treasury balance
+  await db.insert(schema.balances).values({
+    investorId: "00000000-0000-0000-0000-000000000000",
+    availableTokens: "500000",
+    availableUsd: "0",
+    lockedTokens: "0"
+  }).onConflictDoUpdate({
+    target: schema.balances.investorId,
+    set: {
+      availableTokens: sql`EXCLUDED.available_tokens`,
+      availableUsd: sql`EXCLUDED.available_usd`,
+      lockedTokens: sql`EXCLUDED.locked_tokens`
+    }
+  });
+
+  // 1.5. Seed Property
+  const propertyId = "11111111-1111-1111-1111-111111111111";
+  await db.insert(schema.properties).values({
+    id: propertyId,
+    name: "PachaNova Valle Sagrado",
+    location: "Valle Sagrado, Cusco, Perú",
+    status: "trading",
+    totalValuationUsd: "420000.00",
+    tokenPriceUsd: "8.40",
+    totalTokens: "50000.00",
+    availableTokens: "48750.00",
+    annualYieldExpected: "12.50",
+    isDemo: true
+  }).onConflictDoUpdate({
+    target: schema.properties.id,
+    set: {
+      name: "PachaNova Valle Sagrado",
+      location: "Valle Sagrado, Cusco, Perú",
+      status: "trading",
+      totalValuationUsd: "420000.00",
+      tokenPriceUsd: "8.40",
+      totalTokens: "50000.00",
+      availableTokens: "48750.00",
+      annualYieldExpected: "12.50",
+      isDemo: true
+    }
+  });
+
   // 2. Seed Valuation
   await db.delete(schema.annualValuations).where(eq(schema.annualValuations.source, "DEMO_VALUATION"));
   await db.insert(schema.annualValuations).values({
+    propertyId: propertyId,
     year: 2026,
+    totalValuationUsd: "420000.00",
     pricePerSqm: "84.00",
     pricePerToken: "8.40",
     source: "DEMO_VALUATION",

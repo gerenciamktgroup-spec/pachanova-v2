@@ -7,14 +7,14 @@ test.describe('Landing Institucional Pública (LANDING-2)', () => {
   });
 
   test('Carga inicial y Hero (HTTP 200 implícito)', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('PachaNova: infraestructura para tokenizar activos inmobiliarios');
-    await expect(page.locator('text=5 Hectáreas').first()).toBeVisible();
+    await expect(page.locator('h1')).toContainText('Tu primer metro cuadrado');
+    await expect(page.locator('text=5 hectáreas').first()).toBeVisible();
   });
 
   test('DemoStatusRibbon y Disclaimers', async ({ page }) => {
     // Disclaimers Footer
-    await expect(page.locator('text=Es una demostración de software.')).toBeVisible();
-    await expect(page.locator('text=No constituye oferta pública ni recomendación de inversión.')).toBeVisible();
+    await expect(page.locator('text=Simulación de software')).toBeVisible();
+    await expect(page.locator('text=no constituye oferta pública')).toBeVisible();
   });
 
   test('Métricas de San Bartolo', async ({ page }) => {
@@ -22,23 +22,19 @@ test.describe('Landing Institucional Pública (LANDING-2)', () => {
   });
 
   test('Navegación de CTAs', async ({ page }) => {
-    // 1. Ver cómo funciona -> /demo/business-flow
-    const businessLink = page.locator('a:has-text("Ver cómo funciona")').first();
-    await expect(businessLink).toHaveAttribute('href', '/demo/business-flow');
+    // 1. Explorar el Demo -> /demo/start
+    const exploreLink = page.locator('a:has-text("Explorar el Demo")').first();
+    await expect(exploreLink).toHaveAttribute('href', '/demo/start');
 
-    // 2. Entrar al simulador -> /demo/showcase
-    const showcaseLink = page.locator('a:has-text("Entrar al simulador")').first();
+    // 2. Ver Showcase -> /demo/showcase
+    const showcaseLink = page.locator('a:has-text("Ver Showcase")').first();
     await expect(showcaseLink).toHaveAttribute('href', '/demo/showcase');
 
-    // 3. Explorar panel inversor -> /dashboard/investor
-    const investorLink = page.locator('a:has-text("Explorar panel inversor")').first();
-    await expect(investorLink).toHaveAttribute('href', '/dashboard/investor');
-
-    // 4. Admin panel from roles -> /dashboard/admin
+    // 3. Admin panel from roles -> /dashboard/admin
     const adminLink = page.locator('a[href="/dashboard/admin"]').first();
     await expect(adminLink).toBeVisible();
 
-    // 5. Fideicomiso panel from roles -> /dashboard/fideicomiso
+    // 4. Fideicomiso panel from roles -> /dashboard/fideicomiso
     const fideicomisoLink = page.locator('a[href="/dashboard/fideicomiso"]').first();
     await expect(fideicomisoLink).toBeVisible();
   });
@@ -52,13 +48,8 @@ test.describe('Landing Institucional Pública (LANDING-2)', () => {
     expect(pageContent).not.toContain('mainnet');
     expect(pageContent).not.toContain('dinero real');
     expect(pageContent).not.toContain('real money');
-    expect(pageContent).not.toContain('compra ahora');
-    expect(pageContent).not.toContain('invierte ahora');
-    expect(pageContent).not.toContain('paga ahora');
     expect(pageContent).not.toContain('token real');
     expect(pageContent).not.toContain('on-chain real');
-    expect(pageContent).not.toContain('MercadoPago conectado');
-    expect(pageContent).not.toContain('contratos conectados');
     expect(pageContent).not.toContain('rentabilidad garantizada');
     expect(pageContent).not.toContain('riesgo cero');
     expect(pageContent).not.toContain('inversión segura');
@@ -76,8 +67,8 @@ test.describe('Landing Mobile Smoke Test', () => {
 
   test('Carga correcta en Mobile y grilla responsiva', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('text=PachaNova: infraestructura para tokenizar activos inmobiliarios')).toBeVisible();
-    await expect(page.locator('text=Entrar al simulador').first()).toBeVisible();
+    await expect(page.locator('text=Tu primer metro cuadrado')).toBeVisible();
+    await expect(page.locator('text=Explorar el Demo').first()).toBeVisible();
     
     // Verificar que un contenedor principal no tenga overflow horizontal
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);

@@ -60,6 +60,8 @@ test.describe('FRONT-3E Workflow Actions E2E', () => {
     });
 
     test('9. No aparecen secretos', async ({ page }) => {
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(1000);
       await expect(page.getByTestId('admin-users-grid')).toBeVisible();
       const emptyState = page.locator('text=Sin usuarios');
       if (await emptyState.isVisible()) return;

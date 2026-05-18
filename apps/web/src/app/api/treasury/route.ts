@@ -42,6 +42,7 @@ export async function GET() {
       treasury: {
         balanceUsd: systemParam?.value || "0",
         totalSupply: totalSupply,
+        totalTokens: totalSupply,
         tokensSold: totalTokensSold,
         tokensAvailable: totalSupply - totalTokensSold,
         totalUsdRaised: totalUsdRaised,
