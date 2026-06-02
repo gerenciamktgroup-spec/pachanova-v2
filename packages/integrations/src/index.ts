@@ -11,3 +11,4 @@ export * from './env/integrationEnv';
 export * from "./contracts/ContractProvider";
 export * from "./kyc/KycProvider";
 export * from "./oracle/ValuationProvider";
+export * from "./maestroYield";
