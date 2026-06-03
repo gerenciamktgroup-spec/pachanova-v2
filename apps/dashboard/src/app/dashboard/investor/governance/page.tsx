@@ -19,6 +19,7 @@ interface ProposalRow {
   startAt: Date;
   endAt: Date | null;
   quorumRequired: string | null;
+  vertexPrediction: string | null;
 }
 
 interface VoteRow {

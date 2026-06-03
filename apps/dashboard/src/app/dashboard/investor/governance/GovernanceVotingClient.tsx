@@ -11,6 +11,7 @@ interface Proposal {
   startAt: string | Date;
   endAt: string | Date | null;
   quorumRequired: string | null;
+  vertexPrediction: string | null;
 }
 
 interface MyVote {
@@ -195,6 +196,36 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
                 <div className="mt-2 text-[10px] text-pn-text-soft/70">
                   Quórum requerido: {p.quorumRequired || '10'}% • Peso total emitido: {totalPower.toLocaleString()} PACHA
                 </div>
+                {p.vertexPrediction && (() => {
+                  try {
+                    const pred = JSON.parse(p.vertexPrediction);
+                    return (
+                      <div className="mt-3 p-3 bg-violet-950/30 border border-violet-800/40 rounded-xl text-xs space-y-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[9px] px-1.5 py-0.5 bg-violet-800/30 text-violet-300 border border-violet-700/50 rounded uppercase tracking-[1px] font-bold">
+                            Vertex AI Predict
+                          </span>
+                          <span className="text-[10px] text-violet-400 font-medium">
+                            {Math.round((pred.outcomeProb || 0.75) * 100)}% prob. de aprobación
+                          </span>
+                          {pred.impactNetYieldDelta && (
+                            <span className="text-[10px] text-emerald-400 font-semibold">
+                              ({pred.impactNetYieldDelta} impacto neto)
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-pn-text-soft text-xs italic leading-relaxed">
+                          "{pred.rationale || 'Sin justificación disponible'}"
+                        </p>
+                        <div className="text-[9px] text-pn-text-soft/50 font-mono">
+                          Modelo: {pred.vertex_gcp?.based_on || 'gcloud_vertex_fallback'} • Confianza: {pred.vertex_gcp?.conf || '0.73'}
+                        </div>
+                      </div>
+                    );
+                  } catch (e) {
+                    return null;
+                  }
+                })()}
               </div>
 
               <div className="md:w-56 shrink-0 text-xs md:text-right">

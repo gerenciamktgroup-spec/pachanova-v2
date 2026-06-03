@@ -13,6 +13,7 @@ export const proposals = pgTable("proposals", {
   startAt: timestamp("start_at").defaultNow().notNull(),
   endAt: timestamp("end_at"),
   quorumRequired: numeric("quorum_required", { precision: 5, scale: 2 }).default("10.00"), // percent
+  vertexPrediction: text("vertex_prediction"), // json prediction object {outcomeProb, impactNetYieldDelta, rationale, ...}
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
