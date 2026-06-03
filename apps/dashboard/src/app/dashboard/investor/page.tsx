@@ -107,7 +107,19 @@ async function fetchInvestorData(): Promise<any> {
         orqProposals = res.proposals || [];
         orqForecasts = res.forecasts || [];
         orqPortfolioView = res.portfolioView || res._fase34_rich ? (res.portfolioView || []) : [];
-        console.log('[ORQ TEST #17+34 v2 port] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net);
+        // Fase38: enrich with borrow onchain lock proof (Fase9 pattern, real RPC + sha for PNC with debt e.g. PAR)
+        if (typeof orq.computeOnchainTxProofForBorrowLock === 'function') {
+          orqPortfolioView = orqPortfolioView.map((pv: any) => {
+            if (pv.badges && (pv.badges.borrowDebt || 0) > 0) {
+              try {
+                const proof = orq.computeOnchainTxProofForBorrowLock({ pnc: pv.pnc, colat: (pv.badges.borrowDebt || 30000) * 1.67, debt: pv.badges.borrowDebt, net: pv.net });
+                return { ...pv, borrowOnchain: proof };
+              } catch (e) { return pv; }
+            }
+            return pv;
+          });
+        }
+        console.log('[ORQ TEST #17+34+38 v2 port] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net, 'borrowOnchain sample:', !!orqPortfolioView.find((p:any)=>p.borrowOnchain));
       } else {
         orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
       }
@@ -245,6 +257,9 @@ async function InvestorDashboardContent() {
                   Gross: ${(pv.gross || pv.net || 0).toLocaleString()} → Net: ${(pv.net || pv.gross || 0).toLocaleString()} (Fase32 closed + Fase9 net)
                 </div>
                 <div className="mt-1 text-[9px] text-emerald-400">Fase35/36: Gov onchain votes + create proposals activas para este PNC (ver /governance)</div>
+                {pv.borrowOnchain && (
+                  <div className="mt-1 text-[9px] text-amber-400">Fase38: BORROW LOCK onchain tx {pv.borrowOnchain.txHash?.slice(0,10)}... @{pv.borrowOnchain.blockNum} (colat/debt/net proof, Fase9 verifiable)</div>
+                )}
 
                 <div className="mt-2">
                   <a href="/dashboard/investor/governance" className="inline-block text-xs px-2 py-1 border border-emerald-600/60 hover:bg-emerald-900/20 rounded text-emerald-300">
