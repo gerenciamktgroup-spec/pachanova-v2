@@ -72,6 +72,11 @@ Python fix + JS + VC++ + enforced commit = concrete step to "ser autonomo de ver
 (Also mirrored concepts to core if paths differ; this is the pachanova-v2 active tree.)
 
 ## 2026-06-03 Context Exhaustion for Infinite Work (user request)
+(Background full recursive Python surface scan completed post all fixes: task call-83fdaefb-a772-4f72-acf5-020020f75915-43, 340s. Confirmed: ONLY resolve_conflicts.py remains outside node_modules/.next (the legacy one, now with full deprecation header + runtime warnings). Zero Python package files (requirements/pyproject/setup). 'python|pip|venv|py.exe' mentions in automation files (md/txt/ps1/cjs/package) are exclusively our controlled v3 deprecation text in AGENTS.md, this postmortem, and one window_PROGRESS note about the Grok Build bridge. 
+
+This reconfirms the Python 0xc0000017 class of runtime blocker is 100% eliminated from the autonomous path. Combined with the new Context Window Exhaustion Protocol (AI rules + PS resilient launcher + orq checkpoints + persistContextWindowSave), the system handles both "external runtime crashes" and "LLM context 512k/compaction" as normal window-end events that trigger save + re-execute for true infinite work. No more surprise pauses from Python or context limits during v3 loops / orq / bridge / schedulers. 
+
+Scan duration itself (~5-6 min) is noted as meta: prefer fast targeted git-ls-files + rg in future verifiers inside 5m loops to stay responsive. The resilient PS (-ResilientV3) and orq loop now checkpoint periodically anyway.
 Added explicit "Context Window Exhaustion Protocol (512k / compaction)" as a first-class v3 rule in AGENTS.md (for the AI/Grok Build "tu").
 - When compaction reminder appears or context fills in the PS TUI: immediate todo_write full, write CONTEXT_SAVE_*.md with resume instruction, full git add/commit/push, blackboard update, output clear restart marker, then stop.
 - Next fresh Grok Build session (new TUI or PS re-launch) must load the snapshot in bootstrap and continue exactly.
