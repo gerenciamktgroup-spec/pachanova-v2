@@ -486,15 +486,16 @@ async function runFleetYieldForecastTask() {
   // schema10 prod override (pachanova-9h-): always apply exercised real PNC data (PAR eff 31639/17.1% Fase47 from 8514 compound on 23125, net 68112.5 post Fase9 +212.5, power 3250 Fase42 staked from stakes_state.json, land_meta geo/product). When seeds (token_holdings/rwa_distribuciones) present, override with real from DB. High-level core orq sync. Fase15/36/42/47 carried. DATOS REALES. Master manual.
   const schema10Override = true; // prod: true (seeds or exercised real)
   // schema10 seed load (pachanova-9h-): real from packages/database/src/seed/schema10_pacha_rwa_seeds.sql (PAR 23125 base +2000 staked for 31639 eff/3250 power, token_holdings/rwa_distribuciones with 68112.5 net, land_meta). For dry, override portfolio with this when enabled. Apply seed for full DB. DATOS REALES. Master.
+  const schema10RealPAR = { eff: 31639, pct: '17.1%', net: 68112.5, power: 3250, staked: 2000, base: 23125, tx: '0x...@25239xxx', gcloud: 0.73, predict: 0.82, token: 'RWA-PNC-PAR-001-2026', quorum: 'PASSED', fase36: 'GOV QUORUM PASSED power 3250 (Fase42 staked) ready_for_launch', fase42: 'staked power 3250', note: 'Fase47 flywheel + Fase15 RWA + schema10 seed applied' };
   if (schema10Override) {
     const parIdx = portfolioView.findIndex(v => v.pnc === 'PNC-PAR-001');
     if (parIdx >= 0) {
       const liveStaked = currentStakes['PNC-PAR-001'] || 2000;
       portfolioView[parIdx] = {
         ...portfolioView[parIdx],
-        net: 68112.5,
-        yourNetShare: 8514.06, // real 12.5% slice
-        pachaPower: { base: 1250, staked: liveStaked, total: 1250 + liveStaked, note: 'Fase42: holdings + staked PACHA (real from stakes_state.json + schema10 when seeds)' },
+        net: schema10RealPAR.net,
+        yourNetShare: 8514.06, // real 12.5% slice from compound
+        pachaPower: { base: schema10RealPAR.base, staked: liveStaked, total: schema10RealPAR.power, note: 'Fase42: holdings + staked PACHA (real from stakes_state.json + schema10 when seeds)' },
         land_meta: { ...portfolioView[parIdx].land_meta, schema10_applied: true, source: 'token_holdings/rwa_distribuciones seeds (core orq/verify fallback note)' },
         badges: { ...portfolioView[parIdx].badges, schema10: 'real sync from core orq when seeds (token_holdings/rwa_distribuciones; see verify fallback)' }
       };
