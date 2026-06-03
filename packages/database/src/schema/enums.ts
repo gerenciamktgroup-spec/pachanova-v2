@@ -7,3 +7,4 @@ export const transactionStatusEnum = pgEnum("transaction_status_enum", ["pending
 export const propertyStatusEnum = pgEnum("property_status_enum", ["coming_soon", "funding", "funded", "trading", "liquidated"]);
 export const p2pStatusEnum = pgEnum("p2p_status_enum", ["open", "partial", "filled", "cancelled", "expired"]);
 export const notificationTypeEnum = pgEnum("notification_type_enum", ["system", "transaction", "kyc", "market", "dividend"]);
+export const propertyTypeEnum = pgEnum("property_type_enum", ["land", "residential", "hotel", "rental"]);

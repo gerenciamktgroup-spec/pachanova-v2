@@ -12,11 +12,15 @@ import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 
-export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView }) {
-  const availableTokensStr = String(view.investor.balance.availableTokens || "0");
-  const balance = Number(availableTokensStr.replace(/,/g, ''));
-  const sqm = tokensToSquareMeters(balance);
-  const ownership = tokenOwnershipPercent(balance);
+export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & { investor: { portfolio: any[] } } }) {
+  const portfolio = view.investor.portfolio || [];
+  
+  const totalTokens = portfolio.reduce((acc, p) => acc + Number(p.availableTokens || 0), 0);
+  const totalUsd = portfolio.reduce((acc, p) => acc + Number(p.availableUsd || 0), 0);
+  const totalSqm = tokensToSquareMeters(totalTokens);
+  
+  // Example simplistic ownership across all (doesn't make much sense for mixed properties, but kept for UI structure)
+  const ownership = tokenOwnershipPercent(totalTokens);
 
   return (
     <MissionCard className="bg-gradient-to-br from-pn-surface to-pn-surface-strong border-pn-gold/20" animated>
@@ -37,64 +41,66 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
 
       <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-pn-border/50 pt-6">
         <div>
-          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Balance Total</p>
-          <TokenAmount amount={balance} />
+          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Tokens Totales</p>
+          <TokenAmount amount={totalTokens} />
         </div>
         <div>
-          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Superficie Pro-Rata</p>
-          <SquareMeterAmount amount={sqm} />
+          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Superficie Total Estimada</p>
+          <SquareMeterAmount amount={totalSqm} />
         </div>
         <div>
-          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Valor Estimado Demo</p>
-          <MoneyAmount amount={Number(view.investor.balance.availableUsd.replace(/[^0-9.-]+/g, ""))} />
+          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Billetera USD</p>
+          <MoneyAmount amount={totalUsd} />
         </div>
         <div>
-          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Ownership Genesis</p>
-          <span className="text-pn-text font-medium">{ownership.toFixed(2)}%</span>
+          <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Propiedades Activas</p>
+          <span className="text-pn-text font-medium">{portfolio.length}</span>
         </div>
       </div>
     </MissionCard>
   );
 }
 
-export function ProRataLandCardV2({ view }: { view: InvestorDashboardView }) {
-  const availableTokensStr = String(view.investor.balance.availableTokens || "0");
-  const balance = Number(availableTokensStr.replace(/,/g, ''));
-  const sqm = tokensToSquareMeters(balance);
+export function ProRataLandCardV2({ view }: { view: any }) {
+  const portfolio = view.investor.portfolio || [];
 
   return (
-    <MissionCard title="Respaldo Subyacente (Demo)" data-testid="pro-rata-land-card">
-      <div className="aspect-video w-full rounded-md bg-pn-bg border border-pn-border overflow-hidden relative mb-4 flex items-center justify-center p-6">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#4B8FF0 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-        <div className="z-10 w-full h-full border border-pn-gold/30 bg-pn-surface/50 rounded flex flex-col items-center justify-center">
-          <IntegrationStatusBadge status="SIMULATED" />
-          <h4 className="mt-4 font-semibold text-pn-gold tracking-wide">Visualización 2D Demo</h4>
-          <p className="text-xs text-pn-text-muted mt-2">Motor 3D desactivado localmente</p>
-          <div className="mt-6 flex gap-4 text-xs">
-            <div className="text-center px-4 py-2 border border-pn-border bg-pn-bg rounded">
-              <span className="block text-pn-text-soft">San Bartolo</span>
-              <span className="font-bold text-pn-text">50,000 m²</span>
-            </div>
-            <div className="text-center px-4 py-2 border border-pn-border bg-pn-bg rounded">
-              <span className="block text-pn-text-soft">Relación Demo</span>
-              <span className="font-bold text-pn-text">1 PACHA = 0.1 m²</span>
-            </div>
-          </div>
+    <MissionCard title="Portafolio Inmobiliario" data-testid="pro-rata-land-card">
+      {portfolio.length === 0 ? (
+        <ProductEmptyState title="Sin Inversiones" description="Aún no posees fracciones inmobiliarias." />
+      ) : (
+        <div className="space-y-4">
+          {portfolio.map((item: any) => {
+            const balance = Number(item.availableTokens);
+            const sqm = tokensToSquareMeters(balance);
+            return (
+              <div key={item.propertyId} className="flex justify-between items-center p-4 rounded-lg bg-[#0f172a] border border-white/10 hover:border-[#c5a46d]/50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded bg-white/5 border border-white/10 overflow-hidden relative flex-shrink-0">
+                    <img src={item.imageUrl} alt={item.propertyName} className="object-cover w-full h-full opacity-60" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-white/90">{item.propertyName}</h4>
+                    <p className="text-xs text-white/50">{item.location} • {item.propertyType}</p>
+                    <a href={`/dashboard/investor/certificate/${item.propertyId}`} target="_blank" rel="noreferrer" className="text-[10px] text-[#c5a46d] hover:underline mt-1 inline-block">
+                      📄 Descargar Certificado
+                    </a>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-white/50 uppercase mb-1">Fracción ({item.availableTokens} PACHA)</p>
+                  <div className="font-semibold text-[#c5a46d]">
+                    <SquareMeterAmount amount={sqm} />
+                  </div>
+                  <a href={`/dashboard/investor/invest/${item.propertyId}`} className="text-[10px] bg-white/10 hover:bg-white/20 text-white px-2 py-1 rounded mt-2 inline-block transition-colors">
+                    + Invertir Más
+                  </a>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
-      
-      <div className="flex justify-between items-center p-3 rounded bg-pn-surface-strong border border-pn-border">
-        <div>
-          <h4 className="text-sm font-medium text-pn-text">Proyecto San Bartolo</h4>
-          <p className="text-xs text-pn-text-soft">Lote Demo • 50,000 m² Totales</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-pn-text-soft uppercase mb-1">Tu Fracción</p>
-          <div data-testid="investor-sqm-value">
-            <SquareMeterAmount amount={sqm} />
-          </div>
-        </div>
-      </div>
+      )}
     </MissionCard>
   );
 }
@@ -113,7 +119,7 @@ export function InvestorLedgerPanel({ view }: { view: InvestorDashboardView }) {
             <DataGridRow key={tx.id}>
               <DataGridCell><span className="text-xs font-medium px-2 py-1 bg-pn-surface-strong rounded border border-pn-border">{tx.operationType}</span></DataGridCell>
               <DataGridCell><TokenAmount amount={tx.amount} /></DataGridCell>
-              <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString()}</span></DataGridCell>
+              <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString('en-US')}</span></DataGridCell>
               <DataGridCell>
                 <span className="font-mono text-[10px] text-pn-text-soft truncate max-w-[120px] block">
                   {tx.txHash || "PENDING"}
@@ -198,10 +204,12 @@ export function GenesisDemoActionCard({ view }: { view: InvestorDashboardView })
   );
 }
 
-export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardView }) {
+export function InvestorWalletStatusPanel({ view }: { view: any }) {
   const [depositAmount, setDepositAmount] = useState<number>(1000);
   const [isDepositing, setIsDepositing] = useState(false);
   const [message, setMessage] = useState("");
+
+  const totalUsd = view.investor.portfolio?.reduce((acc: number, p: any) => acc + Number(p.availableUsd || 0), 0) || 0;
 
   const handleDeposit = async () => {
     setIsDepositing(true);
@@ -229,8 +237,8 @@ export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardVie
     <MissionCard title="Billetera USD (Simulada)">
       <div className="space-y-4">
         <div className="p-3 bg-pn-surface-strong rounded border border-pn-border">
-          <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible</p>
-          <p className="text-xl font-medium text-pn-gold">${Number(view.investor.balance.availableUsd).toLocaleString()}</p>
+          <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible Total</p>
+          <p className="text-xl font-medium text-pn-gold">${totalUsd.toLocaleString('en-US')}</p>
         </div>
 
         <div className="space-y-2 mt-4 pt-4 border-t border-pn-border">

@@ -1,10 +1,12 @@
 import { pgTable, uuid, varchar, numeric, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { propertyStatusEnum } from "./enums";
+import { propertyStatusEnum, propertyTypeEnum } from "./enums";
 
 export const properties = pgTable("properties", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
   location: varchar("location", { length: 255 }).notNull(),
+  propertyType: propertyTypeEnum("property_type").notNull().default("land"),
+  imageUrl: varchar("image_url", { length: 1024 }),
   status: propertyStatusEnum("status").notNull().default("coming_soon"),
   totalValuationUsd: numeric("total_valuation_usd", { precision: 18, scale: 2 }).notNull(),
   tokenPriceUsd: numeric("token_price_usd", { precision: 18, scale: 2 }).notNull(),

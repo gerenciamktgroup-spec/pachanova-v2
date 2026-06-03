@@ -5,7 +5,8 @@
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./utils/demoValidation": "./src/utils/demoValidation.ts"
+    "./utils/demoValidation": "./src/utils/demoValidation.ts",
+    "./src/schema": "./src/schema/index.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.0",

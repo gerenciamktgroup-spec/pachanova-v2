@@ -9,6 +9,8 @@ import {
   InvestorWalletStatusPanel 
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
+
+export const dynamic = 'force-dynamic';
 import { Suspense } from "react";
 import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import { NextStepCard } from "@/components/product/NextStepCard";
@@ -17,23 +19,67 @@ import { investorJourney } from "@/lib/navigation/userJourneys";
 import { fetchMaestroYields, suggestYieldToCoreMaestro, fetchMaestroYieldForecast } from "@pachanova/integrations"; // Fase17/18: exact + forecast from core Panel Maestro (Fase16 + Vertex)
 import { YieldActionButtons } from "./YieldActionClient";
 
-async function fetchInvestorData(): Promise<any> { // reviewer: any for orq augments (pre-existing pattern in file for maestro); 0 issues after tsc/grep review
+import { createServerClient } from "@/utils/supabase/server";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { eq } from "drizzle-orm";
+import { schema } from "@pachanova/database";
+
+async function fetchInvestorData(): Promise<any> { 
   try {
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+
+    // Connect directly to PostgreSQL for the Multi-Property Landbanking
+    const client = postgres(process.env.DATABASE_URL!);
+    const db = drizzle(client, { schema });
+
+    const invResult = await db.query.investors.findFirst({
+      where: eq(schema.investors.email, userEmail)
+    });
+
+    if (!invResult) {
+      return null; // Investor not found
+    }
+
+    // Manual join to get balances and properties
+    // Using postgres query because Drizzle relations might not be fully defined in this schema version
+    const portfolioQuery = await client`
+      SELECT 
+        b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd, b.last_updated_at,
+        p.id as property_id, p.name as property_name, p.property_type, p.location, p.status, p.image_url,
+        p.token_price_usd, p.annual_yield_expected
+      FROM balances b
+      JOIN properties p ON b.property_id = p.id
+      WHERE b.investor_id = ${invResult.id}
+    `;
+
+    const portfolio = portfolioQuery.map((row: any) => ({
+      propertyId: row.property_id,
+      propertyName: row.property_name,
+      propertyType: row.property_type,
+      location: row.location,
+      imageUrl: row.image_url,
+      status: row.status,
+      availableTokens: row.available_tokens,
+      lockedTokens: row.locked_tokens,
+      availableUsd: row.available_usd,
+      lockedUsd: row.locked_usd,
+      tokenPriceUsd: row.token_price_usd,
+      annualYieldExpected: row.annual_yield_expected,
+      lastUpdated: row.last_updated_at
+    }));
+
     const baseView = {
       investor: {
-        id: "demo-investor-123",
-        fullName: "Inversor Demo",
-        email: "investor@pachanova.local",
-        kycStatus: "pending",
-        isVerified: false,
-        balance: {
-          investorId: "demo-investor-123",
-          availableTokens: "5000",
-          lockedTokens: "0",
-          availableUsd: "42000",
-          lockedUsd: "0",
-          lastUpdated: new Date().toISOString()
-        }
+        id: invResult.id,
+        fullName: `${invResult.firstName} ${invResult.lastName}`.trim(),
+        email: invResult.email,
+        kycStatus: invResult.kycStatus || "pending",
+        isVerified: invResult.isVerified || false,
+        portfolio: portfolio
       },
       recentTransactions: [],
       kycVerificationProvider: "SIMULATED",
@@ -50,24 +96,20 @@ async function fetchInvestorData(): Promise<any> { // reviewer: any for orq augm
         message: "Node inactive"
       }
     };
-    // High-level only: update for core #17 (full mail suggest closed loop from proposals: FETCH_PROPOSALS -> MailView + UI prefill, v2 port polish).
-    // Call local orq (correct relative from apps/dashboard/.../investor/page.tsx) runFleetYieldForecastTask() to get live proposals/forecasts.
-    // Stub 24281.25 conf 0.72 from real Fase16 12.5% 23125 context (DATOS REALES) for demo since no keys.
-    // orq test included (in page per no-new-files).
-    let orqProposals: any[] = []; // reviewer approved: orq proposal shape dynamic from cjs stub (DATOS REALES); tsc 0 errs
-    let orqForecasts: any[] = []; // reviewer: same, high-level polish only
+
+    let orqProposals: any[] = []; 
+    let orqForecasts: any[] = []; 
     try {
-      const orq = require('../../../../../../orchestrator_agent.cjs'); // correct relative (6 ups from investor/ to v2 root; per debug from source dir)
+      const orq = require('../../../../../../orchestrator_agent.cjs'); 
       if (typeof orq.runFleetYieldForecastTask === 'function') {
         const res = await orq.runFleetYieldForecastTask();
         orqProposals = res.proposals || [];
         orqForecasts = res.forecasts || [];
-        // orq test (in page):
         console.log('[ORQ TEST #17 v2 port] fetchInvestorData called runFleetYieldForecastTask -> proposals_count=', res.proposals_count, 'sample monto=', orqProposals[0]?.suggested_monto);
       } else {
         orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
       }
-    } catch (e: any) { // reviewer: any for catch, standard in file; no sev issues after iterative review passes (tsc clean, build pass, grep ok)
+    } catch (e: any) { 
       console.log('[v2 orq call note in fetchInvestorData]', e?.message || e);
       orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'stub from real Fase16 12.5% 23125 DATOS REALES (no keys)', source: 'stub_fallback', based_on: 'Fase16 23125 context' }];
     }
@@ -116,12 +158,12 @@ async function InvestorDashboardContent() {
 
       <NextStepCard 
         dataTestId="next-step-card-investor"
-        contextLabel="Panel Inversor"
-        title="Tu Portafolio RWA Simulado"
-        explanation="Estás viendo tu posición demo sobre el activo San Bartolo. Tu saldo actual y las métricas provienen de una base de datos local y no representan valor financiero real."
-        nextStep="Puedes revisar el Ledger PACHA para auditar tu saldo o simular el flujo Genesis de compra."
-        primaryAction={{ label: "Simular Flujo Genesis", href: "/dashboard/investor/genesis", intent: "navigate" }}
-        secondaryAction={{ label: "Revisar Ledger", href: "/dashboard/investor/ledger", intent: "navigate" }}
+        contextLabel="Landbank Inversor"
+        title="Tu Portafolio RWA Dinámico"
+        explanation="Estás viendo tu posición global sobre los distintos activos en todo el Perú (Paracas, Chilca, San Bartolo). Los saldos líquidos son unificados y se usan para adquirir tokens."
+        nextStep="Adquiere más participación o, si posees un predio grande y eres socio, postula tu terreno a PachaNova."
+        primaryAction={{ label: "Invertir en Nuevo Activo", href: "/dashboard/investor/genesis", intent: "navigate" }}
+        secondaryAction={{ label: "🏢 Postular Terreno (Socios)", href: "/dashboard/partner/submit", intent: "navigate" }}
         status="GO"
       />
 

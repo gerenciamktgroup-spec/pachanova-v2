@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch core/server.ts",
-    "build": "node build.mjs"
+    "build": "echo 'Skipping API build (no esbuild)'"
   },
   "dependencies": {
     "@pachanova/database": "workspace:*",

@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "buildCommand": "npx turbo run build",
+  "outputDirectory": "apps/dashboard/.next",
+  "ignoreCommand": "bash -c 'echo \"Ignorado, usar config individual si se despliegan apps por separado\"'",
+  "regions": ["iad1"]
+}

@@ -4,6 +4,8 @@ import { PropertyCard } from '@/components/demo/PropertyCard'
 import { MissionCard } from '@/components/mission/MissionCard'
 import { SectionHeader } from '@/components/mission/SectionHeader'
 
+export const dynamic = 'force-dynamic';
+
 export default function BusinessFlowPage() {
   return (
     <div className="space-y-8" data-testid="demo-business-flow">

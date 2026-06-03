@@ -1,10 +1,36 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+/**
+ * Long-term resilient version.
+ * 
+ * If Supabase env vars are not configured (common in pure local/demo scenarios),
+ * we avoid crashing the entire app.
+ * 
+ * - Public marketing pages (including the new Precision Spatial landing) work without Supabase.
+ * - Protected routes (/dashboard) still redirect to /login if no session.
+ */
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
+
+  // === GRACEFUL DEGRADATION: No Supabase configured ===
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // Only protect dashboard routes
+    if (isProtectedRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+
+    // Public routes (new landing, demo, como-funciona, etc.) → continue normally
+    return NextResponse.next()
+  }
+
+  // === Normal Supabase flow (when env vars are present) ===
+  let supabaseResponse = NextResponse.next({ request })
 
   // Skip auth check for public and demo routes — no DB needed
   const pathname = request.nextUrl.pathname
@@ -19,16 +45,6 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 
-  // Guard: if Supabase env vars are missing, redirect to login instead of crashing
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('[Middleware] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing')
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
-  }
-
   const supabase = createServerClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -38,7 +54,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -55,16 +71,18 @@ export async function updateSession(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (!user && isProtectedRoute) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
       return NextResponse.redirect(url)
     }
   } catch (error) {
     console.error('[Middleware] Auth check failed:', error)
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    if (isProtectedRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
