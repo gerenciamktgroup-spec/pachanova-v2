@@ -121,7 +121,8 @@ async function fetchInvestorData(): Promise<any> {
         }
         const orqGovAutoProposals = res.govAutoProposals || [];
         const orqLandbankLaunches = res.landbankLaunches || [];
-        console.log('[ORQ TEST #17+34+38+39+40 v2 port] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net, 'borrowOnchain sample:', !!orqPortfolioView.find((p:any)=>p.borrowOnchain), 'govAutoProposals=', orqGovAutoProposals.length, 'landbankLaunches=', orqLandbankLaunches.length);
+        const orqGovMailAlerts = res.govMailAlerts || [];
+        console.log('[ORQ TEST #17+34+38+39+40+41 v2 port] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net, 'borrowOnchain sample:', !!orqPortfolioView.find((p:any)=>p.borrowOnchain), 'govAutoProposals=', orqGovAutoProposals.length, 'landbankLaunches=', orqLandbankLaunches.length, 'govMailAlerts=', orqGovMailAlerts.length);
       } else {
         orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
       }
@@ -129,7 +130,7 @@ async function fetchInvestorData(): Promise<any> {
       console.log('[v2 orq call note in fetchInvestorData]', e?.message || e);
       orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'stub from real Fase16 12.5% 23125 DATOS REALES (no keys)', source: 'stub_fallback', based_on: 'Fase16 23125 context' }];
     }
-    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals, _orqLandbankLaunches: orqLandbankLaunches };
+    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals, _orqLandbankLaunches: orqLandbankLaunches, _orqGovMailAlerts: orqGovMailAlerts };
   } catch (error) {
     console.error("Error fetching investor view model:", error);
     return null;
@@ -154,6 +155,7 @@ async function InvestorDashboardContent() {
   const orqPortfolioView = (data && data._orqPortfolioView) || [];
   const orqGovAutoProposals = (data && data._orqGovAutoProposals) || [];
   const orqLandbankLaunches = (data && data._orqLandbankLaunches) || [];
+  const orqGovMailAlerts = (data && data._orqGovMailAlerts) || [];
 
   if (!view) {
     return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del inversor." />;
@@ -222,6 +224,7 @@ async function InvestorDashboardContent() {
         <div className="text-[10px] text-[#5a5f6a] mt-1">DATOS REALES (use 23125 refs). Thin v2 port. High-level only.</div>
         {orqGovAutoProposals && orqGovAutoProposals.length > 0 && <div className="text-[10px] text-emerald-400 mt-1">Fase36/39 orq auto GOVERNANCE_PROPOSE: {orqGovAutoProposals.map((g:any)=>g.related_pnc).join(', ')} (creadas vía orq fleet para land launches; vota en /governance con poder PACHA real)</div>}
         {orqLandbankLaunches && orqLandbankLaunches.length > 0 && <div className="text-[10px] text-violet-400 mt-1">Fase40: Landbank Launches gov-gated: {orqLandbankLaunches.filter((l:any)=>l.status==='gov_gated').map((l:any)=>l.pnc).join(', ')} (requires gov proposal + quorum vote power per Fase33/39; real PACHA holdings)</div>}
+        {orqGovMailAlerts && orqGovMailAlerts.length > 0 && <div className="text-[10px] text-blue-400 mt-1">Fase41: Mail alerts for gov: {orqGovMailAlerts.map((m:any)=>m.pnc).join(', ')} (Vote outcome affects net yield per Fase32/38. Check inbox/CRM.)</div>}
       </div>
 
       {/* FASE34: V2 Per-PNC / Producto Portfolio Cards - Real Fase32 closed-loop net yields + Fase9 borrow nets + provenance + governance integration.

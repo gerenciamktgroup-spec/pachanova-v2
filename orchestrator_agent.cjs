@@ -359,7 +359,18 @@ async function runFleetYieldForecastTask() {
     };
   });
 
-  return { success: true, forecasts, count: forecasts.length, proposals, proposals_count: proposals.length, portfolioView, _fase34_rich: true, govAutoProposals, gov_auto_count: govAutoProposals.length, landbankLaunches, landbank_count: landbankLaunches.length };
+  // Fase41: Mail alerts for governance outcomes + yield impact (extend mailService/orq)
+  const govMailAlerts = govAutoProposals.map(g => ({
+    type: 'GOV_MAIL_ALERT',
+    pnc: g.related_pnc,
+    title: g.title,
+    message: `Governance proposal active for ${g.related_pnc}. Your PACHA power vote (Fase33/34) can impact yield/net (Fase41 mail alert). Check /governance.`,
+    yieldImpactNote: 'Vote outcome may affect distrib/net per Fase32/38.',
+    sent: false,
+    source: 'orq_fleet_gov_mail_fase41'
+  }));
+
+  return { success: true, forecasts, count: forecasts.length, proposals, proposals_count: proposals.length, portfolioView, _fase34_rich: true, govAutoProposals, gov_auto_count: govAutoProposals.length, landbankLaunches, landbank_count: landbankLaunches.length, govMailAlerts, gov_mail_count: govMailAlerts.length };
 }
 
 // Fase21 #14/#18 onchain sync stub (for v2 thin port consistency with core; demo 12.5 verified enriches proposals)
