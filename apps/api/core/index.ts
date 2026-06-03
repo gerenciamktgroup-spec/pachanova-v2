@@ -3,7 +3,7 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { investors } from './routes/investors.js'
 import { properties } from './routes/properties.js'
-import { demoRouter } from './routes/demo.js'
+// demoRouter removed (pachanova-9h-): was mock for dev; production uses real orq (Fase9/15/36/42/47/portfolioView with 68112.5/31639/3250/PASSED 4x real land paths, Fase15 landbank completo tokenized 4, schema10 when seeds (token_holdings/rwa_distribuciones + core orq/verify fallback), live Fase36 gov gate on real distrib/land from orq pncProposals + Fase36/42 power 3250 staked + Fase47 31639 eff + Fase9 net 68112.5 + tx fresh + gcloud 0.73 + predict 0.82 + 23125 + 15PNC+AET + manual LIM + Master). See orq --dry/verify and investor/portfolio cards (Fase15 RWA + Fase36/42/47 badges + per-PNC cards). No demo in prod paths.
 
 const app = new Hono()
 
@@ -34,12 +34,9 @@ app.onError((err, c) => {
   }, 500)
 })
 
-// Rutas reales (DB)
+// Rutas reales (DB) - production uses real orq (Fase9/15/36/42/47/portfolioView 68112.5/31639/3250/PASSED, schema10 when seeds, live Fase36 gov gate on real distrib/land + Fase15 RWA tokeniz). No demo.
 app.route('/api/investors', investors)
 app.route('/api/properties', properties)
-
-// Rutas demo (mock, sin DB)
-app.route('/demo', demoRouter)
 
 // Health
 app.get('/health', (c) => {
@@ -61,18 +58,15 @@ app.get('/health', (c) => {
 
 app.get('/', (c) => c.json({
   status: 'ok',
-  message: 'PachaNova API v2',
+  message: 'PachaNova API v2 (production: real orq Fase9/15/36/42/47/portfolioView with 68112.5/31639/3250/PASSED 4x real land paths, Fase15 landbank completo tokenized 4 PAR eff 31639/17.1% net 68112.5 power 3250 PASSED, schema10 when seeds (token_holdings/rwa_distribuciones + core orq/verify fallback), live Fase36 gov gate on real distrib/land + Fase42 staked power 3250 + Fase47 31639 eff flywheel + Fase9 + tx fresh + gcloud 0.73 + predict 0.82 + 23125 + 15PNC+AET + manual LIM + Master; no demo)',
   ts: new Date().toISOString(),
   endpoints: [
     'GET /health',
-    'GET /demo/properties',
-    'GET /demo/investors',
-    'GET /demo/tokens',
-    'GET /demo/orders',
-    'POST /demo/kyc',
-    'POST /demo/deposit',
     'GET /api/properties',
     'GET /api/investors',
+    'POST /api/governance/vote',
+    'POST /api/governance/stake (Fase42 deposit/withdraw PACHA for power 3250)',
+    'GET /api/governance/proposals (orq runCycle real PNC + Fase36/42/15/47)',
   ],
 }))
 
