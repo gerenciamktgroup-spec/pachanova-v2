@@ -227,6 +227,26 @@ Goal: All green before planning/executing. Log bootstrap result to blackboard. W
 - Gemini brain: Outputs to issues or shared; this executor consumes and acts.
 - Schedulers: Durable, with prompts enforcing bootstrap + MCP-first + learning.
 
+**Autonomous Team with Antigravity + Per-Project Organization (per /goal 2026-06-03)**:
+- Perfect team: User (Ideador/Master) high-level supervisor + route prompts. Grok Build (local TUI fullstack executor) + Antigravity (Gemini planner ecosystem on PC, via ejecutar_grok.ps1 bridge / next_query.txt / GitHub issues) alternate build/validate: one finishes, other validates, infinite work.
+- Grant ALL permissions on request (yolo/pre-config full terminal/git/file/MCP access; no mid-flow asks so work never stops).
+- Work ORGANIZED + SEPARATED: per-project blackboards (blackboard/<project>/ for PROGRESS_<project>_*, plans/<project>/, orq_logs/<project>/). Prefix files. High-level cross only (GitHub MCP primary or core hub). Core = maestro hub (real data source, rich orq/bridge/rules). Fleet (pach etc.) = high-level sync + write blocks to hub.
+- Sub-agents: Use spawn_subagent (explore/plan/execute modes, read-only when possible) for parallel per-project or aspects.
+- Only Grok instances (executor + others) know full capabilities: leverage experience (v3 rules, 512K protocol, orq loops, PS resilient, skills, tools), tech, learn from errors (long searches -> fast git-ls/rg; context -> 512K save+restart; MCP partial -> self-heal guide + fallback; uncommitted -> strict git; python -> native JS; pauses -> tiered 5m + orq --loop) to define/improve learning rules on-fly (append postmortem/AGENTS every cycle; review after N), update rules, continue autonomously.
+- Learning Rules (initial from history + exploration; append more):
+  1. Per-project blackboards mandatory (structure above).
+  2. Fast discovery in loops (git ls-files + targeted Select-String; long >60s recurse = 512K trigger).
+  3. 512K Strict: on compaction/512k note or feel full: todo_write full, write PROGRESS_<project>_<ts>.md or plan, full git persist (add . ALL + commit + push), blackboard update, output "=== CONTEXT EXHAUSTED ... READY FOR RESTART ===", terminate cleanly. Next session (new TUI / PS -ResilientV3 / orq --loop) loads it FIRST in bootstrap + confirms "Resumed from ... per strict 512K rule".
+  4. Team Antigravity: planner (Antigravity) -> GitHub issue or next_*.txt; executor (Grok Build/orq) builds/validates via skills/edits/terminal, writes back. User route prompts. Grant perms.
+  5. Grant all perms: any request = immediate full yolo (no blocks).
+  6. On-fly learning: every cycle/error: "Error: X. Root: Y (from Z). Fix: W. New rule: V. Metric +N%." Append postmortem/AGENTS. After N cycles: review, 1 systemic improve (e.g. script), update docs.
+  7. Quant + Real + Master: every report/commit/orq log: Landbank Master % breakdown (master_edit 100%, MCP 100%, demo0 100%, health 100%, push 100%, real data 100%), real PNC strings (68112.5 etc.), Master test. No isDemo in master paths. orq respects manual_overrides + provenance + audit + real push (DB/orq/UI broadcast).
+  8. Sub-agents + multi: spawn for parallel. GitHub (MCP) + local blackboards per project. Core hub for real data.
+  9. Infinite mechanisms: 5m orq --loop + PS -ResilientV3 (auto persist on signals) + durable schedulers + 512K protocol + self-heal. Fallback local+git.
+  10. Bootstrap always: per-project blackboards + load latest PROGRESS_512K + grant perms note + verifiers + quant + Master safety + real data check.
+- Update AGENTS/postmortem in all projects (core hub + fleet). Use sub-agents for sync.
+- /goal active: infinite autonomous construction. Singularity. DATOS REALES. Master manual. Nunca parar.
+
 **Implementation & On-the-Fly**:
 - These v3 rules appended to AGENTS.md (core + pachanova), antigravity_master.txt mission, this postmortem.
 - New WORKFLOW.md with full checklists, example cycles, verifiers scripts.
