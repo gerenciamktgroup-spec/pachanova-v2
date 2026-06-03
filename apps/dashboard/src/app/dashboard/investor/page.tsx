@@ -5,7 +5,7 @@ import {
   ProRataLandCardV2, 
   InvestorLedgerPanel, 
   InvestorKycStatusPanel, 
-  GenesisDemoActionCard, 
+  // GenesisDemoActionCard removed (pachanova-9h- demo deprecate): production uses real orq Fase15/36/42/47/48 landbank/portfolio (PAR 31639 eff/17.1% net 68112.5 power 3250 PASSED 4x real land paths, schema10 when seeds token_holdings/rwa_distribuciones + stakes, Fase9/47 carried, tx fresh, 0.73/0.82, 23125+15PNC+AET, manual LIM, Master). See Fase15 RWA section + Fase48 batch below + Governance client (live stake power 3250). DATOS REALES. 
   InvestorWalletStatusPanel 
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
@@ -382,7 +382,7 @@ async function InvestorDashboardContent() {
         </div>
         
         <div className="space-y-8">
-          <GenesisDemoActionCard view={view} />
+          {/* GenesisDemoActionCard removed (demo deprecate): real Fase48 batch/rollups instead (orq enhanced with receipts for PAR claim/compound 8514, net 68112.5, power 3250, tx attest; ties Fase47 + Fase15 tokeniz). See Fase15 cards + Fase48 note above. Real orq data. */}
           <InvestorKycStatusPanel view={view} />
           <InvestorWalletStatusPanel view={view} />
         </div>
