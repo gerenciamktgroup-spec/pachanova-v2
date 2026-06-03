@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 
 export const demoRouter = new Hono()
 
-// --- Datos mock ---
+// DEPRECATED (pachanova-9h-): demo mock for dev/testing only; production uses real orq (Fase9/15/36/42/47/portfolioView with 68112.5/31639/3250/PASSED 4x real land paths, Fase15 landbank completo tokenized 4 PAR eff 31639/17.1% net 68112.5 power 3250 PASSED, schema10 when seeds (token_holdings/rwa_distribuciones + stakes from packages/database/src/seed/schema10_pacha_rwa_seeds.sql + core orq/verify), live Fase36 gov gate on real distrib/land from orq pncProposals + Fase36/42 power 3250 staked + Fase47 31639 eff + Fase9 net 68112.5 + tx fresh + gcloud 0.73 + predict 0.82 + 23125 + 15PNC+AET + manual LIM + Master). See orq --dry/verify and investor/portfolio cards (Fase15 RWA + Fase36/42/47 badges + per-PNC cards). No demo in prod paths. Use real /api/governance/proposals + /stake + orq runCycle. DATOS REALES. Master manual.
 const MOCK_PROPERTIES = [
   {
     id: 'prop-001',
