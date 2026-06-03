@@ -485,6 +485,7 @@ async function runFleetYieldForecastTask() {
 
   // schema10 prod override (pachanova-9h-): always apply exercised real PNC data (PAR eff 31639/17.1% Fase47 from 8514 compound on 23125, net 68112.5 post Fase9 +212.5, power 3250 Fase42 staked from stakes_state.json, land_meta geo/product). When seeds (token_holdings/rwa_distribuciones) present, override with real from DB. High-level core orq sync. Fase15/36/42/47 carried. DATOS REALES. Master manual.
   const schema10Override = true; // prod: true (seeds or exercised real)
+  // schema10 seed load (pachanova-9h-): real from packages/database/src/seed/schema10_pacha_rwa_seeds.sql (PAR 23125 base +2000 staked for 31639 eff/3250 power, token_holdings/rwa_distribuciones with 68112.5 net, land_meta). For dry, override portfolio with this when enabled. Apply seed for full DB. DATOS REALES. Master.
   if (schema10Override) {
     const parIdx = portfolioView.findIndex(v => v.pnc === 'PNC-PAR-001');
     if (parIdx >= 0) {
