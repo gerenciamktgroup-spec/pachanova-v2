@@ -13,10 +13,25 @@ export async function GET(req: Request) {
     }
 
     // Fetch all active/liquidated/repaid loans for this investor
-    const activeLoans = await db.query.loans.findMany({
+    let activeLoans = await db.query.loans.findMany({
       where: eq(schema.loans.investorId, investorId),
       orderBy: (loans, { desc }) => [desc(loans.createdAt)],
     });
+
+    // Auto-accrue interest for active loans on fetch (demo; real via orq scheduler in Fase9)
+    for (const loan of activeLoans.filter(l => l.status === 'active')) {
+      const now = new Date();
+      const last = loan.lastAccruedAt ? new Date(loan.lastAccruedAt) : new Date(loan.createdAt);
+      const days = Math.max(0, (now.getTime() - last.getTime()) / (1000*3600*24));
+      if (days > 0.01) {
+        const rate = parseFloat(loan.interestRate || "0.08");
+        const principal = parseFloat(loan.borrowedAmount);
+        const add = principal * rate * (days / 365);
+        const newAccum = (parseFloat(loan.accumulatedInterest || "0") + add).toFixed(2);
+        await db.update(schema.loans).set({ accumulatedInterest: newAccum, lastAccruedAt: now, updatedAt: now }).where(eq(schema.loans.id, loan.id));
+        loan.accumulatedInterest = newAccum;
+      }
+    }
 
     return NextResponse.json({ success: true, loans: activeLoans });
   } catch (error: any) {
