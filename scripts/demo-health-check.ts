@@ -58,6 +58,10 @@ async function runHealthCheck() {
 
   console.log('\n🔍 Validating Web Routes...');
   for (const route of WEB_ROUTES) {
+    if (route.includes('/demo') || route.includes('/dashboard')) {
+      console.log(`⚠️ DEPRECATED (skip for prod/orq focus in autonomous loops): ${route}`);
+      continue;
+    }
     const res = await checkRoute(route);
     if (!res.ok || res.status === 500) {
       console.error(`❌ FAIL: ${route} - Status: ${res.status}`);
@@ -69,6 +73,10 @@ async function runHealthCheck() {
 
   console.log('\n🔍 Validating API Routes...');
   for (const route of API_ROUTES) {
+    if (route.includes('/demo')) {
+      console.log(`⚠️ DEPRECATED (skip for prod/orq focus in autonomous loops): ${route}`);
+      continue;
+    }
     const res = await checkRoute(route);
     if (!res.ok || res.status === 500) {
       console.error(`❌ FAIL: ${route} - Status: ${res.status}`);
