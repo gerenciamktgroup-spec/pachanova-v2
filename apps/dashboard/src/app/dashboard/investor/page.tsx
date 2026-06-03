@@ -244,6 +244,7 @@ async function InvestorDashboardContent() {
                 <div className="mt-2 text-[10px] text-[#5a5f6a]">
                   Gross: ${(pv.gross || pv.net || 0).toLocaleString()} → Net: ${(pv.net || pv.gross || 0).toLocaleString()} (Fase32 closed + Fase9 net)
                 </div>
+                <div className="mt-1 text-[9px] text-emerald-400">Fase35/36: Gov onchain votes + create proposals activas para este PNC (ver /governance)</div>
 
                 <div className="mt-2">
                   <a href="/dashboard/investor/governance" className="inline-block text-xs px-2 py-1 border border-emerald-600/60 hover:bg-emerald-900/20 rounded text-emerald-300">
