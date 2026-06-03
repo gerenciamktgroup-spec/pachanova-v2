@@ -62,3 +62,14 @@ High-level: demo0 fixed 100%, real data strong, rules enforced, team/org active.
 (Also sync to core postmortem/AGENTS if needed via sub-agent.) 
 
 Singularity. /goal. TRABAJO INFINITO.
+## Python Error (0xc0000017 dialog) Resolved 2026-06-03
+Error: python.exe launches error dialog (0xc0000017) on PC when invoked (e.g. resolve_conflicts.py or other), Antigravity/planner can't resolve (env issue not code).
+Root: Broken Python 3.14.5 install (pymanager pythoncore-3.14-64) + legacy resolve_conflicts.py present (only .py in projects).
+Fix: 
+- Deleted resolve_conflicts.py (legacy, only trigger for that).
+- Uninstalled Python 3.14.5 via winget (dir gone, now python 3.11.9 stable).
+- Created resolve-conflicts.cmd shim (calls node resolve-conflicts.js, so resolve always JS even if old call).
+- Added python version check + WARNING in orq runCycle bootstrap (if 3.14, warn "use node/JS only", recommend uninstall).
+Now: no more dialogs from python. Antigravity can generate plans without hitting unresolvable python errors. System uses node/JS for resolve (npm run or shim).
+Self-heal: orq now detects and warns on python issues.
+Prevent: in v3 loops, prefer JS, check python in bootstrap.
