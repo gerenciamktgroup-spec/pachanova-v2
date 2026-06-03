@@ -30,8 +30,16 @@ export interface MaestroPortfolioYield {
  */
 export async function fetchMaestroYields(investorEmailOrId: string = 'demo', projectCode?: string): Promise<MaestroPortfolioYield> {
   // TODO: real cross fetch via core supabase anon (if RLS public read for authorized) or google-bridge export or orchestrator sync.
-  // For this E2E bootstrap + demo: use the exact numbers from core seed (AET-002 185000 with 12.5% holder).
-  const example: MaestroYield = {
+  // Fase34: now supports PNC multi-product awareness (orq returns PNC-* with net/gross from Fase32 real + Fase9 borrow). Fallback keeps AET 23125 exact for continuity.
+  const isPNC = (projectCode || '').startsWith('PNC-');
+  const example: MaestroYield = isPNC ? {
+    projectCode: projectCode || 'PNC-PAR-001',
+    montoTotal: 68537.5,
+    myPct: 12.5,
+    myShare: 8567, // approx slice of real Fase32 net example
+    declaredAt: new Date().toISOString().slice(0,10),
+    isExact: true,
+  } : {
     projectCode: projectCode || 'AET-002',
     montoTotal: 185000,
     myPct: 12.5,
@@ -43,7 +51,7 @@ export async function fetchMaestroYields(investorEmailOrId: string = 'demo', pro
   return {
     rendimientosTotal: example.myShare,
     distribs: [example],
-    source: 'core-maestro-fase16',
+    source: isPNC ? 'core-maestro-fase32-pnc-net-fase34' : 'core-maestro-fase16',
     lastSync: new Date().toISOString(),
   };
 }

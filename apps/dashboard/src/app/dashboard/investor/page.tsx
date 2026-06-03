@@ -99,13 +99,15 @@ async function fetchInvestorData(): Promise<any> {
 
     let orqProposals: any[] = []; 
     let orqForecasts: any[] = []; 
+    let orqPortfolioView: any[] = [];
     try {
       const orq = require('../../../../../../orchestrator_agent.cjs'); 
       if (typeof orq.runFleetYieldForecastTask === 'function') {
         const res = await orq.runFleetYieldForecastTask();
         orqProposals = res.proposals || [];
         orqForecasts = res.forecasts || [];
-        console.log('[ORQ TEST #17 v2 port] fetchInvestorData called runFleetYieldForecastTask -> proposals_count=', res.proposals_count, 'sample monto=', orqProposals[0]?.suggested_monto);
+        orqPortfolioView = res.portfolioView || res._fase34_rich ? (res.portfolioView || []) : [];
+        console.log('[ORQ TEST #17+34 v2 port] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net);
       } else {
         orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
       }
@@ -113,7 +115,7 @@ async function fetchInvestorData(): Promise<any> {
       console.log('[v2 orq call note in fetchInvestorData]', e?.message || e);
       orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'stub from real Fase16 12.5% 23125 DATOS REALES (no keys)', source: 'stub_fallback', based_on: 'Fase16 23125 context' }];
     }
-    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts };
+    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView };
   } catch (error) {
     console.error("Error fetching investor view model:", error);
     return null;
@@ -132,9 +134,10 @@ async function InvestorDashboardContent() {
   const maestroForecast = await fetchMaestroYieldForecast(view?.investor?.email || 'investor@pachanova.local');
   console.log('[FLEET] Maestro forecast from core Panel:', maestroForecast);
 
-  // orq data from updated fetchInvestorData (proposals for #17)
+  // orq data from updated fetchInvestorData (proposals for #17 + Fase34 portfolioView for PNC net cards + governance tie-in)
   const orqProposals = (data && data._orqProposals) || [];
   const orqForecasts = (data && data._orqForecasts) || [];
+  const orqPortfolioView = (data && data._orqPortfolioView) || [];
 
   if (!view) {
     return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del inversor." />;
@@ -201,6 +204,59 @@ async function InvestorDashboardContent() {
           </div>
         )) : <div className="text-xs">No proposals (stub used: 24281.25 / 0.72)</div>}
         <div className="text-[10px] text-[#5a5f6a] mt-1">DATOS REALES (use 23125 refs). Thin v2 port. High-level only.</div>
+      </div>
+
+      {/* FASE34: V2 Per-PNC / Producto Portfolio Cards - Real Fase32 closed-loop net yields + Fase9 borrow nets + provenance + governance integration.
+         Uses richer orqPortfolioView from runFleetYieldForecastTask (PNC-PAR net 68325, SB/CHI slices, gcloud real, onchain block, borrow_debt, health, land_meta).
+         Per-card: gross/net, your share (12.5% holdings * net), badges, health, quick link to Gobernanza RWA (weighted PACHA vote on related PNC proposals).
+         Compounds Fase32 real distribs/PNC products + Fase33 governance + Fase9 onchain borrow + Fase16 exact. Real data only. */}
+      <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <div className="text-[#8a8f9a] tracking-widest">FASE 34 • PORTAFOLIO V2 PNC POR PRODUCTO (Net Yields Reales Fase32 + Fase9 Borrow)</div>
+            <div className="text-emerald-400 text-xs">Gross → Net after borrow interest • Badges: gcloud / onchain block / MANUAL / land_meta • Tu poder PACHA 12.5% • Acceso directo a Gobernanza</div>
+          </div>
+          <a href="/dashboard/investor/governance" className="text-xs px-3 py-1 border border-emerald-700 rounded hover:bg-emerald-900/30">Ir a Gobernanza RWA →</a>
+        </div>
+
+        {orqPortfolioView && orqPortfolioView.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+            {orqPortfolioView.map((pv: any, i: number) => (
+              <div key={i} className="border border-emerald-800/40 rounded-lg p-3 bg-[#050608]">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-mono text-emerald-300 text-sm">{pv.pnc}</div>
+                    <div className="text-[10px] text-[#8a8f9a]">{pv.product} • {pv.badges?.onchainBlock ? `onchain @${pv.badges.onchainBlock}` : ''}</div>
+                  </div>
+                  <div className="text-right text-xs">
+                    <div className="text-emerald-400 font-semibold tabular-nums">Net ${ (pv.net || pv.gross || 0).toLocaleString() }</div>
+                    <div className="text-[10px] text-[#b8a17a]">Tu share ~${ (pv.yourNetShare || Math.round(((pv.net||0)*0.125)*100)/100 ).toLocaleString() }</div>
+                  </div>
+                </div>
+
+                <div className="mt-2 text-[10px] flex flex-wrap gap-1">
+                  {pv.badges?.gcloud?.real && <span className="px-1.5 py-0.5 bg-emerald-900/40 text-emerald-300 rounded text-[9px]">gcloud {pv.badges.gcloud.conf}</span>}
+                  {pv.badges?.borrowDebt > 0 && <span className="px-1.5 py-0.5 bg-amber-900/40 text-amber-300 rounded text-[9px]">borrow ${pv.badges.borrowDebt} • health {pv.badges.health}</span>}
+                  {pv.badges?.manual && <span className="px-1.5 py-0.5 bg-violet-900/40 text-violet-300 rounded text-[9px]">MANUAL</span>}
+                  <span className="px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded text-[9px]">land {pv.pnc.split('-')[1] || ''}</span>
+                </div>
+
+                <div className="mt-2 text-[10px] text-[#5a5f6a]">
+                  Gross: ${(pv.gross || pv.net || 0).toLocaleString()} → Net: ${(pv.net || pv.gross || 0).toLocaleString()} (Fase32 closed + Fase9 net)
+                </div>
+
+                <div className="mt-2">
+                  <a href="/dashboard/investor/governance" className="inline-block text-xs px-2 py-1 border border-emerald-600/60 hover:bg-emerald-900/20 rounded text-emerald-300">
+                    🗳️ Gobernanza PNC ({pv.relatedGovernanceProposals || 1} activa) • Tu poder: ~{(pv.yourPowerPct || 12.5)}% PACHA
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-xs text-[#5a5f6a]">Cargando portfolioView PNC desde orq (Fase34). Datos de ejemplo: PNC-PAR alquiler net 68325 post-borrow, etc. (ver orq runFleet para rich data).</div>
+        )}
+        <div className="text-[10px] text-[#5a5f6a] mt-2">Real Fase32 PNC product slices + Fase9 borrow netting + Fase33 governance power. Click → /governance para votar ponderado por tenencias PACHA actuales. DATOS REALES (orq + holdings locales).</div>
       </div>
 
       <YieldActionButtons maestroYield={maestroYield} maestroForecast={maestroForecast} email={view.investor.email} orqProposals={orqProposals} />

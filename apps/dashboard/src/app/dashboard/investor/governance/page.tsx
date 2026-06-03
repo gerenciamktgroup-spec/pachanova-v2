@@ -144,16 +144,16 @@ export default async function InvestorGovernancePage() {
         ]} className="mb-4" />
         <div className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-pn-gold text-sm font-mono tracking-[2px] mb-1">FASE 33 • RWA DAO</div>
+            <div className="text-pn-gold text-sm font-mono tracking-[2px] mb-1">FASE 33 + 34 • RWA DAO + NET YIELDS</div>
             <h1 className="text-4xl font-semibold text-white">Gobernanza Colectiva RWA</h1>
             <p className="text-pn-text-soft mt-2 max-w-2xl">
-              Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA en el portafolio (disponibles + locked).
+              Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA en el portafolio (disponibles + locked). Fase34: contexto de net yields reales (Fase32 distribs - Fase9 borrow interest) visible al votar.
             </p>
           </div>
           <div className="hidden sm:block text-right">
             <div className="text-xs text-pn-text-soft">TU PODER DE VOTO ACTUAL</div>
             <div className="text-3xl font-semibold tabular-nums text-white">{totalPachaHoldings.toLocaleString()} <span className="text-sm text-pn-gold">PACHA</span></div>
-            <div className="text-[10px] text-pn-text-soft/70">Basado en balances reales • Fase16/Fase32 holdings</div>
+            <div className="text-[10px] text-pn-text-soft/70">Basado en balances reales • Fase16/Fase32 holdings • Fase34 net context</div>
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@ export default async function InvestorGovernancePage() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">Propuestas Activas</h2>
-          <div className="text-xs px-3 py-1 rounded bg-pn-gold/10 text-pn-gold border border-pn-gold/30">Peso = Holdings PACHA reales</div>
+          <div className="text-xs px-3 py-1 rounded bg-pn-gold/10 text-pn-gold border border-pn-gold/30">Peso = Holdings PACHA reales • Fase34: contexto net yield del activo (Fase32/9)</div>
         </div>
 
         {proposals.length === 0 ? (
