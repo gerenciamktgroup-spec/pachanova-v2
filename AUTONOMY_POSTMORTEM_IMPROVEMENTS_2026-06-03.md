@@ -70,3 +70,17 @@ This directly addresses: "recuerda qeu al ser un ssitema tipo banco... autonizac
 Python fix + JS + VC++ + enforced commit = concrete step to "ser autonomo de verdad" + "maxima capacidad sin perdere calidad". Local+git blackboard active; GitHub MCP next for multi-agent (Grok + Gemini Antigravity + orq).
 
 (Also mirrored concepts to core if paths differ; this is the pachanova-v2 active tree.)
+
+## 2026-06-03 Context Exhaustion for Infinite Work (user request)
+Added explicit "Context Window Exhaustion Protocol (512k / compaction)" as a first-class v3 rule in AGENTS.md (for the AI/Grok Build "tu").
+- When compaction reminder appears or context fills in the PS TUI: immediate todo_write full, write CONTEXT_SAVE_*.md with resume instruction, full git add/commit/push, blackboard update, output clear restart marker, then stop.
+- Next fresh Grok Build session (new TUI or PS re-launch) must load the snapshot in bootstrap and continue exactly.
+- PowerShell side: enhanced ejecutar_grok.ps1 with -ResilientV3 -LoopInfinite. It now wraps Grok Build invocations in infinite loop, forces Invoke-V3ContextPersist (git + snapshot) on every iteration and on detecting "context/compaction/512k/This session is being continued" phrases in output. Auto-generates resume instruction files that embed "load latest CONTEXT_SAVE + full v3 bootstrap + continue infinite autonomous work".
+- orq side: index.cjs --loop and orchestrator_agent.cjs runCycle now call persistContextWindowSave on errors, "context high", periodic checkpoints, and top-level catch. The function is exported and also exposed via `pnpm run v3:context-persist`.
+- New npm scripts: v3:context-persist, v3:infinite-bridge (launches the resilient PS), orchestrate:loop:resilient.
+- Test: manual call succeeded (wrote snapshot + did real git commit+push).
+- Result: even if the chat TUI context resets (compaction), the autonomous system (PS launcher + orq loops + AI rules + git blackboard) saves state and "ejecuta otra vez todo" → true trabajo infinito, nunca te detengas, without losing the Master bank progress or learnings.
+- Also added to Bootstrap Checklist (load latest CONTEXT_SAVE as first-class resume source) and Cycle Workflow discipline.
+- This directly implements the user's request for rules in both the AI environment and the PowerShell launchers.
+
+All changes committed as part of the v3 robustness series. The system now treats context limits as just another normal "window end" that triggers save + seamless re-execution of the full autonomous loop.
