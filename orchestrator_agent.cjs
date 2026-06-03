@@ -286,6 +286,16 @@ async function injectPlanAndReport(feature) {
 
 async function runCycle(dryRun = false, loopMs = null) {
   log('=== CICLO DE SINGULARIDAD (orchestrator_agent.cjs) ===');
+  // v3 5m loop: strict 512K rule enforcement - auto load latest PROGRESS_512K_CONTEXT_SAVE if present (per user REGLA ESTRICTA)
+  try {
+    const progressFiles = fs.readdirSync(PROJECT_ROOT).filter(f => f.startsWith('PROGRESS_512K_CONTEXT_SAVE_')).sort().reverse();
+    if (progressFiles.length > 0) {
+      const latest = progressFiles[0];
+      const content = fs.readFileSync(path.join(PROJECT_ROOT, latest), 'utf8').slice(0, 800);
+      log(`Loaded latest ${latest} per strict 512K rule. Resume key: ${content.match(/Continue exactly the ongoing work:([\s\S]*?)6\. Goal:/)?.[1]?.trim().slice(0,200) || 'see file'}`);
+      // High-level: this ensures orchestrator re-execute from zero loads the saved state for infinite work
+    }
+  } catch (e) { log('512K PROGRESS load note: ' + e.message, 'WARN'); }
   try {
     const out = await consultGrokViaProjectCommand(dryRun);
     const feat = parseNextBestFeature(out);
