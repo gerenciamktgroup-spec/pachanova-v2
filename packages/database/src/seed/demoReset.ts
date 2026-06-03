@@ -36,7 +36,8 @@ async function reset() {
   await db.delete(schema.integrationEvents).where(like(schema.integrationEvents.eventType, "DEMO_%"));
   await db.delete(schema.annualValuations).where(eq(schema.annualValuations.source, "DEMO_VALUATION"));
   await db.delete(schema.systemParameters).where(eq(schema.systemParameters.key, "treasury_balance_usd"));
-  console.log("✅ Demo Database Reset Complete!");
+  await db.delete(schema.distributions).where(eq(schema.distributions.isDemo, true)); // Fase44: clear demo paid history for fresh seed
+  console.log("✅ Demo Database Reset Complete! (Fase44 distribs cleared for re-seed)");
   process.exit(0);
 }
 

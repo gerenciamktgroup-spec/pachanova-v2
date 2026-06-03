@@ -16,48 +16,80 @@ import { fiduciarioJourney } from "@/lib/navigation/userJourneys";
 import { db } from "@/server/db";
 import { requireRole } from "@/utils/auth/requireRole";
 
+import { schema } from "@pachanova/database";
+import { eq, desc, like } from "drizzle-orm";
+import { FideicomisoOperationView } from "@/types/product";
+
 async function fetchFideicomisoData(): Promise<FideicomisoDashboardView | null> {
   try {
     const ops = await db.query.fideicomisoOperations.findMany({
-      limit: 1
+      orderBy: [desc(schema.fideicomisoOperations.id)],
+      limit: 10
     });
-    const latestOp = ops[0];
-    const opId = latestOp?.id || "00000000-0000-0000-0000-000000000001";
-    const status = latestOp?.status;
-    let mappedStatus: "pending" | "rejected" | "signed" | "executed" = "pending";
-    if (status === "executed_simulated") mappedStatus = "executed";
-    else if (status === "fiduciario_signed" || status === "quorum_reached") mappedStatus = "signed";
-    else mappedStatus = "pending";
 
-    // Simulate fetching fideicomiso state
+    const pendingOperations: FideicomisoOperationView[] = [];
+
+    for (const op of ops) {
+      const signatures = await db.query.fideicomisoSignatures.findMany({
+        where: eq(schema.fideicomisoSignatures.operationId, op.id)
+      });
+
+      let mappedStatus: "pending" | "signed" | "executed" | "rejected" = "pending";
+      if (op.status === "executed_simulated" || op.status === "executed") mappedStatus = "executed";
+      else if (op.status === "fiduciario_signed" || op.status === "quorum_reached") mappedStatus = "signed";
+      else if (op.status === "rejected") mappedStatus = "rejected";
+
+      const description = op.type === "DEMO_EMISSION" || op.type === "EMISION_DEMO"
+        ? `Autorizar emisión de ${op.tokenAmount ? parseFloat(op.tokenAmount).toLocaleString() : '500,000'} PACHA simulados para el Sandbox.`
+        : `Operación fiduciaria de tipo ${op.type} por ${op.tokenAmount ? parseFloat(op.tokenAmount).toLocaleString() : '0'} tokens.`;
+
+      pendingOperations.push({
+        id: op.id,
+        type: op.type,
+        description,
+        status: mappedStatus,
+        requiredSignatures: op.requiredSignatures,
+        currentSignatures: op.currentSignatures,
+        signatures: signatures.map(s => ({
+          signerRole: s.signerRole.toUpperCase(),
+          signedAt: s.timestamp.toISOString()
+        })),
+        createdAt: op.executedAt ? op.executedAt.toISOString() : new Date().toISOString()
+      });
+    }
+
+    // Fetch real audit logs for timeline
+    const dbLogs = await db.query.auditLogs.findMany({
+      where: like(schema.auditLogs.action, "FIDEICOMISO_%"),
+      orderBy: [desc(schema.auditLogs.timestamp)],
+      limit: 10
+    });
+
+    const recentHistory = dbLogs.map(log => ({
+      id: log.id,
+      action: log.action.replace("FIDEICOMISO_", "").replace("_", " "),
+      details: log.details,
+      timestamp: log.timestamp.toISOString(),
+      actor: log.userId ? `User:${log.userId}` : "System"
+    }));
+
+    if (recentHistory.length === 0) {
+      recentHistory.push({
+        id: "log-initial",
+        action: "Trust Anchor Initialization",
+        details: "El smart contract del fideicomiso ha sido inicializado en el entorno local (Sandbox).",
+        timestamp: new Date().toISOString(),
+        actor: "System"
+      });
+    }
+
     return {
       status: "SIMULATED",
-      trustAnchorHash: null,
+      trustAnchorHash: ops[0]?.sunarpHash || null,
       quorumRequired: 3,
-      fiduciarioWallet: null,
-      pendingOperations: [
-        {
-          id: opId,
-          type: "EMISION_DEMO",
-          description: "Autorizar emisión de 500,000 PACHA simulados para el Sandbox.",
-          status: mappedStatus,
-          requiredSignatures: 3,
-          currentSignatures: latestOp?.currentSignatures || 0,
-          signatures: [
-            { signerRole: "ADMIN", signedAt: new Date().toISOString() }
-          ],
-          createdAt: new Date().toISOString()
-        }
-      ],
-      recentHistory: [
-        {
-          id: "log-1",
-          action: "Trust Anchor Initialization",
-          details: "El smart contract del fideicomiso ha sido inicializado en el entorno local (Sandbox).",
-          timestamp: new Date().toISOString(),
-          actor: "System"
-        }
-      ]
+      fiduciarioWallet: ops[0]?.notarioHash || null,
+      pendingOperations,
+      recentHistory
     };
   } catch (error) {
     console.error("Error fetching fideicomiso view model:", error);

@@ -82,6 +82,7 @@ async function seed() {
   const users = await db.insert(schema.investors).values([
     { id: "00000000-0000-0000-0000-000000000000", firstName: "PachaNova", lastName: "Treasury", email: "treasury@pachanova.io", role: "admin", kycStatus: "approved", isVerified: true },
     { firstName: "Flavio", lastName: "Master", email: "gerencia.mkrgroup@gmail.com", role: "admin", kycStatus: "approved", isVerified: true },
+    { firstName: "Carlos", lastName: "Mendoza", email: "carlos.mendoza@demo.pachanova.io", role: "admin", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Admin", email: "demo.admin@pachanova.local", role: "admin", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Investor", email: "demo.investor.approved@pachanova.local", role: "investor", kycStatus: "approved", isVerified: true },
     { firstName: "Demo", lastName: "Holder", email: "demo.investor.holder@pachanova.local", role: "investor", kycStatus: "approved", isVerified: true },
@@ -206,7 +207,61 @@ async function seed() {
         eq(schema.balances.investorId, holder.id),
         eq(schema.balances.propertyId, propertyIdParacas)
       ));
+
+    // Fase44: Seed historical + current realized distribs / cashflow paid for PNC-PAR (your 12.5% share of ~68325 net) + AET slice.
+    // Fase46: + claimable/claimed/compounded rows with status + proofRef + compoundDetails (real 8540/23125 + predict + Fase9 net tie)
+    // (refs + predict notes carried in orq cashflowHistory for display; seed provides amounts/dates for HISTORIAL surface + claim/compound actions)
+    const distribsToSeed = [
+      { id: 'd1111111-1111-1111-1111-111111111111', propertyId: propertyIdParacas, investorId: holder.id, amountUsd: '8540.62', periodStart: new Date('2026-04-01'), periodEnd: new Date('2026-04-30'), isDemo: true, createdAt: new Date('2026-05-01'), status: 'PAGADO', proofRef: 'tx@block-25235270-23125' },
+      { id: 'd2222222-2222-2222-2222-222222222222', propertyId: propertyIdParacas, investorId: holder.id, amountUsd: '8540.62', periodStart: new Date('2026-05-01'), periodEnd: new Date('2026-05-31'), isDemo: true, createdAt: new Date('2026-06-01'), status: 'CLAIMABLE', proofRef: 'pending-claim-fase46' }, // Fase46 claimable for RECLAMAR
+      { id: 'd3333333-3333-3333-3333-333333333333', propertyId: propertyIdSB, investorId: holder.id, amountUsd: '23125.00', periodStart: new Date('2026-05-15'), periodEnd: new Date('2026-06-02'), isDemo: true, createdAt: new Date('2026-06-02'), status: 'PAGADO', proofRef: 'tx@block-25235280-23125', compoundDetails: '{"toPnc":"PNC-SB-003","tokensAdded":16.9,"growth":196}' }, // Fase46 compounded example
+      { id: 'd4444444-4444-4444-4444-444444444444', propertyId: propertyIdParacas, investorId: holder.id, amountUsd: '8540.62', periodStart: new Date('2026-06-01'), periodEnd: new Date('2026-06-03'), isDemo: true, createdAt: new Date('2026-06-03'), status: 'CLAIMED', proofRef: '0xf6b06d413f@25236020', claimedAt: new Date('2026-06-03') } // Fase46 claimed example (real PAR 8540)
+    ];
+    for (const d of distribsToSeed) {
+      await db.insert(schema.distributions).values(d as any).onConflictDoUpdate({
+        target: schema.distributions.id,
+        set: { amountUsd: (d as any).amountUsd, status: (d as any).status, proofRef: (d as any).proofRef, compoundDetails: (d as any).compoundDetails, claimedAt: (d as any).claimedAt }
+      });
+    }
   }
+
+  // 2.5 Seed Proposals (Fase33/34 Governance)
+  const proposalId1 = "33333333-3333-3333-3333-333333333301";
+  const proposalId2 = "33333333-3333-3333-3333-333333333302";
+  
+  await db.insert(schema.proposals).values([
+    {
+      id: proposalId1,
+      title: "Financiamiento de Fase 2 PNC-PAR-001 (Paracas)",
+      description: "Propuesta para autorizar la liberación de fondos de tesorería y expandir el Resort Paracas. Incrementará el LTV máximo de préstamos colaterales en la fase 2.",
+      status: "active",
+      creatorInvestorId: "00000000-0000-0000-0000-000000000000",
+      relatedPropertyId: propertyIdParacas,
+      startAt: new Date(),
+      endAt: new Date(Date.now() + 10 * 24 * 3600 * 1000), // 10 days
+      quorumRequired: "15.00",
+      vertexPrediction: "Fase42 Prediction: Probabilidad de Aprobación 78%. Impacto Yield: +1.2% proyectado."
+    },
+    {
+      id: proposalId2,
+      title: "Actualización de Rendimiento Anual San Bartolo",
+      description: "Propuesta para ajustar el rendimiento esperado de San Bartolo a 13.5% anual debido a mayor ocupación y revaluación comercial.",
+      status: "active",
+      creatorInvestorId: "00000000-0000-0000-0000-000000000000",
+      relatedPropertyId: propertyIdSB,
+      startAt: new Date(),
+      endAt: new Date(Date.now() + 5 * 24 * 3600 * 1000), // 5 days
+      quorumRequired: "10.00",
+      vertexPrediction: "Fase42 Prediction: Probabilidad de Aprobación 91%. Impacto Yield: +1.0% proyectado."
+    }
+  ]).onConflictDoUpdate({
+    target: schema.proposals.id,
+    set: {
+      title: sql`EXCLUDED.title`,
+      description: sql`EXCLUDED.description`,
+      status: sql`EXCLUDED.status`
+    }
+  });
 
   // 3. System Parameters
   await db.delete(schema.systemParameters).where(eq(schema.systemParameters.key, "treasury_balance_usd"));
@@ -214,7 +269,7 @@ async function seed() {
     { key: "treasury_balance_usd", value: "0" }
   ]);
 
-  console.log("✅ Demo Seeding Complete! (Fase8 Paracas $50k borrow demo seeded)");
+  console.log("✅ Demo Seeding Complete! (Fase8 Paracas $50k borrow + Fase44 3 distribs history for PAR/AET ~8540/23125 with predict refs seeded + Fase46 claimable/claimed/compounded rows + status/proof)");
   process.exit(0);
 }
 

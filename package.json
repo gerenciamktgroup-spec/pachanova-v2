@@ -30,7 +30,7 @@
     "mp:sandbox:smoke": "tsx scripts/mercadopago-sandbox-smoke.ts",
     "test:demo": "vitest run tests/demo/unit.test.tsx",
     "test:e2e:demo": "playwright test -c tests/demo/playwright.config.ts",
-    "demo:start": "pnpm --filter web run dev",
+    "demo:start": "pnpm --filter dashboard run dev",
     "demo:scenario:happy": "pnpm --filter @pachanova/database run demo:scenario:happy",
     "demo:scenario:rejected-payment": "pnpm --filter @pachanova/database run demo:scenario:rejected",
     "demo:scenario:duplicate-webhook": "pnpm --filter @pachanova/database run demo:scenario:duplicate",

@@ -64,6 +64,45 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & 
 export function ProRataLandCardV2({ view }: { view: any }) {
   const portfolio = view.investor.portfolio || [];
 
+  const downloadAttestation = (item: any) => {
+    const proof = item.metadata?.execute_proof;
+    if (!proof) return;
+    const cert = {
+      title: `Certificado de Emisión RWA - ${item.propertyName}`,
+      asset: {
+        id: item.propertyId,
+        name: item.propertyName,
+        location: item.location,
+        type: item.propertyType,
+        tokenPriceUsd: item.tokenPriceUsd
+      },
+      attestation: {
+        network: "PachaNova L2 Sim",
+        onchainVerified: true,
+        transactionHash: proof.txHash,
+        blockNumber: proof.blockNum,
+        timestamp: proof.timestamp,
+      },
+      governance: {
+        proposalId: proof.proposalId,
+        proposalTitle: proof.proposalTitle,
+        quorumRequiredPercent: proof.quorumPct,
+        votingPowerApplied: proof.votingPowerCast
+      },
+      verificationNote: "Este certificado digital fue generado criptográficamente tras el quórum y ejecución de la propuesta de lanzamiento en el módulo de gobernanza PachaNova DAO."
+    };
+    
+    const blob = new Blob([JSON.stringify(cert, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `attestation-${item.propertyName.replace(/\s+/g, '-').toLowerCase()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <MissionCard title="Portafolio Inmobiliario" data-testid="pro-rata-land-card">
       {portfolio.length === 0 ? (
@@ -73,6 +112,7 @@ export function ProRataLandCardV2({ view }: { view: any }) {
           {portfolio.map((item: any) => {
             const balance = Number(item.availableTokens);
             const sqm = tokensToSquareMeters(balance);
+            const hasProof = !!(item.metadata && (item.metadata as any).execute_proof);
             return (
               <div key={item.propertyId} className="flex justify-between items-center p-4 rounded-lg bg-[#0f172a] border border-white/10 hover:border-[#c5a46d]/50 transition-colors">
                 <div className="flex items-center gap-4">
@@ -80,11 +120,28 @@ export function ProRataLandCardV2({ view }: { view: any }) {
                     <img src={item.imageUrl} alt={item.propertyName} className="object-cover w-full h-full opacity-60" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-white/90">{item.propertyName}</h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="text-sm font-medium text-white/90">{item.propertyName}</h4>
+                      {hasProof && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 text-[9px] font-semibold tracking-wide">
+                          💎 Emisión Certificada (DAO)
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-white/50">{item.location} • {item.propertyType}</p>
-                    <a href={`/dashboard/investor/certificate/${item.propertyId}`} target="_blank" rel="noreferrer" className="text-[10px] text-[#c5a46d] hover:underline mt-1 inline-block">
-                      📄 Descargar Certificado
-                    </a>
+                    <div className="flex items-center gap-3">
+                      <a href={`/dashboard/investor/certificate/${item.propertyId}`} target="_blank" rel="noreferrer" className="text-[10px] text-[#c5a46d] hover:underline mt-1 inline-block">
+                        📄 Descargar Certificado
+                      </a>
+                      {hasProof && (
+                        <button 
+                          onClick={() => downloadAttestation(item)}
+                          className="text-[10px] text-emerald-400 hover:underline mt-1 inline-block"
+                        >
+                          📥 Attestation Proof (JSON)
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -117,7 +174,18 @@ export function InvestorLedgerPanel({ view }: { view: InvestorDashboardView }) {
         <DataGrid headers={["Tipo", "Monto", "Fecha", "Tx Hash Demo"]}>
           {view.recentTransactions.map(tx => (
             <DataGridRow key={tx.id}>
-              <DataGridCell><span className="text-xs font-medium px-2 py-1 bg-pn-surface-strong rounded border border-pn-border">{tx.operationType}</span></DataGridCell>
+              <DataGridCell>
+                <span className={cn(
+                  "text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded border",
+                  tx.operationType === "GENESIS_PURCHASE" && "bg-pn-gold/10 text-pn-gold border-pn-gold/20",
+                  tx.operationType === "TRANSFER" && "bg-pn-blue/10 text-pn-blue border-pn-blue/20",
+                  (tx.operationType === "STAKE" || tx.operationType === "UNSTAKE") && "bg-pn-terracotta/10 text-pn-terracotta border-pn-terracotta/20",
+                  tx.operationType === "YIELD" && "bg-pn-success/10 text-pn-success border-pn-success/20",
+                  !["GENESIS_PURCHASE", "TRANSFER", "STAKE", "UNSTAKE", "YIELD"].includes(tx.operationType) && "bg-pn-surface-strong text-pn-text border-pn-border"
+                )}>
+                  {tx.operationType}
+                </span>
+              </DataGridCell>
               <DataGridCell><TokenAmount amount={tx.amount} /></DataGridCell>
               <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString('en-US')}</span></DataGridCell>
               <DataGridCell>

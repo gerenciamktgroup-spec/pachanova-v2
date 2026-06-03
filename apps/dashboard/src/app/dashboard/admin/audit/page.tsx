@@ -5,21 +5,61 @@ import { AuditLogTimeline } from "@/components/product";
 import { AuditLogView } from "@/types/product";
 import { createClient } from "@supabase/supabase-js";
 
+import postgres from "postgres";
+
 async function fetchAuditLogs(): Promise<AuditLogView[]> {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  
-  const { data, error } = await supabaseAdmin
-    .from("audit_logs")
-    .select("id, action, details, timestamp, user_id")
-    .order("timestamp", { ascending: false })
-    .limit(100);
+  let logs: any[] = [];
+  let fetchFailed = false;
 
-  if (error || !data) return [];
+  if (process.env.DEMO_MODE !== 'true' && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      
+      const { data, error } = await supabaseAdmin
+        .from("audit_logs")
+        .select("id, action, details, timestamp, user_id")
+        .order("timestamp", { ascending: false })
+        .limit(100);
 
-  return data.map((log: any) => ({
+      if (error) throw error;
+      logs = data || [];
+    } catch (err) {
+      console.warn("Supabase fetch failed on audit logs page, falling back to local DB", err);
+      fetchFailed = true;
+    }
+  } else {
+    fetchFailed = true;
+  }
+
+  if (fetchFailed) {
+    try {
+      const client = postgres(process.env.DATABASE_URL!);
+      const rawAuditLogs = await client`
+        SELECT id, action, details, timestamp, user_id
+        FROM audit_logs
+        ORDER BY timestamp DESC
+        LIMIT 100
+      `;
+      logs = rawAuditLogs || [];
+      await client.end();
+    } catch (dbErr) {
+      console.warn("Local DB fetch failed for audit logs, using mocks", dbErr);
+      logs = [
+        {
+          id: "1",
+          action: "SIMULATED_AUDIT",
+          details: "Offline mode fallback enabled.",
+          timestamp: new Date().toISOString(),
+          user_id: "system"
+        }
+      ];
+    }
+  }
+
+  return logs.map((log: any) => ({
     id: log.id,
     action: log.action ?? "UNKNOWN",
     details: typeof log.details === "string"

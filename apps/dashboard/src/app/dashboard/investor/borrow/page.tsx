@@ -3,7 +3,7 @@ import { RouteBreadcrumbs, LoadingState, ErrorState } from "@/components/mission
 import { createServerClient } from "@/utils/supabase/server";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { schema } from "@pachanova/database";
 import DeFiBorrowClient from "./DeFiBorrowClient";
 
@@ -60,7 +60,7 @@ async function fetchBorrowData() {
 
     // Fetch all properties to have the dynamic reference list
     const properties = await db.query.properties.findMany({
-      where: eq(schema.properties.status, 'active'),
+      where: inArray(schema.properties.status, ['trading', 'funding', 'funded']),
     });
 
     return {

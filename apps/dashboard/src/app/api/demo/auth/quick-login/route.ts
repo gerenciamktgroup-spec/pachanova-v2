@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/utils/supabase/server";
 
-const DEMO_PERSONAS: Record<string, { email: string; password: string; label: string }> = {
+const DEMO_PERSONAS: Record<string, { email: string; password: string; label: string; redirectTo: string }> = {
   carlos: {
     email: "carlos.mendoza@demo.pachanova.io",
     password: "Demo2026!",
     label: "Carlos Mendoza (Admin / Operador)",
+    redirectTo: "/dashboard/admin",
+  },
+  holder: {
+    email: "demo.investor.holder@pachanova.local",
+    password: "Demo2026!",
+    label: "Demo Holder (Inversor / KYC Aprobado)",
+    redirectTo: "/dashboard/investor",
   },
 };
 
@@ -45,6 +52,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     persona: target.label,
-    redirectTo: "/dashboard/admin",
+    redirectTo: target.redirectTo,
   });
 }

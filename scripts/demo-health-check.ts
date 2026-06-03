@@ -1,5 +1,5 @@
 // Using native fetch
-const port = process.env.PORT || 3004;
+const port = process.env.PORT || 3000;
 const BASE_URL = process.env.DEMO_BASE_URL || `http://localhost:${port}`;
 
 const WEB_ROUTES = [

@@ -1,6 +1,8 @@
 export const dynamic = 'force-dynamic';
 
-import { createClient } from "@supabase/supabase-js";
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
+import { desc } from "drizzle-orm";
 import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
 import { requireRole } from "@/utils/auth/requireRole";
 
@@ -14,19 +16,23 @@ type FideicomisoOp = {
 };
 
 async function fetchOperations(): Promise<FideicomisoOp[]> {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
-  const { data, error } = await supabaseAdmin
-    .from("fideicomiso_operations")
-    .select("id, type, status, required_signatures, current_signatures, created_at")
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  if (error || !data) return [];
-  return data as FideicomisoOp[];
+  try {
+    const data = await db.query.fideicomisoOperations.findMany({
+      orderBy: [desc(schema.fideicomisoOperations.id)],
+      limit: 50
+    });
+    return data.map(op => ({
+      id: op.id,
+      type: op.type,
+      status: op.status,
+      required_signatures: op.requiredSignatures,
+      current_signatures: op.currentSignatures,
+      created_at: op.executedAt ? op.executedAt.toISOString() : new Date().toISOString()
+    }));
+  } catch (error) {
+    console.error("Error fetching operations:", error);
+    return [];
+  }
 }
 
 export default async function FideicomisoOperationsPage() {

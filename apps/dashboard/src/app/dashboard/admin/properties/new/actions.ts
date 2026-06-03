@@ -1,8 +1,7 @@
 "use server";
 
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 import { createServerClient } from "@/utils/supabase/server";
 
 export async function createPropertyAction(formData: FormData) {
@@ -11,9 +10,6 @@ export async function createPropertyAction(formData: FormData) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Verify admin logic (skipped for demo brevity, rely on middleware)
-
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     const name = formData.get("name") as string;
     const location = formData.get("location") as string;

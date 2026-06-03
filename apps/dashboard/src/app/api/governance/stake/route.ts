@@ -44,11 +44,63 @@ export async function POST(req: Request) {
     const currentStaked = stakeRow ? parseFloat(stakeRow.stakedAmount || '0') : 0;
 
     let newStaked: number;
+    const userBalances = await dbRaw.query.balances.findMany({
+      where: eq(schema.balances.investorId, investor.id)
+    });
+
     if (action === 'stake') {
+      const totalAvailable = userBalances.reduce((sum, b) => sum + parseFloat(b.availableTokens || '0'), 0);
+      if (totalAvailable < stakeAmt) {
+        client.end();
+        return NextResponse.json({ success: false, error: `Saldo de tokens insuficiente. Tienes ${totalAvailable} PACHA disponibles y requieres ${stakeAmt}.` }, { status: 400 });
+      }
+
+      let remainingToDeduct = stakeAmt;
+      for (const bal of userBalances) {
+        if (remainingToDeduct <= 0) break;
+        const avail = parseFloat(bal.availableTokens || '0');
+        const locked = parseFloat(bal.lockedTokens || '0');
+        if (avail <= 0) continue;
+        
+        const toDeduct = Math.min(avail, remainingToDeduct);
+        const nextAvail = avail - toDeduct;
+        const nextLocked = locked + toDeduct;
+        remainingToDeduct -= toDeduct;
+        
+        await dbRaw.update(schema.balances).set({
+          availableTokens: nextAvail.toString(),
+          lockedTokens: nextLocked.toString(),
+          lastUpdatedAt: new Date()
+        }).where(eq(schema.balances.id, bal.id));
+      }
+
       newStaked = currentStaked + stakeAmt;
-      // Fase42: no hard cap (boost via lock; in prod would transfer/lock tokens from balance/erc20)
     } else {
-      newStaked = Math.max(0, currentStaked - stakeAmt);
+      if (currentStaked < stakeAmt) {
+        client.end();
+        return NextResponse.json({ success: false, error: `Monto en staking insuficiente. Tienes ${currentStaked} PACHA en staking y requieres liberar ${stakeAmt}.` }, { status: 400 });
+      }
+
+      let remainingToRelease = stakeAmt;
+      for (const bal of userBalances) {
+        if (remainingToRelease <= 0) break;
+        const avail = parseFloat(bal.availableTokens || '0');
+        const locked = parseFloat(bal.lockedTokens || '0');
+        if (locked <= 0) continue;
+        
+        const toRelease = Math.min(locked, remainingToRelease);
+        const nextAvail = avail + toRelease;
+        const nextLocked = locked - toRelease;
+        remainingToRelease -= toRelease;
+        
+        await dbRaw.update(schema.balances).set({
+          availableTokens: nextAvail.toString(),
+          lockedTokens: nextLocked.toString(),
+          lastUpdatedAt: new Date()
+        }).where(eq(schema.balances.id, bal.id));
+      }
+
+      newStaked = currentStaked - stakeAmt;
     }
 
     // Upsert stake row

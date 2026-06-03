@@ -1,9 +1,8 @@
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
 import { RouteBreadcrumbs } from "@/components/mission";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import { schema } from "@pachanova/database";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,20 +12,24 @@ export default function PartnerSubmitPage() {
     const name = formData.get("name") as string;
     const location = formData.get("location") as string;
     const propertyType = formData.get("propertyType") as string;
-    const has = formData.get("has") as string;
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
+    let mappedType: "land" | "residential" | "hotel" | "rental" = "land";
+    if (propertyType === "AGRICOLA") mappedType = "land";
+    else if (propertyType === "HOTEL") mappedType = "hotel";
+    else if (propertyType === "VIVIENDA") mappedType = "residential";
+    else if (propertyType === "MIXTO") mappedType = "rental";
 
     await db.insert(schema.properties).values({
       name: name,
       location: location,
-      propertyType: propertyType,
-      status: "PENDING_REVIEW", // Submitted by partner, waiting for master ideator
+      propertyType: mappedType,
+      status: "coming_soon",
       imageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2064&auto=format&fit=crop",
-      tokenPriceUsd: "0",
-      totalTokens: "0",
-      annualYieldExpected: "0"
+      tokenPriceUsd: "0.00",
+      totalTokens: "0.00",
+      availableTokens: "0.00",
+      annualYieldExpected: "0.00",
+      isDemo: true
     });
 
     revalidatePath("/dashboard/admin/properties");

@@ -1,4 +1,4 @@
-import { pgTable, uuid, numeric, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, numeric, timestamp, boolean, varchar, jsonb } from "drizzle-orm/pg-core";
 import { investors } from "./investors";
 import { properties } from "./properties";
 
@@ -10,5 +10,9 @@ export const distributions = pgTable("distributions", {
   periodStart: timestamp("period_start").notNull(),
   periodEnd: timestamp("period_end").notNull(),
   isDemo: boolean("is_demo").notNull().default(false),
+  status: varchar("status", { length: 50 }).notNull().default("PAGADO"),
+  proofRef: varchar("proof_ref", { length: 255 }),
+  claimedAt: timestamp("claimed_at"),
+  compoundDetails: jsonb("compound_details"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -21,6 +21,9 @@ export interface MaestroPortfolioYield {
   distribs: MaestroYield[];
   source: 'core-maestro-fase16';
   lastSync: string;
+  claimables?: any[]; // Fase46
+  cashflowHistory?: any[];
+  gov_predict?: any;
 }
 
 /**
@@ -85,7 +88,8 @@ export async function fetchMaestroYields(investorEmailOrId: string = 'demo', pro
     rendimientosTotal: example.myShare,
     distribs,
     cashflowHistory: orqHistory,
-    source: isPNC ? 'local-closed-fase44 + core-maestro-fase32-pnc-net-fase34-fase43' : 'core-maestro-fase16 + fase44-orq-history',
+    claimables: (orqHistory.filter((h: any) => (h.status || 'PAGADO') !== 'CLAIMED') || []), // Fase46
+    source: isPNC ? 'local-closed-fase44 + core-maestro-fase32-pnc-net-fase34-fase43 + fase46-claim' : 'core-maestro-fase16 + fase44-orq-history',
     lastSync: new Date().toISOString(),
     gov_predict: currentPnc?.gov_predict || null
   };

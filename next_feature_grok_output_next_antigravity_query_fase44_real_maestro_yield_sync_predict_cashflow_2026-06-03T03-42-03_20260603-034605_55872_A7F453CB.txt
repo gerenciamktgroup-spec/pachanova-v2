@@ -1,0 +1,10 @@
+grok.exe : [2m2026-06-03T08:49:51.820981Z[0m [31mERROR[0m tool_error: tool_output_error 
+[3msession_id[0m[2m=[0m019e8ca9-50d1-7be0-98d3-cabad71c7be1 [3mtool_name[0m[2m=[0m"search_replace" 
+[3meffective_tool_name[0m[2m=[0m"search_replace" [3mmodel_id[0m[2m=[0m"grok-build" 
+[3merror_kind[0m[2m=[0m"tool_output_error"
+En C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\ejecutar_grok.ps1: 34 Carácter: 1
++ & "C:\Users\LENOVO\.grok\bin\grok.exe" --prompt-file "$InstruccionFil ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m2026-06-03T...l_output_error":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

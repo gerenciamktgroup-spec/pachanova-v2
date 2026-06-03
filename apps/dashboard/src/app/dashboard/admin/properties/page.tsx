@@ -1,25 +1,28 @@
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { Suspense } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
+import { desc } from "drizzle-orm";
 
 export const dynamic = 'force-dynamic';
 
 async function fetchProperties() {
   try {
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-    
-    const { data: properties, error } = await supabaseAdmin
-      .from('properties')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return properties || [];
+    const data = await db.query.properties.findMany({
+      orderBy: [desc(schema.properties.createdAt)]
+    });
+    return data.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      property_type: p.propertyType,
+      location: p.location,
+      total_valuation_usd: p.totalValuationUsd,
+      token_price_usd: p.tokenPriceUsd,
+      status: p.status,
+      created_at: p.createdAt
+    }));
   } catch (err) {
-    console.error("Error fetching properties:", err);
+    console.error("Error fetching properties via Drizzle:", err);
     return [];
   }
 }

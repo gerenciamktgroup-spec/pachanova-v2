@@ -1,0 +1,8 @@
+grok.exe : [2m2026-06-03T09:49:54.457923Z[0m [31mERROR[0m responses API error [3mstatus[0m[2m=[0m520 <unknown 
+status code> [3merror_message[0m[2m=[0m<!DOCTYPE html>
+En C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\ejecutar_grok.ps1: 34 Carácter: 1
++ & "C:\Users\LENOVO\.grok\bin\grok.exe" --prompt-file "$InstruccionFil ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m2026-06-03T...<!DOCTYPE html>:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
