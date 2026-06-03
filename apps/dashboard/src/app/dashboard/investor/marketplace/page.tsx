@@ -14,7 +14,7 @@ async function fetchMarketplaceData() {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+    const userEmail = user?.email || "investor@pachanova.local";
 
     // Fetch current investor - using db singleton
     const investor = await db.query.investors.findFirst({

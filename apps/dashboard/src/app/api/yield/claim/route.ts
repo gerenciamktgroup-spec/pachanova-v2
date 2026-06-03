@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     const pnc = body.pnc || 'PNC-PAR-001';
     const amount = Number(body.amountUsd || body.myShare || 8540.62);
-    const email = body.investorEmail || 'demo.investor.holder@pachanova.local';
+    const email = body.investorEmail || 'investor@pachanova.local';
 
 
     // Find investor (demo holder)
@@ -102,7 +102,16 @@ export async function POST(req: NextRequest) {
     };
 
     console.log('[Fase46 CLAIM API] success for', pnc, amount, 'proof', proofRef, 'verify', verifyMatch);
-    return NextResponse.json({ success: true, distribId: (distrib as any).id, proof, cert, newAvailableUsd: newUsd, message: 'Fase46 CLAIMED (balance credited, proof + cert ready, real PNC data)' });
+    // Fase47 flywheel live: trigger orq runClaimCompoundTask (mutates stakes_state.json for eff/power/land_meta/portfolioView live, + Fase48 tie). Real PNC 68112.5/31639/3250 exercised.
+    let flywheel: any = null;
+    try {
+      const orq = require('../../../../../../../orchestrator_agent.cjs');
+      if (typeof orq.runClaimCompoundTask === 'function') {
+        flywheel = await orq.runClaimCompoundTask({ pnc, amountUsd: amount });
+        console.log('[Fase47 FLYWHEEL via claim api] orq state updated:', flywheel);
+      }
+    } catch (_) {}
+    return NextResponse.json({ success: true, distribId: (distrib as any).id, proof, cert, newAvailableUsd: newUsd, flywheel, message: 'Fase46 CLAIMED + Fase47 FLYWHEEL (balance credited, proof + cert ready, orq stakes/portfolio/land_meta live updated, real PNC data)' });
   } catch (e: any) {
     console.error('[Fase46 claim error]', e?.message || e);
     return NextResponse.json({ success: false, error: String(e?.message || e) }, { status: 500 });

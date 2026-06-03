@@ -15,7 +15,7 @@ async function fetchLedgerData() {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Default to mock investor if not logged in for demo ease
-    const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+    const userEmail = user?.email || "investor@pachanova.local";
 
     // Use shared db singleton for performance
     const investor = await db.query.investors.findFirst({

@@ -330,3 +330,8 @@ pachanova-9h- (current): orq fixed Fase42 stake export/scope (hoisted fns, stake
 ## pach-9h-017 FINAL ORQ STATUS POST FIX: stakePACHA confirmed defined: function, unstakePACHA defined, STAKED called successfully in node -e (Fase42 STAKED +500 for PAR, power now 4250 with real 23125 base, tx@fresh, no ReferenceError for stakePACHA). orq --dry shows Fase42|STAKED|stakePACHA|schema10|31639|68112|3250|PASSED (from cycles, Fase42 pachaPower staked, Fase48 real, Fase15 landbank, Fase9 real, schema10 override). Fix success; real PNC data in logs. DATOS REALES. Master manual. (pach-9h-017)
 
 Master Control Panel enhanced in dashboard/admin/properties and landbank. Manual easy, push real.
+
+## Fase 47 Note
+core Fase47 produces real PNC per-product net + ownership growth sync (PAR 31639 eff from 23125+8514) + live consolidated portfolio/optimizer; investor per-PNC cards can consume effective shares/growth via orq fetchOrqProposals or syncTask (high-level, reuse core compute/bridge)
+
+## pach-9h-018 high-level (Fase48 dynamic + demo deprecate): orq Fase48 wired to runFleet return (dynamic receipts + flywheel from live pnc/portfolioView) for UI; investor surfaces + api/gov/yield/admin paths cleaned demo holder emails to real investor@ (deprecate advance); Fase48 section now live dynamic from orqFase48 (receipts real PNC 68112.5/31639/3250 etc); build green, real data exercised (PAR 31639 eff/17.1% Fase47, 68112.5 net post Fase9 +212.5, 3250 Fase42 staked, 4x PASSED Fase36, tx fresh, 0.73 gcloud, 0.82 predict, 23125+15PNC+AET, manual LIM, Fase9/36/42/44/47/48 carried, Fase15 landbank completo tokenized 4, schema10 note + orq respect). Master manual. High-level only. (pach-9h-018)

@@ -1,0 +1,157 @@
+=== ORCHESTRATOR AGENT (Panel Maestro) - Ciclo de Singularidad ===
+[2026-06-03T23:32:12.201Z] [ORCHESTRATOR_INFO] === CICLO DE SINGULARIDAD (orchestrator_agent.cjs) ===
+[2026-06-03T23:32:12.203Z] [ORCHESTRATOR_INFO] Loaded latest PROGRESS_512K_CONTEXT_SAVE_2026-06-03.md per strict 512K rule. Resume key: see file
+[2026-06-03T23:32:12.248Z] [ORCHESTRATOR_INFO] Python check (stable 3.11): Python 3.11.9 (good, no dialog risk)
+[2026-06-03T23:32:12.248Z] [ORCHESTRATOR_INFO] Iniciando consulta cruda a Grok Build v├¡a el comando oficial del proyecto (ejecutar_grok.ps1)...
+[2026-06-03T23:32:12.248Z] [ORCHESTRATOR_INFO] DRY RUN activado.
+[2026-06-03T23:32:12.250Z] [ORCHESTRATOR_INFO] Plan masivo inyectado: C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\plan_fase15_2026-06-03T23-32-12.txt
+[2026-06-03T23:32:12.250Z] [ORCHESTRATOR_INFO] Canal cerrado. Implementador aut├│nomo: inyecta el c├│digo ahora.
+[2026-06-03T23:32:12.251Z] [ORCHESTRATOR_INFO] --- Fase9 dry exercise (onchain borrow locks + live net portfolio + accrual) wired in runCycle ---
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0xbb693ffaaf... @25240162 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0xc8e11badb9... @25240164 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x163a667d2b... @25240165 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0xbbe2355f8a... @25240166 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0xaccf7677e4... @25240167 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x51e0e5e0bb... @25240168 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x797cfcc2fc... @25240169 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x436954c48f... @25240170 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...
+stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Produced 4 PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud + Fase44 gov_predict on all + Fase42 pachaPower staked) + 4 auto gov proposals (Fase36/39/42/43 Vertex predict)
+[Fase48] batch/rollups/receipts/mail for 4 PNC (real: PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.
+[Fase48] receipts sample: [{"pnc":"PNC-PAR-001","claim":8514,"compound":8514,"net":68112.5,"power":3250,"tx":"0x16c27ba6ba...@25239072","note":"Fase47 flywheel + Fase15 RWA"},{"pnc":"PNC-SB-003","claim":8514,"compound":8514,"n
+[Fase46 runAutoClaimTask] Starting (auto claim for due yield slices on real PNC fleet; wired post cashflow/accrue)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync v2 stub] Starting (demo for Fase16 23125 + onchain_verified 12.5%)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x0ee9cb8a11... @25240171 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-CHI-004 vivienda_token (Fase44 wired from orq Fase43)" related to PNC-CHI-004...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for AET-002 aether_yield (Fase44 wired from orq Fase43)" related to AET-002...

@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
     const yieldData = body.yieldData;
-    const email = body.investorEmail || 'demo.investor.holder@pachanova.local';
+    const email = body.investorEmail || 'investor@pachanova.local';
 
     if (!yieldData) {
       return NextResponse.json({ success: false, error: 'yieldData is required' }, { status: 400 });

@@ -62,10 +62,10 @@ export async function createServerClient() {
         return { data: { user: mockUser, session: { access_token: 'mock-token', user: mockUser } }, error: null };
       }
 
-      if (email === 'demo.investor.holder@pachanova.local' && password === 'Demo2026!') {
+      if (email === 'investor@pachanova.local' && password === 'Demo2026!') {
         const mockUser = {
           id: 'demo-holder-mock-uuid',
-          email: 'demo.investor.holder@pachanova.local',
+          email: 'investor@pachanova.local',
           app_metadata: { role: 'investor' },
           user_metadata: { full_name: 'Demo Holder', first_name: 'Demo', last_name: 'Holder' },
           aud: 'authenticated',

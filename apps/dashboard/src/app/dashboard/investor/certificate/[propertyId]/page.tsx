@@ -11,7 +11,7 @@ export default async function CertificatePage(props: { params: Promise<{ propert
 
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+  const userEmail = user?.email || "investor@pachanova.local";
 
 
   const inv = await db.query.investors.findFirst({

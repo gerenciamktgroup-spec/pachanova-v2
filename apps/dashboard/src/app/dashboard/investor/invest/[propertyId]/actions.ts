@@ -9,7 +9,7 @@ export async function buyTokensAction(propertyId: string, quantity: number) {
   try {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+    const userEmail = user?.email || "investor@pachanova.local";
 
     // Use shared db singleton for performance and pool management
 

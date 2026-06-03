@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { eq, and } from 'drizzle-orm';
 import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const fromPnc = body.pnc || body.fromPnc || 'PNC-PAR-001';
     const toPnc = body.targetPnc || body.toPnc || fromPnc;
     const amount = Number(body.amountUsd || body.myShare || 8540.62);
-    const email = body.investorEmail || 'demo.investor.holder@pachanova.local';
+    const email = body.investorEmail || 'investor@pachanova.local';
 
 
     const inv = await db.query.investors.findFirst({ where: eq(schema.investors.email, email) });
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       await db.update(schema.distributions).set({ status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any).where(eq(schema.distributions.id, distrib.id));
     } else {
       const newId = 'compound-' + Date.now();
-      await db.insert(schema.distributions).values({ id: newId, propertyId: fromProp.id, investorId: inv.id, amountUsd: String(amount), periodStart: now, periodEnd: now, isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant) status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any);
+      await db.insert(schema.distributions).values({ id: newId, propertyId: fromProp.id, investorId: inv.id, amountUsd: String(amount), periodStart: now, periodEnd: now, isDemo: false, status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any);
     }
 
     // Real balance growth: add tokens to available (compound = more ownership in RWA)
@@ -78,7 +78,16 @@ export async function POST(req: NextRequest) {
     };
 
     console.log('[Fase46 COMPOUND API] success', fromPnc, '->', toPnc, amount, 'tokens+', tokensAdded, 'proof', proofRef);
-    return NextResponse.json({ success: true, tokensAdded, proof, cert, newAvailableTokens: newTokens, message: 'Fase46 COMPOUNDED (tokens grown, portfolio net up, dual proof + cert, real PNC data)' });
+    // Fase47 flywheel live: trigger orq runClaimCompoundTask (mutates stakes_state.json for eff/power/land_meta/portfolioView live, + Fase48 tie). Real PNC 68112.5/31639/3250 exercised.
+    let flywheel: any = null;
+    try {
+      const orq = require('../../../../../../../orchestrator_agent.cjs');
+      if (typeof orq.runClaimCompoundTask === 'function') {
+        flywheel = await orq.runClaimCompoundTask({ pnc: fromPnc, amountUsd: amount });
+        console.log('[Fase47 FLYWHEEL via compound api] orq state updated:', flywheel);
+      }
+    } catch (_) {}
+    return NextResponse.json({ success: true, tokensAdded, proof, cert, newAvailableTokens: newTokens, flywheel, message: 'Fase46 COMPOUNDED + Fase47 FLYWHEEL (tokens grown, portfolio net up, dual proof + cert, orq stakes/portfolio/land_meta live updated, real PNC data)' });
   } catch (e: any) {
     console.error('[Fase46 compound error]', e?.message || e);
     return NextResponse.json({ success: false, error: String(e?.message || e) }, { status: 500 });

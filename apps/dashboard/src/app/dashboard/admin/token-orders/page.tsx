@@ -71,7 +71,7 @@ export default async function AdminTokenOrdersPage() {
           total_amount: "42000.00",
           status: "completed",
           created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-          investor: { email: "demo.investor.holder@pachanova.local", first_name: "Demo", last_name: "Holder" }
+          investor: { email: "investor@pachanova.local", first_name: "Investor", last_name: "Holder" }
         },
         {
           id: "mock-2",
@@ -79,7 +79,7 @@ export default async function AdminTokenOrdersPage() {
           total_amount: "10080.00",
           status: "pending",
           created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-          investor: { email: "demo.investor.approved@pachanova.local", first_name: "Demo", last_name: "Investor" }
+          investor: { email: "investor@pachanova.local", first_name: "Investor", last_name: "Approved" }
         }
       ];
     }

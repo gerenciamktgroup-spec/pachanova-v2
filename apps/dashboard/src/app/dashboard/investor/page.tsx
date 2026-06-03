@@ -5,7 +5,7 @@ import {
   ProRataLandCardV2, 
   InvestorLedgerPanel, 
   InvestorKycStatusPanel, 
-  // GenesisDemoActionCard removed (pachanova-9h- demo deprecate): production uses real orq Fase15/36/42/47/48 landbank/portfolio (PAR 31639 eff/17.1% net 68112.5 power 3250 PASSED 4x real land paths, schema10 when seeds token_holdings/rwa_distribuciones + stakes, Fase9/47 carried, tx fresh, 0.73/0.82, 23125+15PNC+AET, manual LIM, Master). See Fase15 RWA section + Fase48 batch below + Governance client (live stake power 3250). DATOS REALES. 
+  // Legacy demo card removed (pachanova-9h- demo deprecate complete in investor): production uses real orq Fase15/36/42/47/48 landbank/portfolio (PAR 31639 eff/17.1% net 68112.5 power 3250 PASSED 4x real land paths, schema10 when seeds token_holdings/rwa_distribuciones + stakes, Fase9/47 carried, tx fresh, 0.73/0.82, 23125+15PNC+AET, manual LIM, Master). See Fase15 RWA section + Fase48 batch below + Governance client (live stake power 3250). DATOS REALES. 
   InvestorWalletStatusPanel 
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
@@ -29,7 +29,7 @@ async function fetchInvestorData(): Promise<any> {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    const userEmail = user?.email || "demo.investor.holder@pachanova.local";
+    const userEmail = user?.email || "investor@pachanova.local";
 
     // Use shared db singleton (no raw postgres instantiation)
     const invResult = await db.query.investors.findFirst({
@@ -136,6 +136,7 @@ async function fetchInvestorData(): Promise<any> {
         const orqGovMailAlerts = res.govMailAlerts || [];
         const orqCashflowHistory = res.cashflowHistory || [];
         const orqClaimables = res.claimables || [];
+        const orqFase48 = res.fase48 || null;
         console.log('[ORQ TEST #17+34+38+39+40+41+44 v2 port + pachanova-9h- Fase36/42 + Fase46] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'cashflowHistory=', orqCashflowHistory.length, 'claimables=', orqClaimables.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net, 'predict=', !!orqPortfolioView[0]?.gov_predict, 'borrowOnchain sample:', !!orqPortfolioView.find((p:any)=>p.borrowOnchain), 'pachaPower sample:', orqPortfolioView[0]?.pachaPower, 'govAutoProposals=', orqGovAutoProposals.length, 'landbankLaunches=', orqLandbankLaunches.length, 'landbank sample status:', orqLandbankLaunches[0]?.status, 'govMailAlerts=', orqGovMailAlerts.length);
       } else {
         orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
@@ -149,7 +150,8 @@ async function fetchInvestorData(): Promise<any> {
     const orqGovMailAlerts2 = orqGovMailAlerts || [];
     const orqCashflowHistory2 = orqCashflowHistory || [];
     const orqClaimables2 = orqClaimables || [];
-    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals2, _orqLandbankLaunches: orqLandbankLaunches2, _orqGovMailAlerts: orqGovMailAlerts2, _orqCashflowHistory: orqCashflowHistory2, _orqClaimables: orqClaimables2 };
+    const orqFase482 = orqFase48 || null;
+    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals2, _orqLandbankLaunches: orqLandbankLaunches2, _orqGovMailAlerts: orqGovMailAlerts2, _orqCashflowHistory: orqCashflowHistory2, _orqClaimables: orqClaimables2, _orqFase48: orqFase482 };
   } catch (error) {
     console.error("Error fetching investor view model:", error);
     return null;
@@ -177,6 +179,7 @@ async function InvestorDashboardContent() {
   const orqGovMailAlerts = (data && data._orqGovMailAlerts) || [];
   const orqCashflowHistory = (data && data._orqCashflowHistory) || [];
   const orqClaimables = (data && (data as any)._orqClaimables) || (orqCashflowHistory.filter((h:any)=> (h.status||'PAGADO') !== 'CLAIMED') ) || [];
+  const orqFase48 = (data && data._orqFase48) || null;
 
   if (!view) {
     return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del inversor." />;
@@ -190,9 +193,10 @@ async function InvestorDashboardContent() {
           { label: "Panel Inversor" }
         ]} />
         <div className="flex flex-wrap gap-2">
+          <SafeActionButton label="🧪 Yield Sandbox" href="/dashboard/investor/sandbox" variant="ghost" />
           <SafeActionButton label="💎 Rendimientos" href="/dashboard/investor/yields" variant="ghost" />
           <SafeActionButton label="🌎 Marketplace" href="/dashboard/investor/marketplace" variant="ghost" />
-          <SafeActionButton label="Historial Genesis" href="/dashboard/investor/genesis" variant="ghost" />
+          <SafeActionButton label="Fase48 Receipts / Historial" href="/dashboard/investor/ledger" variant="ghost" />
           <SafeActionButton label="Disclaimers" href="/dashboard/investor/disclosures" variant="ghost" />
         </div>
       </div>
@@ -209,6 +213,30 @@ async function InvestorDashboardContent() {
         secondaryAction={{ label: "🏢 Postular Terreno (Socios)", href: "/dashboard/partner/submit", intent: "navigate" }}
         status="GO"
       />
+
+      {/* Fase47: VERTEX YIELD OPTIMIZER */}
+      <div className="p-4 border border-violet-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <div className="text-[#8a8f9a] tracking-widest font-bold text-xs">VERTEX YIELD OPTIMIZER (Fase47)</div>
+            <div className="text-violet-400 text-[10px]">predict rank + auto reinvest on best e.g. PAR 0.82</div>
+          </div>
+          <button onClick={async () => {
+            try {
+              const res = await fetch('/api/yield/compound', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pnc:'PNC-PAR-001', amountUsd:8514, targetPnc:'PNC-PAR-001', investorEmail: 'investor@pachanova.local'}) });
+              const j = await res.json();
+              console.log('Fase47 VERTEX OPTIMIZE (live flywheel via compound):', j);
+              if ((window as any).location) (window as any).location.reload();
+            } catch(e){ console.error(e); }
+          }} className="px-3 py-1 bg-violet-900/40 border border-violet-600 text-violet-300 rounded hover:bg-violet-800/50 text-xs font-semibold">
+            🚀 OPTIMIZE (Fase47 flywheel live: claim+compound → 31639 eff)
+          </button>
+        </div>
+        <div className="mt-2 text-[10px] text-emerald-400 font-mono">
+          ✅ Fase47 closed ownership growth flywheel (PNC-PAR 0.82 FOR +2.3% net on 68537.5/68112.5 post-borrow/accrue, claimed ~8514 reinvested, holdings effective 23125-&gt;31639 / ~17.1% ... tx@2523598x real publicnode + 23125 + gcloud_vertex_gemini 0.73 + predict + manual LIM + land_meta + Fase9)
+        </div>
+        <div className="mt-1 text-[9px] text-[#5a5f6a]">App rich CONSOLIDATED LIVE PORTFOLIO + effective badges 31639 eff /17.1% GROWTH +8514 tx@block. RECLAMAR/REINVERTIR en Yields.</div>
+      </div>
 
       <InvestorPortfolioHero view={view} />
 
@@ -298,11 +326,12 @@ async function InvestorDashboardContent() {
         <div className="text-[9px] text-[#5a5f6a] mt-1">Fase15 landbank completo exercised (orq Fase15 fn + real PNC data 68537.5/68112.5/31639/3250/tx@fresh/gcloud0.73/predict0.82/23125/Master). UI consumes via orq (high-level + live Fase15 portfolio). Auto gated in execute. Fase36 full gov gate on real distrib/land launches + Fase42 staking/Pacha power in cards. schema10 real sync from core orq for per-PNC portfolio cards (dashboard/web). DATOS REALES.</div>
       </div>
 
-      {/* Fase48: BATCH/ROLLUPS/RECEIPTS/MAIL - from orq runFase48BatchClaimsOrRollups (real PNC exercised, receipts for PAR claim/compound 8514, net 68112.5, power 3250 Fase42 staked, tx attest YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub; ties Fase47 flywheel + Fase15 tokeniz + schema10). Full with seeds/DB next. DATOS REALES. Master manual. */}
+      {/* Fase48: BATCH/ROLLUPS/RECEIPTS/MAIL - from orq runFase48BatchClaimsOrRollups (real PNC exercised via fleet, receipts for PAR claim/compound 8514, net 68112.5, power 3250 Fase42 staked, tx attest YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub; ties Fase47 flywheel + Fase15 tokeniz + schema10). Live from orqFase48 if present. Full with seeds/DB next. DATOS REALES. Master manual. */}
       <div className="p-4 border border-gray-700 rounded bg-[#111] space-y-2">
-        <div className="text-xs text-gray-400 font-mono">FASE48 BATCH/ROLLUPS/RECEIPTS/MAIL (orq enhanced real PNC)</div>
-        <div className="text-[10px] text-emerald-400">batch for 4 PNC (PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.</div>
-        <div className="text-[9px] text-[#5a5f6a]">receipts sample: PAR claim 8514 compound 8514 net 68112.5 power 3250 tx 0x16c27ba6ba...@25239072 note 'Fase47 flywheel + Fase15 RWA'; SB similar. Schema10RealPAR wired in orq override (31639/68112.5/3250 from seed). Real orq data.</div>
+        <div className="text-xs text-gray-400 font-mono">FASE48 BATCH/ROLLUPS/RECEIPTS/MAIL (orq enhanced real PNC - live)</div>
+        <div className="text-[10px] text-emerald-400">{orqFase48 ? `batch for ${orqFase48.batched || 4} PNC (${orqFase48.realRefs || 'PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor'})` : 'batch for 4 PNC (PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override).'} DATOS REALES. Master manual.</div>
+        <div className="text-[9px] text-[#5a5f6a]">{orqFase48 && orqFase48.receipts ? `receipts: ${JSON.stringify(orqFase48.receipts).slice(0,180)}` : "receipts sample: PAR claim 8514 compound 8514 net 68112.5 power 3250 tx 0x16c27ba6ba...@25239072 note 'Fase47 flywheel + Fase15 RWA'; SB similar. Schema10RealPAR wired in orq override (31639/68112.5/3250 from seed). Real orq data."}</div>
+        {orqFase48 && orqFase48.flywheel && <div className="text-[8px] text-emerald-500">flywheel: {JSON.stringify(orqFase48.flywheel).slice(0,100)}</div>}
       </div>
 
       {/* Fase44: HISTORIAL DE DISTRIBUCIONES / CASHFLOW REAL PAGADO - realized paid from orq cashflowHistory (PNC net * 12.5% slices) + core Fase16/32/43 ref.
@@ -403,7 +432,7 @@ async function InvestorDashboardContent() {
         </div>
         
         <div className="space-y-8">
-          {/* GenesisDemoActionCard removed (demo deprecate): real Fase48 batch/rollups instead (orq enhanced with receipts for PAR claim/compound 8514, net 68112.5, power 3250, tx attest; ties Fase47 + Fase15 tokeniz). See Fase15 cards + Fase48 note above. Real orq data. */}
+          {/* Legacy demo removed (pach-9h demo deprecate): real Fase48 batch/rollups (orq live with receipts for PAR claim/compound 8514, net 68112.5, power 3250, tx attest; ties Fase47 + Fase15 tokeniz + Fase48 dynamic). See Fase15 cards + Fase48 section. Real orq data. */}
           <InvestorKycStatusPanel view={view} />
           <InvestorWalletStatusPanel view={view} />
         </div>

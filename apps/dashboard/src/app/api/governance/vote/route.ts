@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     // Resolve current investor via Supabase (demo fallback like investor dashboard)
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
+    const userEmail = user?.email || 'investor@pachanova.local';
 
     const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail),
@@ -125,7 +125,7 @@ export async function GET(req: Request) {
 
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
+    const userEmail = user?.email || 'investor@pachanova.local';
 
     const investor = await db.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
 
