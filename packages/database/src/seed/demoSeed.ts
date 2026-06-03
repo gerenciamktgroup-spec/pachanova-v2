@@ -41,7 +41,7 @@ async function seed() {
     },
     {
       id: propertyIdParacas,
-      name: "PachaNova Resort Paracas",
+      name: "PachaNova Resort Paracas (PNC-PAR-001)",
       location: "Paracas, Ica, Perú",
       propertyType: "hotel",
       imageUrl: "/properties/paracas.jpg",
@@ -51,7 +51,8 @@ async function seed() {
       totalTokens: "240000.00",
       availableTokens: "200000.00",
       annualYieldExpected: "15.00",
-      isDemo: true
+      isDemo: true,
+      metadata: { pachanova_pnc_codigo: "PNC-PAR-001", landbank_link: true, source: "core-landbank-fase8" }
     },
     {
       id: propertyIdChilca,

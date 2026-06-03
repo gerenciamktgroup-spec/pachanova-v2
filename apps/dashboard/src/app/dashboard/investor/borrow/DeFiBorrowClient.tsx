@@ -60,7 +60,9 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
   // State
   const [loans, setLoans] = useState<Loan[]>(initialLoans);
   const [balances, setBalances] = useState<Balance[]>(portfolio);
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>(portfolio[0]?.propertyId || "");
+  // Default to Paracas (PNC-PAR-001) for Fase8 $50k demo if present in portfolio
+  const initialParacas = portfolio.find((b: any) => (b.propertyName || '').includes('Paracas') || (b.propertyId || '') === '22222222-2222-2222-2222-222222222222' || (b.location || '').toLowerCase().includes('paracas'));
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string>(initialParacas?.propertyId || portfolio[0]?.propertyId || "");
   const [collateralInput, setCollateralInput] = useState<string>("");
   const [borrowInput, setBorrowInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -263,6 +265,7 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
             </p>
             <div className="mt-2 text-[11px] text-pn-gold/80">
               Ejemplo del Ideador: Inversor posee $50,000 en tokens del Terreno Paracas (PNC-PAR-001). Usa como colateral para pedir dólares prestados instantáneamente (hasta ~$30k @60% LTV) <span className="font-semibold">sin vender tu propiedad</span>. Sigues recibiendo yield del alquiler/valorización.
+              <br />Valuación y yield dinámicos desde Landbank core (PNC-PAR-001) + orq/Vertex/gcloud. Master overrides LTV/rates/liquidations en Maestro (audit trail).
             </div>
           </div>
           <div className="flex gap-2">
