@@ -33,3 +33,15 @@ export const votes = pgTable("votes", {
 }, (table) => ({
   uniqueInvestorProposal: uniqueIndex("unique_investor_proposal_vote").on(table.proposalId, table.investorId),
 }));
+
+// Fase42: DeFi Staking & Pacha Power Accrual - stakes table (one row per investor via unique idx)
+// Staked PACHA adds to voting power (holdings + staked) for governance weight + future discounts/accrual
+export const stakes = pgTable("stakes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  stakedAmount: numeric("staked_amount", { precision: 18, scale: 2 }).notNull().default("0"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueInvestor: uniqueIndex("unique_investor_stake").on(table.investorId),
+}));

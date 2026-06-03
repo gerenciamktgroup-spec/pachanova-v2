@@ -33,12 +33,14 @@ interface Tally {
 interface Props {
   proposals: Proposal[];
   totalPachaHoldings: number;
+  stakedPacha?: number;
+  baseHoldings?: number;
   myVotes: MyVote[];
   tallies: Record<string, Tally>;
   investorId?: string;
 }
 
-export default function GovernanceVotingClient({ proposals, totalPachaHoldings, myVotes: initialMyVotes, tallies: initialTallies }: Props) {
+export default function GovernanceVotingClient({ proposals, totalPachaHoldings, stakedPacha: initialStaked = 0, baseHoldings: initialBase = 0, myVotes: initialMyVotes, tallies: initialTallies }: Props) {
   const [myVotes, setMyVotes] = useState<Record<string, MyVote>>(() => {
     const map: Record<string, MyVote> = {};
     initialMyVotes.forEach(v => { map[v.proposalId] = v; });
@@ -47,6 +49,12 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
   const [tallies, setTallies] = useState<Record<string, Tally>>(initialTallies);
   const [loading, setLoading] = useState<Record<string, string | null>>({}); // proposalId -> choice or null
   const [messages, setMessages] = useState<Record<string, string>>({});
+
+  // Fase42: live staked + total power (updated on stake/unstake without full reload)
+  const [stakedAmount, setStakedAmount] = useState<number>(initialStaked);
+  const [totalPower, setTotalPower] = useState<number>(totalPachaHoldings);
+  const [stakeInput, setStakeInput] = useState<string>('');
+  const [stakeLoading, setStakeLoading] = useState<boolean>(false);
 
   // Fase36: simple create proposal form state (demo, posts to API, creates active for PNC)
   const [createTitle, setCreateTitle] = useState('');
@@ -88,7 +96,7 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
       const newVote: MyVote = {
         proposalId,
         choice,
-        votingPower: (json.yourPower || totalPachaHoldings).toString(),
+        votingPower: (json.yourPower || totalPower).toString(),
         createdAt: new Date().toISOString(),
       };
       setMyVotes(v => ({ ...v, [proposalId]: newVote }));
@@ -124,11 +132,42 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
         }
       } catch {}
 
-      setMessages(m => ({ ...m, [proposalId]: json.message || `Voto "${choice}" registrado con ${totalPachaHoldings.toLocaleString()} PACHA.` }));
+      setMessages(m => ({ ...m, [proposalId]: json.message || `Voto "${choice}" registrado con ${totalPower.toLocaleString()} PACHA.` }));
     } catch (e: any) {
       setMessages(m => ({ ...m, [proposalId]: e.message || 'Fallo de red al votar' }));
     } finally {
       setLoading(l => ({ ...l, [proposalId]: null }));
+    }
+  }
+
+  async function handleStakeAction(action: 'stake' | 'unstake') {
+    if (stakeLoading || !stakeInput) return;
+    const amount = parseFloat(stakeInput);
+    if (isNaN(amount) || amount <= 0) {
+      setMessages(m => ({ ...m, stake: 'Por favor ingresa un monto válido mayor a 0.' }));
+      return;
+    }
+    setStakeLoading(true);
+    setMessages(m => ({ ...m, stake: '' }));
+    try {
+      const res = await fetch('/api/governance/stake', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, amount })
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setMessages(m => ({ ...m, stake: json.error || 'Error al procesar staking' }));
+        return;
+      }
+      setStakedAmount(json.newStakedAmount);
+      setTotalPower(json.totalPower);
+      setStakeInput('');
+      setMessages(m => ({ ...m, stake: json.message }));
+    } catch (e: any) {
+      setMessages(m => ({ ...m, stake: e.message || 'Error de red' }));
+    } finally {
+      setStakeLoading(false);
     }
   }
 
@@ -157,6 +196,48 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
 
   return (
     <div className="space-y-4">
+      {/* Fase42: DeFi Staking Panel */}
+      <div className="p-4 border border-violet-850/40 rounded bg-pn-surface/50 space-y-3">
+        <div className="flex justify-between items-center border-b border-pn-border pb-2">
+          <div className="text-xs text-violet-400 font-mono font-bold tracking-[1px] uppercase">
+            Fase 42: DeFi Staking & Pacha Power Accrual
+          </div>
+          <div className="text-[10px] text-pn-text-soft/70">
+            Poder normal: {initialBase.toLocaleString()} PACHA | Staked: {stakedAmount.toLocaleString()} PACHA
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 items-center">
+          <div className="flex-1 text-xs text-pn-text-soft">
+            Bloquea tus tokens PACHA para aumentar tu poder de voto en la gobernanza. El staking es instantáneo y se suma a tus holdings.
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <input
+              type="number"
+              value={stakeInput}
+              onChange={e => setStakeInput(e.target.value)}
+              placeholder="Monto PACHA"
+              className="w-28 bg-pn-bg border border-pn-border rounded px-2 text-sm text-white"
+              disabled={stakeLoading}
+            />
+            <button
+              onClick={() => handleStakeAction('stake')}
+              disabled={stakeLoading || !stakeInput}
+              className="px-3 py-1.5 text-xs bg-violet-700 hover:bg-violet-650 disabled:opacity-60 text-white rounded font-medium transition"
+            >
+              {stakeLoading ? 'Procesando...' : 'Stake'}
+            </button>
+            <button
+              onClick={() => handleStakeAction('unstake')}
+              disabled={stakeLoading || !stakeInput || stakedAmount <= 0}
+              className="px-3 py-1.5 text-xs border border-violet-700 text-violet-300 hover:bg-violet-950/20 disabled:opacity-60 rounded font-medium transition"
+            >
+              {stakeLoading ? 'Procesando...' : 'Unstake'}
+            </button>
+          </div>
+        </div>
+        {messages.stake && <div className="text-xs text-pn-gold">{messages.stake}</div>}
+      </div>
+
       {/* Fase36: Create proposal (demo for admin/land/orq auto) */}
       <div className="p-3 border border-pn-gold/30 rounded bg-pn-surface/50">
         <div className="text-xs text-pn-gold mb-1">FASE36: CREAR PROPUESTA (demo - orq/landbank auto en futuro)</div>
@@ -230,7 +311,7 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
 
               <div className="md:w-56 shrink-0 text-xs md:text-right">
                 <div className="text-pn-text-soft">Tu poder en esta votación</div>
-                <div className="font-semibold text-xl tabular-nums text-white">{totalPachaHoldings.toLocaleString()} PACHA</div>
+                <div className="font-semibold text-xl tabular-nums text-white">{totalPower.toLocaleString()} PACHA</div>
                 {my && (
                   <div className="mt-1 inline-block text-[10px] px-2 py-0.5 bg-blue-950/60 border border-blue-800 text-blue-400 rounded">
                     Votaste: <strong>{my.choice.toUpperCase()}</strong> ({parseFloat(my.votingPower).toLocaleString()} PACHA)

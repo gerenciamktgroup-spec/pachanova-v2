@@ -5,6 +5,7 @@ import { eq, and, sql } from 'drizzle-orm';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { createServerClient } from '@/utils/supabase/server';
+import { computePachaVotingPower } from '@/lib/governance/computePachaPower';
 
 export async function POST(req: Request) {
   try {
@@ -32,13 +33,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'Investor not found for current session' }, { status: 404 });
     }
 
-    // Compute real total PACHA voting power (available + locked across all properties)
-    const powerRows = await client`
-      SELECT COALESCE(SUM(available_tokens::numeric + locked_tokens::numeric), 0) as total_power
-      FROM balances
-      WHERE investor_id = ${investor.id}
-    `;
-    const votingPower = parseFloat(powerRows[0]?.total_power || '0');
+    // Fase42: real total PACHA voting power (balances available+locked + stakes staked for DeFi power accrual)
+    const power = await computePachaVotingPower(client, investor.id);
+    const votingPower = power.total;
 
     if (votingPower <= 0) {
       client.end();

@@ -7,6 +7,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, inArray } from "drizzle-orm";
 import { schema } from "@pachanova/database";
 import GovernanceVotingClient from "./GovernanceVotingClient";
+import { computePachaVotingPower } from "@/lib/governance/computePachaPower";
 
 export const dynamic = 'force-dynamic';
 
@@ -55,12 +56,11 @@ async function fetchGovernanceData() {
       limit: 10,
     });
 
-    // Compute real PACHA holdings for this investor (sum available + locked = voting weight)
-    const powerResult = await client`
-      SELECT COALESCE(SUM(available_tokens::numeric + locked_tokens::numeric), 0)::float as total_pacha
-      FROM balances WHERE investor_id = ${investor.id}
-    `;
-    const totalPachaHoldings = parseFloat(powerResult[0]?.total_pacha || '0');
+    // Fase42: Compute real PACHA voting power = holdings (balances) + staked (DeFi accrual for gov power boost)
+    const power = await computePachaVotingPower(client, investor.id);
+    const totalPachaHoldings = power.total;
+    const stakedPacha = power.staked;
+    const baseHoldings = power.holdings;
 
     // Fetch this investor's past votes (for all proposals to show status)
     const myVotes: VoteRow[] = [];
@@ -108,6 +108,8 @@ async function fetchGovernanceData() {
       },
       proposals,
       totalPachaHoldings,
+      stakedPacha,
+      baseHoldings,
       myVotes,
       tallies,
     };
@@ -133,7 +135,7 @@ export default async function InvestorGovernancePage() {
     );
   }
 
-  const { investor, proposals, totalPachaHoldings, myVotes, tallies } = data;
+  const { investor, proposals, totalPachaHoldings, stakedPacha, baseHoldings, myVotes, tallies } = data;
 
   return (
     <div className="space-y-8 pb-24">
@@ -148,13 +150,13 @@ export default async function InvestorGovernancePage() {
             <div className="text-pn-gold text-sm font-mono tracking-[2px] mb-1">FASE 33 + 34 • RWA DAO + NET YIELDS</div>
             <h1 className="text-4xl font-semibold text-white">Gobernanza Colectiva RWA</h1>
             <p className="text-pn-text-soft mt-2 max-w-2xl">
-              Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA en el portafolio (disponibles + locked). Fase34: contexto de net yields reales (Fase32 distribs - Fase9 borrow interest) visible al votar.
+              Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA (holdings + staked Fase42 DeFi). Bloquea PACHA para accrual de poder de voto + descuentos. Fase34 net + Fase35 onchain intactos.
             </p>
           </div>
           <div className="hidden sm:block text-right">
-            <div className="text-xs text-pn-text-soft">TU PODER DE VOTO ACTUAL</div>
+            <div className="text-xs text-pn-text-soft">TU PODER DE VOTO ACTUAL (FASE42)</div>
             <div className="text-3xl font-semibold tabular-nums text-white">{totalPachaHoldings.toLocaleString()} <span className="text-sm text-pn-gold">PACHA</span></div>
-            <div className="text-[10px] text-pn-text-soft/70">Basado en balances reales • Fase16/Fase32 holdings • Fase34 net context</div>
+            <div className="text-[10px] text-pn-text-soft/70">Holdings: {baseHoldings.toLocaleString()} + Staked: {stakedPacha.toLocaleString()} (DeFi accrual)</div>
           </div>
         </div>
       </div>
@@ -175,7 +177,7 @@ export default async function InvestorGovernancePage() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">Propuestas Activas</h2>
-          <div className="text-xs px-3 py-1 rounded bg-pn-gold/10 text-pn-gold border border-pn-gold/30">Peso = Holdings PACHA reales • Fase34: contexto net yield del activo (Fase32/9)</div>
+          <div className="text-xs px-3 py-1 rounded bg-pn-gold/10 text-pn-gold border border-pn-gold/30">Peso = Holdings + Staked PACHA (Fase42 DeFi accrual) • Fase34 net context</div>
         </div>
 
         {proposals.length === 0 ? (
@@ -187,6 +189,8 @@ export default async function InvestorGovernancePage() {
             <GovernanceVotingClient
               proposals={proposals}
               totalPachaHoldings={totalPachaHoldings}
+              stakedPacha={stakedPacha}
+              baseHoldings={baseHoldings}
               myVotes={myVotes}
               tallies={tallies}
               investorId={investor?.id}
@@ -197,13 +201,13 @@ export default async function InvestorGovernancePage() {
 
       <MissionCard>
         <div className="text-sm text-pn-text-soft space-y-1">
-          <div><strong>Reglas de Votación (RWA Governance):</strong></div>
+          <div><strong>Reglas de Votación (RWA Governance Fase42):</strong></div>
           <ul className="list-disc pl-5 text-xs space-y-0.5">
-            <li>Voto ponderado 1:1 por token PACHA en tenencia (suma available + locked de balances).</li>
-            <li>Un voto por inversor por propuesta (on-chain ready via unique constraint).</li>
-            <li>Quórum por defecto 10-20%. Estado actualizado en tiempo real vía DB.</li>
-            <li>Decisiones afectan Landbank / distribuciones / lanzamientos PNC (ver Fase29-32).</li>
-            <li>Próximamente: ejecución on-chain + attestations desde core (Fase27+).</li>
+            <li>Voto ponderado 1:1 por token PACHA en tenencia (available + locked de balances + staked_amount de stakes Fase42).</li>
+            <li>DeFi Staking: usa Stake/Unstake en el panel para bloquear PACHA, aumentar tu poder de voto y accrual (power = holdings + staked).</li>
+            <li>Un voto por inversor por propuesta (on-chain ready via unique constraint). Stake/Unstake refresca poder inmediatamente.</li>
+            <li>Quórum por defecto 10-20%. Estado actualizado en tiempo real vía DB + Fase35 onchain tx proofs intactos.</li>
+            <li>Decisiones afectan Landbank / distribuciones / lanzamientos PNC (ver Fase29-32,40+). Fase42 integrado a governance.</li>
           </ul>
         </div>
       </MissionCard>
