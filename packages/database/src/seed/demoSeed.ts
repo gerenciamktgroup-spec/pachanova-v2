@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import * as schema from "../schema";
 import * as dotenv from "dotenv";
 
@@ -117,12 +117,12 @@ async function seed() {
       }
     });
 
-    // Balance in Paracas
+    // Balance in Paracas - Fase 8 Demo: exactly $50,000 value (1000 tokens @ $50/token)
     await db.insert(schema.balances).values({
       investorId: holder.id,
       propertyId: propertyIdParacas,
-      availableTokens: "200",
-      availableUsd: "10000",
+      availableTokens: "1000",  // $50,000 USD collateral value
+      availableUsd: "5000",
       lockedTokens: "0"
     }).onConflictDoUpdate({
       target: [schema.balances.investorId, schema.balances.propertyId],
@@ -162,13 +162,58 @@ async function seed() {
     confirmedByFideicomiso: true
   });
 
+  // Fase 8: Seed demo active loan for Paracas $50k collateral scenario (holder has 1000 tokens = $50k)
+  // Uses the updated loans schema (Fase8 fields + pnc link for landbank integration)
+  if (holder) {
+    const paracasLoanId = "f8a1b2c3-d4e5-6789-abcd-ef0123456789"; // stable demo id
+    await db.insert(schema.loans).values({
+      id: paracasLoanId,
+      investorId: holder.id,
+      propertyId: propertyIdParacas,
+      collateralAmount: "1000", // $50k value at $50/token
+      collateralValueUsd: "50000.00",
+      borrowedAmount: "30000.00", // 60% LTV
+      interestRate: "0.0850",
+      accumulatedInterest: "125.00", // some accrued for demo
+      ltvAtBorrow: "0.6000",
+      liquidationThreshold: "0.8500",
+      healthFactor: "1.4167",
+      lastAccruedAt: new Date(),
+      status: "active",
+      pachanova_pnc_codigo: "PNC-PAR-001", // direct link to core landbank PNC
+      manualOverrideNote: "Fase8 Demo: $50k Paracas tokens as collateral. Master can override LTV/rate or force liquidate via Maestro UI."
+    }).onConflictDoUpdate({
+      target: schema.loans.id,
+      set: {
+        collateralAmount: "1000",
+        collateralValueUsd: "50000.00",
+        borrowedAmount: "30000.00",
+        status: "active",
+        pachanova_pnc_codigo: "PNC-PAR-001",
+        manualOverrideNote: sql`EXCLUDED.manual_override_note`
+      }
+    });
+
+    // Lock the collateral tokens in balance (simulate borrow action)
+    await db.update(schema.balances)
+      .set({
+        availableTokens: "0",
+        lockedTokens: "1000",
+        lastUpdatedAt: new Date()
+      })
+      .where(and(
+        eq(schema.balances.investorId, holder.id),
+        eq(schema.balances.propertyId, propertyIdParacas)
+      ));
+  }
+
   // 3. System Parameters
   await db.delete(schema.systemParameters).where(eq(schema.systemParameters.key, "treasury_balance_usd"));
   await db.insert(schema.systemParameters).values([
     { key: "treasury_balance_usd", value: "0" }
   ]);
 
-  console.log("✅ Demo Seeding Complete!");
+  console.log("✅ Demo Seeding Complete! (Fase8 Paracas $50k borrow demo seeded)");
   process.exit(0);
 }
 
