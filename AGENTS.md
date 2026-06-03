@@ -89,6 +89,12 @@ Core (hub) reinforced Fase36 gov quorum gate + Fase42 PACHA staking power accrua
 - After every 9h window or sub (e.g. Fase42 complete, Fase48 UI, landbank admin shipped): git add . ; git commit -m "pach-9h-XXX or core-9h-XXX: [high-level summary + exact real PNC refs + what closed per /goal]"; git push; update GitHub issue with summary + links + new todos.
 - Commit the AUTONOMY_POSTMORTEM... + any new PROGRESS/plan immediately.
 - Never leave 25+ changed + untracked at "end".
+- **Conflict resolution rule (learned from 0xc0000017 blocker)**: Always use `npm run resolve-conflicts <file>` (or `node resolve-conflicts.js <file>`) for git conflicts during autonomous work. The legacy resolve_conflicts.py is kept for reference only but must never be invoked from orq/bootstrap/scheduler/monitor (it requires VC++ runtime for the 3.14 standalone python and was the source of the exact dialog). JS port is zero-dep, verified, self-heals its own source, registered in package.json. On any runtime error in core dev tools, immediately port to native + update rules + commit.
+
+**Tools & runtimes (robustness for never-stop)**:
+- Prefer zero external runtime dependencies for any operation used inside autonomous loops (git blackboard commits, conflict resolve, verifiers). Ship in-repo pure JS/TS + npm script.
+- If python (or other) is required for a dev tool, ensure system has runtimes pre-installed (e.g. VC++ AIO) but still maintain JS fallback/port as primary for the loop.
+- Bootstrap must print the exact `npm run resolve-conflicts` command if conflicts detected.
 
 **Verifiers & quantitative scores (close "30% feel / inconclusivos" visibly, higher quality)**:
 - Every window close + orq --dry/verify/build: Demo count = `grep -r "demo|Demo|Genesis|mock|MOCK" apps/dashboard/src/app/dashboard --include="*.tsx" --include="*.ts" | wc -l` (target 0 in investor/admin/prod paths; list/fail until 0).
