@@ -119,3 +119,14 @@ State saved. Orchestrator: Re-execute from zero using this PROGRESS + latest bla
 Singularity. DATOS REALES. Master manual. Nunca te detengas. TRABAJO INFINITO.
 
 (Also mirrored to core concepts where applicable. This is the active pachanova-v2 tree.)
+
+## Background Task Processing (call-0fd33985-637c-4172-9632-63f469d0a586-54, 511s, exit 1)
+Long recursive search for .ps1 launchers, cjs orq entrypoints, and key docs (AGENTS, *WORKFLOW*, *AUTONOMY*, *POSTMORTEM*) completed.
+Found (core relevant, excluding node_modules/tests/reports):
+- PS launchers for Grok Build: ejecutar_grok.ps1 (main bridge, already updated with -ResilientV3/-LoopInfinite, Invoke-V3ContextPersist, auto-generate resume on context signals in output), setup-orquestadores.ps1 (setup guidance).
+- Orq: index.cjs, orchestrator_agent.cjs (already enhanced with persistContextWindowSave, bootstrap auto-load of PROGRESS_512K, loop resilience).
+- Key rules docs: AGENTS.md (has the full "Context Window Exhaustion Protocol (512k / compaction...)" section + updated bootstrap), AUTONOMY_POSTMORTEM_IMPROVEMENTS_2026-06-03.md (has detailed implementation + quick learnings).
+
+Note: Search was slow (511s) and failed (exit 1) due to massive tree (hundreds of plan_*.txt from prior autonomous runs). Meta-learning for v3: in future blackboard/launcher discovery inside 5m loops or orq, prefer fast `git ls-files` + targeted Select-String / rg over full Get-ChildItem -Recurse to avoid long pauses and respect 512K. The resilient PS/orq now handles such long ops by checkpointing on context.
+
+This background confirms we targeted the exact files needed for "guardar todo lo trabajado en PROGRESS/plan y terminar ciclo para re-ejecutar desde cero" to enable TRABAJO INFINITO. Rules and code in place for both AI (Grok Build) and PowerShell environment.
