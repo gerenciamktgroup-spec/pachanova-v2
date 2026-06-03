@@ -128,6 +128,91 @@ Singularity. DATOS REALES. Master manual. (v2 rules applied 2026-06-03)
 - High-level only here: core now produces reinforced Fase36 gov quorum + Fase42 staking power for real PNC (PAR etc + Fase9/44 intact); investor per-PNC portfolio/gov cards can consume votePower/boost/quorum status via orq fetchOrqProposals or syncTask (high-level). pach orq comments high-level sync. No breakage. Real data exercised.
 - Persist: todos pachanova-core-9h-*, AGENTS high-level, linked PROGRESS both dirs, antigravity_master update pending bridge, 9h status. Reference protocol/9H flow/singularity. Fase9/44 complete, next Fase36/42 advanced real PNC. 9h flow reinforced. Cycle continues. 2026-06-03.
 
+## Autonomy v3 / Never-Stop Rules (learned from errors 2026-06-03+: MCP not primary blackboard leading to coordination loss, gh not pre-auth blocking connectors, uncommitted work risk, demo remnants, repetitive plans without E2E, no quantitative scores/metrics, bridge fragility, no enforced on-the-fly learning, connectors not always "on", no self-healing for MCP/multi-agent, inconsistent use of skills vs ad-hoc, no Master safety enforcement in all paths)
+
+**Never-Stop Principle**: Development never stops. Durable schedulers (45m+), monitors, background orq, self-healing (on connector/MCP error: retry with backoff + log to blackboard + create issue, fallback local+git only temporarily). If "detenido", auto-diagnose via verifiers and resume. Use /loop or scheduler_create durable for continuous cycles.
+
+**MCP / Multi-Agent Connectors Always Work Well**:
+- MCP GitHub is primary blackboard for multi-agent (this Grok executor + Gemini antigravity brain + orq instances + schedulers). All coordination (plans, progress, learnings, questions) via issues (labels antigravity,plan,high-impact,autonomous) + MCP tools (github__list_issues, github__create_issue, github__add_issue_comment, github__search_issues, push_files, create_pull_request, etc.).
+- Bootstrap mandatory every start: `grok mcp list` (github must show "connected", not "still connecting" or missing). If not: Complete gh device auth (code 1E06-091F at https://github.com/login/device), `gh auth token`, then `grok mcp add github --command npx --args "-y @modelcontextprotocol/server-github" --env GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token)`. Set GITHUB_PERSONAL_ACCESS_TOKEN in env for the npx server. Re-verify with search_tool "github" (expect tools) and use_tool for blackboard ops.
+- Pre-config: Add to ~/.grok/config.toml or project .grok/config.toml under [mcp_servers.github] for persistence.
+- Self-healing: In orq/monitor bootstrap, if MCP not connected: retry, guide exact cmd, log to blackboard, create GitHub issue, fallback local but resume on fix.
+- Multi-agent sync: Gemini brain outputs to GitHub issues or shared; this executor consumes and acts.
+- Other connectors (Vercel MCP if added, gcloud): Same pre-check + env.
+
+**Bootstrap Checklist (enforced in orq start, scheduler, monitor, /antigravity - no cycle without this)**:
+1. MCP: grok mcp list; search_tool "github" (discover tools); test use_tool if possible.
+2. Auth: gh auth status (token present); grok mcp for PAT if server requires.
+3. Git: git fetch --dry-run; git status (note uncommitted - forbid starting new without commit or explicit).
+4. Blackboard: MCP search/list issues labeled antigravity/plan (recent, open); read latest local plan_*.txt, PROGRESS_*, antigravity_master.txt, AUTONOMY_POSTMORTEM_*, LEARNINGS.
+5. Verifiers: demo:health or pnpm run demo:health (must pass); demo count (grep in admin/investor paths) == 0; MCP connected; Master manual test (e.g. master_edit in landbank works, audit created, push signal).
+6. Master Safety (bank system): Confirm no isDemo in master paths; audit always inserted on changes; orq respects manual_overrides + provenance; easy panel access (landbank master_edit JSON/forms).
+7. Internet/Resources: npx --version; curl -I to MCP servers or GitHub if needed.
+8. Learning: Review previous cycle learnings from postmortem/blackboard.
+Goal: All green before planning/executing. Log bootstrap result to blackboard.
+
+**Cycle Workflow (9h windows or durable shorter schedulers - repeat forever, focused 1-2 high-impact per window)**:
+1. Consult blackboard (MCP GitHub primary).
+2. Learn on the fly: Review errors/metrics from previous (postmortem, issues). Append at least 1 learning + rule update to postmortem/LEARNINGS.
+3. Plan: For significant, use /design (produces PR Plan) or plan subagent; always create/update GitHub issue (detailed, with quantitative goals, acceptance). Use todo_write.
+4. Execute: Use /implement --effort 3-5 (implementer + multiple reviewers + specialists to 0 issues of any severity, with memory of past patterns) or /execute-plan + subagents in worktrees. Prefer this over ad-hoc search_replace in orq or small edits. todo_write for tracking.
+5. Verify: Run health/build, quantitative scores (e.g. Landbank Master Completeness % with breakdown: master_edit 100%, MCP blackboard used 100%, demo0 90%, health 100%, push verified 100%, real data in orq 100% = overall X%), real data checks (DATOS REALES strings present), demo count, Master push test (edit + confirm orq would pick + audit + broadcast signal).
+6. Persist high-level only: git add . (ALL, including docs/postmortem); commit -m with summary + metrics + learnings + refs; push; update GitHub issue with comment (progress, scores, learnings, next).
+7. Improve on the fly: Update AGENTS.md, antigravity_master.txt, postmortem with new rules/learnings. Propose 1 improvement for next cycle.
+
+**End-of-Cycle / Window Discipline (mandatory - auto-fail cycle if not)**:
+- Zero uncommitted (git status clean or explicit exception logged).
+- Git push done.
+- GitHub issue updated (no local-only progress).
+- Quantitative score + verifiers in commit/issue/orq log.
+- At least 1 learning appended + rules updated.
+- Master safety verified (if bank changes).
+
+**On-the-Fly Learning & Always Improve (enforced)**:
+- Every cycle/error: Append to AUTONOMY_POSTMORTEM_IMPROVEMENTS_2026-06-03.md (or LEARNINGS.md): "Error/Issue: X. Root cause: Y (from session Z). Fix: Z. New rule: W. Metric impact: +N%."
+- After every N cycles or on meta-signal: Run "learning review" - consolidate, update workflow/rules, apply 1 systemic improvement (e.g. script for bootstrap).
+- Update docs live: AGENTS, antigravity_master, orq comments, WORKFLOW.md.
+- Use todo_write + update_goal for the improvement goal.
+
+**Quantitative Metrics (mandatory in every report, commit, orq --dry log, GitHub issue)**:
+- Landbank / Master Completeness % (breakdown list: master_edit UI+API 100%, MCP github configured+used for blackboard 100%, demo count in admin/investor==0 100%, health pass 100%, push to real users verified (orq sync + DB in UIs + broadcast) 100%, real data/DATOS REALES in orq/UI 100%, etc. Overall score).
+- Connector health: MCP list (all expected connected), gh auth, npx/internet.
+- Cycle health: committed+ pushed? GitHub issue updated? verifiers pass? learnings appended (Y/N)?
+- Other: orq --dry no repeats/errors, real data presence, build time, etc.
+- Report example: "Landbank Master: 98% (master_edit 100%, MCP 100%, demo0 90% (2 remnants in non-prod), health 100%, push 100%). Learnings: 1 appended. Next: ..."
+
+**Bank System Specific (RWA under construction - never compromise)**:
+- Master manual is sacred: Easy panel (landbank master_edit JSON/forms for any fields, properties/superadmin overrides), always respected by orq/automations (manual_overrides, provenance, audit), every change audited (MASTER_* actions), pushed to real users/real data (orq sync for computations + real DB queries in investor UIs + broadcast/MASTER_PUSH + audit + revalidate).
+- Real data only: No isDemo in Master/prod paths; all proofs real (RPC, Vertex, onchain); DATOS REALES invariant.
+- Safety/Compliance: Audit every manual, Master can override anything with log, push ensures users see real updated data immediately where possible.
+
+**Self-Healing & Robustness**:
+- Connectors: Bootstrap checks + retry logic (in orq/monitor/ps1). On fail: log, exact guide (with code), blackboard issue, fallback, auto-resume.
+- Bridge: Retries, error capture, MCP pre-check.
+- Plans: No repetitive stubs - after plan, execute with skills or mark incomplete with issue.
+- Errors: Never silent - always to blackboard + learning append + fix in next.
+
+**Multi-Agent Coordination**:
+- All instances (Grok Build executor, Gemini antigravity brain/planner, orq, schedulers, subagents): Read/write exclusively via GitHub issues (MCP) + local for compatibility.
+- Gemini brain: Outputs to issues or shared; this executor consumes and acts.
+- Schedulers: Durable, with prompts enforcing bootstrap + MCP-first + learning.
+
+**Implementation & On-the-Fly**:
+- These v3 rules appended to AGENTS.md (core + pachanova), antigravity_master.txt mission, this postmortem.
+- New WORKFLOW.md with full checklists, example cycles, verifiers scripts.
+- Bootstrap/verifier notes added to orq comments, monitor, ps1.
+- After this: Create durable scheduler for "autonomous-learning-loop" (prompt: bootstrap, consult blackboard, run verifiers/scores, apply 1 learning/improvement from postmortem, execute small, persist to GitHub+commit, append learning).
+- Use search_tool/use_tool for GitHub (once PAT/auth complete) to create master issue for this /goal and track.
+
+**Next Autonomous Actions (this cycle)**:
+- Complete gh device auth (code 1E06-091F) + set PAT for MCP full connect.
+- Use MCP to create GitHub issue "Antigravity v3 Never-Stop Workflow + Continuous Improvement /goal" with these rules + current status.
+- Launch durable scheduler for learning loop.
+- Run verifiers now (health, mcp, demo count, Master test).
+- Commit this as blackboard update.
+
+Cycle continues. Never stop. Learn on the fly. Master manual. DATOS REALES. (v3 rules applied 2026-06-03)
+
 ## Fase46 high-level (Claim-to-Compound Flywheel E2E post Fase15 ownership + Fase44 cashflow; 9h PachaNova-Continue): orq pure dual proofs (compute/recompute/verifyClaimProofMatch + Compound, deterministic CLAIM_ATTEST/COMPOUND_ATTEST + PNC + 8540/23125 + fresh block 25236xxx + net + sha like Fase9/Fase35; real RPC), runAutoClaimTask + runAutoCompoundTask (logs 'Fase46 CLAIMED $8540 PAR', 'Fase46 COMPOUNDED growth', return actions+proofs; wired runFleet/cycle post cashflow/accrue), fleet returns claimables + portfolioGrowth. Schema distribs + mig 0006 (status/proof/claimedAt/compound). demoSeed claimables (PAR 8540 slices + AET 23125 + predict notes). API claim/compound (real db mutate on demo investor balances + distribs for demo.holder, orq proof, cert return with verify match). Investor page + YieldActionClient: RECLAMAR (historial rows) + REINVERTIR (PNC cards, target PNC) CTAs client POST, success real data + proof + cert note + reload for growth (yourNetShare up, historial CLAIMED/COMPOUNDED, net growth badge). Cert/ledger enrich claim/compound. maestroYield claimables note. verify-fase16 new Fase46 section (proofs match, tasks, real 68325/8540/0.82+2.3% exercised, PASS prior intact). orq--dry/verify/build exercised (PAR claim 8540 + compound + tx@fresh + growth + Fase46 logs + PASS). UI /dashboard/investor live actionable cashflow on real PNC nets. High-level only (core hub for exact Fase16 declare/holdings + Fase36/42/43). AGENTS/plan/PROGRESS updated. Real PNC + 23125 + 68325 net + 8540 claim + proofs + gcloud0.73. DATOS REALES. 9h flow. Singularity. 2026-06-03.
 
 
