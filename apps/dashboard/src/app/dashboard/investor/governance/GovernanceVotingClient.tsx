@@ -47,6 +47,11 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
   const [loading, setLoading] = useState<Record<string, string | null>>({}); // proposalId -> choice or null
   const [messages, setMessages] = useState<Record<string, string>>({});
 
+  // Fase36: simple create proposal form state (demo, posts to API, creates active for PNC)
+  const [createTitle, setCreateTitle] = useState('');
+  const [createPNC, setCreatePNC] = useState('PNC-PAR-001');
+  const [creating, setCreating] = useState(false);
+
   const getMyVoteFor = (pid: string) => myVotes[pid];
   const getTally = (pid: string): Tally => tallies[pid] || { for: 0, against: 0, abstain: 0, powerFor: 0, powerAgainst: 0, powerAbstain: 0 };
 
@@ -126,8 +131,44 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
     }
   }
 
+  async function createProposal() {
+    if (!createTitle) return;
+    setCreating(true);
+    try {
+      const res = await fetch('/api/governance/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: createTitle, relatedPNC: createPNC, description: `Propuesta Fase36 para ${createPNC}` })
+      });
+      const j = await res.json();
+      if (j.success) {
+        setMessages(m => ({ ...m, create: `Propuesta creada: ${j.proposal?.title}. Recarga para votar.` }));
+        setCreateTitle('');
+      } else {
+        setMessages(m => ({ ...m, create: j.error || 'Error creando' }));
+      }
+    } catch (e: any) {
+      setMessages(m => ({ ...m, create: e.message }));
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
+      {/* Fase36: Create proposal (demo for admin/land/orq auto) */}
+      <div className="p-3 border border-pn-gold/30 rounded bg-pn-surface/50">
+        <div className="text-xs text-pn-gold mb-1">FASE36: CREAR PROPUESTA (demo - orq/landbank auto en futuro)</div>
+        <div className="flex gap-2">
+          <input value={createTitle} onChange={e=>setCreateTitle(e.target.value)} placeholder="Título de propuesta (ej: Lanzamiento PNC-XXX Fase3)" className="flex-1 bg-pn-bg border border-pn-border rounded px-2 text-sm" />
+          <select value={createPNC} onChange={e=>setCreatePNC(e.target.value)} className="bg-pn-bg border border-pn-border rounded px-2 text-xs">
+            <option>PNC-PAR-001</option><option>PNC-SB-003</option><option>PNC-CHI-004</option>
+          </select>
+          <button onClick={createProposal} disabled={creating || !createTitle} className="px-3 py-1 text-xs border border-pn-gold text-pn-gold rounded hover:bg-pn-gold/10">Crear + Activar</button>
+        </div>
+        {messages.create && <div className="text-[10px] text-pn-gold mt-1">{messages.create}</div>}
+      </div>
+
       {proposals.map((p, idx) => {
         const t = getTally(p.id);
         const my = getMyVoteFor(p.id);
