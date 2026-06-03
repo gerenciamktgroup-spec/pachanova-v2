@@ -296,6 +296,18 @@ async function runCycle(dryRun = false, loopMs = null) {
       // High-level: this ensures orchestrator re-execute from zero loads the saved state for infinite work
     }
   } catch (e) { log('512K PROGRESS load note: ' + e.message, 'WARN'); }
+  // Prevent Python error dialogs (0xc0000017) that Antigravity can't resolve - check and warn
+  try {
+    const { execSync } = require('child_process');
+    const ver = execSync('python --version 2>&1', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
+    if (ver.includes('3.14')) {
+      log('WARNING: Python 3.14 detected - may cause 0xc0000017 error dialogs on PC. Antigravity/planner may hit this. Use only node/JS tools (e.g. npm run resolve-conflicts). Uninstall 3.14 via winget and use stable 3.11/3.12.', 'WARN');
+    } else {
+      log('Python check: ' + ver + ' (stable, good for tools if needed)', 'INFO');
+    }
+  } catch (e) {
+    log('Python check: not found or error (prefer node/JS for all tools to avoid env issues)', 'WARN');
+  }
   try {
     const out = await consultGrokViaProjectCommand(dryRun);
     const feat = parseNextBestFeature(out);
