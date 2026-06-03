@@ -331,8 +331,19 @@ async function runFleetYieldForecastTask() {
     relatedGovernanceProposals: p.proyecto_codigo === 'PNC-PAR-001' || p.proyecto_codigo === 'PNC-SB-003' ? 1 : 0
   }));
 
-  console.log(logPrefix + ' Produced ' + proposals.length + ' PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud)');
-  return { success: true, forecasts, count: forecasts.length, proposals, proposals_count: proposals.length, portfolioView, _fase34_rich: true };
+  // Fase36/39 enhancement (from Antigravity ps1 roadmap): auto GOVERNANCE_PROPOSE from PNC fleet proposals (orq auto for land launches)
+  const govAutoProposals = pncProposals.map(p => ({
+    action: 'GOVERNANCE_PROPOSE',
+    related_pnc: p.proyecto_codigo,
+    title: `Gobernanza Colectiva para ${p.proyecto_codigo} ${p.product || ''} (Fase36 auto from orq land/orq)`,
+    description: `Votación ponderada PACHA para decisión sobre ${p.rationale || p.proyecto_codigo}. Poder real de tenencias (Fase33/34).`,
+    status: 'active',
+    source: 'orq_fleet_auto_gov_propose_fase36',
+    created_at: new Date().toISOString()
+  }));
+
+  console.log(logPrefix + ' Produced ' + proposals.length + ' PNC proposals + portfolioView (Fase32 nets + Fase9 + Fase34 v2 cards ready; real blocks/gcloud) + ' + govAutoProposals.length + ' auto gov proposals (Fase36/39)');
+  return { success: true, forecasts, count: forecasts.length, proposals, proposals_count: proposals.length, portfolioView, _fase34_rich: true, govAutoProposals, gov_auto_count: govAutoProposals.length };
 }
 
 // Fase21 #14/#18 onchain sync stub (for v2 thin port consistency with core; demo 12.5 verified enriches proposals)
