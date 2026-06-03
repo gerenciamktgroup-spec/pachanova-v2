@@ -75,6 +75,16 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     description: "Historial on-chain simulado de transferencias.",
   },
   {
+    id: "investor-governance",
+    label: "Gobernanza RWA",
+    path: "/dashboard/investor/governance",
+    section: "investor",
+    role: "investor",
+    icon: "scale",
+    status: "active",
+    description: "Sistema de votación colectiva ponderada por tenencias reales de PACHA para decisiones RWA.",
+  },
+  {
     id: "investor-disclosures",
     label: "Disclaimers",
     path: "/dashboard/investor/disclosures",

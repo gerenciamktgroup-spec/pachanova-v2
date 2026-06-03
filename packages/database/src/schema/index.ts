@@ -15,3 +15,4 @@ export * from "./distributions";
 export * from "./notifications";
 export * from "./demo_sessions";
 export * from "./loans";
+export * from "./governance";

@@ -8,3 +8,5 @@ export const propertyStatusEnum = pgEnum("property_status_enum", ["coming_soon",
 export const p2pStatusEnum = pgEnum("p2p_status_enum", ["open", "partial", "filled", "cancelled", "expired"]);
 export const notificationTypeEnum = pgEnum("notification_type_enum", ["system", "transaction", "kyc", "market", "dividend"]);
 export const propertyTypeEnum = pgEnum("property_type_enum", ["land", "residential", "hotel", "rental"]);
+export const proposalStatusEnum = pgEnum("proposal_status_enum", ["draft", "active", "passed", "rejected", "executed", "cancelled"]);
+export const voteChoiceEnum = pgEnum("vote_choice_enum", ["for", "against", "abstain"]);
