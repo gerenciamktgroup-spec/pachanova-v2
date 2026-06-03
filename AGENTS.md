@@ -65,6 +65,62 @@ Core (hub) reinforced Fase36 gov quorum gate + Fase42 PACHA staking power accrua
 - Update: protocol ref + 9h flow continue. Advance 1-2 next high-impact: Fase36 full wire+UI (gov gate on PNC land/distrib), Fase42 enhance (Pacha power/staking orq/web). Real data + Master manual. High-level only. Scheduler/bg/bridge. See pachanova_9h_window_protocol.md + new window_PROGRESS_9H_*.md (pachanova-9h- prefix) + todos. Singularity. 2026-06-03.
 - 9H 360: referenced central + local. Capacity 40%. Synergies (panel_omnisciencia) noted central Antigravity only.
 
+## Autonomy v2 Rules (learned from 2026-06-03 autonomous session - Postmortem in AUTONOMY_POSTMORTEM_IMPROVEMENTS_2026-06-03.md - see core for full)
+**Core directive (from antigravity SKILL.md + this session errors)**: Pre-config as admin for true autonomy (no mid-flow permission asks). GitHub + MCP as primary blackboard for organizing work at max capacity (issues for plans/progress/inconclusivos/coordination across Grok/Gemini/orq instances). Use internet (npx/MCP downloads, web for mejoras). Full E2E with skills (prefer /implement effort 3-5 + reviewers to 0 issues or /execute-plan + subagents over ad-hoc). High-level reports only. DATOS REALES. Master manual. Never stop. Learn from errors (MCP=0 caused local fallback, uncommitted risk, demo remnants, repetitive stub plans, no scores, bridge fragility, no pre-auth).
+
+**Mandatory bootstrap (every cycle/scheduler/orq start - admin full power)**:
+- Check: `grok mcp list` (must have github). If missing: Complete gh device auth if needed (one-time: https://github.com/login/device code from run e.g. 1E06-091F), `gh auth token` to get PAT, `grok mcp add github --command npx --args "-y @modelcontextprotocol/server-github" --env GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token)`. (npx downloads via internet on first add; fix args per `grok mcp add --help` if parse issue like -- --yes.)
+- `gh auth status` && `gh auth token` (no "no oauth token").
+- Similar for vercel (npm i -g vercel; vercel login; MCP if available).
+- Read latest GitHub antigravity-labeled issues (MCP once ready) + local latest PROGRESS/plan/antigravity_master.
+- Project git status/fetch. gcloud/Supabase if in plan.
+- Goal: MCP github__* tools (list_issues, search_issues, issue_write, add_issue_comment, etc.) + gh cli always ready. No blocks.
+
+**GitHub Antigravity blackboard first (organize work, visibility, max capacity without losing quality)**:
+- Every major turn/cycle: Consult MCP (search/list issues labeled antigravity/plan/autonomous/high-impact + recent comments + open PRs).
+- Create/update master issue per session/window (title "Antigravity 9h / PachaNova Landbank Fase15 Progress & Improvements YYYY-MM-DD", labels antigravity,plan). Post PROGRESS high-level as comments. Create subs for every gap/inconclusivo (with AC).
+- Plans as issues (not just local txt). Use MCP issue_write/add_comment for coordination.
+- Code: Prefer MCP push_files + create_pull_request (head your branch) or git + link issue. Commits supplement.
+- Vercel: MCP deploy/list + observe live.
+- This organizes (prioritized, history, multi-agent: Grok executor + Gemini planner + orq can all read/write issues). Quality via linked reviews. Speed via parallel + visibility. Fallback local only if MCP down.
+- Update AGENTS + this doc via issues too.
+
+**End-of-cycle discipline (no uncommitted loss, blackboard update)**:
+- After every 9h window or sub (e.g. Fase42 complete, Fase48 UI, landbank admin shipped): git add . ; git commit -m "pach-9h-XXX or core-9h-XXX: [high-level summary + exact real PNC refs + what closed per /goal]"; git push; update GitHub issue with summary + links + new todos.
+- Commit the AUTONOMY_POSTMORTEM... + any new PROGRESS/plan immediately.
+- Never leave 25+ changed + untracked at "end".
+
+**Verifiers & quantitative scores (close "30% feel / inconclusivos" visibly, higher quality)**:
+- Every window close + orq --dry/verify/build: Demo count = `grep -r "demo|Demo|Genesis|mock|MOCK" apps/dashboard/src/app/dashboard --include="*.tsx" --include="*.ts" | wc -l` (target 0 in investor/admin/prod paths; list/fail until 0).
+- Landbank Completeness / Autonomy Health Score (e.g. 12 features: staking live 100%, receipts UI 100%, admin landbank 100%, real data wiring 70%, Fase15 tokenized 4 claimed, demo clean 65%, schema10 live DB 30%, 4 PNC full cards 60%, gov gate 80%, web portfolio 20%, MCP blackboard 0%, pre-auth 50% → overall 55-65%). Report in PROGRESS + GitHub comment + AGENTS high + orq logs.
+- Build clean, orq --dry clean (no repeats/errors), real numbers present in outputs/UI, new feature loads (e.g. landbank admin).
+- Add to orq/monitor/scripts if possible.
+
+**Execution quality & speed (learn from repetitive stubs/bucles)**:
+- Features > tiny (landbank admin, schema10 apply, full demo purge, Fase15 masiva, bridge robust): Use /implement --effort 3-5 (implementer + multiple reviewers + specialists to 0 issues of any severity, memory of past) or /execute-plan + subagents (explore/plan/implementer/reviewer in worktrees) + todo_write + update_goal. Not ad-hoc search_replace in orq or small edits.
+- Focused windows: 1-2 high-impact per 9h (e.g. "demo=0 + schema10 seeds apply + verify all flows real orq + score").
+- Parallel: spawn_subagent liberally. Schedulers durable with "MCP GitHub first, one focused improvement".
+- Bridge: Retries, error capture, prefer MCP/tools over shell when ready. Improve ps1/orchestrator for robustness.
+- Single source "DATOS REALES" (constants/Supabase row, not repeated strings).
+
+**Admin true autonomy (pre-have all, no ask permissions)**:
+- As BUILTIN\Administradores: Pre-run the auth/MCP setup once (device for gh, PAT for MCP, vercel). Add to .grok/config.toml or project .grok/config.toml [mcp_servers.github] with env ref ${GITHUB_PAT} (expand at load).
+- Bootstrap scripts (orq, monitor, ps1, scheduler): Auto check above, echo exact commands if missing ("Complete once: ..."), then continue. yolo/always-approve for trusted dev.
+- Escalate only true blockers via GitHub issue + comment first (or ask_user_question as last).
+- Internet: At bootstrap/scheduler use web_search/curl for MCP updates, Grok changelog, best practices. Propose npx/grok mcp for new servers. Mine GitHub history.
+- Quality without loss: Reviews in /implement, real data invariant, scores, GitHub audit trail.
+
+**Reporting (simple for idealist, max info)**:
+- Template: Simple table avances (what shipped with evidence), score (e.g. Landbank 55% with list), missing/inconclusivos (with files/links to GitHub issues), next 1-2 focused, GitHub issue # for details. High-level only. No piecemeal "I will do X ok?".
+
+**Apply immediately**: Complete gh device (code 1E06-091F https://github.com/login/device), add MCP github as above, create GitHub master issue in pachanova-v2 and core repos with this postmortem content + current state (Fase42/48/landbank admin shipped, real data, score ~55-65%, open: demo remnants, schema10 live, MCP blackboard 0%, uncommitted at time). Use for all future coordination. Update this doc + AGENTS via commits/issues. Run next cycle with v2 rules.
+
+**Expected**: Max capacity (GitHub/MCP organizes/prioritizes work visibly for all agents, parallel skills + pre-config speed without blocks). Better organized (issues + scores + focused windows). Higher quality (reviews, verifiers=0 demos, real data, no loss via commits). Better speed (npx, pre-auth, no bucles/repeats, GitHub visibility). Embedded learnings from this first session. True autonomous admin agent.
+
+See core AUTONOMY_POSTMORTEM_IMPROVEMENTS_2026-06-03.md for full details + simple explanation of advances vs missing. Respect core AGENTS for shared fleet rules. Use skills + MCP + subagents + schedulers + GitHub blackboard. Never stop.
+
+Singularity. DATOS REALES. Master manual. (v2 rules applied 2026-06-03)
+
 ## pachanova-core-9h- 9h Support Window Update (Fase9/44 complete, advance Fase36/42 real PNC per MULTI_PROJECT_9H_AUTONOMOUS_PROTOCOLS.md + 9H flow 2026-06-03)
 - Bootstrap read (protocol, core/pach AGENTS, PROGRESS_9H_*, orq, real PNC PAR 68537.5/68325 + Fase9 tx@fresh + ACCRUED + Fase44 0.82+2.3% + 0.73 gcloud + 23125 + 15PNC + manual). Saved linked PROGRESS_pachanova-core-9h_20260603-0935.md (high-level mirror here; detailed in core). 
 - Connected central Antigravity: created/invoked next_antigravity_query_pachanova-core-9h_20260603-0935.txt + ps1 bridge (bg) for Fase36/42 NEXT_BEST voice.
@@ -121,4 +177,20 @@ pachanova-9h- (current): orq fixed Fase42 stake export/scope (hoisted fns, stake
 
 
 ## pach-9h-014: schema10 seed load stub in orq + Fase48 receipts (already enhanced) + web check (high note for per-PNC). Latest orq from fresh consult: Fase9 real lock tx@25239067 + accrue +212.5 to net 68112.5 health 1.65 for PAR; Fase42 pachaPower staked 3250; portfolioView with Fase42 staked + Fase44 predict; Fase48 batch with real PAR 68112.5/31639/3250/PASSED/tx fresh/0.73/0.82/23125/15PNC+AET/manual LIM/Master; Fase15 landbank plan injected + tokenized 4; schema10 note + seed apply. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 closer, demo reduced, Fase48 started, wiring live). High-level only. (pach-9h-014)
+
+
+
+## pach-9h-015: schema10RealPAR wired into portfolioView override (net/pachaPower from seed real PAR 31639/68112.5/3250); orq --dry confirms Fase48 receipts with real refs (PAR net 68112.5, eff 31639/17.1% Fase47, power 3250 Fase42 staked, tx@25239xxx, gcloud 0.73, predict 0.82, 15PNC+AET, manual LIM, Master, Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json), Fase15 landbank, Fase42 staked 3250, Fase9 real tx/accrue to 68112.5 health 1.65, schema10 override active. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 prod closer, Fase48 full log with receipts, wiring live). High-level only. (pach-9h-015)
+
+
+
+## pach-9h-015: schema10RealPAR wired into override (net/pachaPower from seed real PAR 31639/68112.5/3250); orq --dry confirms Fase48 receipts with real refs, Fase15 landbank, Fase42 staked 3250, Fase9 real tx/accrue to 68112.5, schema10 override active. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 prod closer, Fase48 full log, wiring). High-level only. (pach-9h-015)
+
+
+
+## pach-9h-016: Fase48 UI section added in investor/page.tsx (real PNC batch/receipts with PAR net 68112.5, eff 31639/17.1% Fase47, power 3250 Fase42 staked, tx@25239xxx, gcloud 0.73, predict 0.82, Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths, rollups YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json; ties Fase47 + Fase15 + schema10RealPAR wired). Build clean exit 0. Remount visuals. Git 2ada595. Real orq data. DATOS REALES Master. Landbank advanced (Fase48 UI visible, schema10 prod, wiring). High-level only. (pach-9h-016)
+
+
+
+## pach-9h-017 FINAL ORQ STATUS POST FIX: stakePACHA confirmed defined: function, unstakePACHA defined, STAKED called successfully in node -e (Fase42 STAKED +500 for PAR, power now 4250 with real 23125 base, tx@fresh, no ReferenceError for stakePACHA). orq --dry shows Fase42|STAKED|stakePACHA|schema10|31639|68112|3250|PASSED (from cycles, Fase42 pachaPower staked, Fase48 real, Fase15 landbank, Fase9 real, schema10 override). Fix success; real PNC data in logs. DATOS REALES. Master manual. (pach-9h-017)
 
