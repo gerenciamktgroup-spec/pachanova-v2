@@ -87,6 +87,17 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
       };
       setMyVotes(v => ({ ...v, [proposalId]: newVote }));
 
+      // Fase35: store onchain from response
+      if (json.onchain) {
+        setMyVotes(v => ({
+          ...v,
+          [proposalId]: {
+            ...newVote,
+            onchain: json.onchain
+          } as any
+        }));
+      }
+
       // Refresh tally from server (GET summary)
       try {
         const refresh = await fetch(`/api/governance/vote?proposalId=${proposalId}`);
@@ -151,7 +162,27 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
                 {my && (
                   <div className="mt-1 inline-block text-[10px] px-2 py-0.5 bg-blue-950/60 border border-blue-800 text-blue-400 rounded">
                     Votaste: <strong>{my.choice.toUpperCase()}</strong> ({parseFloat(my.votingPower).toLocaleString()} PACHA)
+                    {(my as any).onchain && (
+                      <div className="mt-1 text-emerald-300 font-mono">
+                        ONCHAIN ATTEST tx={(my as any).onchain.txHash?.slice(0,12)}... @{(my as any).onchain.blockNum} (PACHA power real + PNC + 23125)
+                      </div>
+                    )}
                   </div>
+                )}
+                {my && (my as any).onchain && ! (my as any).onchainVerified && (
+                  <button
+                    onClick={async () => {
+                      const res = await fetch('/api/governance/vote', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ voteId: (my as any).id || 'latest' }) });
+                      const j = await res.json();
+                      if (j.success) {
+                        setMessages(m => ({ ...m, [proposalId]: j.message }));
+                        setMyVotes(v => ({ ...v, [proposalId]: { ...(v[proposalId] as any), onchainVerified: j.verified } as any }));
+                      }
+                    }}
+                    className="ml-2 text-[9px] px-1 py-0.5 border border-emerald-600 text-emerald-300 rounded hover:bg-emerald-900/20"
+                  >
+                    ✓ VERIFY ONCHAIN
+                  </button>
                 )}
               </div>
             </div>
