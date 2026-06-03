@@ -118,13 +118,13 @@ async function seed() {
       }
     });
 
-    // Balance in Paracas - Fase 8 Demo: exactly $50,000 value (1000 tokens @ $50/token)
+    // Balance in Paracas - Fase 8 Demo: $50k+ available for collateral (1000 locked in loan, 500 available for additional borrow demo)
     await db.insert(schema.balances).values({
       investorId: holder.id,
       propertyId: propertyIdParacas,
-      availableTokens: "1000",  // $50,000 USD collateral value
+      availableTokens: "500",   // remaining available
       availableUsd: "5000",
-      lockedTokens: "0"
+      lockedTokens: "1000"      // $50k locked as colateral in demo loan
     }).onConflictDoUpdate({
       target: [schema.balances.investorId, schema.balances.propertyId],
       set: {
