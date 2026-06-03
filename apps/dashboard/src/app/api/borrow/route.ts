@@ -274,6 +274,49 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, newPrice });
     }
 
+    if (action === 'liquidate') {
+      if (!loanId) {
+        return NextResponse.json({ success: false, error: 'loanId required for liquidation' }, { status: 400 });
+      }
+      const loan = await db.query.loans.findFirst({ where: eq(schema.loans.id, loanId) });
+      if (!loan || loan.status !== 'active' && loan.status !== 'under_collateralized') {
+        return NextResponse.json({ success: false, error: 'Loan not liquidatable' }, { status: 400 });
+      }
+      const property = await db.query.properties.findFirst({ where: eq(schema.properties.id, loan.propertyId) });
+      const tokenPrice = parseFloat(property?.tokenPriceUsd || "0");
+      const colAmount = parseFloat(loan.collateralAmount);
+      const currentColVal = colAmount * tokenPrice;
+      const totalDebt = parseFloat(loan.borrowedAmount) + parseFloat(loan.accumulatedInterest);
+      if (currentColVal / totalDebt > parseFloat(loan.liquidationThreshold || "0.85")) {
+        return NextResponse.json({ success: false, error: 'Health factor still safe, cannot liquidate' }, { status: 400 });
+      }
+      // Protocol claims collateral: deduct locked from balance
+      const bal = await db.query.balances.findFirst({ where: and(eq(schema.balances.investorId, loan.investorId), eq(schema.balances.propertyId, loan.propertyId)) });
+      if (bal) {
+        const locked = parseFloat(bal.lockedTokens || "0");
+        await db.update(schema.balances).set({ lockedTokens: Math.max(0, locked - colAmount).toString(), lastUpdatedAt: new Date() }).where(eq(schema.balances.id, bal.id));
+      }
+      await db.update(schema.loans).set({ status: 'liquidated', borrowedAmount: "0", accumulatedInterest: "0", updatedAt: new Date() }).where(eq(schema.loans.id, loanId));
+      await db.insert(schema.auditLogs).values({ action: "DEFI_LIQUIDATION_PROTOCOL", userId: loan.investorId, metadata: { loanId, claimedCollateral: colAmount, debt: totalDebt } });
+      return NextResponse.json({ success: true, message: "Loan liquidated. Collateral claimed by protocol." });
+    }
+
+    if (action === 'accrue') {
+      // Accrue interest for a loan (called on actions or manually). Simple daily pro-rata for demo (Aave style compound on real would use orq scheduler).
+      if (!loanId) return NextResponse.json({ success: false, error: 'loanId required' }, { status: 400 });
+      const loan = await db.query.loans.findFirst({ where: eq(schema.loans.id, loanId) });
+      if (!loan) return NextResponse.json({ success: false, error: 'Loan not found' }, { status: 404 });
+      const now = new Date();
+      const last = loan.lastAccruedAt ? new Date(loan.lastAccruedAt) : new Date(loan.createdAt);
+      const days = Math.max(0, (now.getTime() - last.getTime()) / (1000*3600*24));
+      const rate = parseFloat(loan.interestRate || "0.08");
+      const principal = parseFloat(loan.borrowedAmount);
+      const addInterest = principal * rate * (days / 365);
+      const newAccum = (parseFloat(loan.accumulatedInterest || "0") + addInterest).toFixed(2);
+      await db.update(schema.loans).set({ accumulatedInterest: newAccum, lastAccruedAt: now, updatedAt: now }).where(eq(schema.loans.id, loanId));
+      return NextResponse.json({ success: true, accumulatedInterest: newAccum, daysAccrued: days.toFixed(1) });
+    }
+
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     console.error("Error processing borrow action:", error);

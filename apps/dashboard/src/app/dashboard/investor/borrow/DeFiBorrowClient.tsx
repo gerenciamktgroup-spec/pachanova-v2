@@ -259,8 +259,11 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
             </div>
             <h2 className="text-3xl font-bold tracking-tight">Préstamos DeFi PachaNova</h2>
             <p className="text-sm text-pn-text-muted max-w-xl">
-              Utiliza tus tokens de participación inmobiliaria PACHA como garantía colateral para obtener préstamos de liquidez inmediata en USD a tasas fijas, sin perder tu rentabilidad subyacente.
+              Utiliza tus tokens de participación inmobiliaria PACHA como garantía colateral para obtener préstamos de liquidez inmediata en USD a tasas fijas, sin perder tu rentabilidad subyacente. <strong>Emulación Aave/MakerDAO con RE físico real (Paracas, etc).</strong>
             </p>
+            <div className="mt-2 text-[11px] text-pn-gold/80">
+              Ejemplo del Ideador: Inversor posee $50,000 en tokens del Terreno Paracas (PNC-PAR-001). Usa como colateral para pedir dólares prestados instantáneamente (hasta ~$30k @60% LTV) <span className="font-semibold">sin vender tu propiedad</span>. Sigues recibiendo yield del alquiler/valorización.
+            </div>
           </div>
           <div className="flex gap-2">
             <button 
@@ -359,6 +362,29 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
                     <option value="" disabled>No tienes tokens para colateralizar</option>
                   )}
                 </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Demo EXACTO del query del ideador: $50,000 en tokens Terreno Paracas (PNC-PAR-001).
+                    // Encuentra o usa primero. Calcula tokens para ~$50k USD value, set borrow a 60% LTV = $30k.
+                    const paracas = balances.find((b: any) => 
+                      (b.propertyName || '').toLowerCase().includes('paracas') || 
+                      (b.location || '').toLowerCase().includes('paracas') ||
+                      b.propertyId === 'pnc-par-001' || b.propertyId === 'paracas'
+                    ) || balances[0];
+                    if (paracas) {
+                      setSelectedPropertyId(paracas.propertyId);
+                      const price = parseFloat(paracas.tokenPriceUsd || paracas.token_price_usd || "1");
+                      const tokensFor50k = (50000 / Math.max(price, 0.01)).toFixed(2);
+                      setCollateralInput(tokensFor50k);
+                      setBorrowInput("30000"); // 60% LTV demo
+                    }
+                  }}
+                  className="mt-2 w-full text-xs px-3 py-2 border border-pn-gold/50 hover:bg-pn-gold/10 text-pn-gold rounded-lg font-medium"
+                  disabled={loading}
+                >
+                  🚀 CARGAR DEMO IDEADOR: $50,000 Tokens Terreno Paracas → Borrow $30,000 USD instant (colateral sin vender)
+                </button>
               </div>
 
               {selectedBalance && (
