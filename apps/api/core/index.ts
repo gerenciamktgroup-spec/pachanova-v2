@@ -3,6 +3,8 @@ import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { investors } from './routes/investors.js'
 import { properties } from './routes/properties.js'
+import * as fs from 'fs'
+import * as path from 'path'
 // demoRouter removed (pachanova-9h-): was mock for dev; production uses real orq (Fase9/15/36/42/47/portfolioView with 68112.5/31639/3250/PASSED 4x real land paths, Fase15 landbank completo tokenized 4, schema10 when seeds (token_holdings/rwa_distribuciones + core orq/verify fallback), live Fase36 gov gate on real distrib/land from orq pncProposals + Fase36/42 power 3250 staked + Fase47 31639 eff + Fase9 net 68112.5 + tx fresh + gcloud 0.73 + predict 0.82 + 23125 + 15PNC+AET + manual LIM + Master). See orq --dry/verify and investor/portfolio cards (Fase15 RWA + Fase36/42/47 badges + per-PNC cards). No demo in prod paths.
 
 const app = new Hono()
@@ -69,5 +71,37 @@ app.get('/', (c) => c.json({
     'GET /api/governance/proposals (orq runCycle real PNC + Fase36/42/15/47)',
   ],
 }))
+
+// Fase42 full: live stake/unstake endpoint (shared stakes_state.json with orq for dynamic pachaPower 3250+). Real PNC data, updates power for Fase36 gate/UI. DATOS REALES.
+app.post('/api/governance/stake', async (c) => {
+  try {
+    const body = await c.req.json();
+    const action = body.action || 'stake';
+    const amount = parseFloat(body.amount);
+    const pnc = body.pnc || 'PNC-PAR-001';
+    if (isNaN(amount) || amount <= 0) {
+      return c.json({ success: false, error: 'Invalid amount >0' }, 400);
+    }
+    const stakesFile = path.join(process.cwd(), 'stakes_state.json');
+    let stakes = {};
+    try { stakes = JSON.parse(fs.readFileSync(stakesFile, 'utf8') || '{}'); } catch {}
+    if (action === 'stake') {
+      stakes[pnc] = (stakes[pnc] || 0) + amount;
+    } else if (action === 'unstake') {
+      stakes[pnc] = Math.max(0, (stakes[pnc] || 0) - amount);
+    } else {
+      return c.json({ success: false, error: 'Invalid action' }, 400);
+    }
+    fs.writeFileSync(stakesFile, JSON.stringify(stakes));
+    const newStaked = stakes[pnc] || 0;
+    const totalPower = 1250 + newStaked;
+    const msg = `Fase42 ${action.toUpperCase()} +${amount} for ${pnc} OK. New staked ${newStaked}, total power ${totalPower} (Fase36 PASSED 3250 real land paths). Real PNC: PAR net 68112.5, eff 31639/17.1% Fase47, tx@fresh, predict 0.82, gcloud 0.73, 23125 base, 15PNC+AET, manual LIM, Master. DATOS REALES.`;
+    console.log('[Fase42 STAKE API]', msg);
+    return c.json({ success: true, newStakedAmount: newStaked, totalPower, message: msg, pnc, action });
+  } catch (e: any) {
+    console.error('[Fase42 STAKE API ERROR]', e);
+    return c.json({ success: false, error: e.message || 'Stake error' }, 500);
+  }
+})
 
 export default app

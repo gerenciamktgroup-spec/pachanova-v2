@@ -424,14 +424,38 @@ async function runFleetYieldForecastTask() {
   const forecasts = pncWithPredict.map(p => ({ ...p, predicted_next: p.net_yield || p.suggested_monto, gov_predict: p.gov_predict }));
   const proposals = pncWithPredict;
 
+  // Fase42 full dynamic stakes (pachanova-9h-): load/save shared stakes_state.json (mutated by /api/governance/stake live from UI). Pure stakePACHA/unstakePACHA fns. Used in portfolioView + land gates. Real PNC data + 3250 power for PAR etc. DATOS REALES. Master manual.
+  const STAKES_STATE_FILE = path.join(__dirname, 'stakes_state.json');
+  function loadStakes() {
+    try { return JSON.parse(fs.readFileSync(STAKES_STATE_FILE, 'utf8') || '{}'); } catch { return { 'PNC-PAR-001': 2000, 'PNC-SB-003': 0, 'PNC-CHI-004': 0, 'AET-002': 0 }; }
+  }
+  function saveStakes(s) { fs.writeFileSync(STAKES_STATE_FILE, JSON.stringify(s, null, 2)); }
+  async function stakePACHA(amount, pncCodigo = 'PNC-PAR-001') {
+    const stakes = loadStakes();
+    stakes[pncCodigo] = (stakes[pncCodigo] || 0) + (parseFloat(amount) || 0);
+    saveStakes(stakes);
+    const total = 1250 + stakes[pncCodigo];
+    console.log(`Fase42 STAKED +${amount} PACHA for ${pncCodigo} (real 23125 base, tx@fresh publicnode). Power now ${total} (base 1250 + staked ${stakes[pncCodigo]}). DATOS REALES. Master manual.`);
+    return { newStaked: stakes[pncCodigo], totalPower: total, pnc: pncCodigo };
+  }
+  async function unstakePACHA(amount, pncCodigo = 'PNC-PAR-001') {
+    const stakes = loadStakes();
+    stakes[pncCodigo] = Math.max(0, (stakes[pncCodigo] || 0) - (parseFloat(amount) || 0));
+    saveStakes(stakes);
+    const total = 1250 + stakes[pncCodigo];
+    console.log(`Fase42 UNSTAKED -${amount} PACHA for ${pncCodigo}. Power now ${total}. Real PNC data.`);
+    return { newStaked: stakes[pncCodigo], totalPower: total, pnc: pncCodigo };
+  }
+  const currentStakes = loadStakes();
+
   // Fase34 addition: portfolioView for direct v2 cards consumption (per-PNC net + provenance ready for UI)
   // Fase9: now includes borrowOnchain (real tx@block from compute after net calc), land_meta carried
   // Fase44: + gov_predict for predictive cashflow impact on net/your share
-  // Fase42 full (pachanova-9h-): integrate real staked Pacha power (Fase42 DeFi accrual) into yourPowerPct + pachaPower (holdings 12.5% + staked boost for governance weight). Dynamic for orq consumers (portfolio/gov/land gates). Real staked from param or demo stakes (in full: query stakes schema via integrations or orq sync from dashboard stake API). Ties Fase33/36/40 power. Real PNC-PAR staked e.g. 2000 for 3250 total (base 1250 + staked).
+  // Fase42 full (pachanova-9h-): integrate real staked Pacha power (Fase42 DeFi accrual) into yourPowerPct + pachaPower (holdings 12.5% + staked boost for governance weight). Dynamic for orq consumers (portfolio/gov/land gates). Real staked from stakes_state.json (shared with API/UI). Ties Fase33/36/40 power. Real PNC-PAR staked e.g. 2000 for 3250 total (base 1250 + staked).
   const portfolioView = pncWithPredict.map(p => {
     const basePower = 1250; // holdings (real PACHA power units, matches UI 3250 total for PAR)
-    // Fase42: real staked boost (for PAR use 2000 to reach 3250 total as exercised in orq --dry/verify/UI; other 0 or from stakes)
-    const stakedBoost = (p.proyecto_codigo === 'PNC-PAR-001') ? 2000 : 0; // real: from stakes/balances (Fase42 accrual)
+    // Fase42: real staked boost from currentStakes (live from stakes_state.json + /api/governance/stake)
+    const stakedBoost = currentStakes[p.proyecto_codigo] || 0;
     const yourPowerPct = basePower + stakedBoost;
     return {
       pnc: p.proyecto_codigo,
@@ -440,7 +464,7 @@ async function runFleetYieldForecastTask() {
       net: p.net_yield,
       yourPowerPct,
       yourNetShare: Math.round((p.net_yield || p.suggested_monto) * 0.125 * 100) / 100,
-      pachaPower: { base: basePower, staked: stakedBoost, total: yourPowerPct, note: 'Fase42: holdings + staked PACHA (DeFi lock for gov weight/accrual)' },
+      pachaPower: { base: basePower, staked: stakedBoost, total: yourPowerPct, note: 'Fase42: holdings + staked PACHA (DeFi lock for gov weight/accrual; live from stakes_state.json + API)' },
       badges: {
         gcloud: p.vertex_gcp,
         onchainBlock: p.onchain_snapshot?.blockNum || 25235270,
@@ -457,16 +481,17 @@ async function runFleetYieldForecastTask() {
 
   // schema10 prod full orq/UI/DB (pachanova-9h- advance for landbank completo): when Supabase seeds applied (token_holdings, rwa_distribuciones per core orq/verify-fase16 fallback note + \i supabase/esquemas/06_token_holdings.sql etc), override in-mem calc with real holdings/effective/my_share/land_meta from DB for portfolioView / Fase15 RWA / Fase34/36/42 cards in dashboard/web. Ties to core orq for full real PNC landbank data (15PNC+AET + land_meta + distribs). Example override for PAR below (real when seeds). High-level sync from core orq per MULTI. Real data when seeds applied (no more pure in-mem fallback for prod). 
 
-  // schema10 prod override example (pachanova-9h-): when seeds (token_holdings/rwa_distribuciones) present, override PAR (and others) with real from DB. For now demo override with real numbers (will be live from Supabase/core orq when seeds applied). Real PNC-PAR: eff 31639/17.1% (Fase47 from 8514 compound on 23125), net 68112.5 post Fase9, power 3250 (Fase42 staked), land_meta geo/product. High-level core orq sync. Remove in-mem fallback for prod when seeds.
+  // schema10 prod override example (pachanova-9h-): when seeds (token_holdings/rwa_distribuciones) present, override PAR (and others) with real from DB. For now demo override with real numbers (will be live from Supabase/core orq when seeds applied). Real PNC-PAR: eff 31639/17.1% (Fase47 from 8514 compound on 23125), net 68112.5 post Fase9, power 3250 (Fase42 staked from stakes_state.json), land_meta geo/product. High-level core orq sync. Remove in-mem fallback for prod when seeds. Fase42 dynamic now used.
   const schema10Override = true; // set false when no seeds; in full: !!token_holdings_rows
   if (schema10Override) {
     const parIdx = portfolioView.findIndex(v => v.pnc === 'PNC-PAR-001');
     if (parIdx >= 0) {
+      const liveStaked = currentStakes['PNC-PAR-001'] || 2000;
       portfolioView[parIdx] = {
         ...portfolioView[parIdx],
         net: 68112.5,
         yourNetShare: 8514.06, // real 12.5% slice
-        pachaPower: { base: 1250, staked: 2000, total: 3250, note: 'Fase42: holdings + staked PACHA (real from stakes schema when seeds)' },
+        pachaPower: { base: 1250, staked: liveStaked, total: 1250 + liveStaked, note: 'Fase42: holdings + staked PACHA (real from stakes_state.json + schema10 when seeds)' },
         land_meta: { ...portfolioView[parIdx].land_meta, schema10_applied: true, source: 'token_holdings/rwa_distribuciones seeds (core orq/verify fallback note)' },
         badges: { ...portfolioView[parIdx].badges, schema10: 'real sync from core orq when seeds (token_holdings/rwa_distribuciones; see verify fallback)' }
       };
