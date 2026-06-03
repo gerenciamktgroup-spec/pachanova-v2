@@ -58,6 +58,55 @@ function log(msg, level = 'INFO') {
   console.log(`[${ts}] [ORCHESTRATOR_${level}] ${msg}`);
 }
 
+/**
+ * v3 Context Window Exhaustion Persist (for infinite work when Grok Build TUI context ~512k fills / compaction).
+ * Called from runCycle on signals, errors, or explicitly by AI via terminal when it sees compaction reminder.
+ * Saves state to CONTEXT_SAVE_*.md + git commit/push so next session (new Grok Build invocation or PS resilient loop)
+ * can re-bootstrap and continue exactly without losing work.
+ */
+function persistContextWindowSave(reason = 'context-exhaustion-or-loop-signal') {
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const snapPath = path.join(PROJECT_ROOT, `CONTEXT_SAVE_orq_${ts}_${reason.replace(/\s+/g, '-')}.md`);
+  let gitHead = '';
+  try { gitHead = require('child_process').execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim(); } catch (_) {}
+  let status = '';
+  try { status = require('child_process').execSync('git status --porcelain', { encoding: 'utf8' }).trim().split('\n').slice(0, 30).join('\n'); } catch (_) {}
+
+  const content = `# v3 CONTEXT WINDOW SAVE (orchestrator_agent.cjs)
+Time: ${new Date().toISOString()}
+Reason: ${reason}
+Git: ${gitHead}
+
+## For the NEXT Grok Build session (after context compaction):
+- Read this file + AGENTS.md (full v3 + Context Exhaustion Protocol) + latest AUTONOMY_POSTMORTEM + latest window_PROGRESS or plan files.
+- Full bootstrap (MCP, gh, git, blackboard, verifiers, Master safety, real data).
+- todo_write current state from here.
+- Continue the exact autonomous v3 work that was running (Landbank Master, Fase real data, orq loops, etc.).
+- When your window is about to end again: call this (or run git + write snapshot yourself), persist, output "=== CONTEXT EXHAUSTED - STATE SAVED ===" and stop cleanly.
+- PS launcher (ejecutar_grok.ps1 -ResilientV3 or orq --loop) will re-execute the full thing.
+
+All prior work is in git + blackboard. Infinite autonomous progress guaranteed. DATOS REALES. Master manual. Nunca te detengas.
+`;
+
+  try {
+    fs.writeFileSync(snapPath, content, 'utf8');
+    log(`CONTEXT SAVE snapshot written: ${snapPath}`, 'INFO');
+  } catch (e) { log('Context snapshot write error: ' + e.message, 'WARN'); }
+
+  // Force the full persist (same as end-of-cycle discipline)
+  try {
+    require('child_process').execSync('git add .', { stdio: 'ignore' });
+    const msg = `v3 CONTEXT-SAVE (orq): ${reason} | ${new Date().toISOString()} | snap ${path.basename(snapPath)} | ${gitHead}`;
+    require('child_process').execSync(`git commit -m "${msg}"`, { stdio: 'ignore' });
+    require('child_process').execSync('git push origin main', { stdio: 'ignore' });
+    log('CONTEXT-SAVE git commit+push completed for infinite work continuity.', 'INFO');
+  } catch (e) {
+    log('Context git persist (non-fatal): ' + e.message, 'WARN');
+  }
+
+  return snapPath;
+}
+
 function writeQueryFile() {
   // Load antigravity master principles if present (for richer, consistent autonomous queries)
   let masterPrinciples = '';
@@ -269,14 +318,21 @@ async function runCycle(dryRun = false, loopMs = null) {
         log('Fase9 dry exercise (partial, context high?): ' + ex.message, 'WARN');
         // save note per instr if loop/context high
         try { require('fs').appendFileSync(require('path').join(__dirname, 'FASE9_DRY_NOTE.txt'), new Date().toISOString() + ' | ' + ex.message + '\n'); } catch(_) {}
+        // v3 context protocol: on "context high" or error, force save so infinite work continues in next session
+        try { persistContextWindowSave('fase9-dry-context-high-or-error'); } catch(_) {}
       }
     }
     log('Ciclo terminado. Siguiente iteración vía loop o scheduler TUI.');
     if (loopMs) {
       log(`Loop mode: esperando ${loopMs/1000/60} min... (Fase9 accrue wired to 15m scheduler cadence + after execute)`);
     }
+    // Periodic context checkpoint for very long autonomous windows (helps before 512k limit)
+    if (Math.random() < 0.15) { // occasional, not every cycle
+      try { persistContextWindowSave('periodic-checkpoint-in-loop'); } catch(_) {}
+    }
   } catch(e) {
     log('Error en ciclo: ' + e.message, 'ERROR');
+    try { persistContextWindowSave('runCycle-top-level-error'); } catch(_) {}
   }
 }
 
@@ -1027,4 +1083,4 @@ Output ONLY a JSON block like:
   };
 }
 
-module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, stakePACHA, unstakePACHA, loadStakes, saveStakes, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };
+module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, stakePACHA, unstakePACHA, loadStakes, saveStakes, persistContextWindowSave, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };

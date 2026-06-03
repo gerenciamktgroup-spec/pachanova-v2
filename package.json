@@ -44,7 +44,10 @@
     "orchestrate:loop": "node index.cjs --loop",
     "orchestrate:dry": "node index.cjs --dry",
     "orchestrate:loop:dry": "node index.cjs --dry --loop",
-    "resolve-conflicts": "node resolve-conflicts.js"
+    "resolve-conflicts": "node resolve-conflicts.js",
+  "v3:context-persist": "node -e \"try { const m = require('./orchestrator_agent.cjs'); if (typeof m.persistContextWindowSave === 'function') m.persistContextWindowSave('cli-manual'); else console.log('persist fn not exported'); } catch(e){ console.error('v3 context persist error:', e.message); }\"",
+  "v3:infinite-bridge": "powershell -ExecutionPolicy Bypass -File .\\ejecutar_grok.ps1 -ResilientV3 -LoopInfinite",
+  "orchestrate:loop:resilient": "node index.cjs --loop"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

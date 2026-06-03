@@ -138,6 +138,29 @@ Singularity. DATOS REALES. Master manual. (v2 rules applied 2026-06-03)
 
 **Never-Stop Principle**: Development never stops. Durable schedulers (45m+), monitors, background orq, self-healing (on connector/MCP error: retry with backoff + log to blackboard + create issue, fallback local+git only temporarily). If "detenido", auto-diagnose via verifiers and resume. Use /loop or scheduler_create durable for continuous cycles.
 
+**Context Window Exhaustion Protocol (512k / compaction limit in Grok Build TUI + PS sessions) — generates "trabajo infinito"**:
+When the Grok Build environment (this TUI in PowerShell) fills its context window (the platform emits compaction reminders like "This session is being continued from a previous conversation that ran out of context. The summary below...", "compaction/segment_*.md", or you feel the history is huge / user pastes a 512k-style limit note):
+- **IMMEDIATELY STOP** further planning/execution/tool use in the current full context.
+- **Save everything worked** (no loss):
+  1. `todo_write` with the complete current list (all ids, statuses, contents) — this is the live task state.
+  2. Use the `write` tool (or run_terminal_command + echo) to create `CONTEXT_SAVE_$(date +%Y%m%d-%H%M%S).md` (or append to the active window_PROGRESS_*.md) containing:
+     - Exact goal of this window / sub-task.
+     - Last actions + files edited (with paths:line numbers).
+     - Current quantitative metrics (Landbank Master % breakdown, demo count==0, health, real PNC numbers exercised, push tests, MCP status).
+     - Open questions / next precise step.
+     - "Resume instruction for the *next* Grok Build session": "Load this snapshot + full AGENTS.md (v3 rules + this protocol) + latest postmortem + latest git commit + orq --dry state. Continue v3 loop from exactly here. Full bootstrap first."
+  3. Full end-of-cycle persist **right now** (even mid-task): git add . (ALL); git commit -m "v3 CONTEXT-SAVE [window-id/reason]: [high-level + metrics + link to snapshot]"; git push.
+  4. Update blackboard (append 1 learning to postmortem/AGENTS if new rule; GitHub issue comment via MCP if connected; orq logs).
+  5. Output a clear marker visible to launchers and next session: "=== CONTEXT EXHAUSTED (512k/compaction) - ALL WORK SAVED IN CONTEXT_SAVE_*.md + GIT - READY FOR RESTART. Next session must load snapshot and continue infinite autonomous work. ==="
+- **Re-execute / continue in a fresh session**: The next time a Grok Build session starts (new chat or PS resilient launcher re-invokes the bridge/orq), the mandatory v3 bootstrap (see below) + orq --loop / PS -ResilientV3 must:
+  - Detect and load the latest CONTEXT_SAVE_*.md (and any platform compaction summary).
+  - Treat it as the authoritative "previous window state".
+  - Run full bootstrap checklist.
+  - Resume the exact work without asking "what was I doing?".
+- **PowerShell side (ejecutar_grok.ps1 and launchers)**: The PS bridge and any monitor/launcher that invokes Grok Build must be resilient infinite wrappers (already updated with -ResilientV3 / -LoopInfinite + Invoke-V3ContextPersist). On grok.exe exit or when output contains context/compaction/512k/"session is being continued" phrases: force the git + snapshot persist, auto-generate a resume instruction file that embeds the "load CONTEXT_SAVE + continue v3", sleep briefly, and re-execute the full bridge/orq. This + the orq while(true) 5m loops + durable schedulers = true infinite autonomous work even across many context resets.
+- **Integration with existing rules**: This is an extension of "End-of-Cycle / Window Discipline" and "Bootstrap Checklist". Treat every context compaction as a forced "end of window" that triggers persist + learning append. The PS + orq code now enforces the save even if the AI inside is mid-thought.
+- Goal: zero work lost on context limits. The autonomous system (AI rules + PS launchers + orq loops + git blackboard) keeps producing high-quality infinite progress for the bank-under-construction.
+
 **MCP / Multi-Agent Connectors Always Work Well**:
 - MCP GitHub is primary blackboard for multi-agent (this Grok executor + Gemini antigravity brain + orq instances + schedulers). All coordination (plans, progress, learnings, questions) via issues (labels antigravity,plan,high-impact,autonomous) + MCP tools (github__list_issues, github__create_issue, github__add_issue_comment, github__search_issues, push_files, create_pull_request, etc.).
 - Bootstrap mandatory every start: `grok mcp list` (github must show "connected", not "still connecting" or missing). If not: Complete gh device auth (code 1E06-091F at https://github.com/login/device), `gh auth token`, then `grok mcp add github --command npx --args "-y @modelcontextprotocol/server-github" --env GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token)`. Set GITHUB_PERSONAL_ACCESS_TOKEN in env for the npx server. Re-verify with search_tool "github" (expect tools) and use_tool for blackboard ops.
@@ -150,12 +173,13 @@ Singularity. DATOS REALES. Master manual. (v2 rules applied 2026-06-03)
 1. MCP: grok mcp list; search_tool "github" (discover tools); test use_tool if possible.
 2. Auth: gh auth status (token present); grok mcp for PAT if server requires.
 3. Git: git fetch --dry-run; git status (note uncommitted - forbid starting new without commit or explicit).
-4. Blackboard: MCP search/list issues labeled antigravity/plan (recent, open); read latest local plan_*.txt, PROGRESS_*, antigravity_master.txt, AUTONOMY_POSTMORTEM_*, LEARNINGS.
+4. Blackboard + Context Resume: MCP search/list issues labeled antigravity/plan (recent, open); read latest local plan_*.txt, PROGRESS_*, antigravity_master.txt, AUTONOMY_POSTMORTEM_*, LEARNINGS.
+   **Special for context exhaustion**: Scan for the most recent `CONTEXT_SAVE_*.md` (or platform compaction summary in ~/.grok/sessions/.../compaction/). If present, load it as the authoritative previous state before anything else. The resume instruction inside tells you exactly where to continue the v3 loop.
 5. Verifiers: demo:health or pnpm run demo:health (must pass); demo count (grep in admin/investor paths) == 0; MCP connected; Master manual test (e.g. master_edit in landbank works, audit created, push signal).
 6. Master Safety (bank system): Confirm no isDemo in master paths; audit always inserted on changes; orq respects manual_overrides + provenance; easy panel access (landbank master_edit JSON/forms).
 7. Internet/Resources: npx --version; curl -I to MCP servers or GitHub if needed.
-8. Learning: Review previous cycle learnings from postmortem/blackboard.
-Goal: All green before planning/executing. Log bootstrap result to blackboard.
+8. Learning: Review previous cycle learnings from postmortem/blackboard. If coming from a CONTEXT_SAVE, treat the learnings in it as the starting point.
+Goal: All green before planning/executing. Log bootstrap result to blackboard. When resuming from context save, explicitly confirm in your first output "Resumed from CONTEXT_SAVE_XXX + full v3 bootstrap. Continuing infinite work."
 
 **Cycle Workflow (9h windows or durable shorter schedulers - repeat forever, focused 1-2 high-impact per window)**:
 1. Consult blackboard (MCP GitHub primary).
