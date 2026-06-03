@@ -1,7 +1,7 @@
 import { pgTable, uuid, varchar, numeric, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { investors } from "./investors";
-import { properties } from "./properties";
-import { transactionTypeEnum, transactionStatusEnum } from "./enums";
+import { investors } from "./investors.ts";
+import { properties } from "./properties.ts";
+import { transactionTypeEnum, transactionStatusEnum } from "./enums.ts";
 
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),

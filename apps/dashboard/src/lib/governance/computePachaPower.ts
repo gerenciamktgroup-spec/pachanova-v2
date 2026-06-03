@@ -1,5 +1,4 @@
-import postgres from "postgres";
-
+﻿
 /**
  * Fase42: Compute real PACHA voting power = holdings (available + locked from balances) + staked (from stakes table)
  * Used for governance vote weight. Staked PACHA from DeFi lock accrues extra power.
@@ -29,3 +28,4 @@ export async function computePachaVotingPower(
 
   return { holdings, staked, total: holdings + staked };
 }
+

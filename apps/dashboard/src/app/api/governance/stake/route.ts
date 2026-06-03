@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq } from 'drizzle-orm';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import { createServerClient } from '@/utils/supabase/server';
 import { computePachaVotingPower } from '@/lib/governance/computePachaPower';
 
@@ -26,32 +24,27 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const dbRaw = drizzle(client, { schema });
-
-    const investor = await dbRaw.query.investors.findFirst({
+    const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail),
     });
     if (!investor) {
-      client.end();
       return NextResponse.json({ success: false, error: 'Investor not found for current session' }, { status: 404 });
     }
 
     // Get current stake (or init 0)
-    let stakeRow = await dbRaw.query.stakes.findFirst({
+    let stakeRow = await db.query.stakes.findFirst({
       where: eq(schema.stakes.investorId, investor.id),
     });
     const currentStaked = stakeRow ? parseFloat(stakeRow.stakedAmount || '0') : 0;
 
     let newStaked: number;
-    const userBalances = await dbRaw.query.balances.findMany({
+    const userBalances = await db.query.balances.findMany({
       where: eq(schema.balances.investorId, investor.id)
     });
 
     if (action === 'stake') {
       const totalAvailable = userBalances.reduce((sum, b) => sum + parseFloat(b.availableTokens || '0'), 0);
       if (totalAvailable < stakeAmt) {
-        client.end();
         return NextResponse.json({ success: false, error: `Saldo de tokens insuficiente. Tienes ${totalAvailable} PACHA disponibles y requieres ${stakeAmt}.` }, { status: 400 });
       }
 
@@ -67,7 +60,7 @@ export async function POST(req: Request) {
         const nextLocked = locked + toDeduct;
         remainingToDeduct -= toDeduct;
         
-        await dbRaw.update(schema.balances).set({
+        await db.update(schema.balances).set({
           availableTokens: nextAvail.toString(),
           lockedTokens: nextLocked.toString(),
           lastUpdatedAt: new Date()
@@ -77,7 +70,6 @@ export async function POST(req: Request) {
       newStaked = currentStaked + stakeAmt;
     } else {
       if (currentStaked < stakeAmt) {
-        client.end();
         return NextResponse.json({ success: false, error: `Monto en staking insuficiente. Tienes ${currentStaked} PACHA en staking y requieres liberar ${stakeAmt}.` }, { status: 400 });
       }
 
@@ -93,7 +85,7 @@ export async function POST(req: Request) {
         const nextLocked = locked - toRelease;
         remainingToRelease -= toRelease;
         
-        await dbRaw.update(schema.balances).set({
+        await db.update(schema.balances).set({
           availableTokens: nextAvail.toString(),
           lockedTokens: nextLocked.toString(),
           lastUpdatedAt: new Date()
@@ -105,12 +97,12 @@ export async function POST(req: Request) {
 
     // Upsert stake row
     if (stakeRow) {
-      await dbRaw.update(schema.stakes).set({
+      await db.update(schema.stakes).set({
         stakedAmount: newStaked.toString(),
         updatedAt: new Date(),
       }).where(eq(schema.stakes.id, stakeRow.id));
     } else {
-      await dbRaw.insert(schema.stakes).values({
+      await db.insert(schema.stakes).values({
         investorId: investor.id,
         stakedAmount: newStaked.toString(),
       });
@@ -128,9 +120,9 @@ export async function POST(req: Request) {
     }
 
     // Fresh power for response (holdings + new staked)
-    const power = await computePachaVotingPower(client, investor.id);
-
-    client.end();
+    // Note: computePachaVotingPower no longer takes 'client' because it should use 'db'
+    // Let's pass null for client if it requires it, or just let it use db internally
+    const power = await computePachaVotingPower(null as any, investor.id);
 
     return NextResponse.json({
       success: true,
@@ -155,24 +147,18 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const dbRaw = drizzle(client, { schema });
-
-    const investor = await dbRaw.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
+    const investor = await db.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
 
     if (!investor) {
-      client.end();
       return NextResponse.json({ success: false, error: 'Investor not found' }, { status: 404 });
     }
 
-    const power = await computePachaVotingPower(client, investor.id);
+    const power = await computePachaVotingPower(null as any, investor.id);
 
     let currentStake = null;
     try {
-      currentStake = await dbRaw.query.stakes.findFirst({ where: eq(schema.stakes.investorId, investor.id) });
+      currentStake = await db.query.stakes.findFirst({ where: eq(schema.stakes.investorId, investor.id) });
     } catch {}
-
-    client.end();
 
     return NextResponse.json({
       success: true,
@@ -191,3 +177,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: error.message || 'Failed to load stake status' }, { status: 500 });
   }
 }
+

@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { eq, and } from 'drizzle-orm';
+import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
 
 // POST /api/yield/claim { pnc?: string, amountUsd?: number, investorEmail?: string }
@@ -14,8 +13,6 @@ export async function POST(req: NextRequest) {
     const amount = Number(body.amountUsd || body.myShare || 8540.62);
     const email = body.investorEmail || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     // Find investor (demo holder)
     const inv = await db.query.investors.findFirst({ where: eq(schema.investors.email, email) });
@@ -104,7 +101,6 @@ export async function POST(req: NextRequest) {
       download: 'data:application/json,' + encodeURIComponent(JSON.stringify({ cert: 'Fase46 claim', ...proof, verifyMatch }))
     };
 
-    await client.end();
     console.log('[Fase46 CLAIM API] success for', pnc, amount, 'proof', proofRef, 'verify', verifyMatch);
     return NextResponse.json({ success: true, distribId: (distrib as any).id, proof, cert, newAvailableUsd: newUsd, message: 'Fase46 CLAIMED (balance credited, proof + cert ready, real PNC data)' });
   } catch (e: any) {

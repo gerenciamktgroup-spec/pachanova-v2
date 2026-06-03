@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { investors } from "./investors";
-import { notificationTypeEnum } from "./enums";
+import { investors } from "./investors.ts";
+import { notificationTypeEnum } from "./enums.ts";
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),

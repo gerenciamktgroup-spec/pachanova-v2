@@ -1,9 +1,9 @@
 import { drizzle } from 'drizzle-orm/neon-http'
 import { neon } from '@neondatabase/serverless'
 import { createClient } from '@supabase/supabase-js'
-import * as schema from './schema'
+import * as schema from './schema/index.ts'
 
-export * as schema from './schema'
+export * as schema from './schema/index.ts'
 export type DrizzleDB = ReturnType<typeof drizzle<typeof schema>>
 
 export const isDemo = process.env.IS_DEMO === 'true'

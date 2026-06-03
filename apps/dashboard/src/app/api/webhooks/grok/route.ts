@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, sql } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 
 // Endpoint to receive Webhooks from Grok's Orchestrator (Core)
 // Example Payload from Grok:
@@ -14,8 +13,6 @@ export async function POST(req: Request) {
     console.log("[WEBHOOK] Received from Grok:", body);
 
     if (body.event === "onchain_execution_complete") {
-      const client = postgres(process.env.DATABASE_URL!);
-      const db = drizzle(client, { schema });
 
       const property = await db.query.properties.findFirst({
         where: eq(schema.properties.id, body.propertyId) // This expects Grok to send the exact ID or a mapped code

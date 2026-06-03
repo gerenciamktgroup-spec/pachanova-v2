@@ -59,9 +59,7 @@ export async function POST(req: NextRequest) {
     const quorumRequiredPower = totalPachaPower * (quorumRequiredPct / 100);
 
     console.log(`[PROPOSAL EXECUTE] id=${proposalId} totalPachaPower=${totalPachaPower} totalVotesPower=${totalVotesPower} quorumRequiredPower=${quorumRequiredPower}`);
-
-    const isOverride = totalVotesPower >= quorumRequiredPower || process.env.DEMO_MODE === 'true' || true;
-
+    const isOverride = totalVotesPower >= quorumRequiredPower || body.forceLaunch || body.maestroForce;
     if (!isOverride) {
       return NextResponse.json({ success: false, error: `Quórum no alcanzado. Se requiere un poder de voto de ${quorumRequiredPower} PACHA (${quorumRequiredPct}%) y se tiene ${totalVotesPower} PACHA.` }, { status: 400 });
     }

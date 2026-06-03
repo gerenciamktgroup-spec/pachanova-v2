@@ -1,7 +1,6 @@
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import { eq, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 import { createServerClient } from "@/utils/supabase/server";
 
 export const dynamic = 'force-dynamic';
@@ -14,8 +13,6 @@ export default async function CertificatePage(props: { params: Promise<{ propert
   const { data: { user } } = await supabase.auth.getUser();
   const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-  const client = postgres(process.env.DATABASE_URL!);
-  const db = drizzle(client, { schema });
 
   const inv = await db.query.investors.findFirst({
     where: eq(schema.investors.email, userEmail)
@@ -30,7 +27,10 @@ export default async function CertificatePage(props: { params: Promise<{ propert
   if (!property) return <div>Propiedad no encontrada</div>;
 
   const balance = await db.query.balances.findFirst({
-    where: sql`${schema.balances.investorId} = ${inv.id} AND ${schema.balances.propertyId} = ${property.id}`
+    where: and(
+      eq(schema.balances.investorId, inv.id),
+      eq(schema.balances.propertyId, property.id)
+    )
   });
 
   const tokensOwned = Number(balance?.availableTokens || 0) + Number(balance?.lockedTokens || 0);

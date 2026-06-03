@@ -1,15 +1,12 @@
-import { RouteBreadcrumbs } from "@/components/mission";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+﻿import { RouteBreadcrumbs } from "@/components/mission";
 import { eq, sql } from "drizzle-orm";
+import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
 
 export default async function TreasuryDashboardPage() {
-  const client = postgres(process.env.DATABASE_URL!);
-  const db = drizzle(client, { schema });
 
   // Agregate total funds and properties
   const properties = await db.query.properties.findMany({
@@ -26,8 +23,6 @@ export default async function TreasuryDashboardPage() {
     
     if (!propertyId || amountUsd <= 0) return;
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     // Get all investors who own tokens of this property
     const balances = await db.query.balances.findMany({
@@ -123,3 +118,4 @@ export default async function TreasuryDashboardPage() {
     </div>
   );
 }
+

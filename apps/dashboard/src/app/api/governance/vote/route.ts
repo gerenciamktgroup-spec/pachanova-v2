@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq, and, sql } from 'drizzle-orm';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import { createServerClient } from '@/utils/supabase/server';
 import { computePachaVotingPower } from '@/lib/governance/computePachaPower';
 
@@ -21,39 +19,33 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const dbRaw = drizzle(client, { schema });
-
-    const investor = await dbRaw.query.investors.findFirst({
+    const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail),
     });
 
     if (!investor) {
-      client.end();
       return NextResponse.json({ success: false, error: 'Investor not found for current session' }, { status: 404 });
     }
 
     // Fase42: real total PACHA voting power (balances available+locked + stakes staked for DeFi power accrual)
-    const power = await computePachaVotingPower(client, investor.id);
+    const power = await computePachaVotingPower(null as any, investor.id);
     const votingPower = power.total;
 
     if (votingPower <= 0) {
-      client.end();
       return NextResponse.json({ success: false, error: 'No PACHA holdings detected. Voting power is 0.' }, { status: 400 });
     }
 
     // Check proposal active
-    const proposal = await dbRaw.query.proposals.findFirst({
+    const proposal = await db.query.proposals.findFirst({
       where: eq(schema.proposals.id, proposalId),
     });
 
     if (!proposal || proposal.status !== 'active') {
-      client.end();
       return NextResponse.json({ success: false, error: 'Proposal not found or not active' }, { status: 404 });
     }
 
     // Check existing vote (unique constraint will also enforce)
-    const existing = await dbRaw.query.votes.findFirst({
+    const existing = await db.query.votes.findFirst({
       where: and(
         eq(schema.votes.proposalId, proposalId),
         eq(schema.votes.investorId, investor.id)
@@ -61,7 +53,6 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      client.end();
       return NextResponse.json({ 
         success: false, 
         error: 'Ya has votado en esta propuesta', 
@@ -70,7 +61,7 @@ export async function POST(req: Request) {
     }
 
     // Insert vote with snapshot power (weighted by real holdings)
-    const [newVote] = await dbRaw.insert(schema.votes).values({
+    const [newVote] = await db.insert(schema.votes).values({
       proposalId,
       investorId: investor.id,
       choice,
@@ -97,10 +88,8 @@ export async function POST(req: Request) {
       onchainTxProof = { txHash: txh, blockNum: realBlock, block: blockHex, rpc: rpcUsed, status: 'attested_gov_proof', note: 'Fase35 real publicnode RPC + PACHA power + PNC proposal + 23125 (deterministic recompute)', verified_at: new Date().toISOString() };
       txHash = txh;
       blockNum = realBlock;
-      await client`UPDATE votes SET onchain_tx_proof = ${JSON.stringify(onchainTxProof)}, tx_hash = ${onchainTxProof.txHash}, block_num = ${realBlock}, recompute_note = ${onchainTxProof.note} WHERE id = ${newVote.id}`;
+      await db.execute(sql`UPDATE votes SET onchain_tx_proof = ${JSON.stringify(onchainTxProof)}, tx_hash = ${onchainTxProof.txHash}, block_num = ${realBlock}, recompute_note = ${onchainTxProof.note} WHERE id = ${newVote.id}`);
     } catch (pErr: any) { console.warn('[Fase35 gov vote proof]', pErr.message); }
-
-    client.end();
 
     // Optional: audit log (if table exists)
     try {
@@ -138,20 +127,17 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const dbRaw = drizzle(client, { schema });
-
-    const investor = await dbRaw.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
+    const investor = await db.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
 
     let myVote = null;
     if (investor) {
-      myVote = await dbRaw.query.votes.findFirst({
+      myVote = await db.query.votes.findFirst({
         where: and(eq(schema.votes.proposalId, proposalId), eq(schema.votes.investorId, investor.id)),
       });
     }
 
     // Aggregate counts (real votes + weighted)
-    const tally = await client`
+    const tallyRows = await db.execute(sql`
       SELECT 
         choice,
         COUNT(*)::int as vote_count,
@@ -159,7 +145,10 @@ export async function GET(req: Request) {
       FROM votes
       WHERE proposal_id = ${proposalId}
       GROUP BY choice
-    `;
+    `);
+    
+    // In db.execute with postgres.js, result is usually an array
+    const tally = tallyRows as any[];
 
     const summary = { for: { count: 0, power: 0 }, against: { count: 0, power: 0 }, abstain: { count: 0, power: 0 } };
     for (const row of tally) {
@@ -170,7 +159,6 @@ export async function GET(req: Request) {
       }
     }
 
-    client.end();
     return NextResponse.json({ success: true, myVote, summary, yourEmail: userEmail });
   } catch (error: any) {
     console.error('[GOVERNANCE VOTE GET] Error:', error);
@@ -188,13 +176,9 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ success: false, error: 'voteId required for VERIFY' }, { status: 400 });
     }
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const dbRaw = drizzle(client, { schema });
-
-    const vote = await dbRaw.query.votes.findFirst({ where: eq(schema.votes.id, voteId) });
+    const vote = await db.query.votes.findFirst({ where: eq(schema.votes.id, voteId) });
 
     if (!vote || !vote.onchainTxProof) {
-      client.end();
       return NextResponse.json({ success: false, error: 'Vote or onchain proof not found' }, { status: 404 });
     }
 
@@ -208,9 +192,7 @@ export async function PATCH(req: Request) {
     const verified = match;
 
     // Update row
-    await dbRaw.update(schema.votes).set({ onchainVerified: verified as any }).where(eq(schema.votes.id, voteId));
-
-    client.end();
+    await db.update(schema.votes).set({ onchainVerified: verified as any }).where(eq(schema.votes.id, voteId));
 
     return NextResponse.json({
       success: true,
@@ -224,3 +206,4 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { eq, and } from 'drizzle-orm';
+import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
 
 // POST /api/yield/compound { pnc?: string, amountUsd?: number, targetPnc?: string, investorEmail?: string }
@@ -15,8 +14,6 @@ export async function POST(req: NextRequest) {
     const amount = Number(body.amountUsd || body.myShare || 8540.62);
     const email = body.investorEmail || 'demo.investor.holder@pachanova.local';
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     const inv = await db.query.investors.findFirst({ where: eq(schema.investors.email, email) });
     if (!inv) return NextResponse.json({ success: false, error: 'investor not found' }, { status: 404 });
@@ -80,7 +77,6 @@ export async function POST(req: NextRequest) {
       gcloud: 0.73, growth: Math.round(amount * 0.023 * 100)/100, block: proof.blockNum, ts: now.toISOString()
     };
 
-    await client.end();
     console.log('[Fase46 COMPOUND API] success', fromPnc, '->', toPnc, amount, 'tokens+', tokensAdded, 'proof', proofRef);
     return NextResponse.json({ success: true, tokensAdded, proof, cert, newAvailableTokens: newTokens, message: 'Fase46 COMPOUNDED (tokens grown, portfolio net up, dual proof + cert, real PNC data)' });
   } catch (e: any) {

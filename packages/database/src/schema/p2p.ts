@@ -1,7 +1,7 @@
 import { pgTable, uuid, numeric, timestamp, boolean } from "drizzle-orm/pg-core";
-import { investors } from "./investors";
-import { properties } from "./properties";
-import { p2pStatusEnum } from "./enums";
+import { investors } from "./investors.ts";
+import { properties } from "./properties.ts";
+import { p2pStatusEnum } from "./enums.ts";
 
 export const p2pOrders = pgTable("p2p_orders", {
   id: uuid("id").primaryKey().defaultRandom(),

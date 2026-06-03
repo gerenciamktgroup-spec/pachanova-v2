@@ -22,3 +22,4 @@ with open(file_path, 'w', encoding='utf-8') as f:
     f.writelines(out)
 
 print("Conflicts resolved in", file_path)
+

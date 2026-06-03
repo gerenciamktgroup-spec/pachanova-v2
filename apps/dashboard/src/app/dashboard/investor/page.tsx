@@ -20,10 +20,9 @@ import { fetchMaestroYields, suggestYieldToCoreMaestro, fetchMaestroYieldForecas
 import { YieldActionButtons } from "./YieldActionClient";
 
 import { createServerClient } from "@/utils/supabase/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 
 async function fetchInvestorData(): Promise<any> { 
   try {
@@ -32,10 +31,7 @@ async function fetchInvestorData(): Promise<any> {
 
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    // Connect directly to PostgreSQL for the Multi-Property Landbanking
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
-
+    // Use shared db singleton (no raw postgres instantiation)
     const invResult = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail)
     });
@@ -44,32 +40,44 @@ async function fetchInvestorData(): Promise<any> {
       return null; // Investor not found
     }
 
-    // Manual join to get balances and properties
-    // Using postgres query because Drizzle relations might not be fully defined in this schema version
-    const portfolioQuery = await client`
-      SELECT 
-        b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd, b.last_updated_at,
-        p.id as property_id, p.name as property_name, p.property_type, p.location, p.status, p.image_url,
-        p.token_price_usd, p.annual_yield_expected, p.metadata
-      FROM balances b
-      JOIN properties p ON b.property_id = p.id
-      WHERE b.investor_id = ${invResult.id}
-    `;
+    // Fetch balances with property joins using Drizzle
+    const balancesWithProps = await db
+      .select({
+        availableTokens: schema.balances.availableTokens,
+        lockedTokens: schema.balances.lockedTokens,
+        availableUsd: schema.balances.availableUsd,
+        lockedUsd: schema.balances.lockedUsd,
+        lastUpdatedAt: schema.balances.lastUpdatedAt,
+        propertyId: schema.properties.id,
+        propertyName: schema.properties.name,
+        propertyType: schema.properties.propertyType,
+        location: schema.properties.location,
+        status: schema.properties.status,
+        imageUrl: schema.properties.imageUrl,
+        tokenPriceUsd: schema.properties.tokenPriceUsd,
+        annualYieldExpected: schema.properties.annualYieldExpected,
+        metadata: schema.properties.metadata,
+      })
+      .from(schema.balances)
+      .innerJoin(schema.properties, eq(schema.balances.propertyId, schema.properties.id))
+      .where(eq(schema.balances.investorId, invResult.id));
+    
+    const portfolioQuery = balancesWithProps;
 
     const portfolio = portfolioQuery.map((row: any) => ({
-      propertyId: row.property_id,
-      propertyName: row.property_name,
-      propertyType: row.property_type,
+      propertyId: row.propertyId,
+      propertyName: row.propertyName,
+      propertyType: row.propertyType,
       location: row.location,
-      imageUrl: row.image_url,
+      imageUrl: row.imageUrl,
       status: row.status,
-      availableTokens: row.available_tokens,
-      lockedTokens: row.locked_tokens,
-      availableUsd: row.available_usd,
-      lockedUsd: row.locked_usd,
-      tokenPriceUsd: row.token_price_usd,
-      annualYieldExpected: row.annual_yield_expected,
-      lastUpdated: row.last_updated_at,
+      availableTokens: row.availableTokens,
+      lockedTokens: row.lockedTokens,
+      availableUsd: row.availableUsd,
+      lockedUsd: row.lockedUsd,
+      tokenPriceUsd: row.tokenPriceUsd,
+      annualYieldExpected: row.annualYieldExpected,
+      lastUpdated: row.lastUpdatedAt,
       metadata: row.metadata
     }));
 
@@ -136,7 +144,12 @@ async function fetchInvestorData(): Promise<any> {
       console.log('[v2 orq call note in fetchInvestorData]', e?.message || e);
       orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'stub from real Fase16 12.5% 23125 DATOS REALES (no keys)', source: 'stub_fallback', based_on: 'Fase16 23125 context' }];
     }
-    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals, _orqLandbankLaunches: orqLandbankLaunches, _orqGovMailAlerts: orqGovMailAlerts, _orqCashflowHistory: orqCashflowHistory, _orqClaimables: orqClaimables };
+    const orqGovAutoProposals2 = orqGovAutoProposals || [];
+    const orqLandbankLaunches2 = orqLandbankLaunches || [];
+    const orqGovMailAlerts2 = orqGovMailAlerts || [];
+    const orqCashflowHistory2 = orqCashflowHistory || [];
+    const orqClaimables2 = orqClaimables || [];
+    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals2, _orqLandbankLaunches: orqLandbankLaunches2, _orqGovMailAlerts: orqGovMailAlerts2, _orqCashflowHistory: orqCashflowHistory2, _orqClaimables: orqClaimables2 };
   } catch (error) {
     console.error("Error fetching investor view model:", error);
     return null;
@@ -177,9 +190,10 @@ async function InvestorDashboardContent() {
           { label: "Panel Inversor" }
         ]} />
         <div className="flex flex-wrap gap-2">
+          <SafeActionButton label="💎 Rendimientos" href="/dashboard/investor/yields" variant="ghost" />
+          <SafeActionButton label="🌎 Marketplace" href="/dashboard/investor/marketplace" variant="ghost" />
           <SafeActionButton label="Historial Genesis" href="/dashboard/investor/genesis" variant="ghost" />
           <SafeActionButton label="Disclaimers" href="/dashboard/investor/disclosures" variant="ghost" />
-          <SafeActionButton label="Integraciones" href="/demo/integrations" variant="ghost" />
         </div>
       </div>
 

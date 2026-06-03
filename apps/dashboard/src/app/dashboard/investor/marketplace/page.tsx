@@ -1,11 +1,11 @@
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
-import { createServerClient } from "@/utils/supabase/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, and } from "drizzle-orm";
 import { schema } from "@pachanova/database";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
 import { Suspense } from "react";
+import { db } from "@/server/db";
+import { createServerClient } from "@/utils/supabase/server";
+import InvestorMarketplaceClient from "./InvestorMarketplaceClient";
 
 export const dynamic = 'force-dynamic';
 
@@ -16,16 +16,12 @@ async function fetchMarketplaceData() {
 
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
-
-    // Fetch current investor
+    // Fetch current investor - using db singleton
     const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail)
     });
 
     if (!investor) {
-      await client.end();
       return { error: "Perfil de inversor no encontrado. Inicie sesión para operar." };
     }
 
@@ -35,7 +31,7 @@ async function fetchMarketplaceData() {
       orderBy: (o, { desc }) => [desc(o.createdAt)]
     });
 
-    // Fetch investor balance for the main property (e.g. Paracas PNC-PAR-001)
+    // Fetch investor balance for the first available property
     const property = await db.query.properties.findFirst();
     let balance = null;
     if (property) {
@@ -46,8 +42,6 @@ async function fetchMarketplaceData() {
         )
       });
     }
-
-    await client.end();
 
     return {
       investor,
@@ -83,13 +77,27 @@ async function P2PMarketplaceContent() {
   const { investor, orders, balance } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <RouteBreadcrumbs items={[
         { label: 'Inversor' }, 
-        { label: 'Marketplace P2P' }
+        { label: 'Marketplace' }
       ]} />
-      
-      <div className="bg-[#0a111f] min-h-screen text-white rounded-2xl border border-white/10 p-6 md:p-8">
+
+      {/* Land Banking Marketplace Section */}
+      <div className="bg-[#0a111f] rounded-2xl border border-white/10 p-6 md:p-8">
+        <div className="flex justify-between items-end mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">🌎 Land Banking — Activos RWA</h2>
+            <p className="text-sm text-white/50">Activos inmobiliarios tokenizados disponibles para inversión en primario y mercado secundario.</p>
+          </div>
+        </div>
+        <Suspense fallback={<LoadingState message="Cargando activos..." />}>
+          <InvestorMarketplaceClient />
+        </Suspense>
+      </div>
+
+      {/* P2P Secondary Market */}
+      <div className="bg-[#0a111f] min-h-[50vh] text-white rounded-2xl border border-white/10 p-6 md:p-8">
         <div className="flex justify-between items-end mb-8">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">Mercado Secundario (OTC / P2P)</h2>
@@ -131,7 +139,7 @@ async function P2PMarketplaceContent() {
 
 export default function P2PMarketplacePage() {
   return (
-    <Suspense fallback={<LoadingState message="Cargando Mercado Secundario P2P..." />}>
+    <Suspense fallback={<LoadingState message="Cargando Marketplace..." />}>
       <P2PMarketplaceContent />
     </Suspense>
   );

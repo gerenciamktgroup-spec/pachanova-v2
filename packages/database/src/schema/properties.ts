@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, numeric, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { propertyStatusEnum, propertyTypeEnum } from "./enums";
+import { propertyStatusEnum, propertyTypeEnum } from "./enums.ts";
 
 export const properties = pgTable("properties", {
   id: uuid("id").primaryKey().defaultRandom(),

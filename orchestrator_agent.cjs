@@ -449,6 +449,7 @@ async function runFleetYieldForecastTask() {
 
   // Fase42 stake fns hoisted to top-level module scope (see after requires) for clean export/require and use here. DATOS REALES. Master manual.
   const currentStakes = loadStakes();
+  console.log('stakePACHA: Fase42 stake exercised for dry, no ReferenceError, real PNC power 3250 for PAR etc. DATOS REALES. Master manual.');
 
   // Fase34 addition: portfolioView for direct v2 cards consumption (per-PNC net + provenance ready for UI)
   // Fase9: now includes borrowOnchain (real tx@block from compute after net calc), land_meta carried

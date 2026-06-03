@@ -43,7 +43,8 @@
     "orchestrate": "node orchestrator_agent.cjs",
     "orchestrate:loop": "node index.cjs --loop",
     "orchestrate:dry": "node index.cjs --dry",
-    "orchestrate:loop:dry": "node index.cjs --dry --loop"
+    "orchestrate:loop:dry": "node index.cjs --dry --loop",
+    "resolve-conflicts": "node resolve-conflicts.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",

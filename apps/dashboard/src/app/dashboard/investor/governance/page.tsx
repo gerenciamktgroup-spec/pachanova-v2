@@ -1,10 +1,9 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import { RouteBreadcrumbs, ErrorState, LoadingState, MissionCard } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { createServerClient } from "@/utils/supabase/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, inArray } from "drizzle-orm";
+import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import GovernanceVotingClient from "./GovernanceVotingClient";
 import { computePachaVotingPower } from "@/lib/governance/computePachaPower";
@@ -37,8 +36,6 @@ async function fetchGovernanceData() {
 
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail),
@@ -214,3 +211,4 @@ export default async function InvestorGovernancePage() {
     </div>
   );
 }
+

@@ -1,9 +1,8 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import { RouteBreadcrumbs, LoadingState, ErrorState } from "@/components/mission";
 import { createServerClient } from "@/utils/supabase/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, inArray } from "drizzle-orm";
+import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import DeFiBorrowClient from "./DeFiBorrowClient";
 
@@ -17,8 +16,6 @@ async function fetchBorrowData() {
     // Default to mock investor if not logged in for demo ease
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     // Fetch investor profile
     const investor = await db.query.investors.findFirst({
@@ -125,3 +122,4 @@ export default function BorrowPage() {
     </Suspense>
   );
 }
+

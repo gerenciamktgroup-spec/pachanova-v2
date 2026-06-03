@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { eq, and } from 'drizzle-orm';
+import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
 import crypto from 'crypto';
 
@@ -15,8 +14,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'propertyId and positive totalAmountUsd are required' }, { status: 400 });
     }
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
 
     // 1. Fetch the property
     const property = await db.query.properties.findFirst({
@@ -24,8 +21,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!property) {
-      await client.end();
-      return NextResponse.json({ success: false, error: 'Property not found' }, { status: 404 });
+        return NextResponse.json({ success: false, error: 'Property not found' }, { status: 404 });
     }
 
     // 2. Fetch all balances for this property
@@ -36,8 +32,7 @@ export async function POST(req: NextRequest) {
     `;
 
     if (balances.length === 0) {
-      await client.end();
-      return NextResponse.json({ success: false, error: 'No investors holding tokens for this property' }, { status: 400 });
+        return NextResponse.json({ success: false, error: 'No investors holding tokens for this property' }, { status: 400 });
     }
 
     // 3. Sum up total tokens held
@@ -52,8 +47,7 @@ export async function POST(req: NextRequest) {
     }).filter(h => h.tokens > 0);
 
     if (totalTokensHeld <= 0 || investorHoldings.length === 0) {
-      await client.end();
-      return NextResponse.json({ success: false, error: 'Total tokens held by active investors is zero' }, { status: 400 });
+        return NextResponse.json({ success: false, error: 'Total tokens held by active investors is zero' }, { status: 400 });
     }
 
     // 4. Generate batch distribution proof
@@ -126,7 +120,6 @@ export async function POST(req: NextRequest) {
       });
     } catch (_) {}
 
-    await client.end();
 
     return NextResponse.json({
       success: true,
@@ -144,3 +137,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: e.message || 'Internal error in batch distribution' }, { status: 500 });
   }
 }
+

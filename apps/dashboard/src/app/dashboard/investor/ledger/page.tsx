@@ -2,10 +2,9 @@ import { Suspense } from "react";
 import { RouteBreadcrumbs, SectionHeader, MissionCard, SafeActionButton, LoadingState } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell, TokenAmount } from "@/components/product/SharedComponents";
 import { createServerClient } from "@/utils/supabase/server";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 import { cn } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
@@ -18,10 +17,7 @@ async function fetchLedgerData() {
     // Default to mock investor if not logged in for demo ease
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
-
-    // Fetch investor profile
+    // Use shared db singleton for performance
     const investor = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail),
     });

@@ -18,9 +18,9 @@ import { adminJourney } from "@/lib/navigation/userJourneys";
 import { createServerClient } from "@/utils/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
+import { eq, sql, desc } from "drizzle-orm";
 
 async function fetchTreasury() {
   try {
@@ -220,103 +220,98 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
     }
 
     if (useLocalFallback) {
-      let client;
       try {
-        client = postgres(process.env.DATABASE_URL!);
+        // Use Drizzle db singleton for all queries
+        const investorsList = await db.query.investors.findMany({
+          orderBy: (inv, { desc }) => [desc(inv.createdAt)],
+          limit: 50
+        });
 
-        // 1. Treasury Metrics (total investors count)
-        const investorsCountRes = await client`SELECT COUNT(*)::int as count FROM investors`;
-        const totalInvestors = investorsCountRes[0]?.count || 0;
+        const totalInvestors = investorsList.length;
 
-        // sum of available tokens from balances
-        const balancesSumRes = await client`SELECT SUM(available_tokens::numeric)::numeric as sum FROM balances`;
-        const totalTokens = Number(balancesSumRes[0]?.sum || 0);
+        // Sum all available tokens from balances
+        const allBalances = await db.select({
+          investorId: schema.balances.investorId,
+          propertyId: schema.balances.propertyId,
+          availableTokens: schema.balances.availableTokens,
+          lockedTokens: schema.balances.lockedTokens,
+          availableUsd: schema.balances.availableUsd,
+          lockedUsd: schema.balances.lockedUsd,
+          lastUpdatedAt: schema.balances.lastUpdatedAt,
+        }).from(schema.balances);
 
-        // 2. Users Table
-        const rawInvestors = await client`
-          SELECT i.id, i.first_name, i.last_name, i.email, i.role, i.kyc_status, i.is_verified, i.created_at,
-                 b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd, b.last_updated_at,
-                 kd.status as kyc_doc_status
-          FROM investors i
-          LEFT JOIN balances b ON i.id = b.investor_id
-          LEFT JOIN kyc_documents kd ON i.id = kd.investor_id
-          ORDER BY i.created_at DESC
-          LIMIT 50
-        `;
+        const totalTokens = allBalances.reduce(
+          (acc, b) => acc + Number(b.availableTokens || 0),
+          0
+        );
 
-        const users: UserAdminView[] = rawInvestors.map((inv: any) => {
-          const computedKycStatus = inv.kyc_doc_status || inv.kyc_status || "pending";
+        // Build user admin views
+        const users: UserAdminView[] = investorsList.map((inv) => {
+          const invBalances = allBalances.filter(b => b.investorId === inv.id);
+          const bal = invBalances[0] || null;
           return {
             id: inv.id,
-            fullName: `${inv.first_name || ''} ${inv.last_name || ''}`.trim() || "Usuario",
+            fullName: `${inv.firstName || ''} ${inv.lastName || ''}`.trim() || "Usuario",
             email: inv.email,
-            kycStatus: computedKycStatus as any,
-            isVerified: inv.is_verified || false,
-            role: (inv.role || "INVESTOR").toUpperCase() as any,
+            kycStatus: (inv.kycStatus || "pending") as any,
+            isVerified: inv.isVerified || false,
+            role: ((inv.role || "investor").toUpperCase()) as any,
             status: "ACTIVE",
             balance: {
               investorId: inv.id,
-              availableTokens: inv.available_tokens?.toString() || "0",
-              lockedTokens: inv.locked_tokens?.toString() || "0",
-              availableUsd: inv.available_usd?.toString() || "0",
-              lockedUsd: inv.locked_usd?.toString() || "0",
-              lastUpdated: inv.last_updated_at || new Date().toISOString()
+              availableTokens: bal?.availableTokens?.toString() || "0",
+              lockedTokens: bal?.lockedTokens?.toString() || "0",
+              availableUsd: bal?.availableUsd?.toString() || "0",
+              lockedUsd: bal?.lockedUsd?.toString() || "0",
+              lastUpdated: bal?.lastUpdatedAt?.toISOString() || new Date().toISOString()
             }
           };
         });
 
-        // 3. Audit logs
+        // Audit logs
         let recentAuditLogs: any[] = [];
         try {
-          const rawAuditLogs = await client`
-            SELECT * FROM audit_logs
-            ORDER BY timestamp DESC
-            LIMIT 20
-          `;
+          const rawAuditLogs = await db.query.auditLogs.findMany({
+            orderBy: (a, { desc }) => [desc(a.timestamp)],
+            limit: 20
+          });
           recentAuditLogs = rawAuditLogs.map((log: any) => ({
             id: log.id,
             action: log.action,
             details: log.details,
             timestamp: log.timestamp,
-            actor: log.user_id ? `User:${log.user_id}` : "System"
+            actor: log.userId ? `User:${log.userId}` : "System"
           }));
         } catch (_) {}
 
-        // 4. Integration events
+        // Integration events
         let recentIntegrationEvents: any[] = [];
         try {
-          const rawEvents = await client`
-            SELECT * FROM integration_events
-            ORDER BY timestamp DESC
-            LIMIT 10
-          `;
+          const rawEvents = await db.query.integrationEvents.findMany({
+            orderBy: (e, { desc }) => [desc(e.timestamp)],
+            limit: 10
+          });
           recentIntegrationEvents = rawEvents.map((ev: any) => ({
             id: ev.id,
             provider: ev.provider as any,
-            event: ev.event_type,
+            event: ev.eventType,
             timestamp: ev.timestamp,
             status: ev.status as IntegrationEventView['status']
           }));
         } catch (_) {}
 
-        // Calculate tokens sold and usd raised from genesis_purchases where status = 'completed'
+        // Genesis purchases for treasury metrics
         let tokensSold = 0;
         let usdRaised = 0;
         try {
-          const purchases = await client`
-            SELECT token_amount, total_usd_amount
-            FROM genesis_purchases
-            WHERE status = 'completed'
-          `;
-          tokensSold = purchases.reduce((acc, p) => acc + Number(p.token_amount || 0), 0);
-          usdRaised = purchases.reduce((acc, p) => acc + Number(p.total_usd_amount || 0), 0);
+          const purchases = await db.query.genesisPurchases.findMany({
+            where: (g, { eq }) => eq(g.status, 'completed' as any)
+          });
+          tokensSold = purchases.reduce((acc, p) => acc + Number(p.tokenAmount || 0), 0);
+          usdRaised = purchases.reduce((acc, p) => acc + Number(p.totalUsdAmount || 0), 0);
         } catch (_) {}
 
-        // Fallback default just in case it is 0, to look premium
-        if (tokensSold === 0) {
-          tokensSold = 150000;
-          usdRaised = 1260000;
-        }
+        if (tokensSold === 0) { tokensSold = 150000; usdRaised = 1260000; }
 
         const treasurySummary = {
           totalUsdRaised: new Intl.NumberFormat("en-US", {
@@ -339,15 +334,13 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
           recentIntegrationEvents
         };
 
-        await client.end();
         return { view, users };
       } catch (dbErr) {
         console.error("Local database query failed in fetchAdminData:", dbErr);
-        if (client) {
-          try { await client.end(); } catch (_) {}
-        }
       }
     }
+
+
   } catch (error) {
     console.error("Error fetching admin view model:", error);
   }
@@ -369,10 +362,10 @@ async function AdminDashboardContent() {
           { label: "Consola Admin" }
         ]} />
         <div className="flex flex-wrap gap-2">
+          <SafeActionButton label="🏦 Land Banking" href="/dashboard/admin/landbank" variant="ghost" />
+          <SafeActionButton label="Portafolio RWA" href="/dashboard/admin/properties" variant="ghost" />
           <SafeActionButton label="Usuarios y KYC" href="/dashboard/admin/users" variant="ghost" />
-          <SafeActionButton label="Órdenes Token" href="/dashboard/admin/token-orders" variant="ghost" />
           <SafeActionButton label="Auditoría" href="/dashboard/admin/audit" variant="ghost" />
-          <SafeActionButton label="Integraciones" href="/dashboard/admin/integrations" variant="ghost" />
         </div>
       </div>
 

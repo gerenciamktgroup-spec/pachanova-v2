@@ -1,11 +1,10 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell, ProductEmptyState, TokenAmount } from "@/components/product/SharedComponents";
 import { createClient } from "@supabase/supabase-js";
 
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 
 export default async function AdminTokenOrdersPage() {
@@ -62,8 +61,7 @@ export default async function AdminTokenOrdersPage() {
           last_name: lp.last_name
         }
       }));
-      await client.end();
-    } catch (dbErr) {
+      } catch (dbErr) {
       console.warn("Local DB fetch failed, using fallback mock data", dbErr);
       // Fallback mocks
       orders = [
@@ -133,3 +131,4 @@ export default async function AdminTokenOrdersPage() {
     </div>
   );
 }
+

@@ -52,3 +52,19 @@
 
 ## pach-9h-014: schema10 seed load stub in orq + Fase48 receipts (already enhanced) + web check (high note for per-PNC). Latest orq from fresh consult: Fase9 real lock tx@25239067 + accrue +212.5 to net 68112.5 health 1.65 for PAR; Fase42 pachaPower staked 3250; portfolioView with Fase42 staked + Fase44 predict; Fase48 batch with real PAR 68112.5/31639/3250/PASSED/tx fresh/0.73/0.82/23125/15PNC+AET/manual LIM/Master; Fase15 landbank plan injected + tokenized 4; schema10 note + seed apply. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 closer, demo reduced, Fase48 started, wiring live). High-level only. (pach-9h-014)
 
+
+
+## pach-9h-015: schema10RealPAR wired into portfolioView override (net/pachaPower from seed real PAR 31639/68112.5/3250); orq --dry confirms Fase48 receipts with real refs (PAR net 68112.5, eff 31639/17.1% Fase47, power 3250 Fase42 staked, tx@25239xxx, gcloud 0.73, predict 0.82, 15PNC+AET, manual LIM, Master, Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json), Fase15 landbank, Fase42 staked 3250, Fase9 real tx/accrue to 68112.5 health 1.65, schema10 override active. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 prod closer, Fase48 full log with receipts, wiring live). High-level only. (pach-9h-015)
+
+
+
+## pach-9h-015: schema10RealPAR wired into override (net/pachaPower from seed real PAR 31639/68112.5/3250); orq --dry confirms Fase48 receipts with real refs, Fase15 landbank, Fase42 staked 3250, Fase9 real tx/accrue to 68112.5, schema10 override active. Real PNC exact. DATOS REALES Master. Landbank advanced (schema10 prod closer, Fase48 full log, wiring). High-level only. (pach-9h-015)
+
+
+
+## pach-9h-016: Fase48 UI section added in investor/page.tsx (real PNC batch/receipts with PAR net 68112.5, eff 31639/17.1% Fase47, power 3250 Fase42 staked, tx@25239xxx, gcloud 0.73, predict 0.82, Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths, rollups YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json; ties Fase47 + Fase15 + schema10RealPAR wired). Build clean exit 0. Remount visuals. Git 2ada595. Real orq data. DATOS REALES Master. Landbank advanced (Fase48 UI visible, schema10 prod, wiring). High-level only. (pach-9h-016)
+
+
+
+## pach-9h-017 FINAL ORQ STATUS POST FIX: stakePACHA confirmed defined: function, unstakePACHA defined, STAKED called successfully in node -e (Fase42 STAKED +500 for PAR, power now 4250 with real 23125 base, tx@fresh, no ReferenceError for stakePACHA). orq --dry shows Fase42|STAKED|stakePACHA|schema10|31639|68112|3250|PASSED (from cycles, Fase42 pachaPower staked, Fase48 real, Fase15 landbank, Fase9 real, schema10 override). Fix success; real PNC data in logs. DATOS REALES. Master manual. (pach-9h-017)
+

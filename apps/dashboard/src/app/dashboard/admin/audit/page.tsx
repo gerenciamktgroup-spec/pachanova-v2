@@ -1,11 +1,10 @@
-export const dynamic = 'force-dynamic';
+﻿export const dynamic = 'force-dynamic';
 
 import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
 import { AuditLogTimeline } from "@/components/product";
 import { AuditLogView } from "@/types/product";
 import { createClient } from "@supabase/supabase-js";
 
-import postgres from "postgres";
 
 async function fetchAuditLogs(): Promise<AuditLogView[]> {
   let logs: any[] = [];
@@ -44,8 +43,7 @@ async function fetchAuditLogs(): Promise<AuditLogView[]> {
         LIMIT 100
       `;
       logs = rawAuditLogs || [];
-      await client.end();
-    } catch (dbErr) {
+      } catch (dbErr) {
       console.warn("Local DB fetch failed for audit logs, using mocks", dbErr);
       logs = [
         {
@@ -95,3 +93,4 @@ export default async function AdminAuditPage() {
     </div>
   );
 }
+

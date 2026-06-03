@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
-import { investors } from "./investors";
+import { investors } from "./investors.ts";
 
 export const kycDocuments = pgTable("kyc_documents", {
   id: uuid("id").primaryKey().defaultRandom(),

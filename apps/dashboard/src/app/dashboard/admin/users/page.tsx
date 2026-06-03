@@ -1,4 +1,4 @@
-import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
+﻿import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { Suspense } from "react";
 import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -8,7 +8,6 @@ import { AdminUsersDataGrid } from "@/components/product";
 
 export const dynamic = 'force-dynamic';
 
-import postgres from "postgres";
 
 async function fetchUsersData(): Promise<UserAdminView[]> {
   try {
@@ -59,8 +58,7 @@ async function fetchUsersData(): Promise<UserAdminView[]> {
           LEFT JOIN kyc_documents kd ON i.id = kd.investor_id
           ORDER BY i.created_at DESC
         `;
-        await client.end();
-        
+            
         // Group by investor because left join can return multiple rows if there are multiple balances/docs
         const map = new Map<string, any>();
         for (const row of localInvestors) {
@@ -168,3 +166,4 @@ export default function UsersAdminPage() {
     </Suspense>
   );
 }
+

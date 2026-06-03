@@ -1,7 +1,6 @@
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { db } from "@/server/db";
 import { createServerClient } from "@/utils/supabase/server";
 import InvestClient from "./InvestClient";
 
@@ -11,8 +10,6 @@ export default async function InvestPage(props: { params: Promise<{ propertyId: 
   const params = await props.params;
   const propertyId = params.propertyId;
 
-  const client = postgres(process.env.DATABASE_URL!);
-  const db = drizzle(client, { schema });
 
   const property = await db.query.properties.findFirst({
     where: eq(schema.properties.id, propertyId)

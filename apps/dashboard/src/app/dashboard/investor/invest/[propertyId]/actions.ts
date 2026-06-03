@@ -1,10 +1,9 @@
 "use server";
 
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, sql } from "drizzle-orm";
 import { schema } from "@pachanova/database";
 import { createServerClient } from "@/utils/supabase/server";
+import { db } from "@/server/db";
 
 export async function buyTokensAction(propertyId: string, quantity: number) {
   try {
@@ -12,8 +11,7 @@ export async function buyTokensAction(propertyId: string, quantity: number) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || "demo.investor.holder@pachanova.local";
 
-    const client = postgres(process.env.DATABASE_URL!);
-    const db = drizzle(client, { schema });
+    // Use shared db singleton for performance and pool management
 
     const inv = await db.query.investors.findFirst({
       where: eq(schema.investors.email, userEmail)
@@ -78,6 +76,12 @@ export async function buyTokensAction(propertyId: string, quantity: number) {
         lockedUsd: "0"
       });
     }
+
+    // Deduct available tokens from the property itself
+    const newPropertyTokens = Number(property.availableTokens) - quantity;
+    await db.update(schema.properties)
+      .set({ availableTokens: String(Math.max(0, newPropertyTokens)) })
+      .where(eq(schema.properties.id, property.id));
 
     // Register transaction
     await db.insert(schema.transactions).values({
