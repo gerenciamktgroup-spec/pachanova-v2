@@ -90,7 +90,7 @@ export async function buyTokensAction(propertyId: string, quantity: number) {
       amount: String(quantity),
       type: "mint",
       status: "completed",
-      isDemo: true,
+      isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
       metadata: { note: `Adquisición de ${quantity} tokens de ${property.name}` }
     });
 

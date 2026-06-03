@@ -29,7 +29,7 @@ export default function PartnerSubmitPage() {
       totalTokens: "0.00",
       availableTokens: "0.00",
       annualYieldExpected: "0.00",
-      isDemo: true
+      isDemo: false // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
     });
 
     revalidatePath("/dashboard/admin/properties");

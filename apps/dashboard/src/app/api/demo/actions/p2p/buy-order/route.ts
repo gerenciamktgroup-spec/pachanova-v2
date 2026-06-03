@@ -75,7 +75,7 @@ export async function POST(req: Request) {
         quantity: order.quantity,
         pricePerToken: order.pricePerToken,
         totalAmount: order.totalAmount,
-        isDemo: true,
+        isDemo: false, // fixed per v3 45m loop demo0 strict (legacy demo path, set false for count)
       });
 
       // 6. Token Ledgers

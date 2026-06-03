@@ -31,7 +31,7 @@ export async function createPropertyAction(formData: FormData) {
       availableTokens: totalTokens, // initially all tokens are available
       annualYieldExpected,
       imageUrl: "/properties/placeholder.jpg",
-      isDemo: true
+      isDemo: false // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
     });
 
     return { success: true };

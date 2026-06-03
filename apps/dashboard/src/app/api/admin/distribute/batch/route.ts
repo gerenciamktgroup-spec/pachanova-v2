@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
           amountUsd: shareUsd.toFixed(2),
           periodStart,
           periodEnd,
-          isDemo: true,
+          isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
           status: 'CLAIMABLE', // So investors can claim this payout
           proofRef
         } as any).returning();

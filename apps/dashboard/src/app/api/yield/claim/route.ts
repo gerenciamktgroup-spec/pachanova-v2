@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         amountUsd: String(amount),
         periodStart: now,
         periodEnd: now,
-        isDemo: true,
+        isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
         status: 'CLAIMED',
         proofRef,
         claimedAt: now

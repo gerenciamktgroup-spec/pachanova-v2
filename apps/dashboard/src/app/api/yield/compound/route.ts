@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       await db.update(schema.distributions).set({ status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any).where(eq(schema.distributions.id, distrib.id));
     } else {
       const newId = 'compound-' + Date.now();
-      await db.insert(schema.distributions).values({ id: newId, propertyId: fromProp.id, investorId: inv.id, amountUsd: String(amount), periodStart: now, periodEnd: now, isDemo: true, status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any);
+      await db.insert(schema.distributions).values({ id: newId, propertyId: fromProp.id, investorId: inv.id, amountUsd: String(amount), periodStart: now, periodEnd: now, isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant) status: 'COMPOUNDED', proofRef, compoundDetails, claimedAt: now } as any);
     }
 
     // Real balance growth: add tokens to available (compound = more ownership in RWA)
