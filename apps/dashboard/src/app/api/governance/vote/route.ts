@@ -81,7 +81,10 @@ export async function POST(req: Request) {
     }).returning();
 
     // Fase35: real public RPC block + deterministic onchain tx proof (VOTE_GOV payload + proposal + choice + real PACHA power from balances + PNC + 23125 exact; no random; for recompute match in VERIFY/CERT; publicnode)
-    let onchainProof: any = null;
+    let onchainTxProof: any = null;
+    let txHash: string | null = null;
+    let blockNum: number = 25235360;
+
     try {
       const crypto = require('crypto');
       let realBlock = 25235360;
@@ -94,9 +97,11 @@ export async function POST(req: Request) {
       const payload = { type: 'VOTE_GOV', proposal_id: proposalId, choice, voting_power: votingPower, holder: userEmail, pnc, my_share_base: 23125 };
       const blockHex = '0x' + realBlock.toString(16);
       const txh = '0x' + crypto.createHash('sha256').update(JSON.stringify(payload) + '|' + blockHex + '|pachanova-rwa-gov-attest-23125').digest('hex');
-      onchainProof = { txHash: txh, blockNum: realBlock, block: blockHex, rpc: rpcUsed, status: 'attested_gov_proof', note: 'Fase35 real publicnode RPC + PACHA power + PNC proposal + 23125 (deterministic recompute)', verified_at: new Date().toISOString() };
-      await client`UPDATE votes SET onchain_tx_proof = ${JSON.stringify(onchainProof)}, tx_hash = ${onchainProof.txHash}, block_num = ${realBlock}, recompute_note = ${onchainProof.note} WHERE id = ${newVote.id}`;
-    } catch (pErr) { console.warn('[Fase35 gov vote proof]', pErr.message); }
+      onchainTxProof = { txHash: txh, blockNum: realBlock, block: blockHex, rpc: rpcUsed, status: 'attested_gov_proof', note: 'Fase35 real publicnode RPC + PACHA power + PNC proposal + 23125 (deterministic recompute)', verified_at: new Date().toISOString() };
+      txHash = txh;
+      blockNum = realBlock;
+      await client`UPDATE votes SET onchain_tx_proof = ${JSON.stringify(onchainTxProof)}, tx_hash = ${onchainTxProof.txHash}, block_num = ${realBlock}, recompute_note = ${onchainTxProof.note} WHERE id = ${newVote.id}`;
+    } catch (pErr: any) { console.warn('[Fase35 gov vote proof]', pErr.message); }
 
     client.end();
 

@@ -216,8 +216,8 @@ export default function GovernanceVotingClient({ proposals, totalPachaHoldings, 
                       const res = await fetch('/api/governance/vote', { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ voteId: (my as any).id || 'latest' }) });
                       const j = await res.json();
                       if (j.success) {
-                        setMessages(m => ({ ...m, [proposalId]: j.message }));
-                        setMyVotes(v => ({ ...v, [proposalId]: { ...(v[proposalId] as any), onchainVerified: j.verified } as any }));
+                        setMessages(m => ({ ...m, [p.id]: j.message }));
+                        setMyVotes(v => ({ ...v, [p.id]: { ...(v[p.id] as any), onchainVerified: j.verified } as any }));
                       }
                     }}
                     className="ml-2 text-[9px] px-1 py-0.5 border border-emerald-600 text-emerald-300 rounded hover:bg-emerald-900/20"
