@@ -9,7 +9,7 @@ import {
   Activity, List, Users, FileSearch, FileSignature, 
   Terminal, Puzzle, Palette, History, AlertTriangle,
   FlaskConical, Scale, ShoppingCart, PenTool, Landmark,
-  LucideIcon 
+  Banknote, LucideIcon 
 } from "lucide-react";
 import { useMobileSidebar } from "./MobileSidebarContext";
 
@@ -34,6 +34,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   "shopping-cart": ShoppingCart,
   "pen-tool": PenTool,
   "landmark": Landmark,
+  "banknote": Banknote,
 };
 
 export function MissionSidebar() {

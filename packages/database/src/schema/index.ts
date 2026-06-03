@@ -14,3 +14,4 @@ export * from "./kyc_documents";
 export * from "./distributions";
 export * from "./notifications";
 export * from "./demo_sessions";
+export * from "./loans";
