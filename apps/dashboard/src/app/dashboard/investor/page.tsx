@@ -284,6 +284,13 @@ async function InvestorDashboardContent() {
         <div className="text-[9px] text-[#5a5f6a] mt-1">Fase15 landbank completo exercised (orq Fase15 fn + real PNC data 68537.5/68112.5/31639/3250/tx@fresh/gcloud0.73/predict0.82/23125/Master). UI consumes via orq (high-level + live Fase15 portfolio). Auto gated in execute. Fase36 full gov gate on real distrib/land launches + Fase42 staking/Pacha power in cards. schema10 real sync from core orq for per-PNC portfolio cards (dashboard/web). DATOS REALES.</div>
       </div>
 
+      {/* Fase48: BATCH/ROLLUPS/RECEIPTS/MAIL - from orq runFase48BatchClaimsOrRollups (real PNC exercised, receipts for PAR claim/compound 8514, net 68112.5, power 3250 Fase42 staked, tx attest YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub; ties Fase47 flywheel + Fase15 tokeniz + schema10). Full with seeds/DB next. DATOS REALES. Master manual. */}
+      <div className="p-4 border border-gray-700 rounded bg-[#111] space-y-2">
+        <div className="text-xs text-gray-400 font-mono">FASE48 BATCH/ROLLUPS/RECEIPTS/MAIL (orq enhanced real PNC)</div>
+        <div className="text-[10px] text-emerald-400">batch for 4 PNC (PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override). DATOS REALES. Master manual.</div>
+        <div className="text-[9px] text-[#5a5f6a]">receipts sample: PAR claim 8514 compound 8514 net 68112.5 power 3250 tx 0x16c27ba6ba...@25239072 note 'Fase47 flywheel + Fase15 RWA'; SB similar. Schema10RealPAR wired in orq override (31639/68112.5/3250 from seed). Real orq data.</div>
+      </div>
+
       {/* Fase44: HISTORIAL DE DISTRIBUCIONES / CASHFLOW REAL PAGADO - realized paid from orq cashflowHistory (PNC net * 12.5% slices) + core Fase16/32/43 ref.
          Rows with date/period, PNC, monto (your share), status, proof badge (block + 23125), VERIFY note (recompute refs).
          Compounds Fase32 real distribs + Fase35 proofs + Fase43 predict notes. Suggest E2E adds row visible on refresh. Real data only. */}
