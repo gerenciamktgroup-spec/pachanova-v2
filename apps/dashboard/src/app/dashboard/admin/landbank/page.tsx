@@ -15,12 +15,13 @@ export default function LandbankAdminPage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-white mb-1">
-              🏦 Motor Land Banking
+              🏦 Motor Land Banking (PachaNova Dashboard - Single Unified Project)
             </h2>
             <p className="text-sm text-white/50">
-              Gestión completa del ciclo de vida de activos RWA tokenizados.{" "}
+              Gestión completa del ciclo de vida de activos RWA tokenizados (P2P + Créditos + Master Control integrado del core).{" "}
               <span className="text-[#c5a46d]">coming_soon → funding → funded → trading → liquidated</span>
             </p>
+            <p className="text-[10px] text-[#c5a46d]/70 mt-1">Un solo proyecto final. Master edita TODO (5 PNC Perú multi-product: vivienda/alquiler/hotel/desarrollo). orq + DB real. Ver investor para P2P marketplace + borrow/créditos.</p>
           </div>
           <a
             href="/dashboard/admin/properties"

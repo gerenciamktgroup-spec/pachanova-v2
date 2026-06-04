@@ -1,8 +1,10 @@
-# AGENTS.md - PachaNova (fleet member)
+# AGENTS.md - PachaNova (single unified project - Landbanking with P2P/Créditos/DB/orq/Master)
 
-This repo is part of the user's RWA / Aetheris / Copera / PachaNova platforms fleet.
+**UNIFIED SINGLE FINAL PROJECT** (per user request 2026): This (pachanova at 3000) is now the complete PachaNova Dashboard + Master Landbanking (P2P marketplace, créditos/borrow/DeFi, full investor/admin flows, landbank master control integrado from core, Supabase DB, orq). Core is shared lab hub (high-level only for Pacha; see core AGENTS for orq/bridge shared).
 
-**Core / Maestro Hub**: C:\Users\LENOVO\Documents\laboratorio-lihue-core (Panel Maestro)
+This repo is the primary for PachaNova Landbanking. Run only this (pnpm --filter dashboard run dev) for the complete system visuals.
+
+**Core / Maestro Hub (shared)**: C:\Users\LENOVO\Documents\laboratorio-lihue-core (Panel Maestro) - orq central + fleet. Pacha-specific (landbank master) consolidated here. High-level sync only.
 - Source of truth for exact yield attribution (Fase16: token_holdings + rwa_distribuciones with snapshot, computePersonalYieldForUser, realtime, mail-to-declare closed loop).
 - Orquestadores (mail-processor, google-bridge, core-auth-gateway) and autonomy layer (antigravity master, ps1 bridge, orchestrator:loop, schedulers).
 - Blackboard: GitHub issues in gerenciamktgroup-spec/laboratorio-lihue-core with labels antigravity/plan/autonomous/high-impact.
@@ -19,6 +21,7 @@ This repo is part of the user's RWA / Aetheris / Copera / PachaNova platforms fl
 - Yield attribution and declare happen in core Panel (exact via holdings).
 - This project can consume via sync/adapter (future: fetch from core supabase or google-bridge for shared projects/investors, display "Rendimiento exacto vía Panel Maestro (Fase 16 holdings + Fase50 closed + Fase51 DB)").
 
+pach-9h- (high-level only post Fase17 Maestro self-service + Fase16 closed + landbank 5PNC 2026-06-04): NEXT_BEST Fase21 identified/plan+query written (Onchain Holdings Sync & Onchain-Enriched Yield Intelligence — Verified Ownership Layer feeding richer Fase16 exact + Fase17 Maestro Generative self-service lifecycle RECLAMAR/REINVERTIR/OPTIMIZE with ONCHAIN VERIFIED badges/proofs/certs + Live Orq/Maestro Health + robust fleet RWA discovery fix core + pach* + fullstack "RWA/PNC landbank discovered" + high-level orq bootstrap/sync; real 23125 + PAR 68112.5 net @31639 eff 17.1% power 3250 + tx@25242xxx + 0.73/0.82 + 15PNC+AET + 5PNC $31.4M + manual LIM 0.95 + Fase* carried; core primary full E2E orq/schema09/services/UI/Maestro/verify + fleet scan robust; here orq high sync note + AGENTS/plan/blackboard update + scan fix). Core blackboard #18 (Fase21 open) + #27 consulted (MCP read ok, write auth fail fallback local git/PROGRESS). orq--dry/verify/build + git + local blackboard pending implement. Real PNC + DATOS REALES. Master manual. Singularity. Never stop. (pach-9h- Fase21 post Fase17)
 pach-9h- (high-level only post Fase16 yield closed 2026-06-04): NEXT_BEST Fase17 identified/plan+query written (Maestro Generative Command Center + Full Self-Service Investor Yield Lifecycle E2E RECLAMAR/REINVERTIR/OPTIMIZE one-clicks on Fase16 exact multi-PNC distrib ownership + Live Orq/Maestro Health + RUN FLEET/EXECUTE/ATTEST/CLAIM + Landbank Persistent 5 PNC Real Assets + Master Full Manual Override Console + Product-Specific Attribution Flywheel; real 23125 + PAR 68112.5 net @31639 eff 17.1% power 3250 + tx@25242xxx + 0.73/0.82 + 15PNC+AET + 5PNC $31.4M + manual LIM 0.95 + Fase* carried; core primary full E2E orq/bridge/UI/Maestro/land master; here orq high sync note + AGENTS/plan/blackboard update; fleet scan robust). Core blackboard #27/#18 consulted. orq--dry/verify/build + git + MCP comment pending implement. Real PNC + DATOS REALES. Master manual. Singularity. Never stop. (pach-9h- Fase17 post Fase16)
 
 **pach-9h- Fase16 yield closed post Fase15 (high-level only 2026-06-04):** 
