@@ -167,6 +167,7 @@ function persistRealSchema10(muts = {}) {
 }
 
 // Fase95: Fase94 E2E Injection - Thin runPerpetualTreasurySettleTask + attest + loadReal perpetualSettledClaims for Fase1 Hub "Mis Streams Perpetuos & Claims" + claim growth visible (sane deltas on real 23125 base).
+// Fase106 readiness (planner post Fase105): extend with runMailDeclarePerpetualExternalToFase16Task (or integrate) for Mail one-click declare external claims to real Fase16 closed (rwa_distribuciones INSERT + holdings uplift + external provenance + Fase21 @25244445 + attest YIELD_PERPETUAL_EXTERNAL_DECLARE_TO_FASE16_ATTEST). Wire to /api + Fase1 Hub "Mis Pagos" declare CTAs + Maestro force + verify "Fase16 YIELD ... processed>=1 from ... external ... Mail declared (Fase106)". High sync to core. Compose Fase105 external + all prior. Real PNC 68112.5@31639/17.1% 3250 23125 25244445 + deltas. DATOS REALES. Master. (pach-9h- Fase106)
 // Fase97: Fase96 E2E Injection - Thin runLaunchNextCycleFromSettledLedgerTask (Fase96) + loadReal perpetualLaunchedCycles for Fase1 Hub "Mis Ciclos Futuros (N+2 from Fase95)" + Suscribir immediate growth visible.
 // Composes Fase49 schema10 load/persist exactly + Fase83/89/93/94/95/96 perpetual patterns + Fase21 onchain + real PNC 68112.5@31639/17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase*.
 // Core primary full (treasury/DB/Mail); here thin for Hub visuals + orq--dry/verify + processed>=1 guarantee (Fase96). DATOS REALES. Master manual. Singularity.
