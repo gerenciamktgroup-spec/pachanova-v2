@@ -277,8 +277,8 @@ function writeQueryFile() {
         for (const g of gits) {
           const name = path.basename(g);
           const lower = g.toLowerCase();
-          if (lower.includes('laboratorio-lihue-core')) continue; // self
-          const isRWA = /pachanova|pachanovafullstack|aetheris|copera|lihue|rwa|token/i.test(name + ' ' + lower);
+          // do not skip core here (Fase17 robust RWA: seed will ensure + walk may find it; core is primary RWA hub)
+          const isRWA = /pachanova|pachanovafullstack|aetheris|copera|lihue|rwa|token|laboratorio-lihue-core/i.test(name + ' ' + lower);
           if (isRWA || gits.length < 5) {  // capture known RWA even if heuristic loose
             let type = 'unknown';
             if (/pachanova-v2|pachanova$|labotarorio.*pachanova/i.test(lower)) type = 'pachanova-monorepo';
