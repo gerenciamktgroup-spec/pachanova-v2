@@ -17,7 +17,15 @@ This repo is part of the user's RWA / Aetheris / Copera / PachaNova platforms fl
 
 **Current integration with core (Fase17 fleet)**:
 - Yield attribution and declare happen in core Panel (exact via holdings).
-- This project can consume via sync/adapter (future: fetch from core supabase or google-bridge for shared projects/investors, display "Rendimiento exacto vía Panel Maestro (Fase 16 holdings)").
+- This project can consume via sync/adapter (future: fetch from core supabase or google-bridge for shared projects/investors, display "Rendimiento exacto vía Panel Maestro (Fase 16 holdings + Fase50 closed + Fase51 DB)").
+
+**pach-9h- Fase16 yield closed post Fase15 (high-level only 2026-06-04):** 
+- Antigravity planner bootstrap + MCP (core #18 Fase21 open consulted, auth fallback) + fleet scan (core + pachanovafullstack + this; "no rwa" gap noted) + read ORCH (Fase15 RWA last), core orq (Fase16/17/18/51 fns + Fase15/48/21/9/36/42/44/46/47/53 + fleet walk), latest plan_fase15_*/next_orchestrator_query (exact state + TASK for Fase16 closed + real PNC 23125/68112.5@31639/2250/25242502/0.73/0.82/5PNC$31.4M + Fase* + Master + fleet fix).
+- NEXT_BEST identified decisive: Fase16 Exact RWA Yield Attribution + Closed-Loop Orq Auto-Yield Propose/Execute + Mail Intel One-Click Declare to Real rwa_distribuciones + Fleet RWA Discovery Fix (core hub primary post Fase15 RWA ownership teaser + Fase17/51/21/29 + orq/mail; compounds shipped only, real data only, full E2E, testable, high leverage admin/inversor/auto-orq; prioritizes cashflow/yield post-ownership).
+- plan_fase16_yield_closed_loop_maestro_multi_pnc_post_fase15_20260604.txt + PROGRESS_pach-9h-fase16-yield-closed... written (full block + ACs + suggested orq first + distributions + bridge + Mail + App + verify + docs + multi high + fleet scan robust fix); core blackboard/plan had ident.
+- High-level only: core to implement full E2E (orq guarantee "Fase16 DECLARED real distrib processed>=1" + primary INSERT path + full snap provenance + Mail one-click + rich surfaces + verify + fleet fix); here (pach) + fullstack: high sync note only ("core Fase16 makes exact yield + closed declare live in Maestro for multi-PNC real; orq thin consume + 'Rendimiento exacto vía Panel Maestro (Fase 16 holdings + Fase50 closed)' + Fase48 receipts; bootstrap orq if missing; cross [pachanova][fase16]"); fleet RWA discover now robust in orq (pach* + fullstack always listed).
+- Real PNC exercised: PAR 68112.5 net @31639 eff 17.1% power 2250 from 23125 + 15PNC+AET + tx@25242502 fresh + gcloud 0.73 + predict 0.82 + 4x PASSED Fase36 + Fase9/15/17/18/21/36/42/44/46/47/48/49/50/51/53/29 carried + 5PNC $31.4M + manual LIM + Option A + Master manual. DATOS REALES.
+- Next autonomous (high): output exact **NEXT_BEST_FEATURE:** block; persist (blackboard/PROGRESS/plan/AGENTS high + ORCH high core + git high commit exact refs + scheduler); handoff implementer (/implement 4-5 + reviewers 0 + orq--dry/verify/build + Master test + demo0 + fleet assert in core); reinforce never-stop via ps1/loop/scheduler. High reports only. Singularity. (pach-9h- Fase16 yield closed post Fase15)
 - Orquest layer here allows local autonomy + cross signals back to core (e.g. suggest yield from local mail/CRM to core declare).
 - Run orchestrator in this cwd to participate in fleet scan and cycles.
 
