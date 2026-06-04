@@ -14,7 +14,6 @@ type Property = {
   availableTokens: string;
   annualYieldExpected: string | null;
   imageUrl: string | null;
-  isDemo: boolean;
   metadata: any;
 };
 
@@ -201,11 +200,7 @@ export default function InvestorMarketplaceClient() {
                       {status.label}
                     </span>
                   </div>
-                  {prop.isDemo && (
-                    <div className="absolute top-3 left-3 bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[9px] px-2 py-0.5 rounded-full">
-                      DEMO
-                    </div>
-                  )}
+
                   <div className="absolute bottom-3 left-4 text-xs text-white/50">
                     {getFlag(prop.location)} {prop.location}
                   </div>

@@ -26,7 +26,7 @@ export default function FAQPage() {
     },
     {
       question: "¿Qué puedo explorar ahora mismo?",
-      answer: "Puedes navegar libremente por los paneles de Inversor, Administrador y Fiduciario. Puedes simular el flujo 'Genesis' para ver cómo se registraría la intención de adquisición de tokens."
+      answer: "Puedes navegar libremente. Primary: Landbanking Hub (/dashboard/admin/landbank) con 5PNC Master (evolución beta Genesis RWA → actual). Flujo 'Genesis' es legacy beta (deprecate visible Fase1, schema compat solo). Demo siempre 'Modo Visual / DATOS REALES simulado' con números orq 5PNC."
     },
     {
       question: "¿Qué falta para conectar el Sandbox externo?",

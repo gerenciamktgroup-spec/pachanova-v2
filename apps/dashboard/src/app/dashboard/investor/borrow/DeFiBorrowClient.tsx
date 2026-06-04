@@ -7,6 +7,7 @@ import {
   Coins, TrendingDown, Info, Percent, Landmark, HelpCircle, 
   ArrowRight, ShieldCheck, RefreshCw
 } from "lucide-react";
+import { HologramPncCard } from "@/components/product/HologramPncCard"; // Fase3: Hologram cards for collateral viz (5PNC landbank)
 
 interface Property {
   id: string;
@@ -329,6 +330,46 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
 
       </div>
 
+      {/* Fase3: Hologram cards for collateral viz (rich landbank 5PNC from PAR etc + orq net/health) */}
+      {activeLoans.length > 0 && (
+        <div className="space-y-3">
+          <div className="text-[10px] uppercase tracking-widest text-pn-text-muted">COLLATERAL VIZ — HOLOGRAM (5PNC LANDBANK REAL PATHS + FASE9 TIE)</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {activeLoans.slice(0,2).map((loan) => {
+              const property = properties.find(p => p.id === loan.propertyId) as any;
+              const pncForHolo = {
+                id: loan.propertyId,
+                name: property?.name || 'PNC Land Reserve',
+                location: property?.location || 'Perú',
+                propertyType: 'land',
+                status: 'trading',
+                totalValuationUsd: loan.collateralValueUsd,
+                tokenPriceUsd: (parseFloat(loan.collateralValueUsd) / Math.max(parseFloat(loan.collateralAmount),1)).toFixed(2),
+                totalTokens: loan.collateralAmount,
+                availableTokens: '0',
+                annualYieldExpected: property?.annualYieldExpected || '8.5',
+                metadata: {
+                  pncCode: (property?.metadata?.pncCode || property?.name?.match(/PNC-[A-Z]+-\d+/)?.[0] || 'PNC-PAR-001'),
+                  net: (property?.metadata?.net || 68112.5),
+                  effectiveYield: (property?.metadata?.effectiveYield || 31639),
+                  effectivePct: (property?.metadata?.effectivePct || '17.1%'),
+                  pachaPower: (property?.metadata?.pachaPower || 3250),
+                  phase: 'Fase3/9/15',
+                  notas_maestro: `Loan ${loan.id.slice(0,8)} • health ${loan.healthFactor || '1.5'} • LTV ${(parseFloat(loan.borrowedAmount)/parseFloat(loan.collateralValueUsd)*100).toFixed(0)}% • accrued ${loan.accumulatedInterest}`,
+                  borrow_debt: loan.borrowedAmount,
+                  health: loan.healthFactor,
+                }
+              };
+              return (
+                <div key={loan.id} className="scale-[0.92] origin-top">
+                  <HologramPncCard pnc={pncForHolo as any} compact />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Main Borrow Simulator & Loan Portfolio Details */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -634,6 +675,10 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
                           <div className={`font-semibold ${ltv > 0.80 ? 'text-rose-400 font-bold' : ltv > 0.60 ? 'text-amber-400' : 'text-emerald-400'}`}>
                             {(ltv * 100).toFixed(1)}%
                           </div>
+                        </div>
+                        <div>
+                          <div className="text-pn-text-soft">Health Factor:</div>
+                          <div className="font-semibold text-emerald-400 tabular-nums">{(loan as any).healthFactor || (1/ltv || 1.5).toFixed(2)}</div>
                         </div>
                         <div>
                           <div className="text-pn-text-soft">Fecha:</div>

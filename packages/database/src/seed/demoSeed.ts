@@ -266,7 +266,10 @@ async function seed() {
   // 3. System Parameters
   await db.delete(schema.systemParameters).where(eq(schema.systemParameters.key, "treasury_balance_usd"));
   await db.insert(schema.systemParameters).values([
-    { key: "treasury_balance_usd", value: "0" }
+    { key: "treasury_balance_usd", value: "0" },
+    // Fase3: defaults for borrow/credits full loop (overridable by Master per-PNC in landbank meta or superadmin)
+    { key: "defi_max_ltv", value: "0.60", description: "Default max LTV 60% for DeFi RWA borrow against landbank 5PNC collateral" },
+    { key: "defi_base_interest_rate", value: "0.0850", description: "Base 8.5% APY interest for active loans (accrue + health tie landbank net)" }
   ]);
 
   console.log("✅ Demo Seeding Complete! (Fase8 Paracas $50k borrow + Fase44 3 distribs history for PAR/AET ~8540/23125 with predict refs seeded + Fase46 claimable/claimed/compounded rows + status/proof)");

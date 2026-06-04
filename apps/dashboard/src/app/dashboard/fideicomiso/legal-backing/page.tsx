@@ -39,7 +39,7 @@ export default async function FideicomisoLegalBackingPage() {
           </div>
           <div className="space-y-4">
             <div>
-              <h4 className="text-pn-text-soft mb-1">Emisión Autorizada Genesis</h4>
+              <h4 className="text-pn-text-soft mb-1">Emisión Autorizada (Legacy Genesis beta — Primary Landbanking Hub 5PNC Master)</h4>
               <p className="text-pn-text">500,000 PACHA</p>
             </div>
             <div>

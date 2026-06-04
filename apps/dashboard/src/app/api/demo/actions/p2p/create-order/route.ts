@@ -9,6 +9,7 @@ const bodySchema = z.object({
   sellerInvestorId: z.string().uuid(),
   quantity: z.number().positive(),
   pricePerToken: z.number().positive(),
+  propertyId: z.string().optional(), // Fase2: tie to landbank 5PNC properties for full project
 });
 
 export async function POST(req: Request) {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     const result = bodySchema.safeParse(body);
     if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
 
-    const { sellerInvestorId, quantity, pricePerToken } = result.data;
+    const { sellerInvestorId, quantity, pricePerToken, propertyId } = result.data;
     const totalAmount = quantity * pricePerToken;
 
     await db.transaction(async (tx) => {
@@ -43,8 +44,16 @@ export async function POST(req: Request) {
         })
         .where(eq(schema.balances.investorId, sellerInvestorId));
 
-      const property = await tx.query.properties.findFirst();
-      if (!property) throw new Error("No property found");
+      let property;
+      if (propertyId) {
+        property = await tx.query.properties.findFirst({ where: eq(schema.properties.id, propertyId) });
+      }
+      if (!property) {
+        // Fallback to landbank 5PNC (e.g. PAR from Fase2 seed)
+        property = await tx.query.properties.findFirst({ where: eq(schema.properties.name, 'Paracas Land Reserve — PNC-PAR-001') });
+      }
+      if (!property) property = await tx.query.properties.findFirst();
+      if (!property) throw new Error("No property found (landbank 5PNC)");
 
       // 3. Create Order
       const orderId = crypto.randomUUID();

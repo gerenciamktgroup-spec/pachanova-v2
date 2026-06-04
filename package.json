@@ -2,6 +2,8 @@
   "name": "pachanova-v2",
   "private": true,
   "scripts": {
+    "dashboard": "pnpm --filter dashboard dev",
+    "dashboard:build": "pnpm --filter dashboard build",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

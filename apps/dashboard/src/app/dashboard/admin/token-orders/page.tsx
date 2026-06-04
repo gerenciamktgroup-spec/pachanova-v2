@@ -96,7 +96,7 @@ export default async function AdminTokenOrdersPage() {
         <SectionHeader 
           eyebrow="Transaccional"
           title="Órdenes de Adquisición"
-          description="Supervisión de intentos Genesis simulados."
+          description="Supervisión legacy (beta remnants genesis_purchases). Schema compat. Primary = Landbanking Hub 5PNC (ver /dashboard/admin/landbank). Modo Visual siempre con datos reales."
         />
       </div>
 

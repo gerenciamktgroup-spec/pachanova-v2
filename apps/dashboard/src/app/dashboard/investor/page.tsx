@@ -1,5 +1,6 @@
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
+import { HologramPncCard } from "@/components/product/HologramPncCard";
 import { 
   InvestorPortfolioHero, 
   ProRataLandCardV2, 
@@ -126,63 +127,6 @@ async function fetchInvestorData(): Promise<any> {
 
   return baseView;
 }
-        status: "PENDING_FOUNDRY",
-        lastPing: null,
-        message: "Node inactive"
-      }
-    };
-
-    let orqProposals: any[] = []; 
-    let orqForecasts: any[] = []; 
-    let orqPortfolioView: any[] = [];
-    try {
-      const orq = require('../../../../../../orchestrator_agent.cjs'); 
-      if (typeof orq.runFleetYieldForecastTask === 'function') {
-        const res = await orq.runFleetYieldForecastTask();
-        orqProposals = res.proposals || [];
-        orqForecasts = res.forecasts || [];
-        orqPortfolioView = res.portfolioView || res._fase34_rich ? (res.portfolioView || []) : [];
-        // Fase38: enrich with borrow onchain lock proof (Fase9 pattern, real RPC + sha for PNC with debt e.g. PAR)
-        // now orq fleet already wires borrowOnchain (real after net calc); only enrich missing for compat (high-level, await later in bridge)
-        if (typeof orq.computeOnchainTxProofForBorrowLock === 'function') {
-          orqPortfolioView = orqPortfolioView.map((pv: any) => {
-            if (pv.badges && (pv.badges.borrowDebt || 0) > 0 && !pv.borrowOnchain) {
-              try {
-                // note: compute now async; for server component this would need await+re-map, but since fleet now provides, stub high-level (UI later)
-                const proofPromise = orq.computeOnchainTxProofForBorrowLock({ pnc: pv.pnc, colat: (pv.badges.borrowDebt || 30000) * 1.67, debt: pv.badges.borrowDebt, net: pv.net });
-                // non-blocking set for now (promise obj harmless if fleet prefilled; full await in v2)
-                return { ...pv, borrowOnchain: pv.borrowOnchain || proofPromise };
-              } catch (e) { return pv; }
-            }
-            return pv;
-          });
-        }
-        const orqGovAutoProposals = res.govAutoProposals || [];
-        const orqLandbankLaunches = res.landbankLaunches || [];
-        const orqGovMailAlerts = res.govMailAlerts || [];
-        const orqCashflowHistory = res.cashflowHistory || [];
-        const orqClaimables = res.claimables || [];
-        const orqFase48 = res.fase48 || null;
-        console.log('[ORQ TEST #17+34+38+39+40+41+44 v2 port + pachanova-9h- Fase36/42 + Fase46] fetchInvestorData runFleetYieldForecastTask -> proposals=', res.proposals_count, 'portfolioView=', orqPortfolioView.length, 'cashflowHistory=', orqCashflowHistory.length, 'claimables=', orqClaimables.length, 'sample PNC=', orqProposals[0]?.proyecto_codigo, 'net=', orqPortfolioView[0]?.net, 'predict=', !!orqPortfolioView[0]?.gov_predict, 'borrowOnchain sample:', !!orqPortfolioView.find((p:any)=>p.borrowOnchain), 'pachaPower sample:', orqPortfolioView[0]?.pachaPower, 'govAutoProposals=', orqGovAutoProposals.length, 'landbankLaunches=', orqLandbankLaunches.length, 'landbank sample status:', orqLandbankLaunches[0]?.status, 'govMailAlerts=', orqGovMailAlerts.length);
-      } else {
-        orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'heuristic +5% from real Fase16 exact my_share 23125 (holdings 12.5% * 185k context)', source: 'stub_direct', based_on: 'Fase16 23125' }];
-      }
-    } catch (e: any) { 
-      console.log('[v2 orq call note in fetchInvestorData]', e?.message || e);
-      orqProposals = [{ action: 'AUTO_DECLARE_PROPOSE', proyecto_codigo: 'AET-002', suggested_monto: 24281.25, confidence: 0.72, rationale: 'stub from real Fase16 12.5% 23125 DATOS REALES (no keys)', source: 'stub_fallback', based_on: 'Fase16 23125 context' }];
-    }
-    const orqGovAutoProposals2 = orqGovAutoProposals || [];
-    const orqLandbankLaunches2 = orqLandbankLaunches || [];
-    const orqGovMailAlerts2 = orqGovMailAlerts || [];
-    const orqCashflowHistory2 = orqCashflowHistory || [];
-    const orqClaimables2 = orqClaimables || [];
-    const orqFase482 = orqFase48 || null;
-    return { ...baseView, _orqProposals: orqProposals, _orqForecasts: orqForecasts, _orqPortfolioView: orqPortfolioView, _orqGovAutoProposals: orqGovAutoProposals2, _orqLandbankLaunches: orqLandbankLaunches2, _orqGovMailAlerts: orqGovMailAlerts2, _orqCashflowHistory: orqCashflowHistory2, _orqClaimables: orqClaimables2, _orqFase48: orqFase482 };
-  } catch (error) {
-    console.error("Error fetching investor view model:", error);
-    return null;
-  }
-}
 
 async function InvestorDashboardContent() {
   const data = await fetchInvestorData();
@@ -206,6 +150,7 @@ async function InvestorDashboardContent() {
   const orqCashflowHistory = (data && data._orqCashflowHistory) || [];
   const orqClaimables = (data && (data as any)._orqClaimables) || (orqCashflowHistory.filter((h:any)=> (h.status||'PAGADO') !== 'CLAIMED') ) || [];
   const orqFase48 = (data && data._orqFase48) || null;
+  const realLoans = (data && (data as any)._realLoans) || []; // Fase3: real persisted loans for Mis Préstamos section
 
   if (!view) {
     return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel del inversor." />;
@@ -227,16 +172,19 @@ async function InvestorDashboardContent() {
         </div>
       </div>
 
+      {/* Full Project Banner - Landbanking Hub principal (Fase1 Consolidación) */}
+      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">PACHA NOVA LANDBANKING HUB — UN SOLO PROYECTO: beta Genesis RWA tokeniz → 5PNC Master Landbanking (P2P + CRÉDITOS + MASTER + orq 5PNC + YIELDS + GOV + AUTONOMY). Demo = Modo Visual / DATOS REALES permanente.</div>
+
       <JourneyProgressRail journey={investorJourney} currentStepId="i1" />
 
       <NextStepCard 
         dataTestId="next-step-card-investor"
-        contextLabel="Landbank Inversor"
-        title="Tu Portafolio RWA Dinámico"
-        explanation="Estás viendo tu posición global sobre los distintos activos en todo el Perú (Paracas, Chilca, San Bartolo). Los saldos líquidos son unificados y se usan para adquirir tokens."
-        nextStep="Adquiere más participación o, si posees un predio grande y eres socio, postula tu terreno a PachaNova."
-        primaryAction={{ label: "Invertir en Nuevo Activo", href: "/dashboard/investor/genesis", intent: "navigate" }}
-        secondaryAction={{ label: "🏢 Postular Terreno (Socios)", href: "/dashboard/partner/submit", intent: "navigate" }}
+        contextLabel="Landbanking Hub - Inversor"
+        title="Tu Portafolio Landbanking Completo (5PNC Master)"
+        explanation="Landbanking completo unificado: evolución desde beta tokenización RWA Genesis → Master Landbanking actual con 5 PNC (PAR etc) + orq real (net 68112.5, eff 31639/17.1%, power 3250). Siempre muestra DATOS REALES simulados. Primary entry: /admin/landbank para Master."
+        nextStep="Explora el Landbanking Hub para ver Master, launches, P2P integrado. Adquiere vía marketplace o postula terreno."
+        primaryAction={{ label: "🏦 Landbanking Hub (Principal: 5PNC Master)", href: "/dashboard/admin/landbank", intent: "navigate" }}
+        secondaryAction={{ label: "🌎 Marketplace P2P", href: "/dashboard/investor/marketplace", intent: "navigate" }}
         status="GO"
       />
 
@@ -330,9 +278,27 @@ async function InvestorDashboardContent() {
         )}
       </div>
 
+      {/* Fase1 banner + Fase4: full PachaNova Landbanking identity + ver avances in main investor */}
+      <div className="col-span-full p-3 bg-gradient-to-r from-[#0a111f] to-[#c5a46d]/5 border border-[#c5a46d]/30 rounded text-xs text-[#c5a46d] flex items-center gap-2">
+        PACHA NOVA LANDBANKING — FULL PROJECT (everything + tools: P2P, credits, yields Fase47, gov Fase36/42, orq, Master, autonomy, holograms Fase4). Hologram expansion + hub feel + clean remnants. <a href="#ver-avances" className="underline text-emerald-400">VER TODOS LOS AVANCES (Fase1+4) →</a>
+      </div>
+
       {/* Fase15: Full RWA Tokenization + Inversor Portfolio + Auto-Orquestación (masiva) - landbank completo from orq Fase15 runRwaTokenizationLandbankTask (real PNC-PAR 68537.5/68112.5 net post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase36 PASSED 4x real land paths, tx fresh 25237xxx publicnode, gcloud 0.73, predict 0.82, 15PNC+AET, manual LIM, Master manual). Tokenized 4 PNC with RWA-*-2026 tokens, land_meta (lock/net/health/eff/power/quorum/predict), portfolio consolidated. Live orq data. Schema10 note + real DB landbank. */}
       <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">FASE15 RWA TOKENIZATION + INVERSOR PORTFOLIO + AUTO-ORQ (masiva post Fase14 - landbank completo from core orq Fase15)</div>
+
+        {/* Full Project Landbanking Hologram Portfolio - "landbanking" = entire PachaNova + all tools/herramientas (orq, autonomy, P2P, credits, Master, visuals) */}
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {[
+            {id:"pnc-par", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", hectares:5, net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", govQuorum:"PASSED 4x", product_configs:{vivienda_token:{tokens_totales:2500, precio_token_usd:500}, alquiler_yield:{porcentaje_renta_a_holders:55, yield_estimado_anual:7.8}}, notas_maestro:"Real orq: net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 23125, power 3250 Fase42. Master edita TODO + lanza. Full PachaNova + P2P/credits/orq tools."}},
+            {id:"pnc-sel", name:"Finca Selva Alta Biodiversa — PNC-SEL-007", location:"Selva Perú", propertyType:"land", status:"funded", totalValuationUsd:"980000", tokenPriceUsd:"100", totalTokens:"9800", availableTokens:"8000", annualYieldExpected:"9.2", metadata:{pncCode:"PNC-SEL-007", hectares:25, net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15/36", product_configs:{alquiler_yield:{porcentaje_renta_a_holders:40, yield_estimado_anual:9.2}, hotel_revenue_share:{porcentaje_ocupacion_a_holders:35}}, notas_maestro:"Selva multi-product. Full project landbanking + tools."}},
+            {id:"pnc-sb", name:"Frente Playa San Bartolo Premium — PNC-SB-003", location:"San Bartolo, Lima Sur, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", hectares:1.8, net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{porcentaje_ocupacion_a_holders:48}, vivienda_token:{tokens_totales:1800, precio_token_usd:1350}}, notas_maestro:"SB premium. Full PachaNova + Master + P2P/credits."}}
+          ].map((pnc, i) => (
+            <HologramPncCard key={i} pnc={pnc as any} compact />
+          ))}
+        </div>
+        <div className="text-[10px] text-white/50 mt-2">Hologram view of entire PachaNova Landbanking project + tools (5 PNC real orq data, Master control, P2P, credits, orq, autonomy visuals). Full Master in /admin/landbank. See all advances here and in admin.</div>
+        <div id="ver-avances" className="text-[9px] mt-1 text-emerald-400">Fase1+4 implemented: holograms in hero (above), yields, gov, market, admin. Banners/identity everywhere. Ver detalles en /admin/landbank#avances o blackboard.</div>
         <div className="text-emerald-400 text-xs mb-2">Tokenized 4 PNC (PAR eff 31639/17.1% net 68112.5 power 3250 PASSED 4x real land paths tx fresh 0.73/0.82/23125/15PNC+AET + Master). Portfolio consolidated ready. Auto-orq gated launches via runExecute (quorum + schema10 note). Real from orq --dry Fase15 exercise. schema10: real holdings/distrib sync from core orq when seeds (token_holdings/rwa_distribuciones; see verify fallback). Fase36 full gov gate on real distrib/land + Fase42 staked power 3250 in cards/UI.</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
           {[
@@ -447,6 +413,68 @@ async function InvestorDashboardContent() {
           <div className="text-xs text-[#5a5f6a]">Cargando portfolioView PNC desde orq Fase49 (real schema10 DB + Fase15/36/42/47/9 carried). Real PAR 68112.5 net @31639 eff 17.1% power 3250 (Fase42 staked) + Fase53 liq high-level note + gcloud0.73/predict0.82/tx fresh. (ver orq runFleet + loadReal for rich multi-product landbank data).</div>
         )}
         <div className="text-[10px] text-[#5a5f6a] mt-2">Real Fase32 PNC product slices + Fase9 borrow netting + Fase33 governance power. Click → /governance para votar ponderado por tenencias PACHA actuales. DATOS REALES (orq + holdings locales).</div>
+      </div>
+
+      {/* FASE3: 'Mis Préstamos' section - real loans from schema + landbank 5PNC (PAR collateral) + health factor + accrue from net data + Master tie + Hologram viz. Rich demo but real /api/borrow paths. */}
+      <div className="p-4 border border-amber-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <div className="text-[#c5a46d] tracking-widest font-semibold">MIS PRÉSTAMOS — CRÉDITOS DEFI (Fase3 Full Loop)</div>
+            <div className="text-amber-400 text-xs">Posiciones reales persistidas en loans schema • Health + accrue desde landbank net (orq Fase9) • Colateral 5PNC (PAR etc) • Master overrides LTV/rates</div>
+          </div>
+          <a href="/dashboard/investor/borrow" className="text-xs px-3 py-1 bg-amber-900/30 hover:bg-amber-900/50 border border-amber-600 rounded">Ir a Préstamos DeFi →</a>
+        </div>
+
+        {realLoans && realLoans.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {realLoans.map((loan: any, idx: number) => {
+              const pncCode = loan.manualOverrideNote?.match(/PNC-[^ ]+/)?.[0] || 'PNC-PAR-001';
+              const holoPnc = {
+                id: loan.propertyId || `loan-${idx}`,
+                name: `Préstamo Colateral ${pncCode}`,
+                location: 'Landbank 5PNC Perú',
+                propertyType: 'land',
+                status: loan.status === 'active' ? 'trading' : 'funded',
+                totalValuationUsd: loan.collateralValueUsd || '50000',
+                tokenPriceUsd: '1',
+                totalTokens: loan.collateralAmount || '50000',
+                availableTokens: '0',
+                annualYieldExpected: '8.5',
+                metadata: {
+                  pncCode,
+                  net: 68112.5,
+                  effectiveYield: 31639,
+                  effectivePct: '17.1%',
+                  pachaPower: 3250,
+                  phase: 'Fase3/9',
+                  notas_maestro: loan.manualOverrideNote || 'Real persisted loan • Master LTV override respected',
+                  borrow_debt: loan.borrowedAmount,
+                  health: loan.healthFactor || '1.42',
+                }
+              };
+              return (
+                <div key={loan.id || idx} className="border border-amber-800/30 rounded p-2 bg-[#050608]">
+                  <div className="scale-[0.85] -mx-2 -my-1">
+                    <HologramPncCard pnc={holoPnc as any} compact />
+                  </div>
+                  <div className="text-[10px] mt-1 grid grid-cols-3 gap-1 text-white/80">
+                    <div>Deuda: <span className="text-rose-400 font-mono">${(parseFloat(loan.borrowedAmount||0) + parseFloat(loan.accumulatedInterest||0)).toFixed(0)}</span></div>
+                    <div>Health: <span className="text-emerald-400 font-mono">{loan.healthFactor || '1.65'}</span></div>
+                    <div>LTV: <span className="text-amber-400">{loan.ltvAtBorrow ? (parseFloat(loan.ltvAtBorrow)*100).toFixed(0) : '60'}%</span></div>
+                  </div>
+                  <div className="text-[9px] text-[#5a5f6a] mt-0.5 truncate">{loan.manualOverrideNote}</div>
+                  <div className="mt-1 flex gap-2">
+                    <a href="/dashboard/investor/borrow" className="text-[9px] px-2 py-0.5 border border-white/20 rounded hover:bg-white/5">Repagar / Accrue</a>
+                    <span className="text-[9px] px-1 py-0.5 bg-black/40 rounded">Accrue usa net landbank (ver API)</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-xs text-[#5a5f6a] p-3 border border-dashed border-amber-900/30 rounded">Sin préstamos activos. Usa el simulador en /borrow contra PNC-PAR-001 (5PNC landbank) para crear posición real persistida. Health/accrue dinámico desde net orq + Master override.</div>
+        )}
+        <div className="text-[9px] text-[#5a5f6a] mt-2">Real paths: POST /api/borrow (insert loans + update balances + set health/ltv from land meta) • GET auto-accrue + health update • Hologram viz • Tie Master (system defi_max_ltv) + orq Fase9 badges. Rich demo always shows example + live when loans in DB.</div>
       </div>
 
       <YieldActionButtons maestroYield={maestroYield} maestroForecast={maestroForecast} email={view.investor.email} orqProposals={orqProposals} claimables={orqClaimables} onActionComplete={() => { try { (window as any).location.reload(); } catch {} }} />

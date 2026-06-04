@@ -96,12 +96,12 @@ export const investorJourney: UserJourney = {
     },
     {
       id: "i3",
-      label: "Genesis Demo",
-      route: "/dashboard/investor/genesis",
-      purpose: "Simular una intención de compra (Token Order).",
-      expectedUserUnderstanding: "Crea una orden sin usar fondos externos.",
-      primaryAction: "Simular flujo",
-      status: "pending_credentials"
+      label: "Landbanking Hub (Principal - 5PNC Master)",
+      route: "/dashboard/admin/landbank",
+      purpose: "Explorar el Landbanking completo unificado (evolución desde beta Genesis → Master 5PNC con P2P/Créditos/Master/orq real). Siempre datos reales simulados.",
+      expectedUserUnderstanding: "El proyecto es ahora Landbanking completo (5 PNC Perú). Genesis es legacy beta para compatibilidad de schema.",
+      primaryAction: "Ir al Hub Principal",
+      status: "available"
     },
     {
       id: "i4",
@@ -144,12 +144,12 @@ export const adminJourney: UserJourney = {
     },
     {
       id: "a3",
-      label: "Órdenes Demo",
-      route: "/dashboard/admin/token-orders",
-      purpose: "Revisar las intenciones de compra (Genesis).",
-      expectedUserUnderstanding: "Puede ver lo que el Inversor intentó comprar.",
-      primaryAction: "Revisar órdenes",
-      status: "simulated"
+      label: "Landbanking Hub (Principal)",
+      route: "/dashboard/admin/landbank",
+      purpose: "Control Master del Landbanking completo (5PNC, manual overrides, launches, P2P/Créditos integrados). Historia clara beta→actual.",
+      expectedUserUnderstanding: "Primary = Landbanking Hub. Órdenes Genesis legacy solo para compat (ver token-orders como secondary).",
+      primaryAction: "Ir al Hub Landbanking",
+      status: "available"
     },
     {
       id: "a4",

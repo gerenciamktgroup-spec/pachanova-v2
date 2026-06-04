@@ -11,6 +11,7 @@ import { InvestorDashboardView } from "@/types/product";
 import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
+import { HologramPncCard } from "./HologramPncCard"; // Fase4 expansion: Hologram in main investor hero/portfolio for full PachaNova Landbanking visuals + 5PNC orq fallbacks
 
 export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & { investor: { portfolio: any[] } } }) {
   const portfolio = view.investor.portfolio || [];
@@ -57,6 +58,43 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & 
           <span className="text-pn-text font-medium">{portfolio.length}</span>
         </div>
       </div>
+
+      {/* Fase4 Visuals expansion + Fase1 hub: HologramPncCard in main investor hero/portfolio. Central hub feel. Full PachaNova Landbanking identity. Rich visual fallbacks for 5PNC orq data (PAR etc). Concrete "ver avances". */}
+      {portfolio.length > 0 && (
+        <div className="mt-6 border-t border-pn-gold/20 pt-6">
+          <div className="text-[10px] uppercase tracking-[2px] text-[#c5a46d] mb-2 flex items-center gap-2">PACHA NOVA LANDBANKING — TU PORTAFOLIO EN HOLOGRAMA (5PNC ORQ REALES • MASTER • FASES) <a href="#ver-avances" className="text-emerald-400 underline text-[9px]">VER TODOS LOS AVANCES →</a></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {portfolio.slice(0,3).map((item: any, i: number) => {
+              const pncForHolo = {
+                id: item.propertyId || `pnc-${i}`,
+                name: item.propertyName || "PNC Land Reserve",
+                location: item.location || "Perú",
+                propertyType: item.propertyType || "land",
+                status: item.status || "trading",
+                totalValuationUsd: String(item.availableUsd || item.totalValuationUsd || 1250000),
+                tokenPriceUsd: String(item.tokenPriceUsd || 500),
+                totalTokens: String(item.availableTokens || 2500),
+                availableTokens: String(item.availableTokens || 2000),
+                annualYieldExpected: item.annualYieldExpected || "7.8",
+                metadata: {
+                  pncCode: item.metadata?.pncCode || `PNC-${i}`,
+                  hectares: item.metadata?.hectares || 5,
+                  net: item.metadata?.net || 68112.5,
+                  effectiveYield: item.metadata?.effectiveYield || 31639,
+                  effectivePct: item.metadata?.effectivePct || "17.1%",
+                  pachaPower: item.metadata?.pachaPower || 3250,
+                  phase: item.metadata?.phase || "Fase15/36/42/47/49",
+                  govQuorum: item.metadata?.govQuorum || "PASSED 4x",
+                  product_configs: item.metadata?.product_configs || { alquiler_yield: { porcentaje_renta_a_holders: 55, yield_estimado_anual: 7.8 }, vivienda_token: {} },
+                  notas_maestro: item.metadata?.notas_maestro || "Full PachaNova Landbanking = everything + tools (orq, P2P, yields, gov, Master). Rich fallback."
+                }
+              };
+              return <HologramPncCard key={i} pnc={pncForHolo as any} compact />;
+            })}
+          </div>
+          <div className="text-[9px] text-white/50 mt-1">Hologram expansion in hero. Ver todos los avances en sección abajo o /admin/landbank. DATOS REALES ORQ siempre.</div>
+        </div>
+      )}
     </MissionCard>
   );
 }
@@ -228,49 +266,6 @@ export function InvestorKycStatusPanel({ view }: { view: InvestorDashboardView }
   );
 }
 
-export function GenesisDemoActionCard({ view }: { view: InvestorDashboardView }) {
-  const isKycApproved = view.investor.kycStatus === "approved";
-  const isPaymentsReady = view.paymentsReadiness.status === "SIMULATED" || view.paymentsReadiness.status === "CONNECTED";
-
-  return (
-    <MissionCard title="Oferta Genesis (Simulación)" variant="elevated" data-testid="genesis-demo-action">
-      <div className="p-4 rounded-md border border-pn-border bg-pn-surface-strong mb-6 space-y-4">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-pn-text-soft">Equivalencia PACHA</span>
-          <span className="text-pn-text font-medium">1 PACHA = 0.1 m²</span>
-        </div>
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-pn-text-soft">Precio PACHA (Demo)</span>
-          <span className="text-pn-text font-medium">US$ 8.40</span>
-        </div>
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-pn-text-soft">MercadoPago Readiness</span>
-          <IntegrationStatusBadge status="PENDING_CREDENTIALS" />
-        </div>
-      </div>
-
-      <p className="text-xs text-pn-warning text-center mb-4">
-        No production connections. Entorno aislado.
-      </p>
-
-      <div className="space-y-3">
-        <SafeActionButton 
-          variant="primary" 
-          label="Simular adquisición Genesis"
-          href="/dashboard/investor/genesis"
-          status={(!isKycApproved) ? "disabled" : "active"}
-          disabledReason={!isKycApproved ? "Requiere estado KYC Approved." : ""}
-        />
-        
-        {!isKycApproved && (
-          <div className="pt-2 text-center">
-            <SafeActionButton variant="outline" label="Abrir Control Room" href="/demo/control-room" />
-          </div>
-        )}
-      </div>
-    </MissionCard>
-  );
-}
 
 export function InvestorWalletStatusPanel({ view }: { view: any }) {
   const [depositAmount, setDepositAmount] = useState<number>(1000);

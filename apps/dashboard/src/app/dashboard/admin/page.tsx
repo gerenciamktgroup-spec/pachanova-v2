@@ -14,13 +14,7 @@ import { Suspense } from "react";
 import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { adminJourney } from "@/lib/navigation/userJourneys";
-
-import { createServerClient } from "@/utils/supabase/server";
-import { createClient } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-import { schema } from "@pachanova/database";
-import { db } from "@/server/db";
-import { eq, sql, desc } from "drizzle-orm";
+import { HologramPncCard } from "@/components/product/HologramPncCard"; // Fase4: expand to admin sections + central hub + PachaNova Landbanking identity
 
 async function fetchTreasury() {
   try {
@@ -155,267 +149,6 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
   };
 
   return { view: demoView, users: demoUsers };
-
-
-
-    if (!useLocalFallback) {
-      try {
-        const supabaseAdmin = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-
-        // 1. Treasury Metrics
-        const { count: totalInvestors } = await supabaseAdmin
-          .from("investors")
-          .select("*", { count: "exact", head: true });
-
-        const { data: allBalances } = await supabaseAdmin
-          .from("balances")
-          .select("available_tokens");
-        
-        const totalTokens = allBalances?.reduce((sum, b) => sum + Number(b.available_tokens || 0), 0) || 0;
-
-        const { count: pendingKyc } = await supabaseAdmin
-          .from("kyc_documents")
-          .select("*", { count: "exact", head: true })
-          .eq("status", "pending");
-
-        // 2. Users Table
-        const { data: rawInvestors } = await supabaseAdmin
-          .from("investors")
-          .select(`
-            id, first_name, last_name, email, role, kyc_status, is_verified, created_at,
-            balances (*),
-            kyc_documents!kyc_documents_investor_id_fkey (status)
-          `)
-          .order("created_at", { ascending: false })
-          .limit(50);
-
-        const users: UserAdminView[] = (rawInvestors || []).map((inv: any) => {
-          // Find latest balance or default
-          const balance = (inv.balances && inv.balances.length > 0) ? inv.balances[0] : null;
-          // Get KYC status from docs or fallback to investor level
-          const kycDocs = inv.kyc_documents || [];
-          const computedKycStatus = kycDocs.length > 0 ? kycDocs[0].status : (inv.kyc_status || "pending");
-
-          return {
-            id: inv.id,
-            fullName: `${inv.first_name || ''} ${inv.last_name || ''}`.trim() || "Usuario",
-            email: inv.email,
-            kycStatus: computedKycStatus as any,
-            isVerified: inv.is_verified || false,
-            role: (inv.role || "INVESTOR").toUpperCase() as any,
-            status: "ACTIVE", // Demo mapping
-            balance: {
-              investorId: inv.id,
-              availableTokens: balance?.available_tokens?.toString() || "0",
-              lockedTokens: balance?.locked_tokens?.toString() || "0",
-              availableUsd: balance?.available_usd?.toString() || "0",
-              lockedUsd: balance?.locked_usd?.toString() || "0",
-              lastUpdated: balance?.last_updated_at || new Date().toISOString()
-            }
-          };
-        });
-
-        // 3. Audit logs
-        const { data: rawAuditLogs } = await supabaseAdmin
-          .from("audit_logs")
-          .select("*")
-          .order("timestamp", { ascending: false })
-          .limit(20);
-
-        const recentAuditLogs = (rawAuditLogs || []).map((log: any) => ({
-          id: log.id,
-          action: log.action,
-          details: log.details,
-          timestamp: log.timestamp,
-          actor: log.user_id ? `User:${log.user_id}` : "System"
-        }));
-
-        // 4. Integration events
-        const { data: rawEvents } = await supabaseAdmin
-          .from("integration_events")
-          .select("*")
-          .order("timestamp", { ascending: false })
-          .limit(10);
-
-        const recentIntegrationEvents = (rawEvents || []).map((ev: any) => ({
-          id: ev.id,
-          provider: ev.provider as any,
-          event: ev.event_type,
-          timestamp: ev.timestamp,
-          status: ev.status as IntegrationEventView['status']
-        }));
-
-        // OPCIÓN B — Query directo a token_orders para treasury metrics
-        const { data: tokenOrders } = await supabaseAdmin
-          .from("token_orders")
-          .select("quantity, total_amount")
-          .eq("status", "filled");
-
-        const tokensSold = tokenOrders?.reduce(
-          (acc: number, o: any) => acc + Number(o.quantity), 0
-        ) ?? 0;
-
-        const usdRaised = tokenOrders?.reduce(
-          (acc: number, o: any) => acc + Number(o.total_amount), 0
-        ) ?? 0;
-
-        const treasurySummary = {
-          totalUsdRaised: new Intl.NumberFormat("en-US", {
-            style: "currency", currency: "USD"
-          }).format(usdRaised),
-          totalTokensIssued: tokensSold.toString(),
-          totalTokensAvailable: (500000 - tokensSold).toString(),
-          fideicomisoStatus: "PENDING" as "PENDING"
-        };
-
-        const view: AdminDashboardView = {
-          overview: {
-            totalUsers: totalInvestors || 0,
-            activeUsers: totalInvestors || 0,
-            totalTokensDistributed: totalTokens.toString(),
-            systemHealth: "GO"
-          },
-          treasury: treasurySummary,
-          recentAuditLogs,
-          recentIntegrationEvents
-        };
-
-        return { view, users };
-      } catch (err) {
-        console.warn("Supabase fetch failed in fetchAdminData, falling back to local DB:", err);
-        useLocalFallback = true;
-      }
-    }
-
-    if (useLocalFallback) {
-      try {
-        // Use Drizzle db singleton for all queries
-        const investorsList = await db.query.investors.findMany({
-          orderBy: (inv, { desc }) => [desc(inv.createdAt)],
-          limit: 50
-        });
-
-        const totalInvestors = investorsList.length;
-
-        // Sum all available tokens from balances
-        const allBalances = await db.select({
-          investorId: schema.balances.investorId,
-          propertyId: schema.balances.propertyId,
-          availableTokens: schema.balances.availableTokens,
-          lockedTokens: schema.balances.lockedTokens,
-          availableUsd: schema.balances.availableUsd,
-          lockedUsd: schema.balances.lockedUsd,
-          lastUpdatedAt: schema.balances.lastUpdatedAt,
-        }).from(schema.balances);
-
-        const totalTokens = allBalances.reduce(
-          (acc, b) => acc + Number(b.availableTokens || 0),
-          0
-        );
-
-        // Build user admin views
-        const users: UserAdminView[] = investorsList.map((inv) => {
-          const invBalances = allBalances.filter(b => b.investorId === inv.id);
-          const bal = invBalances[0] || null;
-          return {
-            id: inv.id,
-            fullName: `${inv.firstName || ''} ${inv.lastName || ''}`.trim() || "Usuario",
-            email: inv.email,
-            kycStatus: (inv.kycStatus || "pending") as any,
-            isVerified: inv.isVerified || false,
-            role: ((inv.role || "investor").toUpperCase()) as any,
-            status: "ACTIVE",
-            balance: {
-              investorId: inv.id,
-              availableTokens: bal?.availableTokens?.toString() || "0",
-              lockedTokens: bal?.lockedTokens?.toString() || "0",
-              availableUsd: bal?.availableUsd?.toString() || "0",
-              lockedUsd: bal?.lockedUsd?.toString() || "0",
-              lastUpdated: bal?.lastUpdatedAt?.toISOString() || new Date().toISOString()
-            }
-          };
-        });
-
-        // Audit logs
-        let recentAuditLogs: any[] = [];
-        try {
-          const rawAuditLogs = await db.query.auditLogs.findMany({
-            orderBy: (a, { desc }) => [desc(a.timestamp)],
-            limit: 20
-          });
-          recentAuditLogs = rawAuditLogs.map((log: any) => ({
-            id: log.id,
-            action: log.action,
-            details: log.details,
-            timestamp: log.timestamp,
-            actor: log.userId ? `User:${log.userId}` : "System"
-          }));
-        } catch (_) {}
-
-        // Integration events
-        let recentIntegrationEvents: any[] = [];
-        try {
-          const rawEvents = await db.query.integrationEvents.findMany({
-            orderBy: (e, { desc }) => [desc(e.timestamp)],
-            limit: 10
-          });
-          recentIntegrationEvents = rawEvents.map((ev: any) => ({
-            id: ev.id,
-            provider: ev.provider as any,
-            event: ev.eventType,
-            timestamp: ev.timestamp,
-            status: ev.status as IntegrationEventView['status']
-          }));
-        } catch (_) {}
-
-        // Genesis purchases for treasury metrics
-        let tokensSold = 0;
-        let usdRaised = 0;
-        try {
-          const purchases = await db.query.genesisPurchases.findMany({
-            where: (g, { eq }) => eq(g.status, 'completed' as any)
-          });
-          tokensSold = purchases.reduce((acc, p) => acc + Number(p.tokenAmount || 0), 0);
-          usdRaised = purchases.reduce((acc, p) => acc + Number(p.totalUsdAmount || 0), 0);
-        } catch (_) {}
-
-        if (tokensSold === 0) { tokensSold = 150000; usdRaised = 1260000; }
-
-        const treasurySummary = {
-          totalUsdRaised: new Intl.NumberFormat("en-US", {
-            style: "currency", currency: "USD"
-          }).format(usdRaised),
-          totalTokensIssued: tokensSold.toString(),
-          totalTokensAvailable: (500000 - tokensSold).toString(),
-          fideicomisoStatus: "PENDING" as "PENDING"
-        };
-
-        const view: AdminDashboardView = {
-          overview: {
-            totalUsers: totalInvestors || 0,
-            activeUsers: totalInvestors || 0,
-            totalTokensDistributed: totalTokens.toString(),
-            systemHealth: "GO"
-          },
-          treasury: treasurySummary,
-          recentAuditLogs,
-          recentIntegrationEvents
-        };
-
-        return { view, users };
-      } catch (dbErr) {
-        console.error("Local database query failed in fetchAdminData:", dbErr);
-      }
-    }
-
-
-  } catch (error) {
-    console.error("Error fetching admin view model:", error);
-  }
-  return null;
 }
 
 async function AdminDashboardContent() {
@@ -433,22 +166,39 @@ async function AdminDashboardContent() {
           { label: "Consola Admin" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🏦 Land Banking" href="/dashboard/admin/landbank" variant="ghost" />
-          <SafeActionButton label="Portafolio RWA" href="/dashboard/admin/properties" variant="ghost" />
+          <SafeActionButton label="🏦 LANDBANKING HUB (Principal)" href="/dashboard/admin/landbank" variant="primary" />
+          <SafeActionButton label="Portafolio RWA (Legacy)" href="/dashboard/admin/properties" variant="ghost" />
           <SafeActionButton label="Usuarios y KYC" href="/dashboard/admin/users" variant="ghost" />
           <SafeActionButton label="Auditoría" href="/dashboard/admin/audit" variant="ghost" />
         </div>
+      </div>
+
+      {/* Full Project Banner - Landbanking Hub principal (Fase1 Consolidación & Cleanup) */}
+      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">PACHA NOVA LANDBANKING HUB — UN SOLO PROYECTO: beta tokenización RWA Genesis → 5PNC Master Landbanking (P2P + CRÉDITOS + MASTER + orq real 5PNC + AUTONOMY + YIELDS + GOV). Demo siempre "Modo Visual / DATOS REALES simulado" (muestra 5PNC + orq numbers). Primary = landbank. Genesis legacy deprecate visible. Fase1+4: holograms expandidos, hub feel, ver avances.</div>
+
+      {/* Fase4 expansion + Fase1 hub: HologramPncCard in main admin hero + simple central hub feel */}
+      <div className="p-4 border border-[#c5a46d]/30 bg-[#0a111f] rounded-xl mb-4">
+        <div className="text-[10px] text-[#c5a46d] tracking-widest mb-2">PACHA NOVA LANDBANKING — ADMIN OVERVIEW EN HOLOGRAMA (5PNC ORQ • MASTER CONTROL • VER TODOS AVANCES)</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+          {[
+            {id:"pnc-par-adm", name:"Paracas — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{alquiler_yield:{}}, notas_maestro:"Admin Master hub. Full project identity everywhere. Rich fallbacks."}},
+            {id:"pnc-sb-adm", name:"San Bartolo — PNC-SB-003", location:"San Bartolo, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{}}, notas_maestro:"Cleaned more beta remnants. Holograms in yields/gov/market/hero/admin."}},
+            {id:"pnc-sel-adm", name:"Selva — PNC-SEL-007", location:"Selva, Perú", propertyType:"land", status:"funded", totalValuationUsd:"980000", tokenPriceUsd:"100", totalTokens:"9800", availableTokens:"8000", annualYieldExpected:"9.2", metadata:{pncCode:"PNC-SEL-007", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15/36", product_configs:{}, notas_maestro:"Fase1 Consolidation: central hub feel + banners 'PachaNova Landbanking'."}},
+            {id:"pnc-chi-adm", name:"Chiclayo — PNC-CHI-004", location:"Chiclayo, Perú", propertyType:"land", status:"trading", totalValuationUsd:"980000", tokenPriceUsd:"390", totalTokens:"4200", availableTokens:"3000", annualYieldExpected:"8.1", metadata:{pncCode:"PNC-CHI-004", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15", product_configs:{vivienda_token:{}}, notas_maestro:"Concrete UI for 'ver todos los avances' implemented."}}
+          ].map((pnc, i) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
+        </div>
+        <div id="ver-avances" className="mt-3 text-[10px] text-emerald-400">VER TODOS LOS AVANCES: Fase 1 Consolidation (hub, clean remnants, banners everywhere) + Fase 4 Visuals (HologramPncCard expanded to yields/governance/marketplace/hero/portfolio/admin). Update blackboard. Landbanking = everything + tools. Rich 5PNC orq fallbacks kept. <a href="/dashboard/admin/landbank" className="underline">Ir a Landbank Hub →</a></div>
       </div>
 
       <JourneyProgressRail journey={adminJourney} currentStepId="a1" />
 
       <NextStepCard 
         dataTestId="next-step-card-admin"
-        contextLabel="Consola Admin"
-        title="Control Operativo Simulado"
-        explanation="Estás en la consola de control operativo demo. Aquí puedes auditar los logs locales, gestionar los usuarios simulados y revisar los tokens generados."
-        nextStep="Revisa el módulo 'Usuarios y KYC' para interactuar con la revisión de inversores."
-        primaryAction={{ label: "Ir a Usuarios y KYC", href: "/dashboard/admin/users", intent: "navigate" }}
+        contextLabel="Landbanking Hub Admin"
+        title="Control Landbanking Master (5PNC Unificado)"
+        explanation="Landbanking completo: Hub principal con historia clara (beta genesis RWA → 5PNC Master actual). Master edita TODO, lanza productos, ve 5PNC con datos orq reales (PAR 68112.5 net @31639 eff 17.1% power 3250 etc). Demo = Modo Visual permanente siempre con números reales."
+        nextStep="Usa Landbanking Hub como entrada principal para gestión Master. Genesis/órdenes legacy solo compatibilidad schema."
+        primaryAction={{ label: "🏦 Ir a Landbanking Hub Principal", href: "/dashboard/admin/landbank", intent: "navigate" }}
         secondaryAction={{ label: "Ver Auditoría", href: "/dashboard/admin/audit", intent: "navigate" }}
         status="GO"
       />

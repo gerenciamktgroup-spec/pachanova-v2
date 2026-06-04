@@ -44,16 +44,20 @@ export default function InvestorGenesisPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6" data-testid="genesis-flow-page">
+      {/* Fase1 deprecate visible: genesis legacy beta - cleaned more */}
+      <div className="p-3 border border-amber-700/40 bg-amber-950/30 rounded text-xs text-amber-300">
+        ⚠️ LEGACY BETA (deprecate visible Fase1 Consolidation): Este es flujo Genesis antiguo (genesis_purchases / demo actions). Mantenido solo para compatibilidad de schema DB. <strong>Primary = PachaNova Landbanking Hub</strong> (ve /dashboard/admin/landbank para 5PNC Master + Fase4 holograms). Demo siempre "Modo Visual / DATOS REALES 5PNC ORQ". Usa Marketplace P2P o Hub para adquisición actual. Más UI remnants beta limpios (labels actualizados).
+      </div>
       <div>
         <RouteBreadcrumbs items={[
           { label: "Dashboard" },
           { label: "Panel Inversor", href: "/dashboard/investor" },
-          { label: "Simulación Genesis" }
+          { label: "Simulación Genesis (Legacy)" }
         ]} className="mb-4" />
         <SectionHeader 
-          eyebrow="Marketplace Demo"
-          title="Simulación Flujo Genesis"
-          description="Este flujo educativo te guiará paso a paso sobre cómo funcionará la adquisición de tokens en la plataforma."
+          eyebrow="Legacy Beta (Deprecated visible)"
+          title="Simulación Flujo Genesis (Legacy)"
+          description="Legacy educativo beta. El proyecto consolidado es Landbanking Hub con 5PNC Master. Ver Hub principal para datos reales orq."
         />
       </div>
 

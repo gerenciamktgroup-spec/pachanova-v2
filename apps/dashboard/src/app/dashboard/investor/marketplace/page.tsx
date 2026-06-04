@@ -1,4 +1,5 @@
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
+import { HologramPncCard } from "@/components/product/HologramPncCard";
 import { eq, and } from "drizzle-orm";
 import { schema } from "@pachanova/database";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
@@ -25,10 +26,23 @@ async function fetchMarketplaceData() {
       return { error: "Perfil de inversor no encontrado. Inicie sesión para operar." };
     }
 
-    // Fetch open P2P orders
+    // Fetch open P2P orders - Fase2: tied to landbank 5PNC properties (Master launches feed liquidity, real orq data)
     const orders = await db.query.p2pOrders.findMany({
       where: eq(schema.p2pOrders.status, 'open'),
       orderBy: (o, { desc }) => [desc(o.createdAt)]
+    });
+
+    // Enrich orders with landbank 5PNC for full project view (rich demo with orq numbers)
+    const landbankProperties = await db.query.properties.findMany({
+      where: (p, { like }) => like(p.name, 'PNC-%')
+    });
+    const enrichedOrders = orders.map(o => {
+      const pnc = landbankProperties.find(p => p.id === o.propertyId) || landbankProperties[0];
+      return {
+        ...o,
+        pncCode: pnc?.metadata?.pncCode || '5PNC',
+        net: pnc?.metadata?.net || 68112.5,
+      };
     });
 
     // Fetch investor balance for the first available property
@@ -45,7 +59,7 @@ async function fetchMarketplaceData() {
 
     return {
       investor,
-      orders: orders.map(o => ({
+      orders: enrichedOrders.map(o => ({
         id: o.id,
         sellerInvestorId: o.sellerInvestorId,
         propertyId: o.propertyId,
@@ -53,7 +67,9 @@ async function fetchMarketplaceData() {
         pricePerToken: parseFloat(o.pricePerToken),
         totalAmount: parseFloat(o.totalAmount),
         status: o.status,
-        createdAt: o.createdAt
+        createdAt: o.createdAt,
+        pncCode: o.pncCode,
+        net: o.net
       })),
       balance: balance ? {
         availableTokens: parseFloat(balance.availableTokens),
@@ -82,6 +98,15 @@ async function P2PMarketplaceContent() {
         { label: 'Inversor' }, 
         { label: 'Marketplace' }
       ]} />
+
+      {/* Full Project - P2P is part of entire PachaNova Landbanking + tools (user clarification) */}
+      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">P2P ON LANDBANK 5PNC — FULL PACHA NOVA PROJECT (MASTER LAUNCHES → P2P LIQUIDITY + CREDITS + ORQ + AUTONOMY + YIELDS + GOV)</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
+        <HologramPncCard pnc={{id:"pnc-par-p2p", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"P2P liquidity fed by Master. Full project tools."}} as any} compact />
+        <HologramPncCard pnc={{id:"pnc-sb-p2p", name:"San Bartolo Premium — PNC-SB-003", location:"San Bartolo, Lima Sur, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{}}, notas_maestro:"P2P from landbank launches. Fase4 holograms + Fase1 hub."}} as any} compact />
+        <HologramPncCard pnc={{id:"pnc-chi-p2p", name:"Chiclayo — PNC-CHI-004", location:"Chiclayo, Perú", propertyType:"land", status:"trading", totalValuationUsd:"980000", tokenPriceUsd:"390", totalTokens:"4200", availableTokens:"3000", annualYieldExpected:"8.1", metadata:{pncCode:"PNC-CHI-004", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"VER TODOS LOS AVANCES: holograms everywhere, banners 'PachaNova Landbanking', clean demo."}} as any} compact />
+      </div>
+      <div className="text-[9px] text-white/50 -mt-2 mb-4"><a href="#ver-avances" className="text-emerald-400">VER TODOS LOS AVANCES → Fase1 Consolidation + Fase4 Visuals (Hologram expansion to yields/gov/hero/admin/market)</a></div>
 
       {/* Land Banking Marketplace Section */}
       <div className="bg-[#0a111f] rounded-2xl border border-white/10 p-6 md:p-8">

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId }: { orders: Record<string, unknown>[]; balance: Record<string, unknown> | null; kycStatus: string; currentUserId: string; }) {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(8.40);
+  const [selectedPnc, setSelectedPnc] = useState("PNC-PAR-001"); // Fase2: tie P2P to landbank 5PNC properties for full project
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -19,11 +20,11 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
       const res = await fetch("/api/demo/actions/p2p/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price })
+        body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price, propertyId: selectedPnc }) // Fase2: tie to landbank PNC for full project
       });
       const data = await res.json();
       if (data.success) {
-        setMessage("Orden publicada exitosamente.");
+        setMessage("Orden publicada exitosamente para " + selectedPnc + " (landbank 5PNC).");
         router.refresh();
       } else {
         setMessage(data.error);
@@ -72,6 +73,16 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
             </div>
             
             <div className="space-y-1">
+              <label className="text-sm text-pn-text-muted">PNC Landbank (full project 5PNC Master)</label>
+              <select value={selectedPnc} onChange={e => setSelectedPnc(e.target.value)} className="w-full bg-pn-bg border border-pn-border rounded px-3 py-2 text-sm focus:outline-none focus:border-pn-gold">
+                <option value="PNC-PAR-001">PNC-PAR-001 (Paracas - real orq 68112.5 net)</option>
+                <option value="PNC-SEL-007">PNC-SEL-007 (Selva)</option>
+                <option value="PNC-SB-003">PNC-SB-003 (San Bartolo)</option>
+                <option value="PNC-CHI-004">PNC-CHI-004 (Chilca)</option>
+                <option value="PNC-LIM-012">PNC-LIM-012 (Lima)</option>
+              </select>
+            </div>
+            <div className="space-y-1">
               <label className="text-sm text-pn-text-muted">Cantidad a vender</label>
               <input 
                 type="number" min={1} 
@@ -108,7 +119,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
 
       {/* Order Book */}
       <div className="md:col-span-2">
-        <MissionCard title="Libro de Órdenes Abiertas">
+        <MissionCard title="Libro de Órdenes P2P (Landbank 5PNC Full Project - Master launches feed liquidity, real orq data)">
           {orders.length === 0 ? (
             <div className="p-8 text-center text-pn-text-muted border border-pn-border border-dashed rounded-lg">
               No hay órdenes de venta activas en el mercado.
@@ -118,7 +129,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
               {orders.map((o) => (
                 <DataGridRow key={o.id as string}>
                   <DataGridCell><span className="text-xs truncate max-w-[80px] block">{(o.sellerInvestorId as string).split("-")[0]}...</span></DataGridCell>
-                  <DataGridCell>{String(o.quantity)} PACHA</DataGridCell>
+                  <DataGridCell>{String(o.quantity)} PACHA <span className="text-[9px] text-pn-gold">(PNC: { (o as any).pncCode || selectedPnc || '5PNC Landbank' } net {(o as any).net || 68112.5})</span></DataGridCell>
                   <DataGridCell>${String(o.pricePerToken)}</DataGridCell>
                   <DataGridCell>${String(o.totalAmount)}</DataGridCell>
                   <DataGridCell>

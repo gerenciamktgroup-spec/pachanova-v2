@@ -12,7 +12,11 @@ const ALLOWED_FIELDS = [
   "availableTokens",
   "annualYieldExpected",
   "name",
-  "location"
+  "location",
+  // Fase3: Master override for borrow/credits (LTV/rate per 5PNC landbank collateral, stored in metadata for API consume)
+  "borrowLtv",
+  "borrowInterestRate",
+  "manualOverrideNote"
 ];
 
 const VALID_STATUSES = ["coming_soon", "funding", "funded", "trading", "liquidated"];
@@ -47,9 +51,21 @@ export async function POST(req: NextRequest) {
 
     const oldValue = (prop as any)[field];
 
+    let updateSet: any = { updatedAt: new Date() };
+    if (["borrowLtv", "borrowInterestRate", "manualOverrideNote"].includes(field)) {
+      // Fase3: persist borrow overrides into metadata jsonb (read by /api/borrow + DeFi client for real 5PNC)
+      const currentMeta = (prop as any).metadata || {};
+      const metaKey = field === 'borrowLtv' ? 'borrow_ltv_override' : field === 'borrowInterestRate' ? 'borrow_interest_rate' : 'manual_override_note';
+      updateSet.metadata = { ...currentMeta, [metaKey]: value, last_master_borrow_override: new Date().toISOString() };
+      // also set top level note for visibility
+      if (field === 'manualOverrideNote') updateSet.manualOverrideNote = value; // if col exists, else meta
+    } else {
+      updateSet[field] = value;
+    }
+
     await db
       .update(schema.properties)
-      .set({ [field]: value, updatedAt: new Date() } as any)
+      .set(updateSet)
       .where(eq(schema.properties.id, propertyId));
 
     await db.insert(schema.auditLogs).values({

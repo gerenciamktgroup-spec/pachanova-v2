@@ -108,7 +108,7 @@ export default function LandingPage() {
               <MissionCard className="p-6 bg-pn-bg border-pn-gold/30 shadow-[0_0_15px_rgba(255,215,0,0.05)]">
                 <div className="w-12 h-12 bg-pn-gold/10 border border-pn-gold/30 text-pn-gold rounded-full flex items-center justify-center mb-4 mx-auto text-xl font-bold">3</div>
                 <h4 className="text-center font-medium mb-2">Adquiere PACHA</h4>
-                <p className="text-sm text-pn-text-muted text-center">Compra tokens en la ronda Genesis demo.</p>
+                <p className="text-sm text-pn-text-muted text-center">Legacy beta (Genesis). Primary: Landbanking Hub 5PNC Master (Modo Visual DATOS REALES).</p>
                 <Coins className="w-8 h-8 mx-auto mt-4 text-pn-gold" />
               </MissionCard>
 
@@ -162,7 +162,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Aprobar KYC demo</span></li>
                 <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Simular depósito de fondos</span></li>
-                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Simular compra Genesis y ver tokens</span></li>
+                <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Explorar Landbanking Hub (5PNC Master) — genesis legacy deprecate</span></li>
                 <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Crear órdenes y operar P2P demo</span></li>
                 <li className="flex items-center gap-3 text-sm text-pn-text-muted"><CheckCircle2 className="w-4 h-4 text-pn-text-soft" /> <span>Revisar Ledger y auditoría</span></li>
               </ul>

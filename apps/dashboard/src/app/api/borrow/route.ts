@@ -3,6 +3,19 @@ import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq, and } from 'drizzle-orm';
 
+// Fase3: Master overrides + landbank net tie for borrow/credits full loop (real paths, 5PNC collateral PAR etc)
+async function getBorrowParams() {
+  try {
+    const ltvParam = await db.query.systemParameters.findFirst({ where: eq(schema.systemParameters.key, 'defi_max_ltv') });
+    const rateParam = await db.query.systemParameters.findFirst({ where: eq(schema.systemParameters.key, 'defi_base_interest_rate') });
+    const maxLtv = ltvParam ? parseFloat(ltvParam.value) : 0.60;
+    const baseRate = rateParam ? parseFloat(rateParam.value) : 0.0850;
+    return { maxLtv, baseRate };
+  } catch {
+    return { maxLtv: 0.60, baseRate: 0.0850 };
+  }
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -19,6 +32,7 @@ export async function GET(req: Request) {
     });
 
     // Auto-accrue interest for active loans on fetch (demo; real via orq scheduler in Fase9)
+    // Fase3: accrue from landbank net data (PNC-PAR etc collateral) + recalc healthFactor
     for (const loan of activeLoans.filter(l => l.status === 'active')) {
       const now = new Date();
       const last = loan.lastAccruedAt ? new Date(loan.lastAccruedAt) : new Date(loan.createdAt);
@@ -28,8 +42,27 @@ export async function GET(req: Request) {
         const principal = parseFloat(loan.borrowedAmount);
         const add = principal * rate * (days / 365);
         const newAccum = (parseFloat(loan.accumulatedInterest || "0") + add).toFixed(2);
-        await db.update(schema.loans).set({ accumulatedInterest: newAccum, lastAccruedAt: now, updatedAt: now }).where(eq(schema.loans.id, loan.id));
+
+        // landbank net tie for health (fetch prop meta)
+        const prop = await db.query.properties.findFirst({ where: eq(schema.properties.id, loan.propertyId) });
+        const meta = (prop as any)?.metadata || {};
+        const landNet = Number(meta.net || 0);
+        const curColVal = parseFloat(loan.collateralValueUsd);
+        const curDebt = principal + parseFloat(newAccum);
+        let newHealth = curColVal > 0 ? (curColVal / Math.max(curDebt, 0.01)).toFixed(4) : (loan.healthFactor || "1.5000");
+        if (landNet > 0) {
+          // boost health slightly from positive land net yield backing (high-level Fase9/orq sync)
+          newHealth = (parseFloat(newHealth) * (1 + Math.min(landNet / 1000000, 0.05))).toFixed(4);
+        }
+
+        await db.update(schema.loans).set({ 
+          accumulatedInterest: newAccum, 
+          lastAccruedAt: now, 
+          updatedAt: now,
+          healthFactor: newHealth
+        }).where(eq(schema.loans.id, loan.id));
         loan.accumulatedInterest = newAccum;
+        (loan as any).healthFactor = newHealth;
       }
     }
 
@@ -79,11 +112,24 @@ export async function POST(req: Request) {
 
       const tokenPrice = parseFloat(property.tokenPriceUsd || "0");
       const collateralValue = colAmount * tokenPrice;
+      const borrowAmt = parseFloat(borrowedAmount);
+
+      // Fase3: respect Master override LTV / rate (from system params + per-PNC property metadata from Master landbank overrides), landbank 5PNC metadata (net from PAR etc for health/accrue)
+      const { maxLtv, baseRate } = await getBorrowParams();
+      const meta = (property as any).metadata || {};
+      const landNet = Number(meta.net || meta.net_yield || 0); // e.g. 68112.5 for PNC-PAR-001 from landbank orq
+      const landHealthBase = Number(meta.health || 1.65);
+      const perPncLtv = Number(meta.borrow_ltv_override || meta.borrowLtv || maxLtv);
+      const effectiveLtv = Math.min( (borrowAmt / Math.max(collateralValue, 0.01)) , perPncLtv );
+      const ltvAtBorrow = effectiveLtv;
+      // Health factor: collateral / debt (adjusted by land net proxy for dynamic landbank yield backing; >1 safe, ties Fase9 orq)
+      const healthFactor = collateralValue > 0 ? (collateralValue / Math.max(borrowAmt, 0.01)).toFixed(4) : "1.5000";
+      const usedRate = (meta.borrow_interest_rate || meta.borrowInterestRate || baseRate).toFixed(4);
 
       // Update balances
       const newAvailableTokens = (availableTokens - colAmount).toString();
       const newLockedTokens = (parseFloat(balanceRecord.lockedTokens || "0") + colAmount).toString();
-      const newAvailableUsd = (parseFloat(balanceRecord.availableUsd || "0") + parseFloat(borrowedAmount)).toString();
+      const newAvailableUsd = (parseFloat(balanceRecord.availableUsd || "0") + borrowAmt).toString();
 
       await db.update(schema.balances)
         .set({
@@ -94,31 +140,37 @@ export async function POST(req: Request) {
         })
         .where(eq(schema.balances.id, balanceRecord.id));
 
-      // Insert loan
+      // Insert loan - FULL real loans schema + landbank 5PNC collateral (PAR etc)
       const [newLoan] = await db.insert(schema.loans)
         .values({
           investorId,
           propertyId,
           collateralAmount: colAmount.toString(),
           collateralValueUsd: collateralValue.toString(),
-          borrowedAmount: borrowedAmount.toString(),
-          interestRate: "0.0850", // 8.5% APY
+          borrowedAmount: borrowAmt.toString(),
+          interestRate: usedRate,
           accumulatedInterest: "0.00",
+          ltvAtBorrow: ltvAtBorrow.toFixed(4),
+          liquidationThreshold: "0.8500",
+          healthFactor,
+          lastAccruedAt: new Date(),
           status: 'active',
-        })
+          manualOverrideNote: meta.manual_override_note || (landNet > 0 ? `Fase3 landbank net ${landNet} (5PNC collateral tie; Master LTV ${ (maxLtv*100).toFixed(0) }%)` : null),
+        } as any)
         .returning();
 
-      // Log audit
+      // Log audit (Fase3 fixed schema: details not metadata)
       await db.insert(schema.auditLogs).values({
         action: "DEFI_BORROW",
         userId: investorId,
-        metadata: {
+        details: JSON.stringify({
           loanId: newLoan.id,
           propertyId,
           collateralAmount: colAmount,
           borrowedAmount,
-        },
-      });
+          fase3: 'landbank-5pnc-real',
+        }),
+      } as any);
 
       return NextResponse.json({ success: true, loan: newLoan });
     }
@@ -182,15 +234,16 @@ export async function POST(req: Request) {
         .where(eq(schema.loans.id, loanId))
         .returning();
 
-      // Log audit
+      // Log audit (Fase3 fixed schema: details not metadata)
       await db.insert(schema.auditLogs).values({
         action: "DEFI_REPAY",
         userId: loan.investorId,
-        metadata: {
+        details: JSON.stringify({
           loanId: loan.id,
           repaidAmount: totalDebt,
-        },
-      });
+          fase3: 'landbank-5pnc-real',
+        }),
+      } as any);
 
       return NextResponse.json({ success: true, loan: updatedLoan });
     }
@@ -266,24 +319,29 @@ export async function POST(req: Request) {
           newStatus = 'under_collateralized';
         }
 
+        // Fase3: recalc health on value change (landbank collateral viz)
+        const newDebtForHealth = parseFloat(loan.borrowedAmount) + parseFloat(loan.accumulatedInterest);
+        const newHf = newCollateralValue > 0 ? (newCollateralValue / Math.max(newDebtForHealth, 0.01)).toFixed(4) : loan.healthFactor;
         await db.update(schema.loans)
           .set({
             collateralValueUsd: newCollateralValue.toFixed(2),
             status: newStatus,
+            healthFactor: newHf,
             updatedAt: new Date(),
           })
           .where(eq(schema.loans.id, loan.id));
 
-        // Log audit
+        // Log audit (Fase3 fixed schema: details not metadata)
         await db.insert(schema.auditLogs).values({
           action: newStatus === 'liquidated' ? "DEFI_LIQUIDATION" : "DEFI_MARGIN_CALL",
           userId: loan.investorId,
-          metadata: {
+          details: JSON.stringify({
             loanId: loan.id,
             newLtv,
             newCollateralValue,
-          },
-        });
+            fase3: 'landbank-5pnc-real',
+          }),
+        } as any);
       }
 
       return NextResponse.json({ success: true, newPrice });
@@ -312,12 +370,13 @@ export async function POST(req: Request) {
         await db.update(schema.balances).set({ lockedTokens: Math.max(0, locked - colAmount).toString(), lastUpdatedAt: new Date() }).where(eq(schema.balances.id, bal.id));
       }
       await db.update(schema.loans).set({ status: 'liquidated', borrowedAmount: "0", accumulatedInterest: "0", updatedAt: new Date() }).where(eq(schema.loans.id, loanId));
-      await db.insert(schema.auditLogs).values({ action: "DEFI_LIQUIDATION_PROTOCOL", userId: loan.investorId, metadata: { loanId, claimedCollateral: colAmount, debt: totalDebt } });
+      await db.insert(schema.auditLogs).values({ action: "DEFI_LIQUIDATION_PROTOCOL", userId: loan.investorId, details: JSON.stringify({ loanId, claimedCollateral: colAmount, debt: totalDebt, fase3: 'landbank-5pnc-real' }) } as any);
       return NextResponse.json({ success: true, message: "Loan liquidated. Collateral claimed by protocol." });
     }
 
     if (action === 'accrue') {
       // Accrue interest for a loan (called on actions or manually). Simple daily pro-rata for demo (Aave style compound on real would use orq scheduler).
+      // Fase3: + landbank net data for health recalc + 5PNC
       if (!loanId) return NextResponse.json({ success: false, error: 'loanId required' }, { status: 400 });
       const loan = await db.query.loans.findFirst({ where: eq(schema.loans.id, loanId) });
       if (!loan) return NextResponse.json({ success: false, error: 'Loan not found' }, { status: 404 });
@@ -328,8 +387,25 @@ export async function POST(req: Request) {
       const principal = parseFloat(loan.borrowedAmount);
       const addInterest = principal * rate * (days / 365);
       const newAccum = (parseFloat(loan.accumulatedInterest || "0") + addInterest).toFixed(2);
-      await db.update(schema.loans).set({ accumulatedInterest: newAccum, lastAccruedAt: now, updatedAt: now }).where(eq(schema.loans.id, loanId));
-      return NextResponse.json({ success: true, accumulatedInterest: newAccum, daysAccrued: days.toFixed(1) });
+
+      // landbank net + health update (from PAR 5PNC etc)
+      const prop = await db.query.properties.findFirst({ where: eq(schema.properties.id, loan.propertyId) });
+      const meta = (prop as any)?.metadata || {};
+      const landNet = Number(meta.net || 0);
+      const curColVal = parseFloat(loan.collateralValueUsd);
+      const curDebt = principal + parseFloat(newAccum);
+      let newHealth = curColVal > 0 ? (curColVal / Math.max(curDebt, 0.01)).toFixed(4) : (loan.healthFactor || "1.5000");
+      if (landNet > 0) {
+        newHealth = (parseFloat(newHealth) * (1 + Math.min(landNet / 1000000, 0.05))).toFixed(4);
+      }
+
+      await db.update(schema.loans).set({ 
+        accumulatedInterest: newAccum, 
+        lastAccruedAt: now, 
+        updatedAt: now,
+        healthFactor: newHealth
+      }).where(eq(schema.loans.id, loanId));
+      return NextResponse.json({ success: true, accumulatedInterest: newAccum, daysAccrued: days.toFixed(1), healthFactor: newHealth, landNetUsed: landNet });
     }
 
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });

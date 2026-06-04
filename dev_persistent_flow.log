@@ -1,0 +1,29 @@
+
+> dashboard@0.1.0 dev C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\apps\dashboard
+> next dev --turbopack -p 3000 "--turbo"
+
+ ÔÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\LENOVO\pnpm-lock.yaml as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\pnpm-lock.yaml
+
+   Ôû▓ Next.js 15.5.18 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.15.3:3000
+   - Environments: .env.local
+
+ Ô£ô Starting...
+ Ôùï Compiling middleware ...
+ Ô£ô Compiled middleware in 3.7s
+ Ô£ô Ready in 9.8s
+ Ôùï Compiling /login ...
+ Ô£ô Compiled /login in 6.8s
+ HEAD /login 200 in 8019ms
+ HEAD /login 200 in 7891ms
+ HEAD /login 200 in 421ms
+   Reload env: .env.local
+ Ô£ô Compiled in 45ms
+ Ô£ô Compiled middleware in 87ms
+ Ô£ô Compiled in 0ms

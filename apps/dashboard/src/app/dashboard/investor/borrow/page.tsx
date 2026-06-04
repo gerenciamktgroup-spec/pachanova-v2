@@ -1,7 +1,7 @@
 ﻿import { Suspense } from "react";
 import { RouteBreadcrumbs, LoadingState, ErrorState } from "@/components/mission";
 import { createServerClient } from "@/utils/supabase/server";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import DeFiBorrowClient from "./DeFiBorrowClient";
@@ -26,18 +26,18 @@ async function fetchBorrowData() {
       return { error: "Investor profile not found. Please log in first." };
     }
 
-    // Fetch all active balances/holdings
-    const portfolioQuery = await client`
+    // Fetch all active balances/holdings - Fase3 real paths (landbank 5PNC collateral PAR etc via DB join)
+    const portfolioRows = await db.execute(sql`
       SELECT 
         b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd,
         p.id as property_id, p.name as property_name, p.property_type, p.location, p.status,
-        p.token_price_usd, p.annual_yield_expected
+        p.token_price_usd, p.annual_yield_expected, p.metadata
       FROM balances b
       JOIN properties p ON b.property_id = p.id
       WHERE b.investor_id = ${investor.id}
-    `;
+    `);
 
-    const portfolio = portfolioQuery.map((row: any) => ({
+    const portfolio = (portfolioRows as any[]).map((row: any) => ({
       propertyId: row.property_id,
       propertyName: row.property_name,
       propertyType: row.property_type,
@@ -47,6 +47,7 @@ async function fetchBorrowData() {
       availableUsd: row.available_usd,
       lockedUsd: row.locked_usd,
       tokenPriceUsd: row.token_price_usd,
+      metadata: row.metadata, // for 5PNC net/landbank tie
     }));
 
     // Fetch all active loans
