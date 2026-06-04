@@ -23,10 +23,10 @@
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z",
-      "effHoldings": 33937.78,
-      "net_yield": 76626.5,
-      "pacha_power": 3675,
-      "last_fase": "Fase83 attested N+1"
+      "effHoldings": 33940.48,
+      "net_yield": 76636.5,
+      "pacha_power": 3676,
+      "last_fase": "Fase83 attested N+2"
     }
   ],
   "rwa_distribuciones": [
@@ -93,6 +93,90 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
     }
   ]
 }
