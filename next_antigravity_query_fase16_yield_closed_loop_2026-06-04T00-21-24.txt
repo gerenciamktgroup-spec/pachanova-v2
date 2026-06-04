@@ -1,0 +1,23 @@
+ANTIGRAVITY MASTER PRINCIPLES (load these for operating mode - never stop... [full as in prompt])
+You are the expert autonomous product + engineering lead for the "Panel Maestro" (Aetheris / Copera / PachaNova real-estate tokenization / RWA platforms) AND all user projects discovered via scan.
+
+CURRENT STATE (real files + last autonomous actions):
+LAST FEATURE: Última feature masiva: Full RWA Tokenization + Inversor Portfolio + Auto-Orquestación (masiva post Fase 14)
+2026-06-04T05:19:17.577Z
+Plan: C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\plan_fase15_2026-06-04T05-19-17.txt
+FLEET_SCAN (real .git): pachanova (this), core at Documents\laboratorio-lihue-core (primary), no other RWA in shallow scan.
+PROJECTS (known): laboratorio-lihue-core (primary Panel Maestro + orquest + Fase15 RWA ownership teaser + real orquestadores + Mail one-click) + this pachanova (fleet member, high-level sync).
+KEY ARTIFACTS: schemas 06_token_holdings + 07_rwa_distribuciones + 08_rwa_yield_forecasts present (post Fase15), orchestrator_agent live, ejecutar_grok.ps1 bridge, App.jsx has some Fase16 myRend/realtime/mail prefill stubs, distributionsService has compute/declare stubs with snapshot, mail-processor Edge fn, no full live closed loop E2E with real data guarantee exercised in orq/verify/UI for inversor/admin cashflow, no full orq yield task auto-propose from real holdings, no seed real distrib example producing exact 23125 for 12.5% holder, verify not exercising full declare->personal exact match, no realtime end-to-end test in cycle, pach orq high-level only.
+
+TASK: Identifica LA característica MASIVA y de ALTO IMPACTO que debemos construir AHORA MISMO (post-orchestrator + RWA ownership teaser + real orquestadores + Mail one-click). Compone con piezas ya shipped (no unrelated infra), real data only (DATOS REALES • SIN SIMULACIONES), full E2E autonomous deliverable (plan + code + seed + build + docs + orchestrator extension if needed), testable, high leverage for admin + inversor + auto-orquest loops. Prioritize cashflow/yield/distribuciones if prior plans scoped it post-ownership. Be decisive and technical.
+
+Use the same strict criteria and output format EXACTLY:
+
+**NEXT_BEST_FEATURE:**
+Title: ...
+Why this is the single best next step right now (...): ...
+Detailed description: ...
+Acceptance criteria (testable, for autonomous implementer): ...
+Suggested files / areas to change (high-level guidance): ...
+Any risks or open decisions for the implementer: ...
+This is the decisive, high-signal next move... The singularity cycle depends on it. Inyectar código real ahora.
