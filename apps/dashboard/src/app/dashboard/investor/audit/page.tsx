@@ -2,7 +2,7 @@ import React from 'react';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq } from 'drizzle-orm';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { GlassCard } from '@/components/ui/glass-card';
 import { FileText, ShieldCheck } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -26,28 +26,28 @@ export default async function FideicomisoAuditPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {audits.map(audit => (
-          <Card key={audit.id} className="bg-pn-surface border-pn-border hover:border-pn-gold/50 transition-colors">
-            <CardHeader className="pb-3">
+          <GlassCard key={audit.id} className="hover:border-pn-gold/50 transition-colors">
+            <div className="pb-3">
               <div className="flex items-center justify-between mb-1">
                 <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                <span className="text-xs font-mono text-pn-text-soft bg-pn-bg px-2 py-0.5 rounded border border-pn-border">
+                <span className="text-xs font-mono text-pn-text-soft bg-black/40 px-2 py-0.5 rounded border border-white/10">
                   {new Date(audit.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <CardTitle className="text-sm text-white">{audit.documentType}</CardTitle>
-              <CardDescription className="text-xs line-clamp-1">Propiedad ID: {audit.propertyId}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+              <h3 className="text-sm font-semibold text-white mt-2">{audit.documentType}</h3>
+              <p className="text-xs text-pn-text-soft line-clamp-1 mt-1">Propiedad ID: {audit.propertyId}</p>
+            </div>
+            <div className="space-y-3 pt-2">
               <div className="text-xs">
                 <div className="text-pn-text-soft mb-1">Hash IPFS:</div>
-                <div className="font-mono text-[10px] bg-black/40 p-1.5 rounded border border-pn-border break-all text-emerald-200">
+                <div className="font-mono text-[10px] bg-black/40 p-1.5 rounded border border-white/10 break-all text-emerald-200">
                   {audit.ipfsHash}
                 </div>
               </div>
               {audit.arweaveTxId && (
                 <div className="text-xs">
                   <div className="text-pn-text-soft mb-1">Arweave TX:</div>
-                  <div className="font-mono text-[10px] bg-black/40 p-1.5 rounded border border-pn-border break-all text-violet-300">
+                  <div className="font-mono text-[10px] bg-black/40 p-1.5 rounded border border-white/10 break-all text-violet-300">
                     {audit.arweaveTxId}
                   </div>
                 </div>
@@ -56,18 +56,18 @@ export default async function FideicomisoAuditPage() {
                 href={`https://ipfs.io/ipfs/${audit.ipfsHash}`} 
                 target="_blank"
                 rel="noreferrer"
-                className="w-full flex items-center justify-center gap-2 mt-2 px-3 py-2 text-xs font-medium text-white bg-pn-gold/20 hover:bg-pn-gold/30 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center gap-2 mt-4 px-3 py-2 text-xs font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors border border-white/10"
               >
                 <FileText className="h-3 w-3" />
                 Ver Documento
               </a>
-            </CardContent>
-          </Card>
+            </div>
+          </GlassCard>
         ))}
         
         {audits.length === 0 && (
-          <div className="col-span-full p-8 text-center border border-dashed border-pn-border rounded-xl text-pn-text-soft">
-            <ShieldCheck className="h-8 w-8 mx-auto mb-3 opacity-50 text-pn-gold" />
+          <div className="col-span-full p-8 text-center border border-dashed border-white/20 rounded-xl text-pn-text-soft bg-white/5">
+            <ShieldCheck className="h-8 w-8 mx-auto mb-3 opacity-50 text-emerald-400" />
             <p className="text-sm">No hay registros de auditoría almacenados on-chain en este momento.</p>
           </div>
         )}
