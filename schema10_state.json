@@ -4,7 +4,7 @@
       "investor_id": "admin",
       "pnc_codigo": "PNC-PAR-001",
       "holdings_amount": 23125,
-      "effective_amount": 2688007,
+      "effective_amount": 5965897,
       "land_meta": {
         "geo": "Paracas 5ha",
         "product": "alquiler_yield",
@@ -17,9 +17,9 @@
         "fase36_status": "ready_for_launch",
         "fase42_power": 3250,
         "updated_via_fase49": true,
-        "last_flywheel": "2026-06-04T14:56:20.584Z",
-        "last_compound": "2026-06-04T14:56:20.588Z",
-        "effHoldings": 2688007
+        "last_flywheel": "2026-06-04T15:32:51.564Z",
+        "last_compound": "2026-06-04T15:32:51.570Z",
+        "effHoldings": 5965897
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z"
@@ -35,7 +35,7 @@
       "tx_proof": "YIELD_CLAIM_ATTEST@25242xxx + 23125 + predict 0.82 + Fase9/47",
       "status": "COMPOUNDED",
       "claimed_at": "2026-06-04",
-      "compound_at": "2026-06-04T14:56:20.584Z",
+      "compound_at": "2026-06-04T15:32:51.565Z",
       "created_at": "2026-06-04T00:00:00Z"
     },
     {
