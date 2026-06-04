@@ -34,30 +34,32 @@ async function TreasuryOverview() {
   if (!treasury) return null;
 
   return (
-    <div className="bg-pn-surface-strong border border-pn-border rounded-lg p-6 mb-8">
-      <h2 className="text-lg font-medium text-pn-text mb-4">Treasury Overview</h2>
+    <div className="relative rounded-3xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 p-8 mb-8 overflow-hidden group">
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-cyan-400/30 transition-colors duration-700"></div>
+      <h2 className="text-2xl font-light text-white mb-6 tracking-tight">Treasury Overview</h2>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="p-4 bg-pn-bg rounded-md border border-pn-border">
-          <p className="text-xs text-pn-text-soft uppercase">💰 Balance Fideicomiso</p>
-          <p className="text-xl font-semibold text-pn-gold mt-1">${Number(treasury.balanceUsd).toLocaleString()}</p>
+        <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+          <p className="text-xs text-pn-text-muted uppercase tracking-wider mb-2">💰 Balance Fideicomiso</p>
+          <p className="text-2xl font-light text-cyan-400">${Number(treasury.balanceUsd).toLocaleString()}</p>
         </div>
-        <div className="p-4 bg-pn-bg rounded-md border border-pn-border">
-          <p className="text-xs text-pn-text-soft uppercase">🪙 Tokens Vendidos</p>
-          <p className="text-xl font-semibold text-pn-text mt-1">{Number(treasury.tokensSold).toLocaleString()} / {Number(treasury.totalSupply).toLocaleString()}</p>
+        <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+          <p className="text-xs text-pn-text-muted uppercase tracking-wider mb-2">🪙 Tokens Vendidos</p>
+          <p className="text-2xl font-light text-white">{Number(treasury.tokensSold).toLocaleString()}</p>
+          <p className="text-xs text-pn-text-soft mt-1">/ {Number(treasury.totalSupply).toLocaleString()}</p>
         </div>
-        <div className="p-4 bg-pn-bg rounded-md border border-pn-border">
-          <p className="text-xs text-pn-text-soft uppercase">📈 USD Recaudado</p>
-          <p className="text-xl font-semibold text-pn-text mt-1">${Number(treasury.totalUsdRaised).toLocaleString()}</p>
+        <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+          <p className="text-xs text-pn-text-muted uppercase tracking-wider mb-2">📈 USD Recaudado</p>
+          <p className="text-2xl font-light text-white">${Number(treasury.totalUsdRaised).toLocaleString()}</p>
         </div>
-        <div className="p-4 bg-pn-bg rounded-md border border-pn-border">
-          <p className="text-xs text-pn-text-soft uppercase">🔄 Volumen P2P</p>
-          <p className="text-xl font-semibold text-pn-text mt-1">${Number(treasury.p2pVolume).toLocaleString()}</p>
+        <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+          <p className="text-xs text-pn-text-muted uppercase tracking-wider mb-2">🔄 Volumen P2P</p>
+          <p className="text-2xl font-light text-white">${Number(treasury.p2pVolume).toLocaleString()}</p>
         </div>
-        <div className="p-4 bg-pn-bg rounded-md border border-pn-border">
-          <p className="text-xs text-pn-text-soft uppercase">📊 Utilización</p>
-          <p className="text-xl font-semibold text-pn-text mt-1">{Number(treasury.utilizationPercent).toFixed(2)}%</p>
-          <div className="w-full bg-pn-surface h-2 mt-2 rounded overflow-hidden">
-            <div className="bg-pn-gold h-full" style={{ width: `${Math.min(100, treasury.utilizationPercent)}%` }}></div>
+        <div className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/[0.04] transition-colors">
+          <p className="text-xs text-pn-text-muted uppercase tracking-wider mb-2">📊 Utilización</p>
+          <p className="text-2xl font-light text-white">{Number(treasury.utilizationPercent).toFixed(2)}%</p>
+          <div className="w-full bg-white/10 h-1.5 mt-3 rounded-full overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-500 to-violet-500 h-full rounded-full" style={{ width: `${Math.min(100, treasury.utilizationPercent)}%` }}></div>
           </div>
         </div>
       </div>
