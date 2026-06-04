@@ -16,3 +16,4 @@ export * from "./notifications.ts";
 export * from "./demo_sessions.ts";
 export * from "./loans.ts";
 export * from "./governance.ts";
+export * from "./fideicomiso_audits.ts";
