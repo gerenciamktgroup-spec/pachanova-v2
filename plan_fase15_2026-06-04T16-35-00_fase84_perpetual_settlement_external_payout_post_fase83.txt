@@ -1,0 +1,40 @@
+# Plan Fase 15 (Orchestrator Agent): Fase84: Perpetual Self-Driving Yield Engine — Real Treasury Settlement & External Payout Execution for Infinite Compounding Zero-Drift Attested Slices (post Fase83 live Fase1 Hub surfaces + thin orq persist uplift) + Chained YIELD_PERPETUAL_SETTLE_ATTEST + Maestro FORCE SETTLE PERPETUAL + Investor Reclamar Slices Perpetuos a Wallet/Compound one-click with external_ref + settled growth visible + Fase16 multi + Fase21 pervasive + Full E2E Bootstrap to Lacking RWA orq + Thin Orq + Verify + Landbank Hub "Mis Streams Perpetuos & Claims" + Fleet "INFINITE COMPOUNDING SETTLED LIVE" Broadcast + Blackboard/PROGRESS/AGENTS High + High Sync (composes Fase83 + all Fase55-83 + Fase1 + cashflow/yield/distribuciones post-ownership)
+
+Real PNC exercised (from orq --dry + plans + Fase83 uplift test): PAR 68112.5 net @31639 eff17.1% health1.65 power3250 23125 12.5% ONCHAIN @25244445 tx fresh + Fase62~1700 + Fase63 reinvest + Fase53 liq62663.5 +0.73/0.82 +2.3% +4xPASSED Fase36 +15PNC+AET +5PNC$31.4M + manual LIM + Fase9/15/17/21/36/42/44/46/47/48/49/51/53/54/55-83 carried. Post Fase83 reconcile: eff ~33937.78 net ~76626.5 power ~3675 (uplift persisted).
+
+See next_feature_grok_output_fase84_perpetual_settlement_external_payout_post_fase83_20260604.txt for full strict block (Title/Why/Detailed/ACs/Suggested/Risks).
+
+Bootstrap this cycle (antigravity v3 rules): 
+- Fleet scan (terminal + provided in query): 8 RWA (core primary orq[RWA], pachanovafullstack orq[RWA], pachanova this Fase1 Hub orq[RWA], antigravity-sdk-python [RWA no orq], pachanova-v2 orq[RWA], von-hesse-consultores [RWA no orq], frontend orq, pachanova-v2-git orq[RWA]). Lacking orq for 2 RWA targeted for bootstrap.
+- Blackboard: MCP github__search_issues / list_issues (core gerenciamktgroup-spec/laboratorio-lihue-core labels antigravity/plan/high-impact/autonomous; #18 Fase21 open with history, comments 9+, cross Fase21 onchain to perpetual phases). No newer Fase84 issue yet.
+- Local: read AGENTS.md (high Fase83 post Fase82 LAST + carried PNC), blackboard/PROGRESS_pach-9h-fase83-*.md, next_feature_fase83, orq --dry exercise (Fase83 persist uplift confirmed, PAR eff 31639->33937+), investor/page Fase83 section + /api/perpetual (CTA present but partial/hardcode in fallback + Fase15/34 cards hardcoded), landbank admin (Fase1 note only, no perpetual settle), no Fase84 plan yet.
+- Real data invariant + Master manual + no isDemo in master paths + cashflow/yield prioritized post-ownership.
+
+Gaps closed by this Fase84 (strict): 
+- Settlement execution (attested slices -> SETTLED + external_ref + treasury payout feel).
+- Pervasive visible settled growth (Fase15/34 cards/holograms/hero dynamic from orq loadReal post-settle, not hardcoded 31639).
+- Self-service settled claims (wallet/compound/reinvest CTAs with visible delta + badges).
+- Maestro in landbank (FORCE SETTLE + DISBURSE + EXPORT full chained).
+- Verify Fase84 + orq --dry asserts.
+- Full bootstrap executed to lacking 2 RWA orq (ps1 + stub orq + AGENTS high note "Pacha Fase1 Hub primary for settled perpetual").
+- Blackboard (local + MCP comment #18), plan/next_feature written, AGENTS/PROGRESS high append with exact refs, git high, orq--dry/verify/build green.
+
+Implementation order for /implement (effort 4-5 + reviewers): 
+1. orq settle task + pure attest fns + persist + wire runCycle (guarantee --dry shows SETTLED + external + growth delta).
+2. Make Fase15 RWA cards + Fase34 portfolio dynamic (pull eff/net/power from orqPortfolioView/loadReal; add Fase84 badges).
+3. Investor Fase1 Hub: enhance/add "Mis Streams Perpetuos & Claims" + settled CTAs (POST /api/perpetual, success shows external + growth).
+4. Admin landbank: Maestro perpetual settle panel + FORCE/EXPORT buttons + cert download.
+5. /api/perpetual extend for claim_settled (real orq call, no hardcoded fallback).
+6. Extend verify-fase16-yield.js Fase84 section + node tests.
+7. Fase48/44/historial/hero updates for settled.
+8. Bootstrap: create minimal orq/AGENTS/ps1 in lacking projects (high sync note).
+9. Docs: this plan + next_feature + AGENTS high + blackboard/PROGRESS + ORCHESTRATOR_LAST.
+10. MCP github__add_issue_comment on #18 (high summary + real PNC + Fase84 settle link to perpetual + Fase21).
+11. git add/commit/push (high msg with refs), orq --dry/verify/build pre, remount visuals 3002.
+12. Invoke bridge ps1 for next antigravity query if present.
+
+High-level only for cross (core primary full orq/Maestro/settle/Fase16; here + pach* high sync "core Fase84 makes perpetual slices settled external real + claimable in Pacha Fase1 Hub primary; consume via orq").
+
+Real PNC + DATOS REALES. Master manual. Singularity. Never stop.
+
+(End of plan; implementer reads next_feature block + this + AGENTS + orq for E2E.)
