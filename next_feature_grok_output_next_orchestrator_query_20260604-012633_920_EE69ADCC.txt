@@ -1,0 +1,11 @@
+grok.exe : [2m2026-06-04T06:28:06.281525Z[0m [31mERROR[0m tool_error: execution_failure 
+[3msession_id[0m[2m=[0m019e914f-e9f0-73f0-9dde-2be5dd842ee0 [3mtool_name[0m[2m=[0m"use_tool" 
+[3meffective_tool_name[0m[2m=[0m"github__add_issue_comment" [3mmodel_id[0m[2m=[0m"grok-build" 
+[3merror_kind[0m[2m=[0m"execution_failure" [3merror_message[0m[2m=[0mMcp error: -32603: Authentication Failed: 
+Requires authentication
+En C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\ejecutar_grok.ps1: 40 Carácter: 5
++     & "C:\Users\LENOVO\.grok\bin\grok.exe" --prompt-file "$Instruccio ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m2026-06-04T... authentication:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
