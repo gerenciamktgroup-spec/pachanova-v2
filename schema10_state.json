@@ -4,7 +4,7 @@
       "investor_id": "admin",
       "pnc_codigo": "PNC-PAR-001",
       "holdings_amount": 23125,
-      "effective_amount": 33940,
+      "effective_amount": 35640,
       "land_meta": {
         "geo": "Paracas 5ha",
         "product": "alquiler_yield",
@@ -22,7 +22,8 @@
         "effHoldings": 33940,
         "fase93_settle": "external treasury-settle-93-pncpar001 Fase16_closed Fase21@25244445",
         "fase95_settle": "external treasury-settle-95-pncpar001 Fase16_closed Fase21@25244445 Fase94",
-        "fase96_n2_launch": "from Fase95 settled n2-launch-from-95-pncpar001 Fase16_closed Fase21@25244445 Fase96"
+        "fase96_n2_launch": "from Fase95 settled n2-launch-from-95-pncpar001 Fase16_closed Fase21@25244445 Fase96",
+        "fase111_n1_launch": "from Fase110 mail-declared closed n1-launch-from-fase110-closed-pncpar001 Fase16_closed Fase21@25246156 Fase111"
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z",
@@ -1023,6 +1024,100 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "LAUNCHED_N1_FROM_FASE110_CLOSED",
+      "period": "2026-06-N+1",
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
     }
   ],
   "land_meta": {
@@ -1032,8 +1127,8 @@
       "geo": "Paracas 5ha",
       "aum": 31639,
       "eff_holdings": 31639.06,
-      "net_yield": 71512.5,
-      "pacha_power": 3675,
+      "net_yield": 80036.5,
+      "pacha_power": 4101,
       "gov_quorum_passed": true,
       "fase36": "GOV QUORUM PASSED power 3250 (Fase42 staked) ready_for_launch",
       "fase47": "31639 eff / 17.1%",
@@ -1049,10 +1144,11 @@
       },
       "schema10_applied": true,
       "fase53_liq_note": "high-level sync from core if liq events (no impact yet on dedicated; audit provenance carried)",
-      "effHoldings": 33339,
+      "effHoldings": 35640,
       "fase93": "SETTLED external treasury-settle-93-pncpar001 Fase16 closed",
       "fase95": "SETTLED external treasury-settle-95-pncpar001 Fase16 closed Fase94",
-      "fase96": "N+2 LAUNCHED from Fase95 settled n2-launch-from-95-pncpar001 Fase16 closed Fase96"
+      "fase96": "N+2 LAUNCHED from Fase95 settled n2-launch-from-95-pncpar001 Fase16 closed Fase96",
+      "fase111": "N+1 LAUNCHED from Fase110 mail-declared closed n1-launch-from-fase110-closed-pncpar001 Fase16 closed Fase111"
     }
   },
   "perpetual_settled_claims": [
@@ -1148,6 +1244,23 @@
       },
       "Fase21": "25244445",
       "note": "Fase96 N+2 LAUNCHED FROM FASE95 SETTLED (Fase96) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 111,
+      "launched_amount": 1700,
+      "from_closed_fase": 110,
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "Fase16_closed": true,
+      "Fase110_mail_declared": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25246156",
+      "note": "Fase111 N+1 LAUNCHED FROM FASE110 MAIL-DECLARED FASE16 CLOSED (Fase111) Fase16 YIELD real distrib processed>=1"
     }
   ]
 }
