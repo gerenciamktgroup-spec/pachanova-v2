@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "note": "schema10 PNC DB seeds for full real landbank (token_holdings, rwa_distribuciones, stakes, land_meta). Applied for Fase49 closed cashflow + Fase15/36/42/47/9 carried. Real PNC: PAR 23125 base +2000 staked -> 31639 eff/17.1% , net 68112.5 post Fase9 +212.5 health1.65, power 3250 Fase42, 4x GOV PASSED Fase36, tx fresh publicnode, gcloud 0.73, predict 0.82, 15PNC+AET + manual LIM, Fase15 landbank 4 tokenized. Fase53 liq high-level sync. Master manual. DATOS REALES. Fase49: loadReal/persist on flywheel/claim/compound for dedicated PNC surfaces.",
+    "applied_at": "2026-06-04",
+    "fases_carried": ["Fase9", "Fase15", "Fase36", "Fase42", "Fase44", "Fase46", "Fase47", "Fase48", "Fase53", "Fase21", "Fase16", "Fase17"]
+  },
+  "stakes": [
+    { "investor_id": "admin", "pnc_codigo": "PNC-PAR-001", "staked_amount": 2000, "updated_at": "2026-06-04T00:00:00Z" }
+  ],
+  "token_holdings": [
+    {
+      "investor_id": "admin",
+      "pnc_codigo": "PNC-PAR-001",
+      "holdings_amount": 23125,
+      "effective_amount": 31639.06,
+      "land_meta": {
+        "geo": "Paracas 5ha",
+        "product": "alquiler_yield",
+        "socio": "PachaNova",
+        "borrow_lock_tx": "0xa9c8158de5...@25242177",
+        "schema10_applied": true,
+        "fase47_compound": 8514,
+        "fase9_debt": 30212.5,
+        "fase9_net": 68112.5,
+        "fase36_status": "ready_for_launch",
+        "fase42_power": 3250
+      },
+      "created_at": "2026-06-04T00:00:00Z",
+      "updated_at": "2026-06-04T00:00:00Z"
+    }
+  ],
+  "rwa_distribuciones": [
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 68112.5,
+      "net_yield_post": 68112.5,
+      "health_ratio": 1.65,
+      "period": "2026-06",
+      "tx_proof": "YIELD_CLAIM_ATTEST@25242xxx + 23125 + predict 0.82 + Fase9/47",
+      "status": "COMPOUNDED",
+      "claimed_at": "2026-06-04",
+      "compound_at": "2026-06-04",
+      "created_at": "2026-06-04T00:00:00Z"
+    },
+    {
+      "pnc_codigo": "PNC-SB-003",
+      "distrib_amount": 105840,
+      "net_yield_post": 105840,
+      "health_ratio": 2.1,
+      "period": "2026-06",
+      "tx_proof": "real from orq Fase9",
+      "status": "PAGADO",
+      "created_at": "2026-06-04T00:00:00Z"
+    }
+  ],
+  "land_meta": {
+    "PNC-PAR-001": {
+      "pnc": "PNC-PAR-001",
+      "product": "alquiler_yield",
+      "geo": "Paracas 5ha",
+      "aum": 31639,
+      "eff_holdings": 31639.06,
+      "net_yield": 68112.5,
+      "pacha_power": 3250,
+      "gov_quorum_passed": true,
+      "fase36": "GOV QUORUM PASSED power 3250 (Fase42 staked) ready_for_launch",
+      "fase47": "31639 eff / 17.1%",
+      "fase9": { "debt": 30212.5, "net": 68112.5, "health": 1.65, "tx": "0xa9c8158de5...@25242177" },
+      "fase15_tokenized": "RWA-PNC-PAR-001-2026",
+      "manual_override": { "lim": 0.95 },
+      "schema10_applied": true,
+      "fase53_liq_note": "high-level sync from core if liq events (no impact yet on dedicated; audit provenance carried)"
+    }
+  }
+}
