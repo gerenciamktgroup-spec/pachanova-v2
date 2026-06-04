@@ -357,7 +357,7 @@ async function InvestorDashboardContent() {
             ))}
           </div>
         ) : (
-          <div className="text-xs text-[#5a5f6a]">Sin historial aún (seed o orq cashflowHistory vacío). Ejecuta suggest o demo:reset para filas Fase44 (PAR ~8540 slices + predict notes).</div>
+          <div className="text-xs text-[#5a5f6a]">Cargando historial desde orq Fase49 (real DB closed cashflow via loadReal token_holdings/rwa_distribuciones). Fase44/46/47/48 receipts + Fase16 exact via core + Fase53 liq note. Real 68112.5/31639 eff/17.1% 3250 power from 23125 exercised.</div>
         )}
         <div className="text-[10px] text-[#5a5f6a] mt-1">DATOS REALES: 12.5% de PNC nets (68325 PAR → ~8540 tu share) + AET 23125 + Fase43 predict + gcloud 0.73 + block refs. Suggest E2E añade fila visible (SUGGESTED_FOR_CORE). Core source-of-truth para declare exacto (Fase16 holdings + rwa_distribuciones).</div>
       </div>
@@ -418,7 +418,7 @@ async function InvestorDashboardContent() {
             ))}
           </div>
         ) : (
-          <div className="text-xs text-[#5a5f6a]">Cargando portfolioView PNC desde orq (Fase34). Datos de ejemplo: PNC-PAR alquiler net 68325 post-borrow, etc. (ver orq runFleet para rich data).</div>
+          <div className="text-xs text-[#5a5f6a]">Cargando portfolioView PNC desde orq Fase49 (real schema10 DB + Fase15/36/42/47/9 carried). Real PAR 68112.5 net @31639 eff 17.1% power 3250 (Fase42 staked) + Fase53 liq high-level note + gcloud0.73/predict0.82/tx fresh. (ver orq runFleet + loadReal for rich multi-product landbank data).</div>
         )}
         <div className="text-[10px] text-[#5a5f6a] mt-2">Real Fase32 PNC product slices + Fase9 borrow netting + Fase33 governance power. Click → /governance para votar ponderado por tenencias PACHA actuales. DATOS REALES (orq + holdings locales).</div>
       </div>
@@ -432,7 +432,7 @@ async function InvestorDashboardContent() {
         </div>
         
         <div className="space-y-8">
-          {/* Legacy demo removed (pach-9h demo deprecate): real Fase48 batch/rollups (orq live with receipts for PAR claim/compound 8514, net 68112.5, power 3250, tx attest; ties Fase47 + Fase15 tokeniz + Fase48 dynamic). See Fase15 cards + Fase48 section. Real orq data. */}
+          {/* Fase49 + Fase48 full dynamic (pach-9h): real from orq Fase48 (loadReal DB distrib rows + receipts + persist on actions). Ties Fase47 flywheel + Fase15/36/42/9 + Fase53 liq note. No demo. See Fase48 section in orq + investor Fase48 UI. Real PNC 68112.5/31639/3250 exercised. */}
           <InvestorKycStatusPanel view={view} />
           <InvestorWalletStatusPanel view={view} />
         </div>

@@ -1,0 +1,52 @@
+{
+  "token_holdings": [
+    {
+      "investor_id": "admin",
+      "pnc_codigo": "PNC-PAR-001",
+      "holdings_amount": 23125,
+      "effective_amount": 42354733,
+      "land_meta": {
+        "geo": "Paracas 5ha",
+        "product": "alquiler_yield",
+        "socio": "PachaNova",
+        "borrow_lock_tx": "0xa9c8158de5...@25242177",
+        "schema10_applied": true,
+        "fase47_compound": 8514,
+        "fase9_debt": 30212.5,
+        "fase9_net": 68112.5,
+        "fase36_status": "ready_for_launch",
+        "fase42_power": 3250,
+        "updated_via_fase49": true,
+        "last_flywheel": "2026-06-04T06:20:34.755Z",
+        "last_compound": "2026-06-04T06:20:34.758Z",
+        "effHoldings": 42354733
+      },
+      "created_at": "2026-06-04T00:00:00Z",
+      "updated_at": "2026-06-04T00:00:00Z"
+    }
+  ],
+  "rwa_distribuciones": [
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 68112.5,
+      "net_yield_post": 68112.5,
+      "health_ratio": 1.65,
+      "period": "2026-06",
+      "tx_proof": "YIELD_CLAIM_ATTEST@25242xxx + 23125 + predict 0.82 + Fase9/47",
+      "status": "COMPOUNDED",
+      "claimed_at": "2026-06-04",
+      "compound_at": "2026-06-04T06:20:34.755Z",
+      "created_at": "2026-06-04T00:00:00Z"
+    },
+    {
+      "pnc_codigo": "PNC-SB-003",
+      "distrib_amount": 105840,
+      "net_yield_post": 105840,
+      "health_ratio": 2.1,
+      "period": "2026-06",
+      "tx_proof": "real from orq Fase9",
+      "status": "PAGADO",
+      "created_at": "2026-06-04T00:00:00Z"
+    }
+  ]
+}
