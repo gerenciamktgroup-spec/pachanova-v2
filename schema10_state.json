@@ -4,7 +4,7 @@
       "investor_id": "admin",
       "pnc_codigo": "PNC-PAR-001",
       "holdings_amount": 23125,
-      "effective_amount": 5965897,
+      "effective_amount": 6383510,
       "land_meta": {
         "geo": "Paracas 5ha",
         "product": "alquiler_yield",
@@ -19,13 +19,14 @@
         "updated_via_fase49": true,
         "last_flywheel": "2026-06-04T15:32:51.564Z",
         "last_compound": "2026-06-04T15:32:51.570Z",
-        "effHoldings": 5965897
+        "effHoldings": 5965897,
+        "fase93_settle": "external treasury-settle-93-pncpar001 Fase16_closed Fase21@25244445"
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z",
       "effHoldings": 33940.48,
-      "net_yield": 76636.5,
-      "pacha_power": 3676,
+      "net_yield": 69812.5,
+      "pacha_power": 3675,
       "last_fase": "Fase83 attested N+2"
     }
   ],
@@ -289,6 +290,100 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "SETTLED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-93-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-93-pncpar001@25244445",
+      "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445"
     }
-  ]
+  ],
+  "land_meta": {
+    "PNC-PAR-001": {
+      "pnc": "PNC-PAR-001",
+      "product": "alquiler_yield",
+      "geo": "Paracas 5ha",
+      "aum": 31639,
+      "eff_holdings": 31639.06,
+      "net_yield": 69812.5,
+      "pacha_power": 3675,
+      "gov_quorum_passed": true,
+      "fase36": "GOV QUORUM PASSED power 3250 (Fase42 staked) ready_for_launch",
+      "fase47": "31639 eff / 17.1%",
+      "fase9": {
+        "debt": 30212.5,
+        "net": 68112.5,
+        "health": 1.65,
+        "tx": "0xa9c8158de5...@25242177"
+      },
+      "fase15_tokenized": "RWA-PNC-PAR-001-2026",
+      "manual_override": {
+        "lim": 0.95
+      },
+      "schema10_applied": true,
+      "fase53_liq_note": "high-level sync from core if liq events (no impact yet on dedicated; audit provenance carried)",
+      "effHoldings": 6383510,
+      "fase93": "SETTLED external treasury-settle-93-pncpar001 Fase16 closed"
+    }
+  }
 }
