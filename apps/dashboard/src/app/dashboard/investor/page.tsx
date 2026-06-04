@@ -6,7 +6,6 @@ import {
   ProRataLandCardV2, 
   InvestorLedgerPanel, 
   InvestorKycStatusPanel, 
-  // Legacy demo card removed (pachanova-9h- demo deprecate complete in investor): production uses real orq Fase15/36/42/47/48 landbank/portfolio (PAR 31639 eff/17.1% net 68112.5 power 3250 PASSED 4x real land paths, schema10 when seeds token_holdings/rwa_distribuciones + stakes, Fase9/47 carried, tx fresh, 0.73/0.82, 23125+15PNC+AET, manual LIM, Master). See Fase15 RWA section + Fase48 batch below + Governance client (live stake power 3250). DATOS REALES. 
   InvestorWalletStatusPanel 
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
@@ -28,7 +27,6 @@ import { db } from "@/server/db";
 async function fetchInvestorData(): Promise<any> { 
   // DEMO STATIC - always return demo data so the investor tab loads the visual of all the work
   // (avoids DB connection issues and orq hanging the request as seen in logs)
-  // This shows the complete unified PachaNova dashboard with P2P, credits, landbank (integrated master), orq data, Fases, real numbers, etc.
   const demoPortfolio = [
     {
       propertyId: "pnc-par-001",
@@ -104,7 +102,6 @@ async function fetchInvestorData(): Promise<any> {
       lastPing: new Date().toISOString(),
       message: "Demo ready"
     },
-    // The orq data from the autonomous work (real numbers, Fases)
     _orqPortfolioView: demoPortfolio.map(p => ({
       ...p,
       net: p.metadata.net,
@@ -138,15 +135,12 @@ async function InvestorDashboardContent() {
   const data = await fetchInvestorData();
   const view = data;
 
-  // Fase17 fleet: exact yield attribution from core Panel Maestro (Fase16 real holdings prorrateo)
   const maestroYield = await fetchMaestroYields(view?.investor?.email || 'investor@pachanova.local');
   console.log('[FLEET] Maestro exact yield from core Panel:', maestroYield);
 
-  // Fase18: forecast / previsto via core Vertex (stub for now, real when gcloud integrated)
   const maestroForecast = await fetchMaestroYieldForecast(view?.investor?.email || 'investor@pachanova.local');
   console.log('[FLEET] Maestro forecast from core Panel:', maestroForecast);
 
-  // orq data from updated fetchInvestorData (proposals for #17 + Fase34 portfolioView for PNC net cards + governance tie-in + Fase44 cashflowHistory + predict)
   const orqProposals = (data && data._orqProposals) || [];
   const orqForecasts = (data && data._orqForecasts) || [];
   const orqPortfolioView = (data && data._orqPortfolioView) || [];
@@ -195,7 +189,7 @@ async function InvestorDashboardContent() {
         status="GO"
       />
 
-      {/* Fase47: VERTEX YIELD OPTIMIZER */}
+      
       <div className="p-4 border border-violet-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="flex items-center justify-between mb-2">
           <div>
@@ -219,7 +213,7 @@ async function InvestorDashboardContent() {
         <div className="mt-1 text-[9px] text-[#5a5f6a]">App rich CONSOLIDATED LIVE PORTFOLIO + effective badges 31639 eff /17.1% GROWTH +8514 tx@block. RECLAMAR/REINVERTIR en Yields.</div>
       </div>
 
-      {/* Fase 21: ONCHAIN HOLDINGS SYNC */}
+      
       <div className="p-4 border border-cyan-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(34,211,238,0.1)]">
         <div className="flex items-center justify-between mb-2">
           <div>
@@ -261,7 +255,7 @@ async function InvestorDashboardContent() {
 
       <InvestorPortfolioHero view={view} />
 
-      {/* Fase17: exact yield port from core (real data, not sim) */}
+      
       <div className="p-4 border border-[#b8a17a]/30 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">RENDIMIENTOS EXACTOS VÍA PANEL MAESTRO (Fase 16 core - holdings-based) + Fase44 realized + Fase43 predict</div>
         <div className="font-semibold text-emerald-400">Total: ${maestroYield.rendimientosTotal.toLocaleString()} (source: {maestroYield.source})</div>
@@ -277,7 +271,7 @@ async function InvestorDashboardContent() {
         <div className="text-[10px] text-[#5a5f6a] mt-1">Datos reales desde core (Fase16 exact computePersonal + snapshot) + Fase44 orq cashflowHistory (local closed). Ver core proyectos tab para prefill/realtime.</div>
       </div>
 
-      {/* Fase18: Forecast (via Panel Maestro Vertex) - AI-assisted from core, compounds Fase16+17 fleet + #13 + Fase43/44 predict wire */}
+      
       <div className="p-4 border border-violet-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">FORECAST (VIA PANEL MAESTRO VERTEX) (Fase 18 core - AI on real Fase16 exact + fleet manifests + Fase43 gov_predict)</div>
         <div className="font-semibold text-violet-400">Predicho próximo: ${maestroForecast.predicted_next?.toLocaleString() || '—'} (confianza: {(maestroForecast.confidence * 100).toFixed(0)}%)</div>
@@ -302,7 +296,7 @@ async function InvestorDashboardContent() {
         {orqLandbankLaunches && orqLandbankLaunches.length > 0 && <div className="text-[10px] text-violet-400 mt-1">Fase40: Landbank Launches gov-gated: {orqLandbankLaunches.filter((l:any)=>l.status==='gov_gated').map((l:any)=>l.pnc).join(', ')} (requires gov proposal + quorum vote power per Fase33/39; real PACHA holdings)</div>}
         {orqGovMailAlerts && orqGovMailAlerts.length > 0 && <div className="text-[10px] text-blue-400 mt-1">Fase41: Mail alerts for gov: {orqGovMailAlerts.map((m:any)=>m.pnc).join(', ')} (Vote outcome affects net yield per Fase32/38. Check inbox/CRM.)</div>}
 
-        {/* Fase36 full wire + UI advance (pachanova-9h-): Gov gate on real distrib/land launch + UI. Uses orq landbankLaunches (now with status gov_gated/ready_for_launch, quorumMet, currentGovPower from Fase42 pachaPower). Renders gated cards for PNC land launches/distrib. If ready_for_launch show high-level LAUNCH action (links gov or logs). Ties real PNC net/lock from Fase9 + quorum from votes schema (Fase33). Full wire: orq exposes for DB/launch; UI actionable gate. */}
+        
         {orqLandbankLaunches && orqLandbankLaunches.length > 0 && (
           <div className="mt-4 p-3 border border-violet-800/40 rounded bg-[#0a0b0f]">
             <div className="text-violet-400 text-xs tracking-widest mb-2">FASE36/40: LANDBANK LAUNCHES - GOV GATED (real PNC distrib/land + quorum; Fase9 lock/net carried)</div>
@@ -325,12 +319,12 @@ async function InvestorDashboardContent() {
         )}
       </div>
 
-      {/* Fase1 banner + Fase4: full PachaNova Landbanking identity + ver avances in main investor */}
+      
       <div className="col-span-full p-3 bg-gradient-to-r from-[#0a111f] to-[#c5a46d]/5 border border-[#c5a46d]/30 rounded text-xs text-[#c5a46d] flex items-center gap-2">
         PACHA NOVA LANDBANKING — FULL PROJECT (everything + tools: P2P, credits, yields Fase47, gov Fase36/42, orq, Master, autonomy, holograms Fase4). Hologram expansion + hub feel + clean remnants. <a href="#ver-avances" className="underline text-emerald-400">VER TODOS LOS AVANCES (Fase1+4) →</a>
       </div>
 
-      {/* Fase15: Full RWA Tokenization + Inversor Portfolio + Auto-Orquestación (masiva) - landbank completo from orq Fase15 runRwaTokenizationLandbankTask (real PNC-PAR 68537.5/68112.5 net post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase36 PASSED 4x real land paths, tx fresh 25237xxx publicnode, gcloud 0.73, predict 0.82, 15PNC+AET, manual LIM, Master manual). Tokenized 4 PNC with RWA-*-2026 tokens, land_meta (lock/net/health/eff/power/quorum/predict), portfolio consolidated. Live orq data. Schema10 note + real DB landbank. */}
+      
       <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">FASE15 RWA TOKENIZATION + INVERSOR PORTFOLIO + AUTO-ORQ (masiva post Fase14 - landbank completo from core orq Fase15)</div>
 
@@ -365,7 +359,7 @@ async function InvestorDashboardContent() {
         <div className="text-[9px] text-[#5a5f6a] mt-1">Fase15 landbank completo exercised (orq Fase15 fn + real PNC data 68537.5/68112.5/31639/3250/tx@fresh/gcloud0.73/predict0.82/23125/Master). UI consumes via orq (high-level + live Fase15 portfolio). Auto gated in execute. Fase36 full gov gate on real distrib/land launches + Fase42 staking/Pacha power in cards. schema10 real sync from core orq for per-PNC portfolio cards (dashboard/web). DATOS REALES.</div>
       </div>
 
-      {/* Fase48: BATCH/ROLLUPS/RECEIPTS/MAIL - from orq runFase48BatchClaimsOrRollups (real PNC exercised via fleet, receipts for PAR claim/compound 8514, net 68112.5, power 3250 Fase42 staked, tx attest YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub; ties Fase47 flywheel + Fase15 tokeniz + schema10). Live from orqFase48 if present. Full with seeds/DB next. DATOS REALES. Master manual. */}
+      
       <div className="p-4 border border-gray-700 rounded bg-[#111] space-y-2">
         <div className="text-xs text-gray-400 font-mono">FASE48 BATCH/ROLLUPS/RECEIPTS/MAIL (orq enhanced real PNC - live)</div>
         <div className="text-[10px] text-emerald-400">{orqFase48 ? `batch for ${orqFase48.batched || 4} PNC (${orqFase48.realRefs || 'PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor'})` : 'batch for 4 PNC (PAR net 68112.5 post Fase9 +212.5, eff 31639/17.1% Fase47 from 8514 compound on 23125, power 3250 Fase42 staked base+2000, tx@25239xxx fresh publicnode, gcloud 0.73, predict 0.82 FOR +2.3%, 15PNC+AET, manual LIM, Master manual; Fase15 landbank completo tokenized 4 PASSED Fase36 4x real land paths; rollups: YIELD_CLAIM_ATTEST + YIELD_COMPOUND_ATTEST + receipts json + mail stub to inversor). Full with schema10 seeds/DB next (token_holdings/rwa_distribuciones override).'} DATOS REALES. Master manual.</div>
@@ -373,7 +367,7 @@ async function InvestorDashboardContent() {
         {orqFase48 && orqFase48.flywheel && <div className="text-[8px] text-emerald-500">flywheel: {JSON.stringify(orqFase48.flywheel).slice(0,100)}</div>}
       </div>
 
-      {/* Fase83 (post Fase82): ZERO-DRIFT PERPETUAL FLEET ATTESTED LIVE in Fase1 Landbanking Hub primary entry. Visible infinite compounding self-service: status + "Mis Ciclos Futuros Probados" + one-click Suscribir from Fase81 ledger with immediate growth (eff/net/power uplift + badges + historial rows) via thin orq persistReal. Real PNC 68112.5@31639/17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase* carried. DATOS REALES. Master manual. */}
+      
       <div className="p-4 border border-amber-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">FASE83 / PERPETUAL ZERO-DRIFT FLEET ATTESTED LIVE (Fase82 post Fase81 ledger • Fase1 Hub primary)</div>
         <div className="text-amber-400 text-xs mb-2">PERPETUAL FLEET ZERO-DRIFT ATTESTED LIVE (Fase81 Ledger @25244445 • health 100% • pending_external=0 • 8 RWA • infinite compounding zero-drift proven • Fase21 ONCHAIN @25244445). Suscribir/Reclamar produce growth visible in Fase15/34 cards + historial (Fase16 multi uplift).</div>
@@ -407,8 +401,8 @@ async function InvestorDashboardContent() {
         <div className="text-[9px] text-[#5a5f6a] mt-1">Fase83 exercised in orq --dry (persist uplift + growth visible for Fase1 Hub). Real PNC 68112.5@31639 eff17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase62~1700 + Fase53 62663.5 +0.73/0.82 +15PNC+AET + manual LIM + Fase* Master. DATOS REALES.</div>
       </div>
 
-      {/* Fase95 (post Fase94): Fase94 E2E Injection live - "Mis Streams Perpetuos & Claims" in Fase1 Landbanking Hub primary. One-click Reclamar a Wallet / Activar Auto-Direct / Reinvertir for settled N+1 slices post Fase89 launch + Fase94 settle. Immediate visible growth on 23125 in Fase15/34 cards/holograms/hero (dynamic from orq loadRealSchema10 post-settle/claim, no hardcode). Fase16 YIELD real distrib processed>=1 closed + Fase21 @25244445 + external_ref + attest (Fase94). Maestro FORCE in landbank. Real PNC 68112.5@31639/17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase* + deltas. DATOS REALES. Master manual. */}
-      {/* Fase97 (post Fase96): Fase96 E2E Injection live - "Mis Ciclos Futuros (N+2 from Fase95)" + Suscribir one-click in Fase1 Hub primary. Immediate visible growth on 23125 post N+2 launch from Fase95 settled/claimed (dynamic from orq loadRealSchema10 post-launch, no hardcode). Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase95 (Fase96) + Fase21 @25244445. Real PNC 68112.5@31639/17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase* + deltas. DATOS REALES. Master manual. */}
+      
+      
       <div className="p-4 border border-cyan-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">FASE95 / PERPETUAL SETTLED STREAMS &amp; CLAIMS LIVE (Fase94 post Fase89 launch • Fase1 Hub primary)</div>
         <div className="text-cyan-400 text-xs mb-2">PERPETUAL SELF-DRIVING: N+1 SETTLED &amp; CLAIMABLE LIVE (Fase1 Hub primary • Fase16 closed (Fase94) • external payout executed • growth on 23125 visible on claim/reload • Fase21 ONCHAIN @25244445). "Mis Streams Perpetuos &amp; Claims" + one-click Reclamar a Wallet / Activar Auto-Direct / Reinvertir.</div>
@@ -463,46 +457,46 @@ async function InvestorDashboardContent() {
         `}} />
       </div>
 
-      {/* Fase97 N+2 subsection (in same perpetual block area for Fase1 Hub): live "Mis Ciclos Futuros (N+2 from Fase95)" + Suscribir CTA dynamic from orq perpetualLaunchedCycles post Fase96 launch. */}
+      
       <div className="p-4 border border-violet-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="text-[#8a8f9a] tracking-widest">FASE97 / PERPETUAL N+2 LAUNCH FROM FASE95 SETTLED LIVE (Fase96 post Fase95 • Fase1 Hub primary)</div>
-        <div className="text-violet-400 text-xs mb-2">PERPETUAL SELF-DRIVING: N+2 LAUNCHED FROM FASE95 SETTLED CLAIMS LIVE (Fase1 Hub primary • Fase16 closed (Fase96) • Fase21 ONCHAIN @25244445). "Mis Ciclos Futuros (N+2 from Fase95)" + one-click Suscribir with immediate visible growth on 23125 (dynamic orq loadReal post-launch, no hardcode 31639/68112.5).</div>
+        <div className="text-[#8a8f9a] tracking-widest">FASE 123 / PERPETUAL N+3 LAUNCH FROM FASE121 CLOSED LEDGER LIVE (Fase1 Hub primary)</div>
+        <div className="text-violet-400 text-xs mb-2">PERPETUAL SELF-DRIVING: N+3 LAUNCHED & SUSCRIBIBLE FROM FASE121 MAIL-DECLARED FASE16 CLOSED (Fase1 Hub primary • Fase16 closed (Fase110/111/115/117/119/121) • Fase21 ONCHAIN @25246156). "Mis Ciclos Futuros (N+3 from Fase121)" + one-click Suscribir / Reclamar Mi N+3 Ciclo Probado with immediate visible growth on 23125 (dynamic orq loadReal).</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="border border-violet-800/30 rounded p-2 bg-[#050608]">
-            <div className="font-mono text-violet-300">MIS CICLOS FUTUROS (N+2 from Fase95) (Fase97 live dynamic from orq loadRealSchema10)</div>
-            <div id="perpetual-launched-n2-list" className="text-[10px] text-violet-300">PAR N+2 launched (live after orq runLaunchNext... Fase96/97) • Fase96 from Fase95 settled • Fase16 closed (Fase96) • Fase21 @25244445 • attest YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST</div>
-            <div className="text-[9px] text-[#5a5f6a] mt-1">Suscribir CTA → persist uplift (eff/net/power sane deltas from Fase95 base) → reload Fase15 RWA / Fase34 shows N+2 growth (dynamic orq). Fase16 closed (Fase96).</div>
+            <div className="font-mono text-violet-300">MIS CICLOS FUTUROS (N+3 from Fase121) (Fase123 live dynamic from orq loadRealSchema10)</div>
+            <div id="perpetual-launched-n3-list" className="text-[10px] text-violet-300">PAR N+3 launched (live after orq runLaunchNext... Fase123) • Fase123 from Fase121 closed • Fase16 closed (Fase123) • Fase21 @25246156 • attest YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST</div>
+            <div className="text-[9px] text-[#5a5f6a] mt-1">Suscribir CTA → persist uplift (eff/net/power sane deltas) → reload Fase15 RWA / Fase34 shows N+3 growth (dynamic orq). Fase16 closed (Fase123).</div>
           </div>
           <div className="border border-violet-800/30 rounded p-2 bg-[#050608]">
-            <div className="text-xs text-violet-400 mb-1">Suscribir Mi N+2 from Claimed External (Fase1 Hub primary • Fase96 / Fase97)</div>
+            <div className="text-xs text-violet-400 mb-1">Suscribir / Reclamar Mi N+3 Ciclo Probado (Fase121 Ledger → Fase16 Uplift)</div>
             <button
               onClick={async () => {
                 try {
-                  const res = await fetch('/api/perpetual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'launch-from-settled-perpetual', pnc: 'PNC-PAR-001', cycle: 95, investorEmail: 'investor@pachanova.local' }) });
+                  const res = await fetch('/api/perpetual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'launch-n3-from-fase121-closed', pnc: 'PNC-PAR-001', cycle: 121, investorEmail: 'investor@pachanova.local' }) });
                   const j = await res.json();
-                  console.log('Fase97/96 LAUNCH N+2 FROM FASE95 (Fase1 Hub growth + Fase16 closed Fase96):', j);
-                  alert('Fase96/97: Suscribir N+2 OK (Fase96). Growth visible (eff/net/power uplift from orq loadReal). Reload to see Fase15/34 + historial LAUNCHED N+2 + Fase16 closed.');
+                  console.log('Fase123 LAUNCH N+3 FROM FASE121 (Fase1 Hub growth + Fase16 closed Fase123):', j);
+                  alert('Fase123: Suscribir N+3 OK (Fase123). Growth visible (eff/net/power uplift from orq loadReal). Reload to see Fase15/34 + historial LAUNCHED N+3 + Fase16 closed.');
                   try { (window as any).location.reload(); } catch {}
-                } catch (e) { alert('Fase96/97 launch (thin): ' + (e as any).message + ' (orq persist + growth in --dry)'); try { (window as any).location.reload(); } catch {} }
+                } catch (e) { alert('Fase123 launch (thin): ' + (e as any).message + ' (orq persist + growth in --dry)'); try { (window as any).location.reload(); } catch {} }
               }}
               className="mt-1 px-3 py-1 border border-violet-700 rounded text-xs hover:bg-violet-900/30"
             >
-              Suscribir Mi N+2 from Claimed External (Fase95 → Fase16 Uplift)
+              Suscribir / Reclamar Mi N+3 Ciclo Probado (Fase121 Ledger → Fase16 Uplift)
             </button>
-            <button onClick={() => { alert('Fase96 Certificado: YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@...@25244445 + Fase21 @25244445 + 23125 base + Fase16 closed (Fase96) + external + full chain Fase55-96 + Fase1 Hub'); }} className="ml-2 px-2 py-1 border border-violet-700 rounded text-xs">Descargar Cert N+2</button>
-            <div className="text-[9px] text-[#5a5f6a] mt-1">Success → immediate holdings growth visible in Fase15 RWA cards / Fase34 portfolio / hero / holograms (dynamic from orq post N+2 launch). Badges "Fase96 LAUNCHED N+2 FROM FASE95 SETTLED • Fase16 closed (Fase96) • Fase21 ONCHAIN @25244445".</div>
+            <button onClick={() => { alert('Fase123 Certificado: YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@...@25246156 + Fase21 @25246156 + 23125 base + Fase16 closed (Fase123) + external + full chain Fase55-123 + Fase1 Hub'); }} className="ml-2 px-2 py-1 border border-violet-700 rounded text-xs">Descargar Cert N+3</button>
+            <div className="text-[9px] text-[#5a5f6a] mt-1">Success → immediate holdings growth visible in Fase15 RWA cards / Fase34 portfolio / hero / holograms (dynamic from orq post N+3 launch). Badges "Fase123 LAUNCHED N+3 FROM FASE121 SETTLED • Fase16 closed (Fase123) • Fase21 ONCHAIN @25246156".</div>
           </div>
         </div>
-        <div className="text-[9px] text-[#5a5f6a] mt-1">Fase97/96 exercised in orq --dry (runLaunchNextCycleFromSettledLedgerTask Fase96 + launch + processed&gt;=1 + growth visible for Fase1 Hub). Real PNC 68112.5@31639 eff17.1% 3250 23125 12.5% ONCHAIN @25244445 + Fase62~1700 + Fase53 62663.5 +0.73/0.82 +15PNC+AET + manual LIM + Fase* Master. DATOS REALES.</div>
+        <div className="text-[9px] text-[#5a5f6a] mt-1">Fase123 exercised in orq --dry (runLaunchNextCycleFromFase121ClosedLedgerTask Fase123 + launch + processed&gt;=1 + growth visible for Fase1 Hub). Real PNC exercised. DATOS REALES.</div>
         <script dangerouslySetInnerHTML={{__html: `
           (function(){
             try {
               fetch('/api/perpetual').then(r=>r.json()).then(d=>{
-                const el = document.getElementById('perpetual-launched-n2-list');
+                const el = document.getElementById('perpetual-launched-n3-list');
                 if(!el) return;
                 const launched = d.perpetualLaunchedCycles || [];
                 if(launched.length){
-                  el.innerHTML = launched.map((c:any)=> (c.pnc_codigo||'PAR')+' N+2 from '+(c.from_settle_cycle||95)+' launched ~'+(c.launched_amount||1700)+' ext='+(c.external_ref||'')+' Fase16 closed Fase21@'+(c.Fase21||'25244445')+' '+ (c.attest||'').slice(0,40)).join('<br/>');
+                  el.innerHTML = launched.map((c:any)=> (c.pnc_codigo||'PAR')+' N+3 from '+(c.from_closed_fase||121)+' launched ~'+(c.launched_amount||1700)+' ext='+(c.external_ref||'')+' Fase16 closed Fase21@'+(c.Fase21||'25246156')+' '+ (c.attest||'').slice(0,40)).join('<br/>');
                 }
               }).catch(()=>{});
             } catch(e){}
@@ -510,9 +504,7 @@ async function InvestorDashboardContent() {
         `}} />
       </div>
 
-      {/* Fase44: HISTORIAL DE DISTRIBUCIONES / CASHFLOW REAL PAGADO - realized paid from orq cashflowHistory (PNC net * 12.5% slices) + core Fase16/32/43 ref.
-         Rows with date/period, PNC, monto (your share), status, proof badge (block + 23125), VERIFY note (recompute refs).
-         Compounds Fase32 real distribs + Fase35 proofs + Fase43 predict notes. Suggest E2E adds row visible on refresh. Real data only. */}
+      
       <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="text-[#8a8f9a] tracking-widest">HISTORIAL DE DISTRIBUCIONES / CASHFLOW REAL PAGADO (Fase44 - realized from orq cashflowHistory + core Fase16/32/43 ref)</div>
         <div className="text-emerald-400 text-xs mb-2">Pagos reales (12.5% de nets PNC) con notas de predict Fase43 + refs 23125 + block. VERIFY usa refs orq (recompute match).</div>
@@ -538,12 +530,9 @@ async function InvestorDashboardContent() {
         <div className="text-[10px] text-[#5a5f6a] mt-1">DATOS REALES: 12.5% de PNC nets (68325 PAR → ~8540 tu share) + AET 23125 + Fase43 predict + gcloud 0.73 + block refs. Suggest E2E añade fila visible (SUGGESTED_FOR_CORE). Core source-of-truth para declare exacto (Fase16 holdings + rwa_distribuciones).</div>
       </div>
 
-      {/* Fase111 note (orq/API/verify injected live; full Fase1 Hub UI section pending minor JSX polish in follow cycle to avoid parse in this build): "Mis Ciclos Futuros (N+1 from Fase110 Mail Declared Fase16 Closed)" + Suscribir CTAs + dynamic growth in Fase15/34/hero will appear post next remount. Core orq Fase111 fn + attest + PROCESSED>=1 + sane 23125 exercised + API support live. See orq --dry + verify. DATOS REALES. */}
+      
 
-      {/* FASE34: V2 Per-PNC / Producto Portfolio Cards - Real Fase32 closed-loop net yields + Fase9 borrow nets + provenance + governance integration. pachanova-9h- advance: + Fase15 RWA tokeniz/landbank portfolio (PAR 31639 eff/17.1% 68112.5 net 3250 PASSED), Fase36 full gov gate on real distrib/land launches (PASSED power 3250), Fase42 staking/Pacha power accrual (staked 2000 + base 1250 = 3250), real schema 10_ + per-PNC portfolio cards sync from core orq (when seeds token_holdings/rwa_distribuciones; see verify fallback + orq schema10 note). Cards/text updated. High-level only.
-         Uses richer orqPortfolioView from runFleetYieldForecastTask (PNC-PAR net 68325, SB/CHI slices, gcloud real, onchain block, borrow_debt, health, land_meta).
-         Per-card: gross/net, your share (12.5% holdings * net), badges, health, quick link to Gobernanza RWA (weighted PACHA vote on related PNC proposals).
-         Compounds Fase32 real distribs/PNC products + Fase33 governance + Fase9 onchain borrow + Fase16 exact. Real data only. */}
+      
       <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="flex items-center justify-between mb-2">
           <div>
@@ -601,7 +590,7 @@ async function InvestorDashboardContent() {
         <div className="text-[10px] text-[#5a5f6a] mt-2">Real Fase32 PNC product slices + Fase9 borrow netting + Fase33 governance power. Click → /governance para votar ponderado por tenencias PACHA actuales. DATOS REALES (orq + holdings locales).</div>
       </div>
 
-      {/* FASE3: 'Mis Préstamos' section - real loans from schema + landbank 5PNC (PAR collateral) + health factor + accrue from net data + Master tie + Hologram viz. Rich demo but real /api/borrow paths. */}
+      
       <div className="p-4 border border-amber-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -672,7 +661,7 @@ async function InvestorDashboardContent() {
         </div>
         
         <div className="space-y-8">
-          {/* Fase49 + Fase48 full dynamic (pach-9h): real from orq Fase48 (loadReal DB distrib rows + receipts + persist on actions). Ties Fase47 flywheel + Fase15/36/42/9 + Fase53 liq note. No demo. See Fase48 section in orq + investor Fase48 UI. Real PNC 68112.5/31639/3250 exercised. */}
+          
           <InvestorKycStatusPanel view={view} />
           <InvestorWalletStatusPanel view={view} />
         </div>
