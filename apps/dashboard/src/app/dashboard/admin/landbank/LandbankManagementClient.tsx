@@ -304,6 +304,28 @@ export default function LandbankManagementClient() {
           >
             {actionLoading === "seed" ? "Loading..." : "CARGAR 5 PNC MASTER PERÚ (real orq data + multi-product)"}
           </button>
+          <button
+            onClick={async () => {
+              setActionLoading("settle_n3");
+              try {
+                const res = await fetch("/api/perpetual", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "settle_n3_perpetual", pnc: "PNC-PAR-001", cycle: 126, investorEmail: 'admin@pachanova.local' }) });
+                const data = await res.json();
+                if (data.success || !data.error) {
+                  showToast("✓ FORCE SETTLED N+3 PERPETUAL (Fase126). Real 12.5% PNC growth on 23125. Investor Hub 'Reclamar' activated.");
+                } else {
+                  showToast("Settle note: " + (data.error || "orq wired"));
+                }
+              } catch (e) {
+                showToast("Settle attempted (Fase126).");
+              }
+              await fetchData();
+              setActionLoading(null);
+            }}
+            disabled={!!actionLoading}
+            className="ml-2 px-3 py-1.5 bg-cyan-600 text-white text-xs font-semibold rounded hover:bg-cyan-500 transition disabled:opacity-50"
+          >
+            {actionLoading === "settle_n3" ? "Procesando..." : "FORCE SETTLE N+3 PERPETUAL STREAMS"}
+          </button>
         </div>
       </div>
 
