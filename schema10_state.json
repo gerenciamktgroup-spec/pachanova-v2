@@ -4,7 +4,7 @@
       "investor_id": "admin",
       "pnc_codigo": "PNC-PAR-001",
       "holdings_amount": 23125,
-      "effective_amount": 6383510,
+      "effective_amount": 8290219,
       "land_meta": {
         "geo": "Paracas 5ha",
         "product": "alquiler_yield",
@@ -17,16 +17,18 @@
         "fase36_status": "ready_for_launch",
         "fase42_power": 3250,
         "updated_via_fase49": true,
-        "last_flywheel": "2026-06-04T15:32:51.564Z",
-        "last_compound": "2026-06-04T15:32:51.570Z",
-        "effHoldings": 5965897,
-        "fase93_settle": "external treasury-settle-93-pncpar001 Fase16_closed Fase21@25244445"
+        "last_flywheel": "2026-06-04T18:24:39.034Z",
+        "last_compound": "2026-06-04T18:24:39.038Z",
+        "effHoldings": 8290219,
+        "fase93_settle": "external treasury-settle-93-pncpar001 Fase16_closed Fase21@25244445",
+        "fase95_settle": "external treasury-settle-95-pncpar001 Fase16_closed Fase21@25244445 Fase94",
+        "fase96_n2_launch": "from Fase95 settled n2-launch-from-95-pncpar001 Fase16_closed Fase21@25244445 Fase96"
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z",
       "effHoldings": 33940.48,
-      "net_yield": 69812.5,
-      "pacha_power": 3675,
+      "net_yield": 76636.5,
+      "pacha_power": 3676,
       "last_fase": "Fase83 attested N+2"
     }
   ],
@@ -40,7 +42,7 @@
       "tx_proof": "YIELD_CLAIM_ATTEST@25242xxx + 23125 + predict 0.82 + Fase9/47",
       "status": "COMPOUNDED",
       "claimed_at": "2026-06-04",
-      "compound_at": "2026-06-04T15:32:51.565Z",
+      "compound_at": "2026-06-04T18:24:39.034Z",
       "created_at": "2026-06-04T00:00:00Z"
     },
     {
@@ -60,12 +62,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -74,12 +77,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -88,12 +92,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -102,12 +107,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -116,12 +122,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -130,12 +137,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -144,12 +152,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -158,12 +167,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -172,12 +182,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -186,12 +197,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -200,12 +212,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -214,12 +227,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -228,12 +242,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -242,12 +257,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -256,12 +272,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -270,12 +287,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -284,12 +302,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -298,12 +317,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -312,12 +332,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -326,12 +347,13 @@
       "health_ratio": 1.65,
       "period": "2026-Fase82",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-82"
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -340,22 +362,279 @@
       "health_ratio": 1.65,
       "period": "2026-Fase83",
       "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
-      "status": "ATTESTED_ZERO_DRIFT",
+      "status": "COMPOUNDED",
       "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
       "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
-      "external_ref": "Fase81-ledger-recon-83"
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
       "distrib_amount": 8514,
       "net_yield_post": 8514,
-      "status": "SETTLED",
+      "status": "COMPOUNDED",
       "period": "2026-06-N+1",
       "external_ref": "treasury-settle-93-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-93-pncpar001@25244445",
-      "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445"
+      "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-93-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-93-pncpar001@25244445",
+      "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+2",
+      "external_ref": "n2-launch-from-95-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@n2-launch-from-95-pncpar001@25244445",
+      "note": "Fase96 LAUNCHED N+2 from Fase95 SETTLED CLAIMS; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase95 settle/claim (Fase96); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83",
+      "compound_at": "2026-06-04T18:24:39.034Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8524,
+      "net_yield_post": 8524,
+      "health_ratio": 1.65,
+      "period": "2026-Fase83",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "status": "ATTESTED_ZERO_DRIFT",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle83@25244445",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33940.48",
+      "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-83"
     }
   ],
   "land_meta": {
@@ -365,7 +644,7 @@
       "geo": "Paracas 5ha",
       "aum": 31639,
       "eff_holdings": 31639.06,
-      "net_yield": 69812.5,
+      "net_yield": 71512.5,
       "pacha_power": 3675,
       "gov_quorum_passed": true,
       "fase36": "GOV QUORUM PASSED power 3250 (Fase42 staked) ready_for_launch",
@@ -382,8 +661,105 @@
       },
       "schema10_applied": true,
       "fase53_liq_note": "high-level sync from core if liq events (no impact yet on dedicated; audit provenance carried)",
-      "effHoldings": 6383510,
-      "fase93": "SETTLED external treasury-settle-93-pncpar001 Fase16 closed"
+      "effHoldings": 33339,
+      "fase93": "SETTLED external treasury-settle-93-pncpar001 Fase16 closed",
+      "fase95": "SETTLED external treasury-settle-95-pncpar001 Fase16 closed Fase94",
+      "fase96": "N+2 LAUNCHED from Fase95 settled n2-launch-from-95-pncpar001 Fase16 closed Fase96"
     }
-  }
+  },
+  "perpetual_settled_claims": [
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 89,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 89,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 89,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 89,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 95,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
+    }
+  ],
+  "perpetual_launched_cycles": [
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 96,
+      "launched_amount": 1700,
+      "from_settle_cycle": 95,
+      "external_ref": "n2-launch-from-95-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@n2-launch-from-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase96 N+2 LAUNCHED FROM FASE95 SETTLED (Fase96) Fase16 closed"
+    }
+  ]
 }
