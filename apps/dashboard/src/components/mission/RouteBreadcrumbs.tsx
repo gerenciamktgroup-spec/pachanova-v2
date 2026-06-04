@@ -7,7 +7,7 @@ export interface BreadcrumbItem {
   href?: string;
 }
 
-export function RouteBreadcrumbs({ items, className }: { items: BreadcrumbItem[], className?: string }) {
+export function RouteBreadcrumbs({ items = [], className }: { items?: BreadcrumbItem[], className?: string }) {
   return (
     <nav aria-label="Breadcrumb" className={cn("flex items-center space-x-1 text-sm text-pn-text-muted", className)}>
       {items.map((item, index) => (

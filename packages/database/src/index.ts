@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/neon-http'
-import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import { createClient } from '@supabase/supabase-js'
 import * as schema from './schema/index.ts'
 
@@ -25,7 +25,7 @@ export function getDb(): DrizzleDB {
   if (!dbUrl || dbUrl.includes('[TU_PASSWORD]') || dbUrl.includes('placeholder')) {
     throw new Error('DATABASE_URL no configurada en Vercel -> Settings -> Environment Variables')
   }
-  const sql = neon(dbUrl)
-  _db = drizzle(sql, { schema })
+  const client = postgres(dbUrl, { prepare: false })
+  _db = drizzle(client, { schema })
   return _db
 }
