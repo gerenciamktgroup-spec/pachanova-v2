@@ -1,4 +1,4 @@
-import { pgTable, uuid, numeric, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, uuid, numeric, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 import { investors } from "./investors.ts";
 import { properties } from "./properties.ts";
 
@@ -11,6 +11,9 @@ export const balances = pgTable("balances", {
   availableTokens: numeric("available_tokens", { precision: 18, scale: 2 }).notNull().default("0"),
   lockedTokens: numeric("locked_tokens", { precision: 18, scale: 2 }).notNull().default("0"),
   reservedTokens: numeric("reserved_tokens", { precision: 18, scale: 2 }).notNull().default("0"),
+  onchainProof: varchar("onchain_proof", { length: 255 }),
+  lastOnchainSync: timestamp("last_onchain_sync"),
+  onchainVerifiedPct: numeric("onchain_verified_pct", { precision: 5, scale: 2 }),
   lastUpdatedAt: timestamp("last_updated_at").defaultNow().notNull(),
 }, (table) => {
   return {

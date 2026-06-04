@@ -14,5 +14,7 @@ export const distributions = pgTable("distributions", {
   proofRef: varchar("proof_ref", { length: 255 }),
   claimedAt: timestamp("claimed_at"),
   compoundDetails: jsonb("compound_details"),
+  onchainProof: varchar("onchain_proof", { length: 255 }),
+  lastOnchainSync: timestamp("last_onchain_sync"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

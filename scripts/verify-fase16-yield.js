@@ -402,3 +402,20 @@ try {
 } catch (e) { console.log('Fase46 note (pachanova-9h-):', e.message); }
 
 console.log('✅ Fase46 yield cashflow flywheel verify section complete (high-level exercised)');
+
+console.log('--- Fase21: Onchain Holdings Sync (runOnchainHoldingsSyncTask en orchestrator_agent.cjs) ---');
+try {
+  const orq = require('../orchestrator_agent.cjs');
+  if (typeof orq.runOnchainHoldingsSyncTask === 'function') {
+    (async () => {
+      const res = await orq.runOnchainHoldingsSyncTask();
+      if (res && res.success && res.onchain && res.onchain.verified) {
+        console.log('✅ Fase21 Onchain Sync: ' + res.onchain.pct + '% verified at block ' + res.onchain.blockNum + ' (tx: ' + res.onchain.txHashes[0] + ')');
+      } else {
+        console.log('⚠️ Fase21 Onchain Sync falló o la respuesta no es la esperada.');
+      }
+    })().catch(e => console.log('Fase21 async note:', e.message));
+  } else {
+    console.log('❌ runOnchainHoldingsSyncTask function not found on orchestrator');
+  }
+} catch (e) { console.log('Fase21 note:', e.message); }
