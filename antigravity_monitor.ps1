@@ -6,10 +6,10 @@ $Host.UI.RawUI.ForegroundColor = "Green"
 Clear-Host
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "   🚀 ANTIGRAVITY & GROK - MONITOR AUTÓNOMO EN VIVO 🚀   " -ForegroundColor Cyan
+Write-Host "   🚀 ANTIGRAVITY & GROK - MONITOR AUTONOMO EN VIVO 🚀   " -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "Modo Autónomo: ACTIVADO (Bucle de 10 Horas)" -ForegroundColor Yellow
-Write-Host "Presiona Ctrl+C para cerrar este monitor (el agente no se detendrá)." -ForegroundColor Gray
+Write-Host "Modo Autonomo: ACTIVADO (Bucle de 10 Horas)" -ForegroundColor Yellow
+Write-Host "Presiona Ctrl+C para cerrar este monitor (el agente no se detendra)." -ForegroundColor Gray
 Write-Host "------------------------------------------------------------" -ForegroundColor DarkGray
 
 $tasksDir = "C:\Users\LENOVO\.gemini\antigravity-ide\brain\ea60cddd-02dd-4274-a381-a85a71020e4b\.system_generated\tasks"
@@ -20,7 +20,7 @@ $latestTaskLog = Get-ChildItem -Path $tasksDir -Filter "*.log" | Sort-Object Las
 Write-Host "[SISTEMA] Conectando con los nervios centrales del agente..." -ForegroundColor Magenta
 
 if ($latestTaskLog) {
-    Write-Host "[MONITOR] Tailing el log más reciente del sistema: $($latestTaskLog.Name)" -ForegroundColor Magenta
+    Write-Host "[MONITOR] Tailing el log mas reciente del sistema: $($latestTaskLog.Name)" -ForegroundColor Magenta
     Write-Host "------------------------------------------------------------" -ForegroundColor DarkGray
     
     # Usamos un bucle para poder revisar si hay actividad nueva y mantener la terminal viva
@@ -29,7 +29,7 @@ if ($latestTaskLog) {
     Write-Host "[!] No se encontraron logs de tareas activos en tiempo real." -ForegroundColor Red
     while ($true) {
         $time = Get-Date -Format "HH:mm:ss"
-        Write-Host "[$time] El agente está en espera de la siguiente señal del cron..." -ForegroundColor Green
+        Write-Host "[$time] El agente esta en espera de la siguiente senal del cron..." -ForegroundColor Green
         Start-Sleep -Seconds 10
     }
 }

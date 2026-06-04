@@ -1,0 +1,10 @@
+grok.exe : [2m2026-06-04T11:27:48.231933Z[0m [31mERROR[0m tool_error: execution_failure 
+[3msession_id[0m[2m=[0m019e9261-34ba-7192-93de-1e9d7e45b089 [3mtool_name[0m[2m=[0m"write" 
+[3mmodel_id[0m[2m=[0m"grok-build" [3merror_kind[0m[2m=[0m"execution_failure" [3merror_message[0m[2m=[0mIO 
+Error: El proceso no tiene acceso al archivo porque est├í siendo utilizado por otro proceso. (os error 32)
+En C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\ejecutar_grok.ps1: 40 Carácter: 5
++     & "C:\Users\LENOVO\.grok\bin\grok.exe" --prompt-file "$Instruccio ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([2m2026-06-04T.... (os error 32):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
