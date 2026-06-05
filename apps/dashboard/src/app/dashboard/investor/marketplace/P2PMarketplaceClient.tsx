@@ -17,7 +17,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
     setIsSubmitting(true);
     setMessage("");
     try {
-      const res = await fetch("/api/demo/actions/p2p/create-order", {
+      const res = await fetch("/api/p2p/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price, propertyId: selectedPnc }) // Fase2: tie to landbank PNC for full project
@@ -40,7 +40,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
     setIsSubmitting(true);
     setMessage("");
     try {
-      const res = await fetch("/api/demo/actions/p2p/buy-order", {
+      const res = await fetch("/api/p2p/buy-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ buyerInvestorId: currentUserId, orderId })
