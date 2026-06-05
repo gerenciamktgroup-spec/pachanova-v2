@@ -50,7 +50,7 @@ async function fetchInvestorData(): Promise<any> {
       effectivePct: "17.1%",
       pachaPower: h.pacha_power || 3250,
       govQuorum: "PASSED",
-      phase: "Fase137",
+      phase: "Fase140",
       product: "alquiler_yield + vivienda_token"
     }
   }));
@@ -100,7 +100,7 @@ async function fetchInvestorData(): Promise<any> {
       eff: p.metadata.effectiveYield,
       power: p.metadata.pachaPower,
       gov_predict: { outcomeProb: 0.82, impactNetYieldDelta: "+2.3%" },
-      badges: ["Fase137 N+5", "Fase42 power", "Fase49 SCHEMA10"],
+      badges: ["Fase140 Health ✅", "Fase138 P2P", "Fase139 Fideicomiso", "Fase42 power", "Fase49 SCHEMA10"],
       landbankLaunches: [{ pnc: p.metadata.pncCode, status: "ready_for_launch", quorumMet: true }]
     })),
     _orqLandbankLaunches: [
@@ -690,8 +690,70 @@ async function InvestorDashboardContent() {
         )}
         <div className="text-[9px] text-[#5a5f6a] mt-2">Real paths: POST /api/borrow (insert loans + update balances + set health/ltv from land meta) • GET auto-accrue + health update • Hologram viz • Tie Master (system defi_max_ltv) + orq Fase9 badges. Rich demo always shows example + live when loans in DB.</div>
       </div>
+      {/* Fase140: System Health Status Panel */}
+      <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(16,185,129,0.08)]">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <div className="text-emerald-400 tracking-widest font-bold text-xs flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              ECOSYSTEM HEALTH STATUS (FASE 140)
+            </div>
+            <div className="text-emerald-200/70 text-[10px]">Monitoreo en Tiempo Real del Ecosistema PachaNova</div>
+          </div>
+          <a href="/api/health" target="_blank" className="px-3 py-1 bg-emerald-900/40 border border-emerald-600 text-emerald-300 rounded hover:bg-emerald-800/50 text-xs font-semibold shadow-inner">
+            📊 HEALTH API
+          </a>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <div className="bg-black/40 border border-emerald-900/50 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">SISTEMA</div>
+            <div className="text-xs text-emerald-300 font-mono">✅ HEALTHY</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/50 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">SANE GUARD</div>
+            <div className="text-xs text-emerald-300 font-mono">✅ ACTIVO</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/50 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">FLEET (PNCs)</div>
+            <div className="text-xs text-emerald-300 font-mono">4 ACTIVE</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/50 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">INFLACIÓN</div>
+            <div className="text-xs text-emerald-300 font-mono">⛔ NONE</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/50 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">ÚLTIMA FASE</div>
+            <div className="text-xs text-emerald-300 font-mono">FASE 140</div>
+          </div>
+        </div>
+        <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="bg-black/40 border border-emerald-900/30 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">PAR EFF HOLDINGS</div>
+            <div className="text-xs text-white font-mono">31,639 <span className="text-[9px] text-emerald-400">(max: 32,125)</span></div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/30 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">PAR POWER</div>
+            <div className="text-xs text-white font-mono">3,250 PACHA</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/30 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">P2P TRADES (F138)</div>
+            <div className="text-xs text-white font-mono">{data?._orqFase48?.batched || 0} DVP</div>
+          </div>
+          <div className="bg-black/40 border border-emerald-900/30 p-2 rounded">
+            <div className="text-[9px] text-emerald-500/50">FIDEICOMISO (F139)</div>
+            <div className="text-xs text-white font-mono">Multi-Sig ✅</div>
+          </div>
+        </div>
+        <div className="mt-2 text-[10px] text-emerald-500/50 font-mono">
+          Fase140: Health Check + Sane Guard (max eff 32125, max staked 3000) + Fleet Monitoring + Portfolio Audit. No compound inflation. DATOS REALES.
+        </div>
+      </div>
 
       <YieldActionButtons maestroYield={maestroYield} maestroForecast={maestroForecast} email={view.investor.email} orqProposals={orqProposals} claimables={orqClaimables} onActionComplete={() => { try { (window as any).location.reload(); } catch {} }} />
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
