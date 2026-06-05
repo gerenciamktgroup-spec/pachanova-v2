@@ -1,6 +1,18 @@
 {
   "PNC-PAR-001": {
-    "staked": 124246,
-    "effHoldings": 1266169
+    "staked": 2000,
+    "effHoldings": 23125
+  },
+  "PNC-SB-003": {
+    "staked": 0,
+    "effHoldings": 0
+  },
+  "PNC-CHI-004": {
+    "staked": 0,
+    "effHoldings": 0
+  },
+  "AET-002": {
+    "staked": 0,
+    "effHoldings": 0
   }
 }

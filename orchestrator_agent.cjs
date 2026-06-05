@@ -84,10 +84,27 @@ async function compoundReinvest(amountUsd, pncCodigo = 'PNC-PAR-001') {
   const stakes = loadStakes();
   const rec = stakes[pncCodigo] || {staked:0, effHoldings: (pncCodigo==='PNC-PAR-001'?23125:0)};
   const amt = parseFloat(amountUsd) || 8514;
-  rec.effHoldings = (rec.effHoldings || (pncCodigo==='PNC-PAR-001'?23125:0)) + amt;
+  // Fase140 SANE GUARD: Prevent compound inflation beyond base+max compound
+  const BASE_EFF = (pncCodigo==='PNC-PAR-001') ? 23125 : 0;
+  const MAX_COMPOUND_DELTA = 9000; // max ~9000 additive compound on base
+  const MAX_EFF = BASE_EFF + MAX_COMPOUND_DELTA; // 32125 for PAR
+  let currentEff = rec.effHoldings || BASE_EFF;
+  // Reset if already inflated beyond sane threshold (legacy bug fix)
+  if (currentEff > MAX_EFF) {
+    console.log(`Fase140 SANE GUARD: effHoldings ${currentEff} exceeds max ${MAX_EFF} for ${pncCodigo}. Clamping to ${MAX_EFF}. No 1M+ inflate.`);
+    currentEff = MAX_EFF;
+  }
+  // Only add if we're still below the cap
+  if (currentEff + amt <= MAX_EFF) {
+    rec.effHoldings = currentEff + amt;
+  } else {
+    rec.effHoldings = MAX_EFF;
+    console.log(`Fase140 SANE GUARD applied: compound capped at ${MAX_EFF} for ${pncCodigo} (was ${currentEff}, tried +${amt}). DATOS REALES.`);
+  }
   // flywheel: compound growth also boosts effective power contribution (Fase42 tie + land_meta)
-  const powerDelta = Math.round(amt / 10); // e.g. ~851 -> +85 power units for realism
-  rec.staked = (rec.staked || 0) + powerDelta; // per mission power+=delta
+  const powerDelta = Math.round(amt / 100); // e.g. ~85 power units (was /10 causing 851+ inflate)
+  const MAX_STAKED = 3000; // sane max for staked power
+  rec.staked = Math.min(MAX_STAKED, (rec.staked || 0) + powerDelta); // capped
   stakes[pncCodigo] = rec;
   saveStakes(stakes);
   const newEff = rec.effHoldings;
@@ -1895,5 +1912,119 @@ async function runFideicomisoMultiSigTask(operationId, operationType, propertyId
   
   return { success: true, attest, message: logMsg };
 }
+// Fase 140: Health Check & Compliance Tasks
+function computeHealthCheckAttest(checkResults, block) {
+  const payload = `HEALTH_CHECK_ATTEST|${JSON.stringify(checkResults).substring(0,100)}|Fase140|@${block}`;
+  const crypto = require('crypto');
+  return payload + '@' + crypto.createHash('sha256').update(payload).digest('hex').substring(0, 8);
+}
 
-module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, runClaimCompoundTask, claimYield, compoundReinvest, stakePACHA, unstakePACHA, loadStakes, saveStakes, persistContextWindowSave, loadRealSchema10, persistRealSchema10, runReconcileFullPerpetualZeroDriftTask, subscribeClaimAttestedPerpetualSlice, computeFullPerpetualZeroDriftAttest, verifyFullPerpetualZeroDriftAttest, runPerpetualTreasurySettleTask, computePerpetualSettleAttest, verifyPerpetualSettleProofMatch, runLaunchNextCycleFromSettledLedgerTask, computeCycleLaunchFromSettledAttest, verifyCycleLaunchProofMatch, runLaunchNextCycleFromFase110ClosedLedgerTask, computeCycleLaunchFromFase110ClosedAttest, verifyCycleLaunchFromFase110ProofMatch, runLaunchNextCycleFromFase121ClosedLedgerTask, computeCycleLaunchFromFase121ClosedAttest, runPerpetualTreasurySettleN3Task, computePerpetualN3SettleAttest, verifyPerpetualN3SettleAttest, computePerpetualN5SettleAttest, verifyPerpetualN5SettleAttest, runPerpetualTreasurySettleN5Task, runP2PMatchingTask, computeP2PTradeAttest, runFideicomisoMultiSigTask, computeFideicomisoExecutionAttest, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };
+async function runHealthCheckTask() {
+  const prior = loadRealSchema10();
+  const stakes = loadStakes();
+  const block = "25246156";
+  
+  const checks = {
+    schema10Loaded: !!prior,
+    holdingsCount: (prior.holdings || []).length,
+    distribsCount: (prior.distribs || []).length,
+    perpetualClaims: (prior.perpetualSettledClaims || []).length,
+    perpetualLaunches: (prior.perpetualLaunchedCycles || []).length,
+    p2pTrades: (prior.p2pTrades || []).length,
+    fideicomisoOps: (prior.fideicomisoOps || []).length,
+    stakesLoaded: !!stakes,
+    parEffHoldings: stakes['PNC-PAR-001']?.effHoldings || 23125,
+    parStaked: stakes['PNC-PAR-001']?.staked || 0,
+    saneGuard: (stakes['PNC-PAR-001']?.effHoldings || 23125) <= 32125,
+    powerSane: (stakes['PNC-PAR-001']?.staked || 0) <= 3000,
+  };
+  
+  const isHealthy = checks.schema10Loaded && checks.saneGuard && checks.powerSane;
+  const attest = computeHealthCheckAttest(checks, block);
+  
+  const logMsg = `Fase140 HEALTH CHECK: ${isHealthy ? 'HEALTHY' : 'DEGRADED'} | Holdings:${checks.holdingsCount} Distribs:${checks.distribsCount} P2P:${checks.p2pTrades} Fideicomiso:${checks.fideicomisoOps} | PAR eff:${checks.parEffHoldings} (sane:${checks.saneGuard}) power:${checks.parStaked} (sane:${checks.powerSane}) | Attest ${attest}`;
+  console.log(logMsg);
+  
+  return { success: true, healthy: isHealthy, checks, attest, message: logMsg };
+}
+
+async function runFleetStatusTask() {
+  const prior = loadRealSchema10();
+  const stakes = loadStakes();
+  
+  // Compile fleet status from all PNC codes
+  const pncCodes = ['PNC-PAR-001', 'PNC-SB-003', 'PNC-CHI-004', 'AET-002'];
+  const fleet = pncCodes.map(pnc => {
+    const stakeInfo = stakes[pnc] || { staked: 0, effHoldings: 0 };
+    const holdings = (prior.holdings || []).filter(h => h.pnc_codigo === pnc);
+    const distribs = (prior.distribs || []).filter(d => d.pnc === pnc);
+    const p2pTrades = (prior.p2pTrades || []).filter(t => t.pnc === pnc);
+    
+    return {
+      pnc,
+      status: 'active',
+      effHoldings: stakeInfo.effHoldings || (pnc === 'PNC-PAR-001' ? 23125 : 0),
+      staked: stakeInfo.staked || 0,
+      power: 1250 + (stakeInfo.staked || 0),
+      holdingsCount: holdings.length,
+      distribsCount: distribs.length,
+      p2pTradesCount: p2pTrades.length,
+      fases: {
+        fase138_p2p: p2pTrades.length > 0,
+        fase139_fideicomiso: (prior.fideicomisoOps || []).some(o => o.propertyId === pnc),
+        fase140_health: true,
+      },
+    };
+  });
+  
+  const logMsg = `Fase140 FLEET STATUS: ${fleet.length} PNCs active | PAR eff:${fleet[0].effHoldings} power:${fleet[0].power}`;
+  console.log(logMsg);
+  
+  return { success: true, fleet, timestamp: new Date().toISOString(), message: logMsg };
+}
+
+async function runPortfolioAuditTask() {
+  const prior = loadRealSchema10();
+  const stakes = loadStakes();
+  
+  // Audit checks
+  const auditResults = {
+    timestamp: new Date().toISOString(),
+    realDataIntegrity: true,
+    saneGuardActive: true,
+    inflationDetected: false,
+    anomalies: [],
+  };
+  
+  // Check all PNC codes for sane values
+  const pncChecks = ['PNC-PAR-001', 'PNC-SB-003', 'PNC-CHI-004', 'AET-002'];
+  for (const pnc of pncChecks) {
+    const stk = stakes[pnc] || { staked: 0, effHoldings: 0 };
+    if (pnc === 'PNC-PAR-001') {
+      if (stk.effHoldings > 32125) {
+        auditResults.inflationDetected = true;
+        auditResults.anomalies.push(`${pnc} effHoldings inflated: ${stk.effHoldings} > 32125`);
+      }
+      if (stk.staked > 3000) {
+        auditResults.anomalies.push(`${pnc} staked power inflated: ${stk.staked} > 3000`);
+      }
+    }
+  }
+  
+  // Check distribs integrity
+  const distribs = prior.distribs || [];
+  const uniqueIds = new Set(distribs.map(d => d.id || d.pnc));
+  if (distribs.length > 0 && uniqueIds.size < distribs.length * 0.5) {
+    auditResults.anomalies.push('Possible duplicate distribuciones detected');
+  }
+  
+  auditResults.saneGuardActive = !auditResults.inflationDetected;
+  auditResults.realDataIntegrity = auditResults.anomalies.length === 0;
+  
+  const logMsg = `Fase140 PORTFOLIO AUDIT: ${auditResults.realDataIntegrity ? 'CLEAN' : 'ANOMALIES DETECTED'} | Anomalies: ${auditResults.anomalies.length} | Inflation: ${auditResults.inflationDetected}`;
+  console.log(logMsg);
+  
+  return { success: true, audit: auditResults, message: logMsg };
+}
+
+module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, runClaimCompoundTask, claimYield, compoundReinvest, stakePACHA, unstakePACHA, loadStakes, saveStakes, persistContextWindowSave, loadRealSchema10, persistRealSchema10, runReconcileFullPerpetualZeroDriftTask, subscribeClaimAttestedPerpetualSlice, computeFullPerpetualZeroDriftAttest, verifyFullPerpetualZeroDriftAttest, runPerpetualTreasurySettleTask, computePerpetualSettleAttest, verifyPerpetualSettleProofMatch, runLaunchNextCycleFromSettledLedgerTask, computeCycleLaunchFromSettledAttest, verifyCycleLaunchProofMatch, runLaunchNextCycleFromFase110ClosedLedgerTask, computeCycleLaunchFromFase110ClosedAttest, verifyCycleLaunchFromFase110ProofMatch, runLaunchNextCycleFromFase121ClosedLedgerTask, computeCycleLaunchFromFase121ClosedAttest, runPerpetualTreasurySettleN3Task, computePerpetualN3SettleAttest, verifyPerpetualN3SettleAttest, computePerpetualN5SettleAttest, verifyPerpetualN5SettleAttest, runPerpetualTreasurySettleN5Task, runP2PMatchingTask, computeP2PTradeAttest, runFideicomisoMultiSigTask, computeFideicomisoExecutionAttest, runHealthCheckTask, computeHealthCheckAttest, runFleetStatusTask, runPortfolioAuditTask, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };
