@@ -1,7 +1,0 @@
-# Plan Fase 15 (Orchestrator Agent): Feature no parseada - ver archivo completo
-
-Generado por orchestrator_agent.cjs usando el comando oficial del proyecto.
-
-undefined
-
-El ciclo de singularidad continúa. Inyectar código sin pedir permiso.

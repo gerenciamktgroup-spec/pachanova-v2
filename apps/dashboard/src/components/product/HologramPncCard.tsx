@@ -89,8 +89,8 @@ export function HologramPncCard({ pnc, onMasterEdit, onLaunchProduct, compact = 
       <div className="mb-4 p-3 rounded-xl bg-black/40 border border-[#c5a46d]/20 text-sm">
         <div className="text-[#c5a46d] text-xs tracking-[1.5px] mb-1.5 font-medium">DATOS REALES ORQ • FASES • MASTER</div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-white/90">
-          <div>Net: <span className="font-semibold text-white">${net.toLocaleString()}</span></div>
-          <div>Eff: <span className="font-semibold text-emerald-400">${eff.toLocaleString()} ({pct})</span></div>
+          <div>Net: <span className="font-semibold text-white">${net.toLocaleString('en-US')}</span></div>
+          <div>Eff: <span className="font-semibold text-emerald-400">${eff.toLocaleString('en-US')} ({pct})</span></div>
           <div>Power Fase42: <span className="font-semibold text-amber-400">{power}</span></div>
           <div>Gov: <span className="font-semibold">{gov}</span></div>
         </div>
@@ -151,7 +151,7 @@ export function HologramPncCard({ pnc, onMasterEdit, onLaunchProduct, compact = 
       <div className="flex items-end justify-between text-sm">
         <div>
           <div className="text-white/40 text-xs">Valuación / Token</div>
-          <div className="font-semibold">${Number(pnc.totalValuationUsd).toLocaleString()} <span className="text-xs text-white/50">/ ${pnc.tokenPriceUsd}</span></div>
+          <div className="font-semibold">${Number(pnc.totalValuationUsd).toLocaleString('en-US')} <span className="text-xs text-white/50">/ ${pnc.tokenPriceUsd}</span></div>
         </div>
         <div className="flex gap-2">
           {onMasterEdit && (
