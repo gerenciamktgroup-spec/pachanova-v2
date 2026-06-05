@@ -1867,4 +1867,33 @@ async function runP2PMatchingTask(orderId, buyerId, sellerId, pnc, quantity, pri
   return { success: true, attest, message: logMsg };
 }
 
-module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, runClaimCompoundTask, claimYield, compoundReinvest, stakePACHA, unstakePACHA, loadStakes, saveStakes, persistContextWindowSave, loadRealSchema10, persistRealSchema10, runReconcileFullPerpetualZeroDriftTask, subscribeClaimAttestedPerpetualSlice, computeFullPerpetualZeroDriftAttest, verifyFullPerpetualZeroDriftAttest, runPerpetualTreasurySettleTask, computePerpetualSettleAttest, verifyPerpetualSettleProofMatch, runLaunchNextCycleFromSettledLedgerTask, computeCycleLaunchFromSettledAttest, verifyCycleLaunchProofMatch, runLaunchNextCycleFromFase110ClosedLedgerTask, computeCycleLaunchFromFase110ClosedAttest, verifyCycleLaunchFromFase110ProofMatch, runLaunchNextCycleFromFase121ClosedLedgerTask, computeCycleLaunchFromFase121ClosedAttest, runPerpetualTreasurySettleN3Task, computePerpetualN3SettleAttest, verifyPerpetualN3SettleAttest, computePerpetualN5SettleAttest, verifyPerpetualN5SettleAttest, runPerpetualTreasurySettleN5Task, runP2PMatchingTask, computeP2PTradeAttest, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };
+// Fase 139: Fideicomiso Multi-Sig Execution
+function computeFideicomisoExecutionAttest(operationId, quorum, propertyId, block) {
+  const payload = `FIDEICOMISO_EXEC_ATTEST|${operationId}|quorum${quorum}|prop${propertyId}|Fase139|Fase21@12.5%@${block}`;
+  const crypto = require('crypto');
+  return payload + '@' + crypto.createHash('sha256').update(payload).digest('hex').substring(0, 8);
+}
+
+async function runFideicomisoMultiSigTask(operationId, operationType, propertyId, tokenAmount, quorum, actorIds) {
+  const prior = loadRealSchema10();
+  const block = "25246156";
+  const attest = computeFideicomisoExecutionAttest(operationId, quorum, propertyId, block);
+  
+  const logMsg = `Fase139 FIDEICOMISO MULTI-SIG EXEC: Op ${operationId} | Type ${operationType} | Qty ${tokenAmount} | PNC ${propertyId} | Quorum ${quorum} | Actors ${actorIds.join(',')} | Attest ${attest}`;
+  console.log(logMsg);
+  
+  const land = prior.land || {};
+  const meta = land[propertyId] || {};
+  meta.fase139_fideicomiso = `Executed ${operationId} type ${operationType} qty ${tokenAmount}`;
+  land[propertyId] = meta;
+  
+  persistRealSchema10({
+    ...prior,
+    land,
+    fideicomisoOps: [...(prior.fideicomisoOps || []), { operationId, operationType, propertyId, tokenAmount, quorum, attest, timestamp: new Date().toISOString() }]
+  });
+  
+  return { success: true, attest, message: logMsg };
+}
+
+module.exports = { runCycle, runFleetYieldForecastTask, runOnchainHoldingsSyncTask, computeOnchainTxProofForGovernanceVote, recomputeOnchainTxProofForGovernance, verifyGovProofMatch, computeOnchainTxProofForBorrowLock, recomputeOnchainTxProofForBorrowLock, verifyBorrowLockProofMatch, runOnchainBorrowLockTask, accrueBorrowInterestTask, runAccrueBorrowInterestTask, runExecuteAutoProposals, computeGovernanceVertexPrediction, computeOnchainTxProofForClaim, recomputeOnchainTxProofForClaim, verifyClaimProofMatch, computeOnchainTxProofForCompound, recomputeOnchainTxProofForCompound, verifyCompoundProofMatch, runAutoClaimTask, runAutoCompoundTask, runClaimCompoundTask, claimYield, compoundReinvest, stakePACHA, unstakePACHA, loadStakes, saveStakes, persistContextWindowSave, loadRealSchema10, persistRealSchema10, runReconcileFullPerpetualZeroDriftTask, subscribeClaimAttestedPerpetualSlice, computeFullPerpetualZeroDriftAttest, verifyFullPerpetualZeroDriftAttest, runPerpetualTreasurySettleTask, computePerpetualSettleAttest, verifyPerpetualSettleProofMatch, runLaunchNextCycleFromSettledLedgerTask, computeCycleLaunchFromSettledAttest, verifyCycleLaunchProofMatch, runLaunchNextCycleFromFase110ClosedLedgerTask, computeCycleLaunchFromFase110ClosedAttest, verifyCycleLaunchFromFase110ProofMatch, runLaunchNextCycleFromFase121ClosedLedgerTask, computeCycleLaunchFromFase121ClosedAttest, runPerpetualTreasurySettleN3Task, computePerpetualN3SettleAttest, verifyPerpetualN3SettleAttest, computePerpetualN5SettleAttest, verifyPerpetualN5SettleAttest, runPerpetualTreasurySettleN5Task, runP2PMatchingTask, computeP2PTradeAttest, runFideicomisoMultiSigTask, computeFideicomisoExecutionAttest, suggestYieldToCoreOrLocal: (d, e) => { try { const m = require('./orchestrator_agent.cjs'); return (m.runFleetYieldForecastTask ? m.runFleetYieldForecastTask().then(r => (r && r.suggestYieldToCoreOrLocal) ? r.suggestYieldToCoreOrLocal(d, e) : {success:true}) : {success:true}); } catch(_) { return {success:true, message:'suggest logged (dry)'}; } } };

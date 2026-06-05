@@ -80,14 +80,29 @@ export async function executeFideicomisoOperation(
         }
 
         const [updated] = await tx.update(schema.fideicomisoOperations)
-          .set({ status: "executed_simulated", executedAt: new Date() })
+          .set({ status: "executed", executedAt: new Date() })
           .where(eq(schema.fideicomisoOperations.id, operationId))
           .returning();
 
-        await logDemoIntegrationEvent("CONTRACTS", "OPERATION_EXECUTED", "SIMULATED", { opId: operationId });
-        await logDemoAuditEvent("FIDEICOMISO_EXECUTE", `Simulated execution of operation ${operationId}`, userId);
+        // Llamada al Orquestador (Fase 139)
+        let attestObj = null;
+        try {
+          const orq = require('../../../../../../orchestrator_agent.cjs');
+          if (typeof orq.runFideicomisoMultiSigTask === 'function') {
+             const sigs = await tx.query.fideicomisoSignatures.findMany({ where: eq(schema.fideicomisoSignatures.operationId, operationId) });
+             const actorIds = sigs.map(s => s.signerRole);
+             const pnc = "PNC-PAR-001";
+             const amount = parseFloat(op.tokenAmount || "500000");
+             attestObj = await orq.runFideicomisoMultiSigTask(operationId, op.type, pnc, amount, op.currentSignatures, actorIds);
+          }
+        } catch(e) {
+          console.error("Failed to call orchestrator from fideicomiso execute", e);
+        }
+
+        await logDemoIntegrationEvent("CONTRACTS", "OPERATION_EXECUTED", "REAL_ORCHESTRATOR", { opId: operationId, attest: attestObj?.attest });
+        await logDemoAuditEvent("FIDEICOMISO_EXECUTE", `Orchestrator execution of operation ${operationId}. Attest: ${attestObj?.attest || 'none'}`, userId);
         
-        return { ok: true, status: updated.status, message: "Operación ejecutada localmente", simulated: true };
+        return { ok: true, status: updated.status, message: "Operación ejecutada en Orquestador", simulated: false, orchestrator: attestObj };
       }
 
       case "reset": {

@@ -2003,7 +2003,7 @@
   ],
   "land_meta": {
     "PNC-PAR-001": {
-      "fase138_p2p": "DVP Settled test-order-1 qty 10 buyer buyer-1"
+      "fase139_fideicomiso": "Executed test-op-1 type DEMO_EMISSION qty 500000"
     }
   },
   "perpetual_settled_claims": [

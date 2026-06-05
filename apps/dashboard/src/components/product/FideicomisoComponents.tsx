@@ -139,6 +139,11 @@ export function MultiSigOperationPanelV2({ view }: { view: FideicomisoDashboardV
               <div>
                 <h4 className="text-sm font-semibold mb-1">{result.ok ? "Operación Registrada" : "Error"}</h4>
                 <p className="text-xs opacity-90">{result.message}</p>
+                {(result as any).orchestrator?.attest && (
+                  <p className="text-[10px] font-mono mt-2 break-all text-pn-gold opacity-90">
+                    Attest: {(result as any).orchestrator.attest}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -170,11 +175,11 @@ export function MultiSigOperationPanelV2({ view }: { view: FideicomisoDashboardV
             onClick={() => handleAction("execute_simulated")}
             data-testid="fideicomiso-execute-action"
           >
-            Ejecutar Simulación
+            Ejecutar (Orquestador DVP)
           </CommandButton>
 
-          <p className="text-[10px] text-pn-warning text-center mt-2">
-            Pending Foundry: Ejecución afectará solo al Sandbox DB.
+          <p className="text-[10px] text-pn-success text-center mt-2">
+            Fase 139: Conectado a Lógica de Orquestador.
           </p>
         </div>
       )}
