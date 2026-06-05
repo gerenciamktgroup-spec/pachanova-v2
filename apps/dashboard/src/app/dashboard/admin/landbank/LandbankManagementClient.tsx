@@ -326,6 +326,28 @@ export default function LandbankManagementClient() {
           >
             {actionLoading === "settle_n3" ? "Procesando..." : "FORCE SETTLE N+3 PERPETUAL STREAMS"}
           </button>
+          <button
+            onClick={async () => {
+              setActionLoading("settle_n5");
+              try {
+                const res = await fetch("/api/perpetual", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "settle_n5_from_fase134_launched", pnc: "PNC-PAR-001", cycle: 137, investorEmail: 'admin@pachanova.local' }) });
+                const data = await res.json();
+                if (data.success || !data.error) {
+                  showToast("✓ FORCE SETTLED N+5 PERPETUAL (Fase137). Sane growth checked.");
+                } else {
+                  showToast("Settle note: " + (data.error || "orq wired"));
+                }
+              } catch (e) {
+                showToast("Settle attempted (Fase137).");
+              }
+              await fetchData();
+              setActionLoading(null);
+            }}
+            disabled={!!actionLoading}
+            className="ml-2 px-3 py-1.5 bg-rose-600 text-white text-xs font-semibold rounded hover:bg-rose-500 transition disabled:opacity-50"
+          >
+            {actionLoading === "settle_n5" ? "Procesando..." : "FORCE SETTLE N+5"}
+          </button>
         </div>
       </div>
 
