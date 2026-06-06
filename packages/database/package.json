@@ -4,7 +4,12 @@
   "private": true,
   "main": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./src/schema": "./src/schema/index.ts",
+    "./src/schema/*": "./src/schema/*.ts",
+    "./src/utils/demoValidation": "./src/utils/demoValidation.ts",
+    "./src/utils/*": "./src/utils/*.ts",
+    "./src/*": "./src/*.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0",

@@ -1,0 +1,31 @@
+{
+  "name": "@pachanova/demo-environment",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "echo 'No build needed - consumed as source'",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests yet'",
+    "demo:reset": "tsx src/scripts/demo-reset.ts",
+    "demo:seed": "tsx src/scripts/demo-seed.ts",
+    "demo:scenario": "tsx src/scripts/demo-scenario.ts",
+    "demo:status": "tsx src/scripts/demo-status.ts"
+  },
+  "dependencies": {
+    "@pachanova/database": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.5.0"
+  }
+}

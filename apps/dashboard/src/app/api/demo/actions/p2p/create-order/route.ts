@@ -9,6 +9,7 @@ const bodySchema = z.object({
   sellerInvestorId: z.string().uuid(),
   quantity: z.number().positive(),
   pricePerToken: z.number().positive(),
+  pncCode: z.string().optional(), // Fase 6: P2P landbank tie to 5PNC (e.g. PAR, VIV) - stored in payload/audit for rich demo, no schema change
 });
 
 export async function POST(req: Request) {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     const result = bodySchema.safeParse(body);
     if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
 
-    const { sellerInvestorId, quantity, pricePerToken } = result.data;
+    const { sellerInvestorId, quantity, pricePerToken, pncCode } = result.data;
     const totalAmount = quantity * pricePerToken;
 
     await db.transaction(async (tx) => {
@@ -59,16 +60,17 @@ export async function POST(req: Request) {
         isDemo: true,
       });
 
-      // 4. Audit
+      // 4. Audit (Fase 6 P2P landbank tie: include pncCode if provided for 5PNC E2E)
+      const pncNote = pncCode ? ` for PNC ${pncCode}` : '';
       await tx.insert(schema.auditLogs).values({
         action: 'P2P_ORDER_CREATED',
-        details: `Investor ${sellerInvestorId} created order to sell ${quantity} PACHA at ${pricePerToken}`,
+        details: `Investor ${sellerInvestorId} created order to sell ${quantity} PACHA at ${pricePerToken}${pncNote}`,
       });
 
       await tx.insert(schema.integrationEvents).values({
         provider: 'DEMO_SYSTEM',
         eventType: 'P2P_ORDER_CREATED',
-        payload: { orderId, sellerInvestorId, quantity, pricePerToken },
+        payload: { orderId, sellerInvestorId, quantity, pricePerToken, pncCode: pncCode || null },
         simulated: true,
       });
     });

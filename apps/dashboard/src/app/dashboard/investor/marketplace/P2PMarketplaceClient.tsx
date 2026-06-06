@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MissionCard, CommandButton } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
 import { useRouter } from "next/navigation";
 
-export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId }: { orders: Record<string, unknown>[]; balance: Record<string, unknown> | null; kycStatus: string; currentUserId: string; }) {
+export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId, pncCode }: { orders: Record<string, unknown>[]; balance: Record<string, unknown> | null; kycStatus: string; currentUserId: string; pncCode?: string; }) {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(8.40);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  // Fase 6: P2P landbank ties - prefill from 5PNC hologram / E2E flow if provided (rich fallback to generic)
+  const effectivePnc = pncCode || "";
 
   const handleCreateOrder = async () => {
     setIsSubmitting(true);
@@ -19,7 +23,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
       const res = await fetch("/api/demo/actions/p2p/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price })
+        body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price, pncCode: effectivePnc || undefined })
       });
       const data = await res.json();
       if (data.success) {
@@ -80,6 +84,13 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
               />
             </div>
 
+            {/* Fase 6 P2P on 5PNC tie */}
+            {effectivePnc && (
+              <div className="p-2 bg-pn-gold/10 border border-pn-gold/30 rounded text-xs">
+                P2P Order tied to PNC: <span className="font-mono font-semibold text-pn-gold">{effectivePnc}</span> (from Landbank Hologram E2E)
+              </div>
+            )}
+
             <div className="space-y-1">
               <label className="text-sm text-pn-text-muted">Precio por PACHA (USD)</label>
               <input 
@@ -108,19 +119,24 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
 
       {/* Order Book */}
       <div className="md:col-span-2">
-        <MissionCard title="Libro de Órdenes Abiertas">
+        <MissionCard title="Libro de Órdenes Abiertas (Marketplace Orderbook + more PNC ties + orq Fase refs)">
           {orders.length === 0 ? (
             <div className="p-8 text-center text-pn-text-muted border border-pn-border border-dashed rounded-lg">
               No hay órdenes de venta activas en el mercado.
             </div>
           ) : (
-            <DataGrid headers={["Vendedor", "Cantidad", "Precio/Token", "Total USD", "Acción"]}>
+            <DataGrid headers={["Vendedor", "Cantidad", "Precio/Token", "Total USD", "PNC (E2E tie)", "Acción"]}>
               {orders.map((o) => (
                 <DataGridRow key={o.id as string}>
                   <DataGridCell><span className="text-xs truncate max-w-[80px] block">{(o.sellerInvestorId as string).split("-")[0]}...</span></DataGridCell>
                   <DataGridCell>{String(o.quantity)} PACHA</DataGridCell>
                   <DataGridCell>${String(o.pricePerToken)}</DataGridCell>
                   <DataGridCell>${String(o.totalAmount)}</DataGridCell>
+                  <DataGridCell>
+                    <span className="font-mono text-[10px] text-pn-gold/80">{effectivePnc || "5PNC"}</span>
+                    <span className="block text-[9px] text-pn-text-muted">landbank tie • orq exercised F16/51</span>
+                    <Link href="/demo/showcase#phase4-hologram-landbank" className="text-[8px] underline text-pn-gold/60">ver avances per-PNC</Link>
+                  </DataGridCell>
                   <DataGridCell>
                     {o.sellerInvestorId === currentUserId ? (
                       <span className="text-xs text-pn-text-soft italic">Mi orden</span>

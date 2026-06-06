@@ -1,328 +1,244 @@
+'use client';
+
 import Link from "next/link";
-import { MapPin, Coins, TrendingUp, Vote, Check, ArrowRight, Mountain, CheckCircle } from "lucide-react";
-import { Tooltip } from "@/components/ui/Tooltip";
-import { FAQAccordion, faqData } from "@/components/ui/FAQAccordion";
+import { PrecisionHero3D } from "./components/3d/PrecisionHero";
+import { LandExplorer3D } from "./components/3d/LandExplorer3D";
+import { TrustStructure3D } from "./components/3d/TrustStructure3D";
+import { PrecisionNavbar } from "./components/PrecisionNavbar";
+import { PrecisionFooter } from "./components/PrecisionFooter";
 
-export default function LandingPage() {
+export default function PrecisionSpatialLanding() {
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      {/* ═══ NAV ═══ */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="font-bold text-xl tracking-tight text-slate-900">
-              PACHA<span className="text-blue-700">NOVA</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-6 text-sm text-slate-600">
-              <a href="#como-funciona" className="hover:text-blue-700 transition-colors">Cómo funciona</a>
-              <a href="#activo" className="hover:text-blue-700 transition-colors">El activo</a>
-              <a href="#faq" className="hover:text-blue-700 transition-colors">FAQ</a>
+    <div className="min-h-screen bg-[#0a111f] text-white overflow-hidden selection:bg-[#c5a46d]/30">
+      <PrecisionNavbar />
+
+      {/* ==================== HERO ==================== */}
+      <section className="relative h-[100dvh] flex items-center pt-20">
+        <PrecisionHero3D />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-8">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/10 text-xs tracking-[2px] mb-6">
+              SAN BARTOLO · LIMA SUR · PERÚ
+            </div>
+
+            <h1 className="text-7xl md:text-[92px] leading-[0.90] font-semibold tracking-[-4.6px] mb-7">
+              Tierra real.<br />
+              Valor real.<br />
+              <span className="text-[#c5a46d]">Acceso real.</span>
+            </h1>
+
+            <p className="text-[21px] text-white/70 max-w-md tracking-[-0.2px] mb-12">
+              El primer fideicomiso inmobiliario tokenizado de Perú.<br />
+              Desde $10. Respaldado por ley.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link 
+                href="/demo/start" 
+                className="inline-flex items-center justify-center bg-[#c5a46d] hover:bg-[#d4b47d] text-[#0a111f] font-semibold px-10 py-4 rounded-2xl text-[15px] tracking-[-0.2px] transition-all active:scale-[0.985]"
+              >
+                EXPLORAR DEMO 3D
+              </Link>
+              <a 
+                href="#activo" 
+                className="inline-flex items-center justify-center border border-white/25 hover:bg-white/5 font-medium px-9 py-4 rounded-2xl text-[15px] tracking-[-0.1px] transition-all"
+              >
+                Ver el activo
+              </a>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-slate-600 hover:text-blue-700 transition-colors hidden sm:block">
-              Iniciar sesión
-            </Link>
-            <Link href="/demo/start" className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
-              Explorar Demo
-            </Link>
+        </div>
+
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-[10px] tracking-[3px] text-white/35 font-mono">
+          SCROLL TO BEGIN
+        </div>
+      </section>
+
+      {/* ==================== EL ACTIVO CON 3D REAL ==================== */}
+      <section id="activo" className="border-t border-white/10 pt-20 pb-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid lg:grid-cols-12 gap-x-12 items-end mb-10">
+            <div className="lg:col-span-7">
+              <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-2">EL ACTIVO</div>
+              <h2 className="text-[56px] md:text-7xl leading-[0.92] tracking-[-3.2px] font-semibold">
+                500.000 m² de tierra<br />real en San Bartolo.
+              </h2>
+            </div>
+            <div className="lg:col-span-5 lg:pb-3 text-[15px] text-white/65 max-w-lg mt-6 lg:mt-0">
+              Predio inscrito en SUNARP con título de propiedad, zonificación urbana y acceso a servicios. 
+              No es un activo sintético. Es suelo físico que puedes visitar.
+            </div>
+          </div>
+
+          {/* 3D Experience - Land Explorer */}
+          <div className="mt-10">
+            <LandExplorer3D />
+          </div>
+
+          <div className="mt-6 text-[12px] tracking-widest text-white/40 text-center">
+            INTERACTÚA • ROTACIÓN AUTOMÁTICA • ZOOM Y ÓRBITA
           </div>
         </div>
-      </nav>
+      </section>
 
-      {/* ═══ SECCIÓN 1: HERO ═══ */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-white to-white pointer-events-none" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-center">
-          {/* Badge */}
-          <div className="pn-animate-fade-up inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium px-4 py-1.5 rounded-full mb-8">
-            <Mountain className="w-4 h-4" />
-            RWA · Tierra Real Tokenizada · Perú 2024
+      {/* ==================== TOKENIZACIÓN ==================== */}
+      <section id="tokenizacion" className="bg-[#0d1524] border-y border-white/10 py-20">
+        <div className="max-w-5xl mx-auto px-8">
+          <div className="max-w-2xl">
+            <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-3">TOKENIZACIÓN</div>
+            <h3 className="text-6xl tracking-[-2.6px] font-semibold leading-none mb-8">
+              Cada metro cuadrado,<br />convertido en valor accesible.
+            </h3>
           </div>
 
-          {/* H1 — CAMBIO 4A */}
-          <h1 className="pn-animate-fade-up delay-100 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6 max-w-3xl mx-auto leading-tight">
-            Tu primer metro cuadrado en Perú.
-            <br />
-            <span className="text-blue-700">Por $10.</span>
-          </h1>
+          <div className="grid md:grid-cols-2 gap-8 text-lg text-white/70 max-w-4xl">
+            <div>
+              1 token = <span className="text-white font-medium">0.1 m²</span>.<br />
+              500.000 m² = <span className="text-white font-medium">5.000.000 tokens</span>.
+            </div>
+            <div className="text-white/55">
+              Liquidez fraccional. Transparencia en cadena. 
+              Derechos proporcionales de gobernanza dentro del fideicomiso.
+            </div>
+          </div>
+        </div>
+      </section>
 
-          {/* Sub — CAMBIO 4A */}
-          <p className="pn-animate-fade-up delay-200 text-lg text-slate-600 max-w-xl mx-auto mb-10 leading-relaxed">
-            Comprás una participación real sobre tierra verificada. Sin banco. Sin mínimos. Con respaldo legal notarial.
+      {/* ==================== ESTRUCTURA FIDUCIARIA (NUEVA + 3D) ==================== */}
+      <section id="estructura" className="max-w-6xl mx-auto px-8 pt-20 pb-16 border-b border-white/10">
+        <div className="grid lg:grid-cols-12 gap-x-16 items-center">
+          <div className="lg:col-span-5 mb-10 lg:mb-0">
+            <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-3">ARQUITECTURA LEGAL</div>
+            <h3 className="text-6xl tracking-[-2.5px] font-semibold leading-none mb-7">
+              Tres capas.<br />Una sola verdad.
+            </h3>
+            <p className="text-[15px] text-white/65 max-w-md">
+              El valor no vive solo en blockchain. Vive en una estructura fiduciaria real, 
+              con escritura pública, notario y fiduciarios profesionales.
+            </p>
+          </div>
+
+          <div className="lg:col-span-7">
+            <TrustStructure3D />
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== GOBERNANZA ==================== */}
+      <section id="gobernanza" className="max-w-5xl mx-auto px-8 py-20">
+        <div className="max-w-3xl">
+          <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-3">GOBERNANZA</div>
+          <h3 className="text-[56px] tracking-[-2.4px] font-semibold leading-none mb-8">
+            Decisiones que requieren<br />más que código.
+          </h3>
+          <div className="space-y-6 text-[15px] text-white/70 max-w-2xl">
+            <p>
+              Cualquier operación relevante del fideicomiso exige quórum de <span className="text-white">2 de 3 fiduciarios</span>. 
+              Tus tokens otorgan derechos reales de voto y distribución dentro de la estructura legal.
+            </p>
+            <p>
+              Esto no es un DAO sin consecuencias. Es una entidad regulada donde la tecnología 
+              amplifica —no reemplaza— la responsabilidad fiduciaria.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-14 grid md:grid-cols-3 gap-4 text-sm">
+          {[
+            { label: "Quórum reforzado", value: "2/3" },
+            { label: "Fiduciarios profesionales", value: "3" },
+            { label: "Respaldado por", value: "Ley 26702" }
+          ].map((item, i) => (
+            <div key={i} className="border border-white/10 rounded-2xl px-6 py-5">
+              <div className="text-white/40 text-xs tracking-widest mb-1.5">{item.label.toUpperCase()}</div>
+              <div className="text-3xl tracking-tighter font-semibold text-[#c5a46d]">{item.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ==================== RESPALDOS REALES (NUEVA - Confianza Institucional) ==================== */}
+      <section className="bg-[#0d1524] border-y border-white/10 py-20">
+        <div className="max-w-5xl mx-auto px-8">
+          <div className="text-center mb-12">
+            <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-3">RESPALDOS INSTITUCIONALES</div>
+            <h3 className="text-5xl tracking-[-2px] font-semibold">No es una promesa.<br />Es un expediente.</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            {[
+              { title: "Inscripción SUNARP", desc: "Predio inscrito en Registros Públicos con partida electrónica vigente." },
+              { title: "Escritura Pública", desc: "Formalizada ante notario público. Título de propiedad individualizado." },
+              { title: "Fideicomiso Regulado", desc: "Constitución bajo Ley 26702 y supervisión de la SBS en sus alcances." },
+              { title: "Gobernanza Mixta", desc: "Combinación de control fiduciario profesional + derechos proporcionales de token holders." }
+            ].map((item, index) => (
+              <div key={index} className="glass border border-white/10 rounded-3xl p-7 hover:border-white/15 transition-colors">
+                <div className="font-semibold tracking-tight text-lg mb-3 text-white/95">{item.title}</div>
+                <p className="text-white/60 leading-relaxed text-[13.5px]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== CÓMO FUNCIONA (Refinado) ==================== */}
+      <section className="max-w-6xl mx-auto px-8 py-20 border-b border-white/10">
+        <div className="flex flex-col items-center text-center mb-12">
+          <div className="text-[#c5a46d] text-xs tracking-[2.5px] mb-3">PROCESO</div>
+          <h3 className="text-6xl tracking-[-2.4px] font-semibold">Tres pasos.<br />Institucional y simple.</h3>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {[
+            { 
+              n: "01", 
+              title: "Selecciona tu participación", 
+              desc: "Elige cuántos tokens adquieres. Cada uno representa 0.1 m² del terreno de San Bartolo." 
+            },
+            { 
+              n: "02", 
+              title: "Paga con total trazabilidad", 
+              desc: "Transacción vía Mercado Pago. Registro inmediato en el ledger del fideicomiso y confirmación legal." 
+            },
+            { 
+              n: "03", 
+              title: "Recibe derechos reales", 
+              desc: "Tus tokens quedan registrados. Puedes consultarlos, seguir su valor y participar en decisiones según quórum." 
+            }
+          ].map((step, i) => (
+            <div key={i} className="group border border-white/10 hover:border-white/20 transition-colors rounded-3xl px-8 pt-8 pb-9">
+              <div className="font-mono text-6xl text-[#c5a46d]/70 font-light tracking-[-2px] mb-8 tabular-nums">{step.n}</div>
+              <h4 className="text-2xl tracking-[-0.6px] font-semibold mb-4">{step.title}</h4>
+              <p className="text-white/65 text-[14.5px] leading-relaxed">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ==================== CTA FINAL ==================== */}
+      <section className="py-20">
+        <div className="max-w-xl mx-auto px-8 text-center">
+          <h4 className="text-5xl tracking-[-1.8px] font-semibold mb-5 leading-none">
+            Ve cómo opera realmente<br />un fideicomiso tokenizado.
+          </h4>
+          <p className="text-lg text-white/55 mb-9 max-w-md mx-auto">
+            El demo contiene datos reales del proyecto San Bartolo, escenarios de pago, KYC y gobernanza.
           </p>
 
-          {/* CTAs */}
-          <div className="pn-animate-fade-up delay-300 flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <Link href="/demo/start" className="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-8 py-3.5 rounded-xl text-base transition-colors flex items-center gap-2 shadow-lg shadow-blue-700/20">
-              Explorar el Demo <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link href="/demo/showcase" className="bg-white border-2 border-slate-300 hover:border-blue-400 text-slate-700 hover:text-blue-700 font-semibold px-8 py-3.5 rounded-xl text-base transition-all">
-              Ver Showcase
-            </Link>
-          </div>
+          <Link 
+            href="/demo/start" 
+            className="inline-flex bg-[#c5a46d] hover:bg-[#d4b47d] text-[#0a111f] font-semibold px-14 py-[17px] rounded-2xl text-base tracking-[-0.1px] transition-all active:scale-[0.985]"
+          >
+            ENTRAR AL DEMO INTERACTIVO
+          </Link>
 
-          {/* CAMBIO 4B — Trust badges */}
-          <div className="pn-animate-fade-up delay-400 flex flex-wrap items-center justify-center gap-6 mb-16">
-            <span className="flex items-center gap-1.5 text-sm text-slate-500">
-              <CheckCircle className="w-4 h-4 text-green-500" /> Sin comisiones de entrada
-            </span>
-            <span className="flex items-center gap-1.5 text-sm text-slate-500">
-              <CheckCircle className="w-4 h-4 text-green-500" /> Datos reales en la demo
-            </span>
-            <span className="flex items-center gap-1.5 text-sm text-slate-500">
-              <CheckCircle className="w-4 h-4 text-green-500" /> No requiere registro
-            </span>
-          </div>
-
-          {/* Stat cards — CAMBIO 4D con Tooltips */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            <StatCard value="500,000 m²" label="Superficie tokenizada" tooltip="Total de metros cuadrados del Proyecto San Bartolo representados en tokens verificados." />
-            <StatCard value="USD $10" label="Precio por token" tooltip="Precio fijo en la ronda Génesis. Cada token representa una fracción proporcional del fideicomiso." />
-            <StatCard value="8.5% APY" label="Rendimiento estimado" tooltip="Proyección anual basada en valorización del activo. No garantizado. Ver disclaimer legal." />
-            <StatCard value="2/3 Quórum" label="Gobernanza fiduciaria" tooltip="Toda operación mayor requiere firma de 2 de 3 fideicomisarios. Tu voto tiene peso legal real." />
-          </div>
+          <div className="mt-5 text-[10px] tracking-[2px] text-white/35">SIN REGISTRO • DATOS REALES • EXPLORACIÓN 3D</div>
         </div>
       </section>
 
-      {/* ═══ SECCIÓN SOCIAL PROOF — CAMBIO 4C ═══ */}
-      <section className="bg-white border-y border-slate-100 py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <ProofStat value="$5,000,000 USD" label="Valoración del activo San Bartolo" />
-            <ProofStat value="47 inversores" label="En la ronda Génesis" />
-            <ProofStat value="100%" label="Transacciones auditadas on-chain" />
-            <ProofStat value="SUNARP" label="Registro público verificable" />
-          </div>
-          <p className="text-xs text-slate-400 text-center mt-8">
-            Datos del Proyecto San Bartolo · Mayo 2026 · Simulación de demo
-          </p>
-        </div>
-      </section>
-
-      {/* ═══ SECCIÓN 2: CÓMO FUNCIONA — CAMBIO 4E ═══ */}
-      <section id="como-funciona" className="bg-slate-50 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">4 pasos. Sin tecnicismos.</h2>
-          <p className="text-slate-500 text-center mb-16 max-w-lg mx-auto">Desde tu primera visita hasta el cobro de rendimientos, todo pasa en un solo lugar.</p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <StepCard num={1} icon={<MapPin className="w-6 h-6" />} title="Revisás antes de invertir un peso" desc="Revisás el dossier legal y la ubicación verificada." />
-            <StepCard num={2} icon={<Coins className="w-6 h-6" />} title="Tu participación, en tokens" desc="Desde $10 USD por token. Sin montos mínimos prohibitivos." />
-            <StepCard num={3} icon={<TrendingUp className="w-6 h-6" />} title="El activo trabaja por vos" desc="8.5% APY estimado sobre el valor del activo." />
-            <StepCard num={4} icon={<Vote className="w-6 h-6" />} title="Tu voz tiene peso legal" desc="Quórum 2/3 en el fideicomiso. Liquidez P2P." />
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ SECCIÓN 3: EL ACTIVO ═══ */}
-      <section id="activo" className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-            {/* Left — Info */}
-            <div className="lg:col-span-3 space-y-8">
-              <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-medium px-3 py-1 rounded-full">
-                <Check className="w-4 h-4" /> Proyecto verificado
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Proyecto San Bartolo</h2>
-              <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
-                5 hectáreas de tierra en San Bartolo, Perú. Registro SUNARP activo, fideicomiso notarial constituido y auditoría de tokens en cadena.
-              </p>
-              {/* CAMBIO 4F */}
-              <h3 className="text-xl font-semibold text-slate-800">Tu dinero protegido por ley, no por promesas.</h3>
-              <div className="space-y-4">
-                <FeatureRow text="Registro SUNARP activo" />
-                <FeatureRow text="Fideicomiso notarial constituido" />
-                <FeatureRow text="Auditoría de tokens en cadena" />
-              </div>
-            </div>
-
-            {/* Right — Premium Card */}
-            <div className="lg:col-span-2">
-              <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-2xl">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="font-bold text-lg tracking-tight">PACHA</span>
-                  <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">Genesis Round</span>
-                </div>
-                <div className="mb-6">
-                  <p className="text-slate-400 text-sm mb-1">Precio por token</p>
-                  <p className="text-4xl font-bold">$10.00 <span className="text-lg font-normal text-slate-400">USD</span></p>
-                </div>
-                <div className="mb-6">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-400">Genesis: 45% vendido</span>
-                    <span className="text-blue-400 font-medium">225,000 / 500,000</span>
-                  </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2.5">
-                    <div className="bg-blue-500 h-2.5 rounded-full" style={{width: '45%'}} />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 mb-8 text-center">
-                  <div>
-                    <p className="text-xl font-bold">100K</p>
-                    <p className="text-xs text-slate-400">Disponibles</p>
-                  </div>
-                  <div>
-                    <p className="text-xl font-bold">8.5%</p>
-                    <p className="text-xs text-slate-400">APY est.</p>
-                  </div>
-                  <div>
-                    <p className="text-xl font-bold">PE</p>
-                    <p className="text-xs text-slate-400">Perú</p>
-                  </div>
-                </div>
-                <Link href="/demo/start" className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold py-3.5 rounded-xl transition-colors">
-                  Comprar tokens <ArrowRight className="inline w-4 h-4 ml-1" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ SECCIÓN 4: ROLES ═══ */}
-      <section className="bg-blue-950 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">¿Cuál es tu rol?</h2>
-          <p className="text-blue-300 mb-16 max-w-lg mx-auto">Cada participante tiene un panel dedicado con herramientas específicas para su función.</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <RoleCard emoji="🏦" title="Inversor" desc="Comprá tokens y cobrá rendimientos sobre activos reales verificados." href="/demo/start" badge="Principal" />
-            <RoleCard emoji="⚙️" title="Administrador" desc="Gestioná el activo, los inversores y la auditoría de la plataforma." href="/dashboard/admin" badge="Staff" />
-            <RoleCard emoji="📜" title="Fideicomiso" desc="Firmá operaciones con quórum legal y controlá la emisión de tokens." href="/dashboard/fideicomiso" badge="Legal" />
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ SECCIÓN FAQ — CAMBIO 4G ═══ */}
-      <section id="faq" className="bg-white py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-4">Preguntas frecuentes</h2>
-          <p className="text-slate-500 text-center mb-12">Las que más nos hacen antes de invertir.</p>
-          <FAQAccordion items={faqData} />
-        </div>
-      </section>
-
-      {/* ═══ SECCIÓN 5: CTA FINAL ═══ */}
-      <section className="py-24">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-slate-900 rounded-3xl p-12 text-center shadow-2xl">
-            <h2 className="text-3xl font-bold text-white mb-4">Probá el sistema completo hoy</h2>
-            <p className="text-slate-400 mb-8">Demo interactivo, sin registro obligatorio, datos simulados en entorno seguro.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/demo/start" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors flex items-center gap-2">
-                Iniciar Demo <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/demo/showcase" className="border-2 border-slate-600 hover:border-slate-400 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors">
-                Ver documentación
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ FOOTER ═══ */}
-      <footer className="bg-slate-50 border-t border-slate-200 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-            <div className="md:col-span-1">
-              <Link href="/" className="font-bold text-lg tracking-tight text-slate-900 block mb-3">
-                PACHA<span className="text-blue-700">NOVA</span>
-              </Link>
-              <p className="text-sm text-slate-500">Infraestructura para tokenizar activos inmobiliarios con respaldo fiduciario.</p>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Producto</h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li><Link href="/demo/start" className="hover:text-blue-700 transition-colors">Demo Guiada</Link></li>
-                <li><Link href="/demo/showcase" className="hover:text-blue-700 transition-colors">Showcase</Link></li>
-                <li><Link href="/dashboard/investor" className="hover:text-blue-700 transition-colors">Panel Inversor</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li><Link href="/demo/legal" className="hover:text-blue-700 transition-colors">Disclaimers</Link></li>
-                <li><Link href="/dashboard/investor/disclosures" className="hover:text-blue-700 transition-colors">Términos</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-widest mb-4">Contacto</h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>info@pachanova.io</li>
-                <li>Lima, Perú</li>
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-slate-200 text-xs text-slate-400 text-center">
-            © {new Date().getFullYear()} PachaNova Labs. Simulación de software — no constituye oferta pública. Todos los derechos reservados.
-          </div>
-        </div>
-      </footer>
+      <PrecisionFooter />
     </div>
   );
 }
 
-/* ─── Sub-components ─── */
-
-function StatCard({ value, label, tooltip }: { value: string; label: string; tooltip: string }) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
-      <Tooltip content={tooltip} position="top">
-        <p className="text-xl font-bold text-slate-900 cursor-help border-b border-dashed border-slate-300">{value}</p>
-      </Tooltip>
-      <p className="text-xs text-slate-500 mt-1">{label}</p>
-    </div>
-  );
-}
-
-function ProofStat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p className="text-2xl md:text-3xl font-bold text-slate-900">{value}</p>
-      <p className="text-sm text-slate-500 mt-1">{label}</p>
-    </div>
-  );
-}
-
-function StepCard({ num, icon, title, desc }: { num: number; icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-      <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center font-bold text-lg mb-5">
-        {String(num).padStart(2, '0')}
-      </div>
-      <div className="text-blue-700 mb-3">{icon}</div>
-      <h3 className="font-bold text-lg text-slate-900 mb-2">{title}</h3>
-      <p className="text-sm text-slate-500 leading-relaxed">{desc}</p>
-    </div>
-  );
-}
-
-function FeatureRow({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-        <Check className="w-4 h-4 text-green-600" />
-      </div>
-      <span className="text-slate-700">{text}</span>
-    </div>
-  );
-}
-
-function RoleCard({ emoji, title, desc, href, badge }: { emoji: string; title: string; desc: string; href: string; badge: string }) {
-  return (
-    <Link href={href} className="group block">
-      <div className="bg-blue-900/80 border border-blue-800 rounded-2xl p-8 text-left hover:bg-blue-800 transition-colors h-full">
-        <div className="flex items-center justify-between mb-5">
-          <span className="text-3xl">{emoji}</span>
-          <span className="bg-blue-700/50 text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">{badge}</span>
-        </div>
-        <h3 className="font-bold text-xl text-white mb-2">{title}</h3>
-        <p className="text-sm text-blue-300 leading-relaxed mb-4">{desc}</p>
-        <span className="text-blue-400 group-hover:text-white text-sm font-medium flex items-center gap-1 transition-colors">
-          Acceder <ArrowRight className="w-4 h-4" />
-        </span>
-      </div>
-    </Link>
-  );
-}

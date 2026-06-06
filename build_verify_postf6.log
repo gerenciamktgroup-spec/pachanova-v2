@@ -1,0 +1,126 @@
+
+> dashboard@0.1.0 build C:\Users\LENOVO\Desktop\pachanova-v2-git\apps\dashboard
+> next build
+
+ ÔÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\LENOVO\pnpm-lock.yaml as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\LENOVO\Desktop\pachanova-v2-git\pnpm-lock.yaml
+
+   Ôû▓ Next.js 15.5.18
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (101kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (231kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ Ô£ô Compiled successfully in 14.3s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+   Generating static pages (0/51) ...
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+   Generating static pages (12/51) 
+ÔÜá´©Å SUPABASE_URL no configurada.
+ÔÜá´©Å DATABASE_URL no configurada.
+   Generating static pages (25/51) 
+   Generating static pages (38/51) 
+ Ô£ô Generating static pages (51/51)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                        Size  First Load JS
+Ôöî Ôùï /                                           5.08 kB         165 kB
+Ôö£ Ôùï /_not-found                                   998 B         103 kB
+Ôö£ ãÆ /api/admin/audit-logs                         201 B         102 kB
+Ôö£ ãÆ /api/admin/users                              201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/admin-user-review           201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/audit-event                 201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/fideicomiso-operation       201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/genesis-demo-purchase       201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/integration-event           201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/investor-genesis-attempt    201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/kyc-status                  201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/p2p/buy-order               201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/p2p/create-order            201 B         102 kB
+Ôö£ ãÆ /api/demo/actions/simulated-deposit           201 B         102 kB
+Ôö£ ãÆ /api/demo/auth/quick-login                    201 B         102 kB
+Ôö£ ãÆ /api/demo/health                              201 B         102 kB
+Ôö£ ãÆ /api/demo/integrations                        201 B         102 kB
+Ôö£ ãÆ /api/demo/reset                               201 B         102 kB
+Ôö£ ãÆ /api/demo/seed                                201 B         102 kB
+Ôö£ ãÆ /api/fideicomiso/status                       201 B         102 kB
+Ôö£ ãÆ /api/mercadopago/preference                   201 B         102 kB
+Ôö£ ãÆ /api/mercadopago/webhook                      201 B         102 kB
+Ôö£ ãÆ /api/oracle/valuation                         201 B         102 kB
+Ôö£ ãÆ /api/token-balance                            201 B         102 kB
+Ôö£ ãÆ /api/treasury                                 201 B         102 kB
+Ôö£ ãÆ /api/trpc/[trpc]                              201 B         102 kB
+Ôö£ Ôùï /como-funciona                              6.38 kB         166 kB
+Ôö£ ãÆ /dashboard/admin                              969 B         182 kB
+Ôö£ ãÆ /dashboard/admin/audit                      1.04 kB         179 kB
+Ôö£ Ôùï /dashboard/admin/integrations                 134 B         157 kB
+Ôö£ ãÆ /dashboard/admin/landbank                     969 B         182 kB
+Ôö£ ãÆ /dashboard/admin/token-orders                 133 B         157 kB
+Ôö£ ãÆ /dashboard/admin/users                      2.38 kB         164 kB
+Ôö£ ãÆ /dashboard/fideicomiso                        969 B         182 kB
+Ôö£ ãÆ /dashboard/fideicomiso/legal-backing          134 B         157 kB
+Ôö£ ãÆ /dashboard/fideicomiso/operations             134 B         157 kB
+Ôö£ Ôùï /dashboard/fideicomiso/signatures             134 B         157 kB
+Ôö£ Ôùï /dashboard/investor                           969 B         182 kB
+Ôö£ Ôùï /dashboard/investor/disclosures               134 B         157 kB
+Ôö£ Ôùï /dashboard/investor/genesis                 11.2 kB         169 kB
+Ôö£ Ôùï /dashboard/investor/ledger                    134 B         157 kB
+Ôö£ ãÆ /dashboard/investor/marketplace             6.18 kB         164 kB
+Ôö£ Ôùï /demo                                         166 B         106 kB
+Ôö£ Ôùï /demo/business-flow                         4.44 kB         165 kB
+Ôö£ Ôùï /demo/control-room                            762 B         152 kB
+Ôö£ Ôùï /demo/design-system                           134 B         157 kB
+Ôö£ Ôùï /demo/events                                  201 B         102 kB
+Ôö£ Ôùï /demo/health                                  201 B         102 kB
+Ôö£ Ôùï /demo/integrations                           2.5 kB         163 kB
+Ôö£ Ôùï /demo/legal                                   134 B         157 kB
+Ôö£ Ôùï /demo/operator                              2.51 kB         163 kB
+Ôö£ Ôùï /demo/reports                                 760 B         152 kB
+Ôö£ Ôùï /demo/scenarios                               134 B         157 kB
+Ôö£ Ôùï /demo/showcase                                910 B         171 kB
+Ôö£ Ôùï /demo/walkthrough                             762 B         152 kB
+Ôö£ Ôùï /login                                        923 B         103 kB
+Ôö£ Ôùï /preguntas-frecuentes                       6.38 kB         166 kB
+Ôöö Ôùï /unauthorized                                 201 B         102 kB
++ First Load JS shared by all                    102 kB
+  Ôö£ chunks/91065d4b-ce88d69c3f3caaa2.js         54.2 kB
+  Ôö£ chunks/9817-bd326920e86605b5.js             45.9 kB
+  Ôöö other shared chunks (total)                    2 kB
+
+
+ãÆ Middleware                                    88.9 kB
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+

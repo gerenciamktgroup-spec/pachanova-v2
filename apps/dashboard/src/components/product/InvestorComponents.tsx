@@ -23,11 +23,18 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-light tracking-tighter text-pn-text mb-2">
-            Bienvenido, <span className="font-semibold text-pn-gold">{view.investor.fullName}</span>
+            Bienvenido, <span className="font-semibold text-pn-gold">{view.investor.fullName}</span> • PachaNova Landbanking
           </h1>
           <p className="text-sm text-pn-text-muted max-w-xl">
-            {PRODUCT_COPY.disclaimers.noRealMoney} Su cuenta se encuentra en el entorno Demo Local.
+            {PRODUCT_COPY.disclaimers.noRealMoney} Su cuenta se encuentra en el entorno Demo Local. Rich permanent demo. DATOS REALES • Master sacred. Post-F6 polish: full orq high-level bridge visibility + E2E on yields/gov/borrow/landbank surfaces.
           </p>
+          {/* more interactive: per-PNC ver avances + cross links + orq exercised badges */}
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <a href="/demo/showcase#phase4-hologram-landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Ver avances (Holograms + E2E 5PNC)</a>
+            <a href="/dashboard/investor/marketplace?pnc=PAR" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">P2P Orderbook (PAR tie)</a>
+            <a href="/dashboard/admin/landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Admin Landbank</a>
+            <span className="px-2 py-0.5 bg-emerald-900/30 text-emerald-300 rounded border border-emerald-700/50">ORQ EXERCISED • F16/21/36/47/51/53</span>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <UserStatusPill status={view.investor.kycStatus} />
@@ -51,6 +58,7 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
         <div>
           <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Ownership Genesis</p>
           <span className="text-pn-text font-medium">{ownership.toFixed(2)}%</span>
+          <div className="mt-1"><a href="/demo/showcase#phase4-hologram-landbank" className="text-[10px] underline text-pn-gold/80">ver avances por PNC →</a></div>
         </div>
       </div>
     </MissionCard>

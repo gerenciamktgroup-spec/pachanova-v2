@@ -28,9 +28,8 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${inter.variable} ${dmSans.variable} antialiased`}
+        className={`${inter.variable} ${dmSans.variable} antialiased bg-[#0a111f] text-white`}
       >
-        <DemoBanner />
         {children}
       </body>
     </html>

@@ -32,12 +32,17 @@ async function fetchMarketplaceData() {
   }
 }
 
-async function MarketplaceContent() {
+async function MarketplaceContent({ searchParams }: { searchParams?: Promise<{ pnc?: string }> }) {
+  const resolvedSearch = searchParams ? await searchParams : {};
+  const pncFromQuery = resolvedSearch.pnc || undefined;
+
   const data = await fetchMarketplaceData();
 
   if (!data) {
-    return <ErrorState title="Error" message="No se pudo cargar el mercado P2P." />;
+    return <ErrorState title="Error (PachaNova Landbanking Rich Permanent Demo)" message="No se pudo cargar el mercado P2P. Full unified. DATOS REALES. Master sacred. Hard refresh for holograms." />;
   }
+
+  const pncLabel = pncFromQuery ? ` • PNC ${pncFromQuery} (from Landbank E2E)` : "";
 
   return (
     <div className="space-y-6">
@@ -48,8 +53,8 @@ async function MarketplaceContent() {
           { label: "Mercado P2P Demo" }
         ]} className="mb-4" />
         <SectionHeader 
-          title="Mercado P2P Demo"
-          description="Compra y vende tokens PACHA simulados con otros usuarios de la red local."
+          title={`Mercado P2P Demo${pncLabel} • PachaNova Landbanking Full`}
+          description="Compra y vende tokens PACHA simulados con otros usuarios de la red local. Rich permanent demo. DATOS REALES. Fase 6 + Post-F6: P2P orders tied directly to 5PNC holograms via Landbank flow + more PNC ties + orq exercised + ver avances. Full unified project."
         />
       </div>
 
@@ -58,15 +63,16 @@ async function MarketplaceContent() {
         balance={data.balance || null} 
         kycStatus={data.kycStatus}
         currentUserId={DEMO_USER_ID}
+        pncCode={pncFromQuery}
       />
     </div>
   );
 }
 
-export default function MarketplacePage() {
+export default function MarketplacePage({ searchParams }: { searchParams?: Promise<{ pnc?: string }> }) {
   return (
     <Suspense fallback={<div>Cargando mercado...</div>}>
-      <MarketplaceContent />
+      <MarketplaceContent searchParams={searchParams} />
     </Suspense>
   );
 }

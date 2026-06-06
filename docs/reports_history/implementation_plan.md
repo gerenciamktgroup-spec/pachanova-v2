@@ -15,6 +15,8 @@ Por favor, revisa la paleta de colores (`globals.css`) y la arquitectura de comp
 ### 2. Componentes Mission Control
 Se crearán dentro de `apps/web/src/components/mission/`:
 
+**Fase 6 Polish + E2E note (high-level autonomous close for PachaNova Landbanking):** E2E flows (Master launch -> P2P on 5PNC using HologramPncCard + ties -> borrow loop -> claim yield -> gov vote) implemented in dashboard landbank client + P2P polish. Full identity/hub + cross-links + immediate 'ver todos los avances'. Single project focus. See AGENTS.md Fase6 + LandbankManagementClient.tsx for details. Build clean. Blackboard updated.
+
 #### [NEW] `motion.ts`
 Exportación de micro-animaciones reutilizables con `framer-motion` (ej. `fadeInUp`, `staggerContainer`, `softScale`), asegurando el soporte a `prefers-reduced-motion`.
 
