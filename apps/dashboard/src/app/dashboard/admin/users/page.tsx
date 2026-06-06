@@ -1,10 +1,11 @@
-﻿import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
+import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { Suspense } from "react";
 import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { UserAdminView } from "@/types/product";
 import { AdminUsersDataGrid } from "@/components/product";
+import postgres from "postgres";
 
 export const dynamic = 'force-dynamic';
 
@@ -48,7 +49,9 @@ async function fetchUsersData(): Promise<UserAdminView[]> {
     if (useLocalFallback) {
       let client;
       try {
-        client = postgres(process.env.DATABASE_URL!);
+        const dbUrl = process.env.DATABASE_URL!;
+        const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase');
+        client = postgres(dbUrl, { ssl: useSsl ? { rejectUnauthorized: false } : undefined });
         const localInvestors = await client`
           SELECT i.id, i.first_name, i.last_name, i.email, i.role, i.kyc_status, i.is_verified, i.created_at,
                  b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd, b.last_updated_at,

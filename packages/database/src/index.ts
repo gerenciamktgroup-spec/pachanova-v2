@@ -1,9 +1,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { createClient } from '@supabase/supabase-js'
-import * as schema from './schema/index.ts'
+import * as schema from './schema/index'
 
-export * as schema from './schema/index.ts'
+export * as schema from './schema/index'
+export * from './schema/index'
 export type DrizzleDB = ReturnType<typeof drizzle<typeof schema>>
 
 export const isDemo = process.env.IS_DEMO === 'true'
@@ -25,7 +26,11 @@ export function getDb(): DrizzleDB {
   if (!dbUrl || dbUrl.includes('[TU_PASSWORD]') || dbUrl.includes('placeholder')) {
     throw new Error('DATABASE_URL no configurada en Vercel -> Settings -> Environment Variables')
   }
-  const client = postgres(dbUrl, { prepare: false })
+  const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase')
+  const client = postgres(dbUrl, {
+    prepare: false,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined
+  })
   _db = drizzle(client, { schema })
   return _db
 }

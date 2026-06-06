@@ -1,8 +1,9 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell, ProductEmptyState, TokenAmount } from "@/components/product/SharedComponents";
 import { createClient } from "@supabase/supabase-js";
+import postgres from "postgres";
 
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
@@ -39,7 +40,9 @@ export default async function AdminTokenOrdersPage() {
   // Fallback to local postgres DB
   if (fetchFailed) {
     try {
-      const client = postgres(process.env.DATABASE_URL!);
+      const dbUrl = process.env.DATABASE_URL!;
+      const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase');
+      const client = postgres(dbUrl, { ssl: useSsl ? { rejectUnauthorized: false } : undefined });
       const localPurchases = await client`
         SELECT gp.id, gp.token_amount as quantity, gp.total_usd_amount as total_amount, 
                gp.status, gp.timestamp as created_at,

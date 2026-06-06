@@ -1,9 +1,10 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
 import { AuditLogTimeline } from "@/components/product";
 import { AuditLogView } from "@/types/product";
 import { createClient } from "@supabase/supabase-js";
+import postgres from "postgres";
 
 
 async function fetchAuditLogs(): Promise<AuditLogView[]> {
@@ -35,7 +36,9 @@ async function fetchAuditLogs(): Promise<AuditLogView[]> {
 
   if (fetchFailed) {
     try {
-      const client = postgres(process.env.DATABASE_URL!);
+      const dbUrl = process.env.DATABASE_URL!;
+      const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase');
+      const client = postgres(dbUrl, { ssl: useSsl ? { rejectUnauthorized: false } : undefined });
       const rawAuditLogs = await client`
         SELECT id, action, details, timestamp, user_id
         FROM audit_logs
