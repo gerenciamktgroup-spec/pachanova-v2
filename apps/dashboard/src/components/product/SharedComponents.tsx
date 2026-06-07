@@ -87,11 +87,16 @@ export function UserStatusPill({ status }: { status: "pending" | "approved" | "r
 }
 
 // EmptyState
-export function ProductEmptyState({ title, description }: { title: string, description: string }) {
+export function ProductEmptyState({ title, description, actionLabel, actionHref }: { title: string, description: string, actionLabel?: string, actionHref?: string }) {
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center rounded-md border border-dashed border-pn-border/50 bg-pn-surface-strong/20">
       <p className="text-sm font-medium text-pn-text mb-1">{title}</p>
-      <p className="text-xs text-pn-text-muted">{description}</p>
+      <p className="text-xs text-pn-text-muted mb-4">{description}</p>
+      {actionLabel && actionHref && (
+        <a href={actionHref} className="px-4 py-2 text-xs font-medium text-pn-bg bg-pn-gold hover:bg-pn-gold/90 rounded-md transition-colors">
+          {actionLabel}
+        </a>
+      )}
     </div>
   );
 }

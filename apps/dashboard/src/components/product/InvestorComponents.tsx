@@ -151,7 +151,12 @@ export function ProRataLandCardV2({ view }: { view: any }) {
   return (
     <MissionCard title="Portafolio Inmobiliario" data-testid="pro-rata-land-card">
       {portfolio.length === 0 ? (
-        <ProductEmptyState title="Sin Inversiones" description="Aún no posees fracciones inmobiliarias." />
+        <ProductEmptyState 
+          title="Sin Inversiones" 
+          description="Aún no posees fracciones inmobiliarias." 
+          actionLabel="Ir al Marketplace"
+          actionHref="/dashboard/investor/marketplace"
+        />
       ) : (
         <div className="space-y-4">
           {portfolio.map((item: any) => {

@@ -76,25 +76,7 @@ async function fetchInvestorData(): Promise<any> {
     }
   }));
 
-  // Fallback to placeholder if no DB data
-  if (portfolio.length === 0) {
-    portfolio.push({
-      propertyId: "pnc-par-001",
-      propertyName: "Paracas Land Reserve - PNC-PAR-001",
-      propertyType: "land",
-      location: "Paracas, Ica, Perú",
-      imageUrl: null,
-      status: "trading",
-      availableTokens: "2000",
-      lockedTokens: "500",
-      availableUsd: "1000000",
-      lockedUsd: "250000",
-      tokenPriceUsd: "500",
-      annualYieldExpected: "7.8",
-      lastUpdated: new Date().toISOString(),
-      metadata: { pncCode: "PNC-PAR-001", hectares: 5, net: 68112.5, effectiveYield: 7.8 } as any
-    });
-  }
+  // No fallback to placeholder, let the UI handle the empty state.
 
   let realHologramPncs: any[] = [];
   try {

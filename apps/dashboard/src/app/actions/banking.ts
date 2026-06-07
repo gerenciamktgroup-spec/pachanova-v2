@@ -10,6 +10,8 @@ import { revalidatePath } from "next/cache";
  */
 export async function createDepositRequest(amountUsd: number) {
   try {
+    if (amountUsd <= 0) throw new Error("El monto debe ser mayor a 0");
+
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -39,7 +41,7 @@ export async function createDepositRequest(amountUsd: number) {
 /**
  * CHECKER: El Administrador aprueba una transacción
  */
-export async function approveTransaction(transactionId: string) {
+export async function approveTransaction(transactionId: string, action: "APPROVED" | "REJECTED" = "APPROVED") {
   try {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -53,6 +55,15 @@ export async function approveTransaction(transactionId: string) {
     // 1. Obtener la transacción PENDING
     const [tx] = await db.select().from(schema.transactions).where(eq(schema.transactions.id, transactionId));
     if (!tx || tx.status !== "pending") throw new Error("Transacción inválida o ya procesada.");
+
+    if (action === "REJECTED") {
+      await db.update(schema.transactions).set({ 
+        status: "failed", 
+        metadata: { ...(tx.metadata as any || {}), reason: "Rechazado por el administrador" } 
+      }).where(eq(schema.transactions.id, tx.id));
+      revalidatePath("/dashboard/admin/approvals");
+      return { success: true };
+    }
 
     // 2. Ejecutar la lógica de aprobación (Atómica idealmente, aquí secuencial por simplicidad)
     if (tx.type === "deposit") {

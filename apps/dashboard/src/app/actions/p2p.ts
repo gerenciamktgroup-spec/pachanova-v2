@@ -10,6 +10,10 @@ import { revalidatePath } from "next/cache";
  */
 export async function createP2POrder(propertyId: string, quantity: number, pricePerToken: number) {
   try {
+    if (quantity <= 0 || pricePerToken <= 0) {
+      throw new Error("La cantidad y el precio deben ser mayores a 0");
+    }
+
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("No autenticado");
@@ -87,7 +91,7 @@ export async function initiateP2PTrade(orderId: string) {
 /**
  * CHECKER (Admin): Aprueba el P2P Trade. Intercambia Saldos y cobra Fee.
  */
-export async function approveP2PTrade(tradeId: string) {
+export async function approveP2PTrade(tradeId: string, action: "APPROVED" | "REJECTED" = "APPROVED") {
   try {
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -98,6 +102,13 @@ export async function approveP2PTrade(tradeId: string) {
     
     const [trade] = await db.select().from(schema.p2pTrades).where(eq(schema.p2pTrades.id, tradeId));
     if (!trade || trade.status !== "pending_approval") throw new Error("Trade inválido");
+
+    if (action === "REJECTED") {
+      await db.update(schema.p2pTrades).set({ status: "cancelled" }).where(eq(schema.p2pTrades.id, trade.id));
+      await db.update(schema.p2pOrders).set({ status: "open" }).where(eq(schema.p2pOrders.id, trade.orderId));
+      revalidatePath("/dashboard/admin/approvals");
+      return { success: true };
+    }
 
     // LÓGICA ATÓMICA DE SWAP DE BALANCES (Simplificada para la Fase 6 MVP)
     // En un entorno de producción estricto, esto debe ir dentro de un db.transaction()

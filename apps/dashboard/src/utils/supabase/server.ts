@@ -52,7 +52,7 @@ export async function createServerClient() {
       
       if (email === 'carlos.mendoza@demo.pachanova.io' && password === 'Demo2026!') {
         const mockUser = {
-          id: 'carlos-mendoza-mock-uuid',
+          id: 'aaaa0000-0000-0000-0000-000000000000',
           email: 'carlos.mendoza@demo.pachanova.io',
           app_metadata: { role: 'admin' },
           user_metadata: { full_name: 'Carlos Mendoza', first_name: 'Carlos', last_name: 'Mendoza' },
@@ -65,7 +65,7 @@ export async function createServerClient() {
 
       if (email === 'investor@pachanova.local' && password === 'Demo2026!') {
         const mockUser = {
-          id: 'demo-holder-mock-uuid',
+          id: 'bbbb0000-0000-0000-0000-000000000000',
           email: 'investor@pachanova.local',
           app_metadata: { role: 'investor' },
           user_metadata: { full_name: 'Demo Holder', first_name: 'Demo', last_name: 'Holder' },

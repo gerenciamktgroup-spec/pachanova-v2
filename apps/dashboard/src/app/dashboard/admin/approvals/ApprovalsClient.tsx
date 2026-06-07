@@ -25,14 +25,12 @@ export function ApprovalsClient({ initialApprovals }: { initialApprovals: Approv
   const handleAction = async (id: string, type: string, action: "APPROVED" | "REJECTED") => {
     setIsProcessing(id);
     try {
-      if (action === "APPROVED") {
-        if (type === "DEPOSIT" || type === "WITHDRAWAL") {
-          const res = await approveTransaction(id);
-          if (!res.success) throw new Error(res.error);
-        } else if (type === "P2P_TRADE") {
-          const res = await approveP2PTrade(id);
-          if (!res.success) throw new Error(res.error);
-        }
+      if (type === "DEPOSIT" || type === "WITHDRAWAL") {
+        const res = await approveTransaction(id, action);
+        if (!res.success) throw new Error(res.error);
+      } else if (type === "P2P_TRADE") {
+        const res = await approveP2PTrade(id, action);
+        if (!res.success) throw new Error(res.error);
       }
 
       setApprovals(prev => prev.map(item => 
