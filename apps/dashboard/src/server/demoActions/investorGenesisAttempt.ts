@@ -12,7 +12,7 @@ export async function executeInvestorGenesisAttempt(investorId: string, tokenAmo
 
   return await db.transaction(async (tx) => {
     // 0. Ensure we have a valid investor ID from the database for foreign key constraint
-    const firstInvestor = await tx.query.investors.findFirst();
+    const firstInvestor = await tx.query.users.findFirst();
     const validInvestorId = firstInvestor?.id || investorId;
 
     // 1. Create a token order in pending_demo state

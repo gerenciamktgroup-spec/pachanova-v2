@@ -1,10 +1,10 @@
 import { pgTable, uuid, varchar, numeric, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { properties } from './properties';
 
 export const tokenOrders = pgTable("token_orders", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   propertyId: uuid("property_id").references(() => properties.id).notNull(),
   quantity: numeric("quantity", { precision: 18, scale: 2 }).notNull(),
   unitPrice: numeric("unit_price", { precision: 18, scale: 2 }).notNull(),

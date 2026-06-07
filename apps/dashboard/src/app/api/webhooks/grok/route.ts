@@ -22,8 +22,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error: "Propiedad no encontrada en frontend V2" }, { status: 404 });
       }
 
-      const inv = await db.query.investors.findFirst({
-        where: eq(schema.investors.email, body.investorEmail)
+      const inv = await db.query.users.findFirst({
+        where: eq(schema.users.email, body.investorEmail)
       });
 
       if (!inv) {

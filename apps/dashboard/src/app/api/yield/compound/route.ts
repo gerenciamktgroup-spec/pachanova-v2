@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       }
     } catch (_) {}
 
-    const inv = await db.query.investors.findFirst({ where: eq(schema.investors.email, email) });
+    const inv = await db.query.users.findFirst({ where: eq(schema.users.email, email) });
     if (!inv) return NextResponse.json({ success: false, error: 'investor not found' }, { status: 404 });
 
     const props = await db.query.properties.findMany();

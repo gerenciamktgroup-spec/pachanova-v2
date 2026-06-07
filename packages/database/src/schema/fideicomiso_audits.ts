@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp } from "drizzle-orm/pg-core";
 import { properties } from './properties';
-import { investors } from './investors';
+import { users } from './users';
 
 export const fideicomisoAudits = pgTable("fideicomiso_audits", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -10,5 +10,5 @@ export const fideicomisoAudits = pgTable("fideicomiso_audits", {
   arweaveTxId: varchar("arweave_tx_id", { length: 255 }),
   metadata: text("metadata"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  createdBy: uuid("created_by").references(() => investors.id),
+  createdBy: uuid("created_by").references(() => users.id),
 });

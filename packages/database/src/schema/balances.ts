@@ -1,10 +1,10 @@
 import { pgTable, uuid, numeric, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { properties } from './properties';
 
 export const balances = pgTable("balances", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(), // kept column name as investorId for simplicity
   propertyId: uuid("property_id").references(() => properties.id).notNull(),
   availableUsd: numeric("available_usd", { precision: 18, scale: 2 }).notNull().default("0"),
   lockedUsd: numeric("locked_usd", { precision: 18, scale: 2 }).notNull().default("0"),

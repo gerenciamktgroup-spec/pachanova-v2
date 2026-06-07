@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     const { investorId, quantity } = result.data;
 
     // Check KYC status
-    const user = await db.query.investors.findFirst({
-      where: eq(schema.investors.id, investorId)
+    const user = await db.query.users.findFirst({
+      where: eq(schema.users.id, investorId)
     });
 
     if (!user) {

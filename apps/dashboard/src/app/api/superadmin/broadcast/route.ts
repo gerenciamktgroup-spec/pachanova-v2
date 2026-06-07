@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     let recipientIds: string[] = [];
 
     if (targetSegment === "all") {
-      const investors = await db.query.investors.findMany({ columns: { id: true } });
+      const investors = await db.query.users.findMany({ columns: { id: true } });
       recipientIds = investors.map((i) => i.id);
     } else {
       // targetSegment is assumed to be a propertyId

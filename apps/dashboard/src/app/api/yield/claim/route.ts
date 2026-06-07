@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     } catch (_) {}
 
     // Find investor (demo holder)
-    const inv = await db.query.investors.findFirst({ where: eq(schema.investors.email, email) });
+    const inv = await db.query.users.findFirst({ where: eq(schema.users.email, email) });
     if (!inv) return NextResponse.json({ success: false, error: 'investor not found' }, { status: 404 });
 
     // Find property for PNC (simple: use first or by name match if possible; demo uses Paracas for PAR)

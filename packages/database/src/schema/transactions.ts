@@ -1,12 +1,13 @@
 import { pgTable, uuid, varchar, numeric, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { properties } from './properties';
 import { transactionTypeEnum, transactionStatusEnum } from './enums';
 
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  senderId: uuid("sender_id").references(() => investors.id), // Null for minting
-  receiverId: uuid("receiver_id").references(() => investors.id), // Null for burning
+  senderId: uuid("sender_id").references(() => users.id), // Null for vault minting
+  receiverId: uuid("receiver_id").references(() => users.id), // Null for vault burning
+  vaultId: uuid("vault_id"), // Refers to a Vault if interacting directly with Treasury/Escrow/Burn
   propertyId: uuid("property_id").references(() => properties.id), // Context for the tx
   amount: numeric("amount", { precision: 18, scale: 2 }).notNull(),
   feeAmount: numeric("fee_amount", { precision: 18, scale: 2 }).default("0"),
@@ -21,3 +22,4 @@ export const transactions = pgTable("transactions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const totalAmount = quantity * pricePerToken;
 
     await db.transaction(async (tx) => {
-      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.id, sellerInvestorId) });
+      const user = await tx.query.users.findFirst({ where: eq(schema.users.id, sellerInvestorId) });
       if (!user || user.kycStatus !== 'approved') {
         throw new Error('User KYC must be approved to sell tokens');
       }

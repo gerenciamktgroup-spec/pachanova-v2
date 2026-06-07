@@ -24,8 +24,8 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'investor@pachanova.local';
 
-    const investor = await db.query.investors.findFirst({
-      where: eq(schema.investors.email, userEmail),
+    const investor = await db.query.users.findFirst({
+      where: eq(schema.users.email, userEmail),
     });
     if (!investor) {
       return NextResponse.json({ success: false, error: 'Investor not found for current session' }, { status: 404 });
@@ -147,7 +147,7 @@ export async function GET(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     const userEmail = user?.email || 'investor@pachanova.local';
 
-    const investor = await db.query.investors.findFirst({ where: eq(schema.investors.email, userEmail) });
+    const investor = await db.query.users.findFirst({ where: eq(schema.users.email, userEmail) });
 
     if (!investor) {
       return NextResponse.json({ success: false, error: 'Investor not found' }, { status: 404 });

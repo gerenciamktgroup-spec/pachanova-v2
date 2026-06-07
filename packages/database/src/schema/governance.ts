@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, text, timestamp, numeric, uniqueIndex } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { properties } from './properties';
 import { proposalStatusEnum, voteChoiceEnum } from './enums';
 
@@ -8,7 +8,7 @@ export const proposals = pgTable("proposals", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   status: proposalStatusEnum("status").notNull().default("active"),
-  creatorInvestorId: uuid("creator_investor_id").references(() => investors.id),
+  creatorInvestorId: uuid("creator_investor_id").references(() => users.id),
   relatedPropertyId: uuid("related_property_id").references(() => properties.id),
   startAt: timestamp("start_at").defaultNow().notNull(),
   endAt: timestamp("end_at"),
@@ -21,7 +21,7 @@ export const proposals = pgTable("proposals", {
 export const votes = pgTable("votes", {
   id: uuid("id").primaryKey().defaultRandom(),
   proposalId: uuid("proposal_id").references(() => proposals.id).notNull(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   choice: voteChoiceEnum("choice").notNull(),
   votingPower: numeric("voting_power", { precision: 18, scale: 2 }).notNull(), // snapshot of PACHA holdings at vote time (weighted)
   // Fase35: onchain gov attest (tie Fase26/27; real tx@block from publicnode + deterministic proof for recompute/VERIFY in UI + verify script)
@@ -38,7 +38,7 @@ export const votes = pgTable("votes", {
 // Staked PACHA adds to voting power (holdings + staked) for governance weight + future discounts/accrual
 export const stakes = pgTable("stakes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   stakedAmount: numeric("staked_amount", { precision: 18, scale: 2 }).notNull().default("0"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

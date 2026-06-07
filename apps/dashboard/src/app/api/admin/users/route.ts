@@ -7,13 +7,13 @@ export async function GET() {
   try {
     const usersData = await db
       .select({
-        id: schema.investors.id,
-        email: schema.investors.email,
-        kycStatus: schema.investors.kycStatus,
+        id: schema.users.id,
+        email: schema.users.email,
+        kycStatus: schema.users.kycStatus,
         tokenBalance: schema.balances.availableTokens,
       })
-      .from(schema.investors)
-      .leftJoin(schema.balances, eq(schema.investors.id, schema.balances.investorId));
+      .from(schema.users)
+      .leftJoin(schema.balances, eq(schema.users.id, schema.balances.investorId));
     
     return NextResponse.json({ success: true, users: usersData });
   } catch (error) {

@@ -1,10 +1,10 @@
 import { pgTable, uuid, numeric, timestamp, varchar } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { properties } from './properties';
 
 export const loans = pgTable("loans", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   propertyId: uuid("property_id").references(() => properties.id).notNull(),
   collateralAmount: numeric("collateral_amount", { precision: 18, scale: 2 }).notNull(),
   collateralValueUsd: numeric("collateral_value_usd", { precision: 18, scale: 2 }).notNull(),

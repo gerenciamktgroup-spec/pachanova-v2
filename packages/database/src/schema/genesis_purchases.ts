@@ -1,9 +1,9 @@
 import { pgTable, uuid, varchar, timestamp, numeric } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 
 export const genesisPurchases = pgTable("genesis_purchases", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   tokenAmount: numeric("token_amount", { precision: 18, scale: 2 }).notNull(),
   usdPricePerToken: numeric("usd_price_per_token", { precision: 18, scale: 2 }).notNull().default("8.40"), // Presale price
   totalUsdAmount: numeric("total_usd_amount", { precision: 18, scale: 2 }).notNull(),

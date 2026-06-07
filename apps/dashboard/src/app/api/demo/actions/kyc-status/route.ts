@@ -22,9 +22,9 @@ export async function POST(req: Request) {
     const { investorId, status } = result.data;
 
     await db.transaction(async (tx) => {
-      await tx.update(schema.investors)
+      await tx.update(schema.users)
         .set({ kycStatus: status })
-        .where(eq(schema.investors.id, investorId));
+        .where(eq(schema.users.id, investorId));
 
       await tx.insert(schema.auditLogs).values({
         action: 'DEMO_KYC_STATUS_UPDATED',

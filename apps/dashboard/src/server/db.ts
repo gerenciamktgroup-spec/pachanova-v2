@@ -104,7 +104,7 @@ export async function persistSchema10ToDb(muts: any = {}) {
     // real investor: try find by email or use first; fallback safe uuid for demo/prod seed
     let investorId = '00000000-0000-0000-0000-000000000000';
     try {
-      const inv = await db.select().from(schema.investors || schema.investors).limit(1); // adjust if table name differs
+      const inv = await db.select().from(schema.users || schema.users).limit(1); // adjust if table name differs
       if (inv[0]?.id) investorId = inv[0].id;
     } catch {}
     if (propId && muts.distribs && muts.distribs.length) {

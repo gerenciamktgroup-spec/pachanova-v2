@@ -18,8 +18,8 @@ async function fetchBorrowData() {
 
 
     // Fetch investor profile
-    const investor = await db.query.investors.findFirst({
-      where: eq(schema.investors.email, userEmail),
+    const investor = await db.query.users.findFirst({
+      where: eq(schema.users.email, userEmail),
     });
 
     if (!investor) {

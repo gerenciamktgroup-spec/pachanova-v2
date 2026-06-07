@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       limit: 50,
     });
 
-    const investorsCount = await db.$count(schema.investors);
+    const investorsCount = await db.$count(schema.users);
     const propertiesCount = await db.$count(schema.properties);
     const distributionsCount = await db.$count(schema.distributions);
 

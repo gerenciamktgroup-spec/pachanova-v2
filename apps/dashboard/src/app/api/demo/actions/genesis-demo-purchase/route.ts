@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     // Execute everything in a single transaction
     await db.transaction(async (tx) => {
       // 1. Check KYC
-      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.id, investorId) });
+      const user = await tx.query.users.findFirst({ where: eq(schema.users.id, investorId) });
       if (!user || user.kycStatus !== 'approved') {
         throw new Error('User KYC must be approved');
       }

@@ -1,9 +1,9 @@
 import { pgTable, uuid, varchar, timestamp, numeric } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 
 export const tokenLedger = pgTable("token_ledger", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id),
+  investorId: uuid("investor_id").references(() => users.id),
   operation: varchar("operation", { length: 50 }).notNull(), // 'mint', 'transfer', 'burn'
   amount: numeric("amount", { precision: 18, scale: 2 }).notNull(),
   txHash: varchar("tx_hash", { length: 66 }).unique(), // Blockchain tx hash if applicable

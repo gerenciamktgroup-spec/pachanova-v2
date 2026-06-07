@@ -1,10 +1,10 @@
 import { pgTable, uuid, varchar, text, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
-import { investors } from './investors';
+import { users } from './users';
 import { notificationTypeEnum } from './enums';
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  investorId: uuid("investor_id").references(() => investors.id).notNull(),
+  investorId: uuid("investor_id").references(() => users.id).notNull(),
   type: notificationTypeEnum("type").notNull().default("system"),
   title: varchar("title", { length: 255 }).notNull(),
   message: text("message").notNull(),
