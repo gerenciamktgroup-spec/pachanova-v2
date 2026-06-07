@@ -1,31 +1,38 @@
-"use client";
-
-import { useState } from "react";
 import { RouteBreadcrumbs } from "@/components/mission";
-import { DollarSign, ArrowRight, Clock, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { WalletDepositForm } from "./WalletClient";
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
+import { eq, desc, and } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { createDepositRequest } from "@/app/actions/banking";
+export default async function WalletPage() {
+  const cookieStore = await cookies();
+  const sessionStr = cookieStore.get('pachanova-mock-session')?.value;
+  if (!sessionStr) redirect('/login');
+  
+  const user = JSON.parse(sessionStr);
+  if (user.role !== 'investor') redirect('/dashboard/admin');
 
-export default function WalletPage() {
-  const [amount, setAmount] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success">("idle");
+  // Fetch balances
+  const userBalances = await db.select()
+    .from(schema.balances)
+    .where(eq(schema.balances.investorId, user.id));
 
-  const handleDeposit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Llamar a la Server Action real
-    const result = await createDepositRequest(parseFloat(amount));
-    
-    setIsSubmitting(false);
-    if (result.success) {
-      setStatus("success");
-      setAmount("");
-    } else {
-      alert("Error al solicitar fondeo: " + result.error);
-    }
-  };
+  const totalUsd = userBalances.reduce((acc, b) => acc + Number(b.availableUsd || 0), 0);
+
+  // Fetch recent transactions (deposits and withdrawals)
+  const recentTransactions = await db.select()
+    .from(schema.transactions)
+    .where(
+      and(
+        eq(schema.transactions.receiverId, user.id),
+        eq(schema.transactions.type, "deposit")
+      )
+    )
+    .orderBy(desc(schema.transactions.createdAt))
+    .limit(10);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -41,74 +48,29 @@ export default function WalletPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Formulario de Fondeo (Maker) */}
-        <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30 backdrop-blur-sm space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold text-pn-text mb-1">Fondear Cuenta</h2>
-            <p className="text-sm text-pn-text-soft">
-              El saldo se reflejará como <span className="text-pn-gold font-medium">Pacha USD</span> tras la validación de la transferencia.
-            </p>
+        <div className="space-y-6">
+          <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/50 backdrop-blur-sm flex justify-between items-center">
+            <div>
+              <p className="text-sm text-pn-text-soft">Saldo Disponible</p>
+              <p className="text-3xl font-medium text-pn-gold">${totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+            </div>
+            <div className="px-3 py-1 bg-pn-gold/10 text-pn-gold text-xs font-semibold uppercase tracking-wider rounded border border-pn-gold/20">
+              Pacha USD
+            </div>
           </div>
 
-          {status === "success" ? (
-            <div className="p-6 rounded-lg bg-pn-success/10 border border-pn-success/20 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-pn-success/20 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-pn-success" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-pn-success">Solicitud en Revisión</h3>
-                <p className="text-sm text-pn-text-soft mt-1">
-                  Tu fondeo está en proceso de validación. Una vez aprobado por el Administrador, verás el saldo reflejado.
-                </p>
-              </div>
-              <button 
-                onClick={() => setStatus("idle")}
-                className="mt-4 px-4 py-2 text-sm font-medium text-pn-gold hover:bg-pn-gold/10 rounded-md transition-colors"
-              >
-                Realizar otro depósito
-              </button>
+          <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30 backdrop-blur-sm space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-pn-text mb-1">Fondear Cuenta</h2>
+              <p className="text-sm text-pn-text-soft">
+                El saldo se reflejará como <span className="text-pn-gold font-medium">Pacha USD</span> tras la validación de la transferencia.
+              </p>
             </div>
-          ) : (
-            <form onSubmit={handleDeposit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-pn-text-muted">Monto a depositar (USD)</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <DollarSign className="h-5 w-5 text-pn-text-soft" />
-                  </div>
-                  <input
-                    type="number"
-                    required
-                    min="100"
-                    step="0.01"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-pn-bg border border-pn-border rounded-lg focus:outline-none focus:ring-1 focus:ring-pn-gold focus:border-pn-gold text-pn-text placeholder-pn-text-soft/50 transition-colors"
-                    placeholder="Ej. 1000.00"
-                  />
-                </div>
-                <p className="text-xs text-pn-text-soft">Depósito mínimo: $100 USD.</p>
-              </div>
-
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !amount}
-                  className="w-full flex items-center justify-center gap-2 bg-pn-gold hover:bg-pn-gold/90 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold py-3 px-4 rounded-lg transition-all"
-                >
-                  {isSubmitting ? (
-                    <span className="animate-pulse">Procesando...</span>
-                  ) : (
-                    <>
-                      Continuar con MercadoPago <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
+            <WalletDepositForm />
+          </div>
         </div>
 
-        {/* Info lateral */}
+        {/* Info lateral & Historial */}
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-pn-border/50 bg-gradient-to-br from-pn-surface-strong/20 to-transparent">
             <div className="flex items-start gap-4">
@@ -124,25 +86,32 @@ export default function WalletPage() {
             </div>
           </div>
           
-          <div className="p-6 rounded-xl border border-pn-border/50 bg-gradient-to-br from-pn-surface-strong/20 to-transparent">
-            <h3 className="font-semibold text-pn-text mb-4">Proceso de Fondeo</h3>
-            <ol className="relative border-l border-pn-border/50 ml-3 space-y-5">
-              <li className="pl-6">
-                <span className="absolute flex items-center justify-center w-6 h-6 bg-pn-gold rounded-full -left-3 ring-4 ring-pn-bg text-black text-xs font-bold">1</span>
-                <h4 className="font-medium text-pn-text">Solicitud (Maker)</h4>
-                <p className="text-xs text-pn-text-soft mt-1">Inicias el depósito en esta pantalla.</p>
-              </li>
-              <li className="pl-6">
-                <span className="absolute flex items-center justify-center w-6 h-6 bg-pn-surface-strong rounded-full -left-3 ring-4 ring-pn-bg text-pn-text-muted text-xs font-bold">2</span>
-                <h4 className="font-medium text-pn-text">Aprobación (Checker)</h4>
-                <p className="text-xs text-pn-text-soft mt-1">El Administrador valida los fondos en Tesorería.</p>
-              </li>
-              <li className="pl-6">
-                <span className="absolute flex items-center justify-center w-6 h-6 bg-pn-surface-strong rounded-full -left-3 ring-4 ring-pn-bg text-pn-text-muted text-xs font-bold">3</span>
-                <h4 className="font-medium text-pn-text">Acreditación</h4>
-                <p className="text-xs text-pn-text-soft mt-1">Recibes tus Pacha USD listos para invertir.</p>
-              </li>
-            </ol>
+          <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30">
+            <h3 className="font-semibold text-pn-text mb-4">Depósitos Recientes</h3>
+            {recentTransactions.length === 0 ? (
+              <p className="text-sm text-pn-text-soft text-center py-4">No hay historial de fondeos.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentTransactions.map((tx) => (
+                  <div key={tx.id} className="flex justify-between items-center p-3 rounded-lg bg-pn-surface/50 border border-pn-border/50">
+                    <div>
+                      <p className="text-sm font-medium text-pn-text">Fondeo USD</p>
+                      <p className="text-xs text-pn-text-soft">{new Date(tx.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono text-pn-gold">+${Number(tx.amount).toFixed(2)}</p>
+                      <span className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded ${
+                        tx.status === 'completed' ? 'bg-pn-success/10 text-pn-success' :
+                        tx.status === 'failed' || tx.status === 'cancelled' ? 'bg-pn-danger/10 text-pn-danger' :
+                        'bg-pn-warning/10 text-pn-warning'
+                      }`}>
+                        {tx.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

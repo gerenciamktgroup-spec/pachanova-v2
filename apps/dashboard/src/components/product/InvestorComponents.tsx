@@ -280,64 +280,27 @@ export function InvestorKycStatusPanel({ view }: { view: InvestorDashboardView }
 
 
 export function InvestorWalletStatusPanel({ view }: { view: any }) {
-  const [depositAmount, setDepositAmount] = useState<number>(1000);
-  const [isDepositing, setIsDepositing] = useState(false);
-  const [message, setMessage] = useState("");
-
   const totalUsd = view.investor.portfolio?.reduce((acc: number, p: any) => acc + Number(p.availableUsd || 0), 0) || 0;
 
-  const handleDeposit = async () => {
-    setIsDepositing(true);
-    setMessage("");
-    try {
-      const res = await fetch("/api/demo/actions/simulated-deposit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ investorId: view.investor.id, amountUsd: depositAmount })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setMessage("Depósito simulado con éxito. Actualiza la página para ver tu saldo.");
-      } else {
-        setMessage(data.error || "Error al depositar");
-      }
-    } catch (e) {
-      setMessage("Error de red");
-    } finally {
-      setIsDepositing(false);
-    }
-  };
-
   return (
-    <MissionCard title="Billetera USD (Simulada)">
+    <MissionCard title="Billetera Institucional">
       <div className="space-y-4">
-        <div className="p-3 bg-pn-surface-strong rounded border border-pn-border">
-          <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible Total</p>
-          <p className="text-xl font-medium text-pn-gold">${totalUsd.toLocaleString('en-US')}</p>
-        </div>
-
-        <div className="space-y-2 mt-4 pt-4 border-t border-pn-border">
-          <label className="text-sm text-pn-text-muted">Simular Depósito (USD)</label>
-          <div className="flex gap-2">
-            <input 
-              type="number" 
-              value={depositAmount} 
-              onChange={e => setDepositAmount(Number(e.target.value))} 
-              className="flex-1 bg-pn-bg border border-pn-border rounded px-3 py-1 text-sm focus:outline-none focus:border-pn-gold"
-            />
-            <CommandButton variant="primary" onClick={handleDeposit} disabled={isDepositing || depositAmount <= 0}>
-              {isDepositing ? "..." : "Depositar"}
-            </CommandButton>
+        <div className="p-3 bg-pn-surface-strong rounded border border-pn-border flex justify-between items-center">
+          <div>
+            <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible Total</p>
+            <p className="text-xl font-medium text-pn-gold">${totalUsd.toLocaleString('en-US')}</p>
           </div>
-          {message && <p className="text-xs text-pn-gold mt-2">{message}</p>}
+          <Link href="/dashboard/investor/wallet">
+            <CommandButton variant="primary">Fondear Billetera</CommandButton>
+          </Link>
         </div>
 
         <div className="flex justify-between items-center text-sm pt-4 border-t border-pn-border">
           <span className="text-pn-text-soft">Contratos Custodios</span>
-          <IntegrationStatusBadge status={view.contractReadiness.status} />
+          <IntegrationStatusBadge status={view.paymentsReadiness?.status || "READY"} />
         </div>
         <p className="text-xs text-pn-text-muted">
-          El saldo y los tokens PACHA virtuales residen temporalmente en la base de datos local hasta conectar Foundry.
+          Los fondos son custodiados mediante Fideicomiso. Todas las transacciones de entrada/salida requieren validación institucional (Maker-Checker).
         </p>
       </div>
     </MissionCard>
