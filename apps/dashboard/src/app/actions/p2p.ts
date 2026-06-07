@@ -1,7 +1,7 @@
 "use server";
 
 import { getDb, schema } from "@pachanova/database";
-import { createClient } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/server";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
  */
 export async function createP2POrder(propertyId: string, quantity: number, pricePerToken: number) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("No autenticado");
 
@@ -48,7 +48,7 @@ export async function createP2POrder(propertyId: string, quantity: number, price
  */
 export async function initiateP2PTrade(orderId: string) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("No autenticado");
 
@@ -89,7 +89,7 @@ export async function initiateP2PTrade(orderId: string) {
  */
 export async function approveP2PTrade(tradeId: string) {
   try {
-    const supabase = createClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     const role = user?.app_metadata?.role || user?.user_metadata?.role;
     if (role !== "admin") throw new Error("No autorizado");
