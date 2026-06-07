@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { RouteBreadcrumbs } from "@/components/mission";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowUpRight, ArrowRightLeft } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowUpRight, ArrowRightLeft, FileSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { approveTransaction } from "@/app/actions/banking";
 import { approveP2PTrade } from "@/app/actions/p2p";
 
@@ -139,6 +140,15 @@ export function ApprovalsClient({ initialApprovals }: { initialApprovals: Approv
                           <span className="text-sm text-pn-text-soft animate-pulse">Procesando...</span>
                         ) : (
                           <>
+                            <button 
+                              onClick={() => {
+                                toast.info('Ver Comprobante', { description: 'Simulación: Viendo el comprobante subido por el usuario.' })
+                              }}
+                              className="p-2 text-pn-text-soft hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors mr-2"
+                              title="Ver Comprobante"
+                            >
+                              <FileSearch className="w-5 h-5" />
+                            </button>
                             <button 
                               onClick={() => handleAction(item.id, item.type, "REJECTED")}
                               className="p-2 text-pn-text-soft hover:text-pn-danger hover:bg-pn-danger/10 rounded-md transition-colors"

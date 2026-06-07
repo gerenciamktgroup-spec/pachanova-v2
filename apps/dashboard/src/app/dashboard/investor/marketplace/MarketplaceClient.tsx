@@ -81,54 +81,60 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
                   No hay órdenes de venta públicas en este momento.
                 </div>
               ) : (
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-pn-surface-strong/50 border-b border-pn-border text-pn-text-soft">
-                    <tr>
-                      <th className="px-6 py-4 font-medium">Bóveda (Proyecto)</th>
-                      <th className="px-6 py-4 font-medium">Fracciones</th>
-                      <th className="px-6 py-4 font-medium">Precio P2P</th>
-                      <th className="px-6 py-4 font-medium">Diferencial</th>
-                      <th className="px-6 py-4 font-medium text-right">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-pn-border/50">
-                    {orders.map((order) => {
+                <div className="flex flex-col text-sm">
+                  <div className="grid grid-cols-5 px-6 py-3 bg-pn-surface-strong/50 border-b border-pn-border text-pn-text-soft font-medium uppercase text-xs tracking-wider">
+                    <div className="col-span-2">Propiedad / Bóveda</div>
+                    <div className="text-right">Precio (USD)</div>
+                    <div className="text-right">Cantidad</div>
+                    <div className="text-right">Acción</div>
+                  </div>
+                  <div className="divide-y divide-pn-border/30 relative">
+                    {/* Simulated Depth Bar Backgrounds */}
+                    {orders.map((order, idx) => {
                       const currentMarketPrice = parseFloat(order.property?.tokenPriceUsd || "1");
                       const orderPrice = parseFloat(order.pricePerToken);
                       const discount = ((orderPrice - currentMarketPrice) / currentMarketPrice) * 100;
                       const isDiscount = discount < 0;
+                      const depthPercentage = Math.min(100, Math.max(10, (parseFloat(order.quantity) / 1000) * 100)); // Simulación de profundidad
 
                       return (
-                        <tr key={order.id} className="hover:bg-pn-surface-strong/30 transition-colors">
-                          <td className="px-6 py-4 font-medium text-pn-text">
-                            {order.property?.name || "Propiedad Desconocida"}
-                          </td>
-                          <td className="px-6 py-4 text-pn-text-soft">
-                            {order.quantity} Tokens
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-mono text-pn-gold">${orderPrice.toFixed(2)}</span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className={`inline-flex items-center gap-1 text-xs font-medium ${isDiscount ? 'text-pn-success' : 'text-pn-danger'}`}>
+                        <div key={order.id} className="grid grid-cols-5 px-6 py-3 hover:bg-pn-surface-strong/30 transition-colors relative group items-center">
+                          {/* Depth Bar */}
+                          <div 
+                            className="absolute right-0 top-0 bottom-0 bg-pn-danger/5 opacity-50 transition-all group-hover:opacity-70" 
+                            style={{ width: `${depthPercentage}%` }}
+                          />
+                          
+                          <div className="col-span-2 relative z-10 flex flex-col">
+                            <span className="font-medium text-pn-text">{order.property?.name || "Propiedad Desconocida"}</span>
+                            <div className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide mt-0.5 ${isDiscount ? 'text-pn-success' : 'text-pn-danger'}`}>
                               {isDiscount ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
-                              {Math.abs(discount).toFixed(2)}%
+                              {Math.abs(discount).toFixed(2)}% {isDiscount ? "Descuento" : "Premium"}
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
+                          </div>
+                          
+                          <div className="text-right relative z-10 font-mono font-medium text-pn-danger">
+                            ${orderPrice.toFixed(2)}
+                          </div>
+                          
+                          <div className="text-right relative z-10 font-mono text-pn-text-soft">
+                            {order.quantity}
+                          </div>
+                          
+                          <div className="text-right relative z-10">
                             <button
                               onClick={() => handleBuy(order.id)}
                               disabled={isProcessing === order.id}
-                              className="px-4 py-1.5 bg-pn-surface-strong hover:bg-pn-gold hover:text-black border border-pn-border hover:border-pn-gold rounded-md text-pn-text text-xs font-medium transition-all"
+                              className="px-4 py-1.5 bg-pn-success/10 hover:bg-pn-success hover:text-white border border-pn-success/20 text-pn-success text-xs font-medium rounded transition-all w-24"
                             >
-                              {isProcessing === order.id ? "Procesando..." : "Comprar"}
+                              {isProcessing === order.id ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto"/> : "Comprar"}
                             </button>
-                          </td>
-                        </tr>
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               )}
             </div>
           </div>

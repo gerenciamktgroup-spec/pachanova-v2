@@ -63,6 +63,36 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     status: "active",
     description: "Centro educativo sobre Tokenización y RWA.",
   },
+  {
+    id: "investor-governance",
+    label: "Gobernanza",
+    path: "/dashboard/investor/governance",
+    section: "investor",
+    role: "investor",
+    icon: "scale",
+    status: "active",
+    description: "Participa en las decisiones de la comunidad.",
+  },
+  {
+    id: "investor-kyc",
+    label: "Verificación KYC",
+    path: "/dashboard/investor/kyc",
+    section: "investor",
+    role: "investor",
+    icon: "file-signature",
+    status: "active",
+    description: "Sube tus documentos de identidad para cumplimiento.",
+  },
+  {
+    id: "investor-settings",
+    label: "Mi Perfil",
+    path: "/dashboard/investor/settings",
+    section: "investor",
+    role: "investor",
+    icon: "users",
+    status: "active",
+    description: "Ajustes de cuenta, seguridad y notificaciones.",
+  },
 
   // ═══════════════════════════════════════════════════
   // ADMINISTRADOR: Consola Bancaria (Checker / Tesorería)
@@ -86,6 +116,16 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     icon: "shield",
     status: "active",
     description: "Bandeja para aprobar Fondeos, Retiros y KYC.",
+  },
+  {
+    id: "admin-kyc",
+    label: "Revisión KYC",
+    path: "/dashboard/admin/kyc",
+    section: "experto",
+    role: "admin",
+    icon: "file-signature",
+    status: "active",
+    description: "Revisión manual de documentos de identidad.",
   },
   {
     id: "admin-landbank",

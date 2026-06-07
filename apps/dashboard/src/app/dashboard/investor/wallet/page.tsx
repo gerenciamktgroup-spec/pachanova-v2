@@ -1,6 +1,6 @@
 import { RouteBreadcrumbs } from "@/components/mission";
 import { ShieldCheck } from "lucide-react";
-import { WalletDepositForm } from "./WalletClient";
+import { WalletClient } from "./WalletClient";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import { eq, desc, and } from "drizzle-orm";
@@ -27,8 +27,7 @@ export default async function WalletPage() {
     .from(schema.transactions)
     .where(
       and(
-        eq(schema.transactions.receiverId, user.id),
-        eq(schema.transactions.type, "deposit")
+        eq(schema.transactions.receiverId, user.id)
       )
     )
     .orderBy(desc(schema.transactions.createdAt))
@@ -42,12 +41,12 @@ export default async function WalletPage() {
           Billetera <span className="font-semibold text-pn-gold">PachaNova</span>
         </h1>
         <p className="text-pn-text-muted">
-          Inyecta saldo fiduciario para comenzar a adquirir fracciones inmobiliarias (RWA).
+          Inyecta saldo fiduciario o retira tus rendimientos en cualquier momento.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Formulario de Fondeo (Maker) */}
+        {/* Formulario de Fondeo/Retiro */}
         <div className="space-y-6">
           <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/50 backdrop-blur-sm flex justify-between items-center">
             <div>
@@ -60,13 +59,7 @@ export default async function WalletPage() {
           </div>
 
           <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30 backdrop-blur-sm space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-pn-text mb-1">Fondear Cuenta</h2>
-              <p className="text-sm text-pn-text-soft">
-                El saldo se reflejará como <span className="text-pn-gold font-medium">Pacha USD</span> tras la validación de la transferencia.
-              </p>
-            </div>
-            <WalletDepositForm />
+            <WalletClient totalUsd={totalUsd} />
           </div>
         </div>
 
