@@ -34,7 +34,10 @@ export function ApprovalsClient({ initialApprovals }: { initialApprovals: Approv
       }
 
       setApprovals(prev => prev.map(item => 
-        item.id === id ? { ...item, status: action } : item
+        item.id === id ? { 
+          ...item, 
+          status: action === "APPROVED" ? "COMPLETED" : (type === "P2P_TRADE" ? "CANCELLED" : "FAILED")
+        } : item
       ));
     } catch (error: any) {
       alert("Error processing approval: " + error.message);
@@ -120,12 +123,12 @@ export function ApprovalsClient({ initialApprovals }: { initialApprovals: Approv
                     <div className={cn(
                       "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
                       item.status === "PENDING" && "bg-pn-warning/10 text-pn-warning border-pn-warning/20",
-                      item.status === "APPROVED" && "bg-pn-success/10 text-pn-success border-pn-success/20",
-                      item.status === "REJECTED" && "bg-pn-danger/10 text-pn-danger border-pn-danger/20"
+                      item.status === "COMPLETED" && "bg-pn-success/10 text-pn-success border-pn-success/20",
+                      (item.status === "FAILED" || item.status === "CANCELLED") && "bg-pn-danger/10 text-pn-danger border-pn-danger/20"
                     )}>
                       {item.status === "PENDING" && <Clock className="w-3 h-3" />}
-                      {item.status === "APPROVED" && <CheckCircle2 className="w-3 h-3" />}
-                      {item.status === "REJECTED" && <XCircle className="w-3 h-3" />}
+                      {item.status === "COMPLETED" && <CheckCircle2 className="w-3 h-3" />}
+                      {(item.status === "FAILED" || item.status === "CANCELLED") && <XCircle className="w-3 h-3" />}
                       {item.status}
                     </div>
                   </td>
