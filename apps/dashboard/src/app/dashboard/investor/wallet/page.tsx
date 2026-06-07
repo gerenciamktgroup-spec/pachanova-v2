@@ -4,21 +4,27 @@ import { useState } from "react";
 import { RouteBreadcrumbs } from "@/components/mission";
 import { DollarSign, ArrowRight, Clock, ShieldCheck } from "lucide-react";
 
+import { createDepositRequest } from "@/app/actions/banking";
+
 export default function WalletPage() {
   const [amount, setAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success">("idle");
 
-  const handleDeposit = (e: React.FormEvent) => {
+  const handleDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simular el registro de la transacción "Maker" (PENDING)
-    setTimeout(() => {
-      setIsSubmitting(false);
+    // Llamar a la Server Action real
+    const result = await createDepositRequest(parseFloat(amount));
+    
+    setIsSubmitting(false);
+    if (result.success) {
       setStatus("success");
       setAmount("");
-    }, 1500);
+    } else {
+      alert("Error al solicitar fondeo: " + result.error);
+    }
   };
 
   return (

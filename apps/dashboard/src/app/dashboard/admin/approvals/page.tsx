@@ -1,172 +1,86 @@
-"use client";
+import { getDb, schema } from "@pachanova/database";
+import { ApprovalsClient } from "./ApprovalsClient";
+import { eq, desc } from "drizzle-orm";
 
-import { useState } from "react";
-import { RouteBreadcrumbs } from "@/components/mission";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowUpRight, ArrowRightLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
+// Habilitar renderizado dinámico porque lee de DB y necesita estar fresco
+export const dynamic = "force-dynamic";
 
-// Mock data para el MVP
-const MOCK_APPROVALS = [
-  {
-    id: "tx-123",
-    type: "DEPOSIT",
-    user: "Nuevo Inversor",
-    email: "investor@pachanova.local",
-    amount: "$1,000.00 USD",
-    fee: "-",
-    date: "2026-06-07 10:30 AM",
-    status: "PENDING",
-  },
-  {
-    id: "p2p-001",
-    type: "P2P_TRADE",
-    user: "Comprador_Z",
-    email: "comprador@demo.com",
-    amount: "100 Tokens San Bartolo",
-    fee: "$27.20 USD (3.4%)", // Fee del 3.4% calculado sobre $800
-    date: "2026-06-07 11:45 AM",
-    status: "PENDING",
-  },
-  {
-    id: "tx-124",
-    type: "KYC",
-    user: "Maria L.",
-    email: "maria.l@demo.com",
-    amount: "-",
-    fee: "-",
-    date: "2026-06-07 09:15 AM",
-    status: "PENDING",
+export default async function ApprovalsPage() {
+  const db = getDb();
+
+  try {
+    // 1. Obtener Transacciones (Fondeos/Retiros) pendientes
+    const txs = await db.select({
+      id: schema.transactions.id,
+      type: schema.transactions.type,
+      amount: schema.transactions.amountUsd,
+      date: schema.transactions.createdAt,
+      status: schema.transactions.status,
+      investorId: schema.transactions.investorId,
+    }).from(schema.transactions)
+      .where(eq(schema.transactions.status, "pending"))
+      .orderBy(desc(schema.transactions.createdAt));
+
+    // 2. Obtener P2P Trades pendientes
+    const p2p = await db.select({
+      id: schema.p2pTrades.id,
+      amount: schema.p2pTrades.totalAmount,
+      fee: schema.p2pTrades.feeAmount,
+      date: schema.p2pTrades.createdAt,
+      status: schema.p2pTrades.status,
+      buyerId: schema.p2pTrades.buyerInvestorId,
+    }).from(schema.p2pTrades)
+      .where(eq(schema.p2pTrades.status, "pending_approval"))
+      .orderBy(desc(schema.p2pTrades.createdAt));
+
+    // Obtener inversores para mapear nombres (Simplificado, idealmente usar JOINs)
+    const investors = await db.select({
+      id: schema.investors.id,
+      email: schema.investors.email,
+      firstName: schema.investors.firstName,
+      lastName: schema.investors.lastName
+    }).from(schema.investors);
+
+    const investorMap = investors.reduce((acc, inv) => {
+      acc[inv.id] = { name: `${inv.firstName || ''} ${inv.lastName || ''}`.trim() || 'Inversor', email: inv.email };
+      return acc;
+    }, {} as Record<string, {name: string, email: string}>);
+
+    // Mapear al formato del Client Component
+    const unifiedApprovals = [
+      ...txs.map(t => ({
+        id: t.id,
+        type: t.type?.toUpperCase() || "UNKNOWN",
+        user: investorMap[t.investorId]?.name || "Desconocido",
+        email: investorMap[t.investorId]?.email || "",
+        amount: `$${t.amount} USD`,
+        fee: "-",
+        date: t.date.toLocaleString(),
+        status: t.status.toUpperCase(),
+      })),
+      ...p2p.map(p => ({
+        id: p.id,
+        type: "P2P_TRADE",
+        user: investorMap[p.buyerId]?.name || "Desconocido",
+        email: investorMap[p.buyerId]?.email || "",
+        amount: `$${p.amount} USD`,
+        fee: `$${p.fee} USD`,
+        date: p.date.toLocaleString(),
+        status: p.status === "pending_approval" ? "PENDING" : p.status.toUpperCase(),
+      }))
+    ];
+
+    // Ordenar por fecha (más recientes primero)
+    unifiedApprovals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    return <ApprovalsClient initialApprovals={unifiedApprovals} />;
+
+  } catch (error) {
+    console.error("Error loading approvals:", error);
+    return (
+      <div className="p-8 text-center text-pn-danger">
+        Error al cargar las solicitudes. Verifica la conexión a la base de datos.
+      </div>
+    );
   }
-];
-
-export default function ApprovalsPage() {
-  const [approvals, setApprovals] = useState(MOCK_APPROVALS);
-
-  const handleAction = (id: string, action: "APPROVED" | "REJECTED") => {
-    setApprovals(prev => prev.map(item => 
-      item.id === id ? { ...item, status: action } : item
-    ));
-  };
-
-  const pendingCount = approvals.filter(a => a.status === "PENDING").length;
-
-  return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-2">
-        <RouteBreadcrumbs />
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-light tracking-tight text-pn-text">
-              Consola de <span className="font-semibold text-pn-gold">Aprobaciones</span>
-            </h1>
-            <p className="text-pn-text-muted mt-1">
-              Bandeja de entrada del flujo Maker-Checker (Principio de 4 Ojos).
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-pn-surface-strong px-4 py-2 rounded-lg border border-pn-border">
-            <ShieldAlert className="w-5 h-5 text-pn-warning" />
-            <span className="font-medium text-pn-text">{pendingCount} Pendientes</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-pn-surface/50 border border-pn-border rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-pn-surface-strong/50 border-b border-pn-border text-pn-text-soft">
-              <tr>
-                <th className="px-6 py-4 font-medium">Tipo / ID</th>
-                <th className="px-6 py-4 font-medium">Usuario (Maker)</th>
-                <th className="px-6 py-4 font-medium">Operación</th>
-                <th className="px-6 py-4 font-medium">Fee (PachaNova)</th>
-                <th className="px-6 py-4 font-medium">Estado</th>
-                <th className="px-6 py-4 font-medium text-right">Acción (Checker)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-pn-border/50">
-              {approvals.map((item) => (
-                <tr key={item.id} className="hover:bg-pn-surface-strong/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className={cn(
-                        "p-1.5 rounded-md",
-                        item.type === "DEPOSIT" ? "bg-emerald-500/10 text-emerald-500" :
-                        item.type === "P2P_TRADE" ? "bg-purple-500/10 text-purple-500" :
-                        item.type === "WITHDRAWAL" ? "bg-orange-500/10 text-orange-500" :
-                        "bg-blue-500/10 text-blue-500"
-                      )}>
-                        {item.type === "DEPOSIT" && <ArrowUpRight className="w-4 h-4" />}
-                        {item.type === "P2P_TRADE" && <ArrowRightLeft className="w-4 h-4" />}
-                        {item.type === "WITHDRAWAL" && <ArrowUpRight className="w-4 h-4 rotate-180" />}
-                        {item.type === "KYC" && <ShieldAlert className="w-4 h-4" />}
-                      </div>
-                      <div>
-                        <p className="font-medium text-pn-text">{item.type}</p>
-                        <p className="text-xs text-pn-text-soft">{item.id}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="font-medium text-pn-text">{item.user}</p>
-                    <p className="text-xs text-pn-text-soft">{item.email}</p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-mono text-pn-gold">{item.amount}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={cn(
-                      "font-mono text-sm",
-                      item.fee !== "-" ? "text-pn-success font-medium" : "text-pn-text-soft"
-                    )}>
-                      {item.fee}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border",
-                      item.status === "PENDING" && "bg-pn-warning/10 text-pn-warning border-pn-warning/20",
-                      item.status === "APPROVED" && "bg-pn-success/10 text-pn-success border-pn-success/20",
-                      item.status === "REJECTED" && "bg-pn-danger/10 text-pn-danger border-pn-danger/20"
-                    )}>
-                      {item.status === "PENDING" && <Clock className="w-3 h-3" />}
-                      {item.status === "APPROVED" && <CheckCircle2 className="w-3 h-3" />}
-                      {item.status === "REJECTED" && <XCircle className="w-3 h-3" />}
-                      {item.status}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    {item.status === "PENDING" ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <button 
-                          onClick={() => handleAction(item.id, "REJECTED")}
-                          className="p-2 text-pn-text-soft hover:text-pn-danger hover:bg-pn-danger/10 rounded-md transition-colors"
-                          title="Rechazar"
-                        >
-                          <XCircle className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={() => handleAction(item.id, "APPROVED")}
-                          className="p-2 text-pn-text-soft hover:text-pn-success hover:bg-pn-success/10 rounded-md transition-colors"
-                          title="Aprobar"
-                        >
-                          <CheckCircle2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-pn-text-soft italic">Resuelto</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {approvals.length === 0 && (
-            <div className="p-8 text-center text-pn-text-soft">
-              No hay solicitudes pendientes.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 }
