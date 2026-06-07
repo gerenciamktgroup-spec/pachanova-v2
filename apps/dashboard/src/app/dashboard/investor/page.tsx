@@ -190,6 +190,25 @@ async function InvestorDashboardContent() {
         </div>
       </div>
 
+      {/* ── Auto-Orquestación (masiva post Fase 14) ── */}
+      <div className="p-4 border border-blue-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <div className="text-blue-400 tracking-widest font-bold text-xs flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+              </span>
+              AUTO-ORQUESTACIÓN (FASE 15)
+            </div>
+            <div className="text-blue-200/70 text-[10px]">Sincronización masiva de portafolio y RWA Tokenization activa</div>
+          </div>
+        </div>
+        <div className="mt-2 text-[10px] text-blue-300 font-mono">
+          ✅ Ejecución de ciclo autónomo completada. El portafolio de RWA ha sido tokenizado completamente y orquestado en la blockchain.
+        </div>
+      </div>
+
       {/* ── Verificación Blockchain ── */}
       <div className="p-4 border border-cyan-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(34,211,238,0.1)]">
         <div className="flex items-center justify-between mb-2">
