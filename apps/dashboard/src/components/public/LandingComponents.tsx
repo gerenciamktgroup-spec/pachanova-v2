@@ -24,7 +24,7 @@ export function PublicHeader() {
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/demo/showcase">
+              <Link href="/login">
                 <CommandButton variant="primary">Entrar al Demo Mirror</CommandButton>
               </Link>
             </div>
@@ -59,7 +59,7 @@ export function PublicFooter() {
           <div>
             <h4 className="text-xs font-semibold text-pn-text uppercase tracking-widest mb-4">Recursos</h4>
             <ul className="space-y-2 text-sm text-pn-text-muted">
-              <li><Link href="/demo/showcase" className="hover:text-pn-gold transition-colors">Demo Showcase</Link></li>
+              <li><Link href="/login" className="hover:text-pn-gold transition-colors">Iniciar Sesión Demo</Link></li>
               <li><Link href="/demo/reports" className="hover:text-pn-gold transition-colors">Data Room</Link></li>
               <li><Link href="/demo/walkthrough" className="hover:text-pn-gold transition-colors">Walkthrough</Link></li>
             </ul>

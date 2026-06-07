@@ -66,8 +66,18 @@ export async function updateSession(request: NextRequest) {
   if (user && !isAuthPage && !isApiRoute) {
     // Rol sincronizado vía trigger Supabase: public.investors.role → auth.users.raw_app_meta_data.role
     const role = (user.app_metadata?.role as string | undefined) || 'investor';
+    if (request.nextUrl.pathname === '/dashboard') {
+      const url = request.nextUrl.clone();
+      if (role === 'admin' || role === 'operator') {
+        url.pathname = '/dashboard/admin';
+      } else {
+        url.pathname = '/dashboard/investor';
+      }
+      return NextResponse.redirect(url);
+    }
+
     const isInvestorPath = request.nextUrl.pathname.startsWith('/dashboard/investor');
-    const isAdminPath = request.nextUrl.pathname.startsWith('/dashboard/admin') || request.nextUrl.pathname === '/dashboard';
+    const isAdminPath = request.nextUrl.pathname.startsWith('/dashboard/admin');
     
     if (isInvestorPath && role !== 'investor' && role !== 'admin' && role !== 'operator') {
       const url = request.nextUrl.clone();
