@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
         // Use fresh publicnode style like orq for real tx/block (Master authorization allows force even without full quorum)
         const crypto = require('crypto');
         let realBlock = 25237000 + Math.floor(Math.random() * 100); // fallback
-        let txHash = '0x' + crypto.randomBytes(32).toString('hex');
+        const txHash = '0x' + crypto.randomBytes(32).toString('hex');
         const timestamp = new Date().toISOString();
         try {
           // In full autonomous: call orq fetchFreshPublicBlock or real RPC

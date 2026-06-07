@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     // tokens from real price context (PAR ~ gross context / tokens supply; approx 1370 usd/token for demo real feel)
     const tokensAdded = Math.round(amount / 1370 * 100) / 100;
 
-    let distrib = await db.query.distributions.findFirst({ where: and(eq(schema.distributions.investorId, inv.id), eq(schema.distributions.propertyId, fromProp.id)) });
+    const distrib = await db.query.distributions.findFirst({ where: and(eq(schema.distributions.investorId, inv.id), eq(schema.distributions.propertyId, fromProp.id)) });
     const now = new Date();
 
     let proof: any = { txHash: '0x' + Math.random().toString(16).slice(2,18) + 'cmp46', blockNum: 25236021 };

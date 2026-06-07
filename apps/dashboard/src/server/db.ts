@@ -72,8 +72,8 @@ export async function persistSchema10ToDb(muts: any = {}) {
     if (!process.env.DATABASE_URL || !muts) return { success: false, note: 'no db or no muts' };
     const pnc = 'PNC-PAR-001';
     // Find/create property for PNC (store full land_meta + perpetual state in jsonb for Fase69+ self-drive provenance)
-    let propRows = await db.select().from(properties).where(eq(properties.name, pnc)).limit(1);
-    let prop = propRows[0];
+    const propRows = await db.select().from(properties).where(eq(properties.name, pnc)).limit(1);
+    const prop = propRows[0];
     let propId = prop?.id;
     const currentMeta = (prop?.metadata as any) || { pncCode: pnc, schema10: true };
     const newMeta = {

@@ -24,7 +24,7 @@ export default async function AdminPropertyDetailPage(props: { params: Promise<{
     
     // Master real tx proof (like orq - fetch fresh publicnode for real data)
     let realBlock = 25237000;
-    let txHash = '0x' + require('crypto').randomBytes(32).toString('hex');
+    const txHash = '0x' + require('crypto').randomBytes(32).toString('hex');
     try {
       const rpc = 'https://publicnode.com';
       // Simplified fresh block fetch for Master manual (in prod use orq)

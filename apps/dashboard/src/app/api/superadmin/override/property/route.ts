@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     const oldValue = (prop as any)[field];
 
-    let updateSet: any = { updatedAt: new Date() };
+    const updateSet: any = { updatedAt: new Date() };
     if (["borrowLtv", "borrowInterestRate", "manualOverrideNote"].includes(field)) {
       // Fase3: persist borrow overrides into metadata jsonb (read by /api/borrow + DeFi client for real 5PNC)
       const currentMeta = (prop as any).metadata || {};

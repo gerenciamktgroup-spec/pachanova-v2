@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     }
 
     // Get current stake (or init 0)
-    let stakeRow = await db.query.stakes.findFirst({
+    const stakeRow = await db.query.stakes.findFirst({
       where: eq(schema.stakes.investorId, investor.id),
     });
     const currentStaked = stakeRow ? parseFloat(stakeRow.stakedAmount || '0') : 0;

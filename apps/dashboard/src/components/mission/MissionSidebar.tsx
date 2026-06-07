@@ -12,6 +12,8 @@ import {
   Banknote, LucideIcon 
 } from "lucide-react";
 import { useMobileSidebar } from "./MobileSidebarContext";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   "play-square": PlaySquare,
@@ -40,14 +42,37 @@ const ICON_MAP: Record<string, LucideIcon> = {
 export function MissionSidebar() {
   const pathname = usePathname();
   const { isOpen, close } = useMobileSidebar();
+  const [role, setRole] = useState<string | null>(null);
 
-  // Agrupar rutas por sección
+  useEffect(() => {
+    async function loadRole() {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getUser();
+      const userRole = data.user?.user_metadata?.role || data.user?.app_metadata?.role || "public";
+      setRole(userRole);
+    }
+    loadRole();
+  }, []);
+
+  // Agrupar rutas por sección y filtrar por rol
   const sections: Record<string, AppRoute[]> = {};
   ROUTE_REGISTRY.forEach(route => {
-    if (!sections[route.section]) {
-      sections[route.section] = [];
+    // Si el usuario no tiene rol aún (cargando), no mostrar rutas protegidas
+    if (!role && route.role !== "public") return;
+    
+    // El admin ve rutas de admin, experto y públicas.
+    // El investor ve rutas de investor y públicas.
+    const canSee = 
+      route.role === "public" || 
+      route.role === role || 
+      (role === "admin" && (route.role === "experto" || route.role === "fiduciario" || route.section === "experto"));
+
+    if (canSee) {
+      if (!sections[route.section]) {
+        sections[route.section] = [];
+      }
+      sections[route.section].push(route);
     }
-    sections[route.section].push(route);
   });
 
   return (

@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     }
 
     // Fetch all active/liquidated/repaid loans for this investor
-    let activeLoans = await db.query.loans.findMany({
+    const activeLoans = await db.query.loans.findMany({
       where: eq(schema.loans.investorId, investorId),
       orderBy: (loans, { desc }) => [desc(loans.createdAt)],
     });
