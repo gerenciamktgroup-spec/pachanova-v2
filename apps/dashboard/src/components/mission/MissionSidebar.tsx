@@ -46,10 +46,38 @@ export function MissionSidebar() {
 
   useEffect(() => {
     async function loadRole() {
-      const supabase = createClient();
-      const { data } = await supabase.auth.getUser();
-      const userRole = data.user?.user_metadata?.role || data.user?.app_metadata?.role || "public";
-      setRole(userRole);
+      // Try Supabase auth first
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
+        if (data.user) {
+          const userRole = data.user?.user_metadata?.role || data.user?.app_metadata?.role;
+          if (userRole) {
+            setRole(userRole);
+            return;
+          }
+        }
+      } catch {}
+
+      // Fallback: read mock session cookie
+      try {
+        const cookies = document.cookie.split(';').map(c => c.trim());
+        const mockCookie = cookies.find(c => c.startsWith('pachanova-mock-session='));
+        if (mockCookie) {
+          const val = decodeURIComponent(mockCookie.split('=').slice(1).join('='));
+          const mockUser = JSON.parse(val);
+          const mockRole = mockUser?.app_metadata?.role || 'investor';
+          setRole(mockRole);
+          return;
+        }
+      } catch {}
+
+      // Final fallback: detect from URL path
+      const path = window.location.pathname;
+      if (path.includes('/admin')) setRole('admin');
+      else if (path.includes('/investor')) setRole('investor');
+      else if (path.includes('/fideicomiso')) setRole('fiduciario');
+      else setRole('public');
     }
     loadRole();
   }, []);

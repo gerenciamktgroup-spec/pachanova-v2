@@ -24,21 +24,21 @@ export function MissionHeader() {
           {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        <Link href="/demo/showcase" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-semibold tracking-tighter text-pn-text">
             PachaNova <span className="font-light text-pn-gold">Landbanking</span>
           </span>
           <span className="ml-2 rounded border border-[#c5a46d]/40 bg-[#0a111f] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest text-[#c5a46d] hidden sm:inline">
-            FULL PROJECT + TOOLS
+            PLATAFORMA RWA
           </span>
         </Link>
         
         <div className="ml-auto flex items-center space-x-4 text-sm font-medium">
-          <Link href="/demo/showcase" className="text-pn-text-muted hover:text-pn-text transition-colors hidden sm:block">
-            Showcase
+          <Link href="/dashboard/investor" className="text-pn-text-muted hover:text-pn-text transition-colors hidden sm:block">
+            Inversor
           </Link>
-          <Link href="/demo/reports" className="text-pn-text-muted hover:text-pn-text transition-colors hidden sm:block">
-            Reports
+          <Link href="/dashboard/admin" className="text-pn-text-muted hover:text-pn-text transition-colors hidden sm:block">
+            Admin
           </Link>
           <div className="h-6 w-px bg-pn-border hidden sm:block mx-2"></div>
           <GuidedModeToggle />

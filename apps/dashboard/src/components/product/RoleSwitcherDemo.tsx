@@ -33,7 +33,7 @@ function RoleSwitcherDemoInner() {
     { id: "investor", label: "Inversor", path: "/dashboard/investor" },
     { id: "admin", label: "Admin", path: "/dashboard/admin" },
     { id: "fiduciario", label: "Fiduciario", path: "/dashboard/fideicomiso" },
-    { id: "operator", label: "Operador", path: "/demo/showcase" }
+    { id: "operator", label: "Operador", path: "/dashboard/admin" }
   ];
 
   const handleSwitch = (path: string, id: string) => {
