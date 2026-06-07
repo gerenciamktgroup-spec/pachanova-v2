@@ -140,14 +140,14 @@ async function fetchAdminData(): Promise<{ view: AdminDashboardView, users: User
       fideicomisoStatus: "PENDING"
     },
     recentAuditLogs: [
-      { id: "a1", action: "MASTER_MANUAL_EDIT", details: "Updated PNC-PAR-001 valuation and product configs (vivienda + alquiler_yield)", timestamp: new Date().toISOString(), userId: "master" },
-      { id: "a2", action: "LAND LAUNCH", details: "Launched PNC-PAR-001 for trading - Fase15/36", timestamp: new Date(Date.now() - 3600000).toISOString(), userId: "master" },
-      { id: "a3", action: "Fase49 SCHEMA10", details: "Live DB loaded real PAR 68112.5 net @31639 eff /17.1% power 3250", timestamp: new Date(Date.now() - 7200000).toISOString(), userId: "orq" }
+      { id: "a1", action: "MASTER_MANUAL_EDIT", details: "Updated PNC-PAR-001 valuation and product configs (vivienda + alquiler_yield)", timestamp: new Date().toISOString(), actor: "master" },
+      { id: "a2", action: "LAND LAUNCH", details: "Launched PNC-PAR-001 for trading - Fase15/36", timestamp: new Date(Date.now() - 3600000).toISOString(), actor: "master" },
+      { id: "a3", action: "Fase49 SCHEMA10", details: "Live DB loaded real PAR 68112.5 net @31639 eff /17.1% power 3250", timestamp: new Date(Date.now() - 7200000).toISOString(), actor: "orq" }
     ],
     recentIntegrationEvents: [
-      { id: "e1", type: "ORQ", status: "SUCCESS", details: "Fase49 SCHEMA10 LIVE DB + Fase48 batch for 4 PNC (PAR net 68112.5)", createdAt: new Date().toISOString() },
-      { id: "e2", type: "GOV", status: "SUCCESS", details: "Fase36 quorum PASSED power 3250 for 4 PNC real land launch", createdAt: new Date(Date.now() - 7200000).toISOString() },
-      { id: "e3", type: "Fase47", status: "SUCCESS", details: "Effective growth flywheel: 23125 -> 31639 eff for PAR", createdAt: new Date(Date.now() - 10800000).toISOString() }
+      { id: "e1", provider: "FOUNDRY", status: "success", event: "Fase49 SCHEMA10 LIVE DB + Fase48 batch for 4 PNC (PAR net 68112.5)", timestamp: new Date().toISOString() },
+      { id: "e2", provider: "FOUNDRY", status: "success", event: "Fase36 quorum PASSED power 3250 for 4 PNC real land launch", timestamp: new Date(Date.now() - 7200000).toISOString() },
+      { id: "e3", provider: "FOUNDRY", status: "success", event: "Effective growth flywheel: 23125 -> 31639 eff for PAR", timestamp: new Date(Date.now() - 10800000).toISOString() }
     ]
   };
 

@@ -22,17 +22,25 @@ export async function POST(req: Request) {
     const { investorId, amountUsd } = result.data;
 
     await db.transaction(async (tx) => {
-      // Upsert balance if it doesn't exist
       const existing = await tx.query.balances.findFirst({ where: eq(schema.balances.investorId, investorId) });
+      let targetPropertyId = existing?.propertyId;
+
+      if (!targetPropertyId) {
+        const prop = await tx.query.properties.findFirst();
+        if (!prop) throw new Error('No properties found to assign balance');
+        targetPropertyId = prop.id;
+      }
+
       if (!existing) {
         await tx.insert(schema.balances).values({
           investorId,
+          propertyId: targetPropertyId,
           availableUsd: amountUsd.toString(),
         });
       } else {
         await tx.update(schema.balances)
           .set({ availableUsd: sql`${schema.balances.availableUsd} + ${amountUsd}` })
-          .where(eq(schema.balances.investorId, investorId));
+          .where(eq(schema.balances.id, existing.id));
       }
 
       await tx.insert(schema.auditLogs).values({

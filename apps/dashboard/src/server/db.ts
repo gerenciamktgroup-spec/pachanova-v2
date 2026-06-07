@@ -138,7 +138,7 @@ export async function persistSchema10ToDb(muts: any = {}) {
           set: { 
             availableUsd: String(h.effective_amount || 0), 
             lastUpdatedAt: new Date(),
-            onchainVerifiedPct: (h.pacha_power || 3250) / 100 
+            onchainVerifiedPct: String((h.pacha_power || 3250) / 100) 
           }
         });
       }

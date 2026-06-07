@@ -110,7 +110,7 @@ async function PropertiesContent() {
 export default function AdminPropertiesPage() {
   return (
     <div className="space-y-6">
-      <RouteBreadcrumbs customSegments={['Admin', 'Gestión de Proyectos']} />
+      <RouteBreadcrumbs items={[{ label: 'Admin' }, { label: 'Gestión de Proyectos' }]} />
       
       <div className="bg-[#0a111f] min-h-screen text-white rounded-2xl border border-white/10 p-6 md:p-8">
         <Suspense fallback={<LoadingState message="Cargando portafolio inmobiliario..." />}>

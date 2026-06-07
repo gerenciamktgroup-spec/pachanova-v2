@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { RouteBreadcrumbs, ErrorState, LoadingState, MissionCard } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { createServerClient } from "@/utils/supabase/server";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import GovernanceVotingClient from "./GovernanceVotingClient";
@@ -43,7 +43,6 @@ async function fetchGovernanceData() {
     });
 
     if (!investor) {
-      client.end();
       return { error: "Investor profile not found. Login required for governance." };
     }
 
@@ -55,10 +54,23 @@ async function fetchGovernanceData() {
     });
 
     // Fase42: Compute real PACHA voting power = holdings (balances) + staked (DeFi accrual for gov power boost)
-    const power = await computePachaVotingPower(client, investor.id);
-    const totalPachaHoldings = power.total;
-    const stakedPacha = power.staked;
-    const baseHoldings = power.holdings;
+    const holdingsRows = await db.execute(sql`
+      SELECT COALESCE(SUM(available_tokens::numeric + locked_tokens::numeric), 0)::float as total
+      FROM balances WHERE investor_id = ${investor.id}
+    `);
+    const baseHoldings = parseFloat((holdingsRows as any[])[0]?.total || '0');
+
+    let stakedPacha = 0;
+    try {
+      const stakedRows = await db.execute(sql`
+        SELECT COALESCE(SUM(staked_amount::numeric), 0)::float as staked
+        FROM stakes WHERE investor_id = ${investor.id}
+      `);
+      stakedPacha = parseFloat((stakedRows as any[])[0]?.staked || '0');
+    } catch (e: any) {
+      console.warn('[Fase42] stakes table not found or query failed (staked fallback=0):', e?.message || e);
+    }
+    const totalPachaHoldings = baseHoldings + stakedPacha;
 
     // Fetch this investor's past votes (for all proposals to show status)
     const myVotes: VoteRow[] = [];
@@ -83,20 +95,18 @@ async function fetchGovernanceData() {
     // Also fetch global tallies for each proposal (simple count for UI)
     const tallies: Record<string, any> = {};
     for (const p of proposals) {
-      const t = await client`
+      const t = await db.execute(sql`
         SELECT choice, COUNT(*)::int as c, COALESCE(SUM(voting_power::numeric),0)::float as pwr
         FROM votes WHERE proposal_id = ${p.id} GROUP BY choice
-      `;
+      `);
       tallies[p.id] = { for: 0, against: 0, abstain: 0, powerFor: 0, powerAgainst: 0, powerAbstain: 0 };
-      for (const row of t) {
+      for (const row of (t as any[])) {
         const key = row.choice;
         if (key === 'for') { tallies[p.id].for = row.c; tallies[p.id].powerFor = row.pwr; }
         else if (key === 'against') { tallies[p.id].against = row.c; tallies[p.id].powerAgainst = row.pwr; }
         else if (key === 'abstain') { tallies[p.id].abstain = row.c; tallies[p.id].powerAbstain = row.pwr; }
       }
     }
-
-    client.end();
 
     return {
       investor: {
@@ -164,11 +174,11 @@ export default async function InvestorGovernancePage() {
               Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA (holdings + staked Fase42 DeFi). Bloquea PACHA para accrual de poder de voto + descuentos. Fase34 net + Fase35 onchain intactos.
             </p>
           </div>
-          <div className="hidden sm:block text-right">
-            <div className="text-xs text-pn-text-soft">TU PODER DE VOTO ACTUAL (FASE42)</div>
-            <div className="text-3xl font-semibold tabular-nums text-white">{totalPachaHoldings.toLocaleString()} <span className="text-sm text-pn-gold">PACHA</span></div>
-            <div className="text-[10px] text-pn-text-soft/70">Holdings: {baseHoldings.toLocaleString()} + Staked: {stakedPacha.toLocaleString()} (DeFi accrual)</div>
-          </div>
+            <div className="hidden sm:block text-right">
+              <div className="text-xs text-pn-text-soft">TU PODER DE VOTO ACTUAL (FASE42)</div>
+              <div className="text-3xl font-semibold tabular-nums text-white">{(totalPachaHoldings || 0).toLocaleString()} <span className="text-sm text-pn-gold">PACHA</span></div>
+              <div className="text-[10px] text-pn-text-soft/70">Holdings: {(baseHoldings || 0).toLocaleString()} + Staked: {(stakedPacha || 0).toLocaleString()} (DeFi accrual)</div>
+            </div>
         </div>
       </div>
 
@@ -206,19 +216,19 @@ export default async function InvestorGovernancePage() {
           <div className="text-xs px-3 py-1 rounded bg-pn-gold/10 text-pn-gold border border-pn-gold/30">Peso = Holdings + Staked PACHA (Fase42 DeFi accrual) • Fase34 net context</div>
         </div>
 
-        {proposals.length === 0 ? (
+        {(proposals || []).length === 0 ? (
           <MissionCard>
             <div className="text-pn-text-soft">No hay propuestas activas en este momento. El comité o landbank puede proponer vía orquestador.</div>
           </MissionCard>
         ) : (
           <Suspense fallback={<LoadingState message="Cargando propuestas de gobernanza RWA..." />}>
             <GovernanceVotingClient
-              proposals={proposals}
-              totalPachaHoldings={totalPachaHoldings}
-              stakedPacha={stakedPacha}
-              baseHoldings={baseHoldings}
-              myVotes={myVotes}
-              tallies={tallies}
+              proposals={proposals || []}
+              totalPachaHoldings={totalPachaHoldings || 0}
+              stakedPacha={stakedPacha || 0}
+              baseHoldings={baseHoldings || 0}
+              myVotes={myVotes || []}
+              tallies={tallies || {}}
               investorId={investor?.id}
             />
           </Suspense>

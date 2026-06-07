@@ -118,7 +118,7 @@ export async function POST(req: Request) {
         if (orq && typeof orq.runP2PMatchingTask === 'function') {
            // property PNC is needed. Let's find it.
            const property = await tx.query.properties.findFirst({ where: eq(schema.properties.id, order.propertyId) });
-           let pnc_codigo = property?.metadata?.pncCode || 'PNC-PAR-001';
+           let pnc_codigo = (property?.metadata as any)?.pncCode || 'PNC-PAR-001';
            matchResult = await orq.runP2PMatchingTask(orderId, buyerInvestorId, order.sellerInvestorId, pnc_codigo, quantity, parseFloat(order.pricePerToken));
         }
       } catch(e) {

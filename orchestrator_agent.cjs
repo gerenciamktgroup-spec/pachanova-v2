@@ -153,11 +153,11 @@ function loadRealSchema10() {
   try {
     let dbMod = null;
     try {
-      const p1 = './apps/dashboard/src/server/db';
+      const p1 = './' + 'apps/dashboard/src/server/db';
       dbMod = eval('require')(p1);
     } catch (_) {
-      try { dbMod = eval('require')(process.cwd() + '/apps/dashboard/src/server/db'); } catch (_) {}
-      try { dbMod = eval('require')('./apps/dashboard/dist/server/db'); } catch (_) {}
+      try { dbMod = eval('require')(process.cwd() + '/src/server/db'); } catch (_) {}
+      try { dbMod = eval('require')('./' + 'apps/dashboard/dist/server/db'); } catch (_) {}
     }
     if (dbMod && typeof dbMod.loadSchema10FromDb === 'function') {
       try {
@@ -206,7 +206,7 @@ function persistRealSchema10(muts = {}) {
   let realOk = false;
   try {
     let dbMod = null;
-    try { const p2 = './apps/dashboard/src/server/db'; dbMod = eval('require')(p2); } catch (_) { try { dbMod = eval('require')(process.cwd()+'/apps/dashboard/src/server/db'); } catch (_) {} }
+    try { const p2 = './' + 'apps/dashboard/src/server/db'; dbMod = eval('require')(p2); } catch (_) { try { dbMod = eval('require')(process.cwd()+'/src/server/db'); } catch (_) {} }
     if (dbMod && typeof dbMod.persistSchema10ToDb === 'function') {
       const p = dbMod.persistSchema10ToDb(muts);
       if (p && p.then) { p.then(r => { if (r?.success) realOk = true; }); } else if (p?.success) realOk = true;

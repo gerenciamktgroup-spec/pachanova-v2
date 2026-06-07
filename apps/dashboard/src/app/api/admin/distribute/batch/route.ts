@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { eq, and } from 'drizzle-orm';
 import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
@@ -25,23 +25,21 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Fetch all balances for this property
-    const balances = await client`
-      SELECT investor_id, available_tokens::numeric, locked_tokens::numeric
-      FROM balances
-      WHERE property_id = ${propertyId}
-    `;
+    const balancesRaw = await db.query.balances.findMany({
+      where: eq(schema.balances.propertyId, propertyId)
+    });
 
-    if (balances.length === 0) {
+    if (balancesRaw.length === 0) {
         return NextResponse.json({ success: false, error: 'No investors holding tokens for this property' }, { status: 400 });
     }
 
     // 3. Sum up total tokens held
     let totalTokensHeld = 0;
-    const investorHoldings = balances.map((b: any) => {
-      const held = parseFloat(b.available_tokens) + parseFloat(b.locked_tokens);
+    const investorHoldings = balancesRaw.map((b: any) => {
+      const held = parseFloat(b.availableTokens as string) + parseFloat(b.lockedTokens as string);
       totalTokensHeld += held;
       return {
-        investorId: b.investor_id,
+        investorId: b.investorId,
         tokens: held
       };
     }).filter(h => h.tokens > 0);
@@ -93,13 +91,13 @@ export async function POST(req: NextRequest) {
           await db.insert(schema.auditLogs).values({
             action: 'BATCH_REVENUE_DISTRIBUTION_MEMBER',
             userId: h.investorId,
-            metadata: {
+            details: JSON.stringify({
               propertyId,
               propertyName: property.name,
               amountUsd: shareUsd,
               batchId,
               proofRef
-            }
+            })
           });
         } catch (_) {}
       }
@@ -109,14 +107,14 @@ export async function POST(req: NextRequest) {
     try {
       await db.insert(schema.auditLogs).values({
         action: 'BATCH_REVENUE_DISTRIBUTION_MASTER',
-        metadata: {
+        details: JSON.stringify({
           propertyId,
           propertyName: property.name,
           totalAmountUsd,
           batchId,
           proofRef,
           recipientsCount: insertedDistributions.length
-        }
+        })
       });
     } catch (_) {}
 

@@ -1,4 +1,4 @@
-﻿import { RouteBreadcrumbs } from "@/components/mission";
+import { RouteBreadcrumbs } from "@/components/mission";
 import { eq, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
@@ -10,7 +10,7 @@ export default async function TreasuryDashboardPage() {
 
   // Agregate total funds and properties
   const properties = await db.query.properties.findMany({
-    where: eq(schema.properties.status, 'TOKENIZED')
+    where: eq(schema.properties.status, 'trading')
   });
 
   const allBalances = await db.query.balances.findMany();

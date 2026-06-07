@@ -135,6 +135,8 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     // Real DB recovery path: load current, apply sane default growth for the action, persist (no thin hardcoded)
     try {
+      const pnc = 'PNC-PAR-001';
+      const cycle = 89;
       const { loadSchema10FromDb, persistSchema10ToDb } = await import('../../../server/db');
       const current = (await loadSchema10FromDb?.(pnc)) || { holdings: [{effective_amount: 31639, net_yield: 68112.5, pacha_power: 3250}] };
       const h = current.holdings?.[0] || {};

@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { RouteBreadcrumbs, LoadingState, ErrorState } from "@/components/mission";
 import { createServerClient } from "@/utils/supabase/server";
 import { eq, inArray, sql } from "drizzle-orm";
@@ -68,7 +68,7 @@ async function fetchBorrowData() {
         email: investor.email,
       },
       portfolio,
-      loans,
+      loans: loans.map(l => ({ ...l, createdAt: l.createdAt.toISOString(), updatedAt: l.updatedAt.toISOString() })),
       properties: properties.map(p => ({
         id: p.id,
         name: p.name,

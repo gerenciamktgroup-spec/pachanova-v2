@@ -44,7 +44,7 @@ export default async function AdminPropertyDetailPage(props: { params: Promise<{
       annualYieldExpected: apy,
       status: "funding",
       metadata: {
-        ...(property.metadata as any || {}),
+        ...(property?.metadata as any || {}),
         master_tokenize_proof: { txHash, block: realBlock, timestamp: new Date().toISOString(), proofRef },
         onchain_verified: true
       }
@@ -107,23 +107,22 @@ export default async function AdminPropertyDetailPage(props: { params: Promise<{
             } as any);
           }
         }
+
+        // Master Push to real users and real data: log broadcast + trigger orq sync note
+        try {
+          await db.insert(schema.auditLogs).values({
+            action: "MASTER_PUSH_DISTRIBUTE",
+            details: `Master manual distribute executed for ${property?.name || params.id}. Amount ${amount}. Pushed to ${investorHoldings.length} real investors. Data real, orq will sync on next cycle.`
+          } as any);
+          // In full: await fetch('/api/superadmin/broadcast', { method: 'POST', body: JSON.stringify({ message: `Master override on ${property?.name || params.id}: new distribution ${amount} pushed. Check your portfolio.`, type: 'master_update', targetSegment: params.id }) });
+        } catch (pushErr) {
+          console.error("Master push log error", pushErr);
+        }
       }
     }
 
     revalidatePath(`/dashboard/admin/properties/${params.id}`);
     revalidatePath("/dashboard/investor");
-
-    // Master Push to real users and real data: log broadcast + trigger orq sync note
-    try {
-      await db.insert(schema.auditLogs).values({
-        action: "MASTER_PUSH_DISTRIBUTE",
-        details: `Master manual distribute executed for ${propName || params.id}. Amount ${amount}. Pushed to ${investorHoldings.length} real investors. Data real, orq will sync on next cycle.`,
-        userId: user.id, // from outer scope if available, or 'master'
-      } as any);
-      // In full: await fetch('/api/superadmin/broadcast', { method: 'POST', body: JSON.stringify({ message: `Master override on ${propName}: new distribution ${amount} pushed. Check your portfolio.`, type: 'master_update', targetSegment: params.id }) });
-    } catch (pushErr) {
-      console.error("Master push log error", pushErr);
-    }
   }
 
   const isTokenized = ['funding', 'funded', 'trading', 'liquidated'].includes(property.status);

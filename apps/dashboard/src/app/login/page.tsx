@@ -2,12 +2,13 @@ import { login } from './actions'
 import { AdminDemoLogin } from './AdminDemoLogin'
 import Link from 'next/link'
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const errorMsg = searchParams?.message as string | undefined;
+  const resolvedSearchParams = await searchParams;
+  const errorMsg = resolvedSearchParams?.message as string | undefined;
 
   return (
     <div className="min-h-screen bg-pn-bg text-pn-text flex flex-col justify-center items-center relative overflow-hidden font-sans">

@@ -26,6 +26,7 @@ export default function PartnerSubmitPage() {
       status: "coming_soon",
       imageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2064&auto=format&fit=crop",
       tokenPriceUsd: "0.00",
+      totalValuationUsd: "0.00",
       totalTokens: "0.00",
       availableTokens: "0.00",
       annualYieldExpected: "0.00",

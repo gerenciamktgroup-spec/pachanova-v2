@@ -30,8 +30,8 @@ async function fetchInvestorData(): Promise<any> {
     const { loadSchema10FromDb, getRealHologramPncs, db: realDb } = await import('../../../server/db');
     const real = await loadSchema10FromDb?.('PNC-PAR-001');
 
-    if (real?.holdings?.length > 0) {
-      holdings = real.holdings;
+    if ((real?.holdings?.length || 0) > 0) {
+      holdings = real!.holdings;
     } else {
       const props = await realDb
         .select()
@@ -92,7 +92,7 @@ async function fetchInvestorData(): Promise<any> {
       tokenPriceUsd: "500",
       annualYieldExpected: "7.8",
       lastUpdated: new Date().toISOString(),
-      metadata: { pncCode: "PNC-PAR-001", hectares: 5 }
+      metadata: { pncCode: "PNC-PAR-001", hectares: 5, net: 68112.5, effectiveYield: 7.8 } as any
     });
   }
 

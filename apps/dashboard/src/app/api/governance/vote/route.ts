@@ -96,7 +96,7 @@ export async function POST(req: Request) {
       await db.insert(schema.auditLogs).values({
         action: 'GOVERNANCE_VOTE_ONCHAIN',
         userId: investor.id,
-        metadata: { proposalId, choice, votingPower, voteId: newVote.id, txHash, blockNum },
+        details: JSON.stringify({ proposalId, choice, votingPower, voteId: newVote.id, txHash, blockNum }),
       });
     } catch {}
 
@@ -192,7 +192,7 @@ export async function PATCH(req: Request) {
     const verified = match;
 
     // Update row
-    await db.update(schema.votes).set({ onchainVerified: verified as any }).where(eq(schema.votes.id, voteId));
+    await db.update(schema.votes).set({ recomputeNote: verified ? 'VERIFIED' : 'FAILED' }).where(eq(schema.votes.id, voteId));
 
     return NextResponse.json({
       success: true,

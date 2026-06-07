@@ -51,7 +51,7 @@ export default async function CertificatePage(props: { params: Promise<{ propert
           <p className="text-sm text-white/50">Utiliza la función de Imprimir (Ctrl+P / Cmd+P) y guarda como PDF</p>
         </div>
         <button 
-          onClick="window.print()" 
+          id="print-btn"
           className="bg-[#c5a46d] text-black px-6 py-2 rounded font-semibold hover:bg-[#d4b47d]"
           // In Next.js App Router, inline onClick doesn't work directly in Server Components unless passed to a Client Component,
           // but we can just use a simple `<a href="javascript:window.print()">` or create a small client wrapper.
@@ -62,7 +62,7 @@ export default async function CertificatePage(props: { params: Promise<{ propert
       </div>
 
       <script dangerouslySetInnerHTML={{ __html: `
-        document.querySelector('button').addEventListener('click', () => window.print());
+        document.getElementById('print-btn')?.addEventListener('click', () => window.print());
       ` }} />
 
       {/* A4 Document Area */}
@@ -93,7 +93,7 @@ export default async function CertificatePage(props: { params: Promise<{ propert
               Por la presente, <strong>PACHANOVA LANDBANKING S.A.C.</strong> certifica y acredita que:
             </p>
             <p className="text-center text-2xl font-bold text-[#0a111f] py-4">
-              {inv.fullName}
+              {inv.firstName} {inv.lastName}
             </p>
             <p>
               identificado(a) bajo el perfil KYC con estado <strong>{inv.kycStatus.toUpperCase()}</strong>, 

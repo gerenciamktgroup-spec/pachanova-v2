@@ -113,7 +113,7 @@ export async function POST(req: Request) {
       await db.insert(schema.auditLogs).values({
         action: `GOVERNANCE_${action.toUpperCase()}_PACHA`,
         userId: investor.id,
-        metadata: { amount: stakeAmt, previousStaked: currentStaked, newStaked, email: userEmail },
+        details: JSON.stringify({ amount: stakeAmt, previousStaked: currentStaked, newStaked, email: userEmail }),
       });
     } catch (auditErr: any) {
       console.warn('[Fase42 stake audit] skipped:', auditErr?.message);

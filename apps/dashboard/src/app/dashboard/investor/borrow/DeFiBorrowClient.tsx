@@ -40,6 +40,7 @@ interface Loan {
   interestRate: string;
   accumulatedInterest: string;
   status: string;
+  healthFactor?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -420,7 +421,7 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
                     ) || balances[0];
                     if (paracas) {
                       setSelectedPropertyId(paracas.propertyId);
-                      const price = parseFloat(paracas.tokenPriceUsd || paracas.token_price_usd || "1");
+                      const price = parseFloat(paracas.tokenPriceUsd || "1");
                       const tokensFor50k = (50000 / Math.max(price, 0.01)).toFixed(2);
                       setCollateralInput(tokensFor50k);
                       setBorrowInput("30000"); // 60% LTV demo

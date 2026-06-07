@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
     // 3. If proposal matches a property, update that property status
     let propertyUpdated = false;
     let propName = '';
+    let nextStatus: "coming_soon" | "funding" | "funded" | "trading" | "liquidated" | undefined;
     
     let propertyId = proposal.relatedPropertyId;
     if (!propertyId) {
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
         where: eq(schema.properties.id, propertyId)
       });
       if (prop) {
-        const nextStatus = prop.status === 'coming_soon' ? 'funding' : 'trading';
+        nextStatus = prop.status === 'coming_soon' ? 'funding' : 'trading';
         
         // Master / real onchain proof (refactored per Antigravity plan to real data, no random)
         // Use fresh publicnode style like orq for real tx/block (Master authorization allows force even without full quorum)

@@ -55,7 +55,10 @@ export async function fetchMaestroYields(investorEmailOrId: string = 'demo', pro
       }
     }
     if (orq && typeof orq.runFleetYieldForecastTask === 'function') {
-      const res = await orq.runFleetYieldForecastTask();
+      if (!(globalThis as any).__orqRes) {
+        (globalThis as any).__orqRes = await orq.runFleetYieldForecastTask();
+      }
+      const res = (globalThis as any).__orqRes;
       orqHistory = res.cashflowHistory || [];
       orqPortfolio = res.portfolioView || [];
     }

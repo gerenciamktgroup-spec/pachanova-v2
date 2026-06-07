@@ -46,7 +46,8 @@ export async function createServerClient() {
     };
 
     const originalSignInWithPassword = client.auth.signInWithPassword.bind(client.auth);
-    client.auth.signInWithPassword = async (credentials) => {
+    // @ts-ignore
+    client.auth.signInWithPassword = async (credentials: any) => {
       const { email, password } = credentials;
       
       if (email === 'carlos.mendoza@demo.pachanova.io' && password === 'Demo2026!') {

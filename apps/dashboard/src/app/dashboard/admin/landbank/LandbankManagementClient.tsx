@@ -16,6 +16,7 @@ type Property = {
   annualYieldExpected: string | null;
   contractAddress: string | null;
   isDemo: boolean; // kept for schema compat (beta genesis remnants); always true here for "Modo Visual / DATOS REALES simulado" permanent. Primary landbank, not used to hide real orq data.
+  metadata?: any;
   createdAt: string;
 };
 
@@ -290,8 +291,8 @@ export default function LandbankManagementClient() {
         orqAttest: `N+2 orq attest (mutation + logs) for ${targetPnc}`,
         fases: 'Fase72 Phase6 #35'
       };
-      setMyBuysLedger(prev => [receipt, ...prev].slice(0, 10));
-      setProjectHoldings(prev => ({ ...prev, [targetPnc]: { ...sbHoldings, lastBuy: receipt, updated: true } }));
+      setMyBuysLedger((prev: any) => [receipt, ...prev].slice(0, 10));
+      setProjectHoldings((prev: any) => ({ ...prev, [targetPnc]: { ...sbHoldings, lastBuy: receipt, updated: true } }));
       showToast(`✓ SB-003 BUY/ACQUIRE ${mode} (Fase72 Phase6 #35). 25% holdings for hotel_revenue_share + vivienda_token. Badge: ${receipt.attest}`);
       console.log('Fase72 Phase6 #35 SB-003 launchPerpetual orq attest N+1/N+2:', data, receipt);
       await fetchData();
@@ -310,8 +311,8 @@ export default function LandbankManagementClient() {
         orqAttest: 'N+2 orq attest (demo + logs) Fase72 Phase6 #35',
         fases: 'Fase72 Phase6 #35'
       };
-      setMyBuysLedger(prev => [receipt, ...prev].slice(0, 10));
-      setProjectHoldings(prev => ({ ...prev, [targetPnc]: { ...sbHoldings, lastBuy: receipt } }));
+      setMyBuysLedger((prev: any) => [receipt, ...prev].slice(0, 10));
+      setProjectHoldings((prev: any) => ({ ...prev, [targetPnc]: { ...sbHoldings, lastBuy: receipt } }));
       showToast(`SB-003 buy ${mode} (demo) - Fase72 Phase6 #35 badge shown.`);
       console.log('Fase72 Phase6 #35 SB-003 demo buy receipt + onchain badge (PAR/SB/CHI/AET orq cover):', receipt);
     } finally {
@@ -713,7 +714,7 @@ export default function LandbankManagementClient() {
                 <div key={prop.id} className="space-y-1">
                   <HologramPncCard
                     pnc={prop as any}
-                    onMasterEdit={openMasterEdit}
+                    onMasterEdit={(pncData: any) => openMasterEdit(pncData)}
                     onLaunchProduct={async (p, prod) => {
                       setActionLoading(p.id + prod);
                       try {

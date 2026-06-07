@@ -40,8 +40,8 @@ async function fetchMarketplaceData() {
       const pnc = landbankProperties.find(p => p.id === o.propertyId) || landbankProperties[0];
       return {
         ...o,
-        pncCode: pnc?.metadata?.pncCode || '5PNC',
-        net: pnc?.metadata?.net || 68112.5,
+        pncCode: (pnc?.metadata as any)?.pncCode || '5PNC',
+        net: (pnc?.metadata as any)?.net || 68112.5,
       };
     });
 
@@ -139,7 +139,7 @@ async function P2PMarketplaceContent({ initialPnc }: { initialPnc?: string }) {
           </div>
           <div className="bg-[#0f172a] p-5 rounded-xl border border-white/10">
             <h3 className="text-[10px] uppercase tracking-wider text-white/50 mb-1">Órdenes Activas</h3>
-            <div className="text-2xl font-semibold text-white">{orders.length}</div>
+            <div className="text-2xl font-semibold text-white">{(orders || []).length}</div>
           </div>
           <div className="bg-[#0f172a] p-5 rounded-xl border border-white/10">
             <h3 className="text-[10px] uppercase tracking-wider text-white/50 mb-1">Spread Promedio</h3>
@@ -148,10 +148,10 @@ async function P2PMarketplaceContent({ initialPnc }: { initialPnc?: string }) {
         </div>
 
         <P2PMarketplaceClient
-          orders={orders}
-          balance={balance}
-          kycStatus={investor.kycStatus}
-          currentUserId={investor.id}
+          orders={orders || []}
+          balance={balance || null}
+          kycStatus={investor!.kycStatus}
+          currentUserId={investor!.id}
           initialPnc={initialPnc}
         />
 

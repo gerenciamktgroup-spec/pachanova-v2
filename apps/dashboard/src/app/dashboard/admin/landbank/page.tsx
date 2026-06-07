@@ -9,7 +9,7 @@ export default function LandbankAdminPage() {
   return (
     <div className="space-y-6">
       <RouteBreadcrumbs
-        customSegments={["Admin", "Land Banking"]}
+        items={[{ label: "Admin" }, { label: "Land Banking" }]}
       />
       <div className="bg-[#0a111f] min-h-screen text-white rounded-2xl border border-white/10 p-6 md:p-8">
         <div className="flex justify-between items-center mb-6">

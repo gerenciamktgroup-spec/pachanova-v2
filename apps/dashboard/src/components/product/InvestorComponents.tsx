@@ -12,6 +12,7 @@ import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 import { HologramPncCard } from "./HologramPncCard"; // Fase4 expansion: Hologram in main investor hero/portfolio for full PachaNova Landbanking visuals + 5PNC orq fallbacks
+import { cn } from "@/lib/utils";
 
 export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & { investor: { portfolio: any[] } } }) {
   const portfolio = view.investor.portfolio || [];
@@ -223,9 +224,9 @@ export function InvestorLedgerPanel({ view }: { view: InvestorDashboardView }) {
                   "text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded border",
                   tx.operationType === "GENESIS_PURCHASE" && "bg-pn-gold/10 text-pn-gold border-pn-gold/20",
                   tx.operationType === "TRANSFER" && "bg-pn-blue/10 text-pn-blue border-pn-blue/20",
-                  (tx.operationType === "STAKE" || tx.operationType === "UNSTAKE") && "bg-pn-terracotta/10 text-pn-terracotta border-pn-terracotta/20",
-                  tx.operationType === "YIELD" && "bg-pn-success/10 text-pn-success border-pn-success/20",
-                  !["GENESIS_PURCHASE", "TRANSFER", "STAKE", "UNSTAKE", "YIELD"].includes(tx.operationType) && "bg-pn-surface-strong text-pn-text border-pn-border"
+                  ((tx.operationType as string) === "STAKE" || (tx.operationType as string) === "UNSTAKE") && "bg-pn-terracotta/10 text-pn-terracotta border-pn-terracotta/20",
+                  (tx.operationType as string) === "YIELD" && "bg-pn-success/10 text-pn-success border-pn-success/20",
+                  !["GENESIS_PURCHASE", "TRANSFER", "STAKE", "UNSTAKE", "YIELD"].includes(tx.operationType as string) && "bg-pn-surface-strong text-pn-text border-pn-border"
                 )}>
                   {tx.operationType}
                 </span>

@@ -29,7 +29,7 @@ export async function GET() {
       approved: allInvestors.filter(i => i.kycStatus === 'approved').length,
       pending: allInvestors.filter(i => i.kycStatus === 'pending').length,
       rejected: allInvestors.filter(i => i.kycStatus === 'rejected').length,
-      notStarted: allInvestors.filter(i => !i.kycStatus || i.kycStatus === 'not_started').length,
+      notStarted: allInvestors.filter(i => !i.kycStatus || (i.kycStatus as string) === 'not_started').length,
     };
 
     const complianceRate = stats.total > 0 ? Math.round((stats.approved / stats.total) * 100) : 0;
@@ -37,7 +37,7 @@ export async function GET() {
     // Recent KYC actions from audit logs
     const recentAudit = await db.query.auditLogs.findMany({
       where: sql`${schema.auditLogs.action} LIKE '%KYC%' OR ${schema.auditLogs.action} LIKE '%P2P%' OR ${schema.auditLogs.action} LIKE '%FIDEICOMISO%'`,
-      orderBy: sql`${schema.auditLogs.createdAt} DESC`,
+      orderBy: sql`${schema.auditLogs.timestamp} DESC`,
       limit: 10,
     });
 
@@ -48,7 +48,7 @@ export async function GET() {
       recentActivity: recentAudit.map(a => ({
         action: a.action,
         details: a.details?.substring(0, 200),
-        timestamp: a.createdAt,
+        timestamp: a.timestamp,
       })),
       note: 'Fase140 Compliance KYC Dashboard • Real investor data from Supabase. P2P trades require KYC approved (Fase138). Fideicomiso operations audit-logged (Fase139).',
     });
