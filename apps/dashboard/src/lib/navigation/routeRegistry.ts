@@ -118,15 +118,4 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     description: "Control de operaciones legales subyacentes.",
   },
 
-  // --- EXPERTO LOCAL (Legacy Demo Tools) ---
-  {
-    id: "demo-showcase",
-    label: "Showcase / Componentes",
-    path: "/demo/showcase",
-    section: "demo",
-    role: "operator",
-    icon: "play-square",
-    status: "active",
-    description: "Herramientas de testing UI locales.",
-  }
 ];
