@@ -21,6 +21,7 @@ export async function GET() {
     let totalEscrowedUsd = 0;
     let totalBurnedTokens = 0;
     let totalLiquidationUsd = 0;
+    let totalYieldUsd = 0;
 
     const vaultsByProperty: Record<string, any> = {};
 
@@ -42,6 +43,7 @@ export async function GET() {
       }
 
       totalMintedTokens += parseFloat(vault.availableTokens) + parseFloat(vault.lockedTokens);
+      totalYieldUsd += parseFloat(vault.accumulatedYieldUsd || "0");
     }
 
     for (const esc of escrow) {
@@ -70,6 +72,7 @@ export async function GET() {
         totalEscrowedUsd,
         totalBurnedTokens,
         totalLiquidationUsd,
+        totalYieldUsd,
         totalActiveVaults: Object.keys(vaultsByProperty).length
       },
       vaults: Object.values(vaultsByProperty)

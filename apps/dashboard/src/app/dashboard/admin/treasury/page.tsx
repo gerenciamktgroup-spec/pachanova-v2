@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminTreasuryPage() {
   // Fetch data directly from our API route to keep it simple and reusable
-  const host = headers().get("host");
+  const host = (await headers()).get("host");
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   
   const res = await fetch(`${protocol}://${host}/api/treasury`, {

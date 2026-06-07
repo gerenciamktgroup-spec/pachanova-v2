@@ -7,6 +7,8 @@ export const treasury_vaults = pgTable("treasury_vaults", {
   name: varchar("name", { length: 255 }).notNull(),
   availableTokens: numeric("available_tokens", { precision: 18, scale: 2 }).notNull().default("0"),
   lockedTokens: numeric("locked_tokens", { precision: 18, scale: 2 }).notNull().default("0"),
+  accumulatedYieldUsd: numeric("accumulated_yield_usd", { precision: 18, scale: 2 }).notNull().default("0"),
+  lastYieldInjectionAt: timestamp("last_yield_injection_at"),
   metadata: jsonb("metadata"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

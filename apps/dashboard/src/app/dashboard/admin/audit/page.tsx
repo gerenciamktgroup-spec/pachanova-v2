@@ -1,99 +1,90 @@
+import { RouteBreadcrumbs } from "@/components/mission";
+import { headers } from "next/headers";
+import { formatCurrency, formatNumber } from "@/utils/formatters";
+
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
-import { AuditLogTimeline } from "@/components/product";
-import { AuditLogView } from "@/types/product";
-import { createClient } from "@supabase/supabase-js";
-import postgres from "postgres";
-
-
-async function fetchAuditLogs(): Promise<AuditLogView[]> {
-  let logs: any[] = [];
-  let fetchFailed = false;
-
-  if (process.env.DEMO_MODE !== 'true' && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    try {
-      const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
-      
-      const { data, error } = await supabaseAdmin
-        .from("audit_logs")
-        .select("id, action, details, timestamp, user_id")
-        .order("timestamp", { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-      logs = data || [];
-    } catch (err) {
-      console.warn("Supabase fetch failed on audit logs page, falling back to local DB", err);
-      fetchFailed = true;
+export default async function InstitutionalLedgerPage() {
+  const host = (await headers()).get("host");
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  
+  let ledger = [];
+  try {
+    const res = await fetch(`${protocol}://${host}/api/admin/audit-logs/ledger`, {
+      cache: 'no-store'
+    });
+    const data = await res.json();
+    if (data.success) {
+      ledger = data.ledger;
     }
-  } else {
-    fetchFailed = true;
+  } catch (e) {
+    console.error("Error fetching ledger", e);
   }
-
-  if (fetchFailed) {
-    try {
-      const dbUrl = process.env.DATABASE_URL!;
-      const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase');
-      const client = postgres(dbUrl, { ssl: useSsl ? { rejectUnauthorized: false } : undefined });
-      const rawAuditLogs = await client`
-        SELECT id, action, details, timestamp, user_id
-        FROM audit_logs
-        ORDER BY timestamp DESC
-        LIMIT 100
-      `;
-      logs = rawAuditLogs || [];
-      } catch (dbErr) {
-      console.warn("Local DB fetch failed for audit logs, using mocks", dbErr);
-      logs = [
-        {
-          id: "1",
-          action: "SIMULATED_AUDIT",
-          details: "Offline mode fallback enabled.",
-          timestamp: new Date().toISOString(),
-          user_id: "system"
-        }
-      ];
-    }
-  }
-
-  return logs.map((log: any) => ({
-    id: log.id,
-    action: log.action ?? "UNKNOWN",
-    details: typeof log.details === "string"
-      ? log.details
-      : JSON.stringify(log.details ?? {}),
-    timestamp: log.timestamp,
-    actor: log.user_id ? `User:${log.user_id}` : "System",
-  }));
-}
-
-export default async function AdminAuditPage() {
-  const logs = await fetchAuditLogs();
-  const view = { recentAuditLogs: logs } as any;
 
   return (
-    <div className="space-y-8 pb-24">
-      <div>
-        <RouteBreadcrumbs items={[
-          { label: "Dashboard" },
-          { label: "Consola Admin", href: "/dashboard/admin" },
-          { label: "Auditoría" }
-        ]} className="mb-4" />
-        <SectionHeader 
-          eyebrow="Seguridad"
-          title="Logs de Auditoría"
-          description="Registro inmutable de eventos del sistema y mutaciones simuladas."
-        />
-      </div>
+    <div className="space-y-6">
+      <RouteBreadcrumbs items={[
+        { label: 'Admin' }, 
+        { label: 'Ledger Institucional (Hash Chain)' }
+      ]} />
+      
+      <div className="bg-[#0a111f] min-h-screen text-white rounded-2xl border border-white/10 p-6 md:p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40"></div>
 
-      <MissionCard>
-        <AuditLogTimeline view={view} />
-      </MissionCard>
+        <div className="mb-8 relative z-10">
+          <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">Ledger Inmutable (Trazabilidad)</h2>
+          <p className="text-sm text-white/50">Explorador de Hash Chain. Todas las emisiones, transferencias y quemas están ligadas criptográficamente.</p>
+        </div>
+
+        <div className="relative z-10 overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-white/50">
+                <th className="py-4 px-4 font-medium">Timestamp</th>
+                <th className="py-4 px-4 font-medium">Operación</th>
+                <th className="py-4 px-4 font-medium">Monto</th>
+                <th className="py-4 px-4 font-medium">Previous Hash</th>
+                <th className="py-4 px-4 font-medium">Current Hash</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {ledger.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-white/40">No hay registros en el Ledger.</td>
+                </tr>
+              ) : (
+                ledger.map((entry: any, i: number) => (
+                  <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors font-mono">
+                    <td className="py-4 px-4 text-white/60">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        entry.operation === 'mint' ? 'bg-[#c5a46d]/10 text-[#c5a46d] border border-[#c5a46d]/20' : 
+                        entry.operation === 'transfer' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                        'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                      }`}>
+                        {entry.operation.toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 font-semibold text-white">
+                      {formatNumber(entry.amount)} <span className="text-xs text-white/30">PACHA</span>
+                    </td>
+                    <td className="py-4 px-4 text-xs text-white/40 truncate max-w-[150px]" title={entry.previousHash}>
+                      {entry.previousHash === '0x0000000000000000000000000000000000000000000000000000000000000000' 
+                        ? 'GENESIS BLOCK' 
+                        : `${entry.previousHash.substring(0, 16)}...`}
+                    </td>
+                    <td className="py-4 px-4 text-xs text-emerald-400/70 truncate max-w-[150px]" title={entry.currentHash}>
+                      {entry.currentHash.substring(0, 16)}...
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
-
