@@ -14,16 +14,6 @@ export type AppRoute = {
 export const ROUTE_REGISTRY: AppRoute[] = [
   // --- Public / Investor Flow ---
   {
-    id: "demo-start",
-    label: "Demo Start",
-    path: "/demo/start",
-    section: "investor",
-    role: "public",
-    icon: "play-square",
-    status: "active",
-    description: "Flujo guiado de la demo.",
-  },
-  {
     id: "dashboard-investor",
     label: "Panel Inversor",
     path: "/dashboard/investor",

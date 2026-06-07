@@ -1,5 +1,6 @@
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { Suspense } from "react";
+import Link from "next/link";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import { desc } from "drizzle-orm";
@@ -37,9 +38,9 @@ async function PropertiesContent() {
           <h2 className="text-xl font-semibold tracking-tight text-white/90">Portafolio Inmobiliario</h2>
           <p className="text-sm text-white/50">Gestiona los terrenos, hoteles y proyectos disponibles en PachaNova.</p>
         </div>
-        <a href="/dashboard/admin/properties/new" className="bg-[#c5a46d] hover:bg-[#d4b47d] text-[#0a111f] font-semibold px-4 py-2 rounded-lg text-sm transition-colors block">
+        <Link href="/dashboard/admin/properties/new" className="bg-[#c5a46d] hover:bg-[#d4b47d] text-[#0a111f] font-semibold px-4 py-2 rounded-lg text-sm transition-colors block">
           + Nuevo Proyecto
-        </a>
+        </Link>
       </div>
 
       <div className="bg-[#0f172a] rounded-xl border border-white/5 overflow-hidden">

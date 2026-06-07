@@ -46,7 +46,7 @@ export async function createServerClient() {
     };
 
     const originalSignInWithPassword = client.auth.signInWithPassword.bind(client.auth);
-    // @ts-ignore
+    // @ts-expect-error Mocking signInWithPassword for demo mode
     client.auth.signInWithPassword = async (credentials: any) => {
       const { email, password } = credentials;
       

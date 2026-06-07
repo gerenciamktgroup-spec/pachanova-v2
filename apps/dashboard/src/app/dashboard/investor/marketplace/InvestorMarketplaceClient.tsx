@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 
 type Property = {
   id: string;
@@ -276,21 +277,21 @@ export default function InvestorMarketplaceClient() {
                   {/* CTA */}
                   <div className="pt-2 border-t border-white/5">
                     {isInvestable ? (
-                      <a
+                      <Link
                         href={`/dashboard/investor/invest`}
                         onClick={(e) => e.stopPropagation()}
                         className="block w-full text-center py-2.5 bg-[#c5a46d] hover:bg-[#d4b47d] text-black font-semibold text-sm rounded-lg transition-colors"
                       >
                         Invertir Ahora →
-                      </a>
+                      </Link>
                     ) : prop.status === "trading" ? (
-                      <a
+                      <Link
                         href={`/dashboard/investor/marketplace`}
                         onClick={(e) => e.stopPropagation()}
                         className="block w-full text-center py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-400 font-semibold text-sm rounded-lg transition-colors"
                       >
                         Comprar en P2P →
-                      </a>
+                      </Link>
                     ) : (
                       <div className="text-center text-xs text-white/30 py-2.5">
                         No disponible para inversión aún
@@ -403,20 +404,20 @@ export default function InvestorMarketplaceClient() {
 
             <div className="flex gap-3">
               {["funding", "coming_soon"].includes(selectedProperty.status) && (
-                <a
+                <Link
                   href="/dashboard/investor/invest"
                   className="flex-1 text-center py-3 bg-[#c5a46d] hover:bg-[#d4b47d] text-black font-semibold rounded-xl transition-colors"
                 >
                   Invertir Ahora →
-                </a>
+                </Link>
               )}
               {selectedProperty.status === "trading" && (
-                <a
+                <Link
                   href="/dashboard/investor/marketplace"
                   className="flex-1 text-center py-3 bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 font-semibold rounded-xl transition-colors hover:bg-emerald-600/30"
                 >
                   Mercado P2P →
-                </a>
+                </Link>
               )}
               <button
                 onClick={() => setSelectedProperty(null)}
