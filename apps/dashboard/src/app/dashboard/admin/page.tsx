@@ -169,10 +169,9 @@ async function AdminDashboardContent() {
           { label: "Consola Admin" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🏦 LANDBANKING HUB (Principal)" href="/dashboard/admin/landbank" variant="primary" />
-          <SafeActionButton label="Portafolio RWA (Legacy)" href="/dashboard/admin/properties" variant="ghost" />
-          <SafeActionButton label="Usuarios y KYC" href="/dashboard/admin/users" variant="ghost" />
-          <SafeActionButton label="Auditoría" href="/dashboard/admin/audit" variant="ghost" />
+          <SafeActionButton label="🏦 LANDBANKING HUB" href="/dashboard/admin/landbank" variant="primary" />
+          <SafeActionButton label="Aprobaciones (Maker/Checker)" href="/dashboard/admin/approvals" variant="ghost" />
+          <SafeActionButton label="Auditoría Ledger" href="/dashboard/admin/audit" variant="ghost" />
         </div>
       </div>
 

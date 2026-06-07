@@ -83,6 +83,15 @@ export default function LandbankManagementClient() {
   const [distributeModal, setDistributeModal] = useState<Property | null>(null);
   const [distributeAmount, setDistributeAmount] = useState("");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  
+  // New Property Modal State
+  const [newPropertyModal, setNewPropertyModal] = useState(false);
+  const [newPropertyForm, setNewPropertyForm] = useState({
+    name: "",
+    location: "",
+    totalValuationUsd: "",
+    totalTokens: "",
+  });
 
   // MASTER AUTHORIZATION: Full manual control panel for the ideador/master.
   // Always available. Edit any fields manually (real data). Changes pushed to real users/data via API (audit + orq sync + DB).
@@ -172,6 +181,38 @@ export default function LandbankManagementClient() {
         );
         setDistributeModal(null);
         setDistributeAmount("");
+        await fetchData();
+      } else {
+        showToast(`❌ Error: ${data.error}`);
+      }
+    } catch (e: any) {
+      showToast(`❌ Error: ${e.message}`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCreateProperty = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading("create_property");
+    try {
+      const res = await fetch("/api/landbank", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create_property",
+          property: {
+            ...newPropertyForm,
+            status: "coming_soon",
+            tokenPriceUsd: String(Number(newPropertyForm.totalValuationUsd) / Number(newPropertyForm.totalTokens)),
+          }
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`✅ Proyecto creado exitosamente`);
+        setNewPropertyModal(false);
+        setNewPropertyForm({ name: "", location: "", totalValuationUsd: "", totalTokens: "" });
         await fetchData();
       } else {
         showToast(`❌ Error: ${data.error}`);
@@ -586,6 +627,69 @@ export default function LandbankManagementClient() {
         </div>
       )}
 
+      {/* New Property Modal */}
+      {newPropertyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#0a111f] border border-[#c5a46d]/50 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+            <h3 className="text-lg font-semibold text-[#c5a46d] mb-2">
+              ✨ Crear Nuevo Proyecto RWA
+            </h3>
+            <p className="text-xs text-white/50 mb-4">
+              Ingresa los detalles base para crear un nuevo activo tokenizado en el Landbank Hub.
+            </p>
+            <form onSubmit={handleCreateProperty} className="space-y-4">
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Nombre del Proyecto</label>
+                <input 
+                  required type="text" placeholder="Ej: San Bartolo Beach Resort"
+                  value={newPropertyForm.name} onChange={e => setNewPropertyForm({...newPropertyForm, name: e.target.value})}
+                  className="w-full bg-[#060d1f] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#c5a46d]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-white/50 mb-1">Ubicación</label>
+                <input 
+                  required type="text" placeholder="Ej: Lima, Perú"
+                  value={newPropertyForm.location} onChange={e => setNewPropertyForm({...newPropertyForm, location: e.target.value})}
+                  className="w-full bg-[#060d1f] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#c5a46d]"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Valuación Total (USD)</label>
+                  <input 
+                    required type="number" placeholder="Ej: 5000000"
+                    value={newPropertyForm.totalValuationUsd} onChange={e => setNewPropertyForm({...newPropertyForm, totalValuationUsd: e.target.value})}
+                    className="w-full bg-[#060d1f] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#c5a46d]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Tokens Totales a Emitir</label>
+                  <input 
+                    required type="number" placeholder="Ej: 5000"
+                    value={newPropertyForm.totalTokens} onChange={e => setNewPropertyForm({...newPropertyForm, totalTokens: e.target.value})}
+                    className="w-full bg-[#060d1f] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-[#c5a46d]"
+                  />
+                </div>
+              </div>
+              {newPropertyForm.totalValuationUsd && newPropertyForm.totalTokens && (
+                <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs text-[#c5a46d] font-mono">
+                  Precio por Token Resultante: ${(Number(newPropertyForm.totalValuationUsd) / Number(newPropertyForm.totalTokens)).toFixed(2)}
+                </div>
+              )}
+              <div className="flex gap-3 mt-4 pt-2 border-t border-white/10">
+                <button type="submit" disabled={!!actionLoading} className="flex-1 bg-[#c5a46d] hover:bg-[#d4b47d] text-black font-semibold rounded-lg py-2.5 text-sm transition-colors disabled:opacity-50">
+                  {actionLoading === "create_property" ? "Creando..." : "Crear Proyecto"}
+                </button>
+                <button type="button" onClick={() => setNewPropertyModal(false)} className="flex-1 border border-white/10 hover:border-white/20 text-white/60 hover:text-white font-medium rounded-lg py-2.5 text-sm transition-colors">
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Stats Grid */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -676,12 +780,12 @@ export default function LandbankManagementClient() {
             ({filtered.length})
           </h3>
           <div className="flex gap-2">
-            <a
-              href="/dashboard/admin/properties/new"
+            <button
+              onClick={() => setNewPropertyModal(true)}
               className="px-3 py-1.5 bg-[#c5a46d] hover:bg-[#d4b47d] text-black text-xs font-semibold rounded-lg transition-colors"
             >
               + Nuevo Activo
-            </a>
+            </button>
             <button
               onClick={() => setFilterStatus("all")}
               className="px-3 py-1.5 border border-white/10 hover:border-white/20 text-white/50 hover:text-white text-xs rounded-lg transition-colors"
@@ -698,12 +802,12 @@ export default function LandbankManagementClient() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-white/30">
             No hay activos en este estado.{" "}
-            <a
-              href="/dashboard/admin/properties/new"
+            <button
+              onClick={() => setNewPropertyModal(true)}
               className="text-[#c5a46d] hover:underline"
             >
               Crear uno
-            </a>
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

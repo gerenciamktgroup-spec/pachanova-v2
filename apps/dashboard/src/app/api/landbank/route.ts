@@ -43,11 +43,41 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { propertyId, action } = body;
+    const { propertyId, action, property: newPropertyData } = body;
 
-    if (!propertyId || !action) {
+    if (!action) {
       return NextResponse.json(
-        { error: "propertyId and action are required" },
+        { error: "action is required" },
+        { status: 400 }
+      );
+    }
+
+    if (action === "create_property") {
+      if (!newPropertyData) {
+        return NextResponse.json({ error: "property data required" }, { status: 400 });
+      }
+      const newProp = await db.insert(schema.properties).values({
+        name: newPropertyData.name,
+        location: newPropertyData.location,
+        status: newPropertyData.status || "coming_soon",
+        totalValuationUsd: newPropertyData.totalValuationUsd,
+        totalTokens: newPropertyData.totalTokens,
+        tokenPriceUsd: newPropertyData.tokenPriceUsd,
+        propertyType: "land",
+        isDemo: false,
+      } as any).returning();
+      
+      await db.insert(schema.auditLogs).values({
+        action: "PROPERTY_CREATED",
+        details: { name: newPropertyData.name },
+      } as any);
+
+      return NextResponse.json({ success: true, property: newProp[0] });
+    }
+
+    if (!propertyId) {
+      return NextResponse.json(
+        { error: "propertyId is required for this action" },
         { status: 400 }
       );
     }

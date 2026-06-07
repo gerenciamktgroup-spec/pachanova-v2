@@ -130,11 +130,9 @@ async function InvestorDashboardContent() {
           { label: "Panel Inversor" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="💎 Rendimientos" href="/dashboard/investor/yields" variant="ghost" />
-          <SafeActionButton label="🌎 Marketplace" href="/dashboard/investor/marketplace" variant="ghost" />
-          <SafeActionButton label="📋 Historial" href="/dashboard/investor/ledger" variant="ghost" />
-          <SafeActionButton label="📄 Disclaimers" href="/dashboard/investor/disclosures" variant="ghost" />
-          <SafeActionButton label="🧪 Sandbox" href="/dashboard/investor/sandbox" variant="ghost" />
+          <SafeActionButton label="🌎 Marketplace P2P" href="/dashboard/investor/marketplace" variant="primary" />
+          <SafeActionButton label="💰 Préstamos DeFi" href="/dashboard/investor/borrow" variant="ghost" />
+          <SafeActionButton label="📚 Aprende" href="/dashboard/investor/learn" variant="ghost" />
         </div>
       </div>
 
