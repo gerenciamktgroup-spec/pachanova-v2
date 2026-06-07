@@ -90,7 +90,7 @@ export const ROUTE_REGISTRY: AppRoute[] = [
   {
     id: "admin-treasury",
     label: "Tesorería y Liquidación",
-    path: "/dashboard/treasury",
+    path: "/dashboard/admin/treasury",
     section: "experto",
     role: "admin",
     icon: "layout-dashboard",
