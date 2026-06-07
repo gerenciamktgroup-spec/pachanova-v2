@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RouteBreadcrumbs } from "@/components/mission";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowUpRight } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ShieldAlert, ArrowUpRight, ArrowRightLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Mock data para el MVP
@@ -13,7 +13,18 @@ const MOCK_APPROVALS = [
     user: "Nuevo Inversor",
     email: "investor@pachanova.local",
     amount: "$1,000.00 USD",
+    fee: "-",
     date: "2026-06-07 10:30 AM",
+    status: "PENDING",
+  },
+  {
+    id: "p2p-001",
+    type: "P2P_TRADE",
+    user: "Comprador_Z",
+    email: "comprador@demo.com",
+    amount: "100 Tokens San Bartolo",
+    fee: "$27.20 USD (3.4%)", // Fee del 3.4% calculado sobre $800
+    date: "2026-06-07 11:45 AM",
     status: "PENDING",
   },
   {
@@ -22,17 +33,9 @@ const MOCK_APPROVALS = [
     user: "Maria L.",
     email: "maria.l@demo.com",
     amount: "-",
+    fee: "-",
     date: "2026-06-07 09:15 AM",
     status: "PENDING",
-  },
-  {
-    id: "tx-125",
-    type: "WITHDRAWAL",
-    user: "Carlos M.",
-    email: "carlos.m@demo.com",
-    amount: "$500.00 USD",
-    date: "2026-06-06 18:45 PM",
-    status: "APPROVED",
   }
 ];
 
@@ -73,9 +76,9 @@ export default function ApprovalsPage() {
             <thead className="bg-pn-surface-strong/50 border-b border-pn-border text-pn-text-soft">
               <tr>
                 <th className="px-6 py-4 font-medium">Tipo / ID</th>
-                <th className="px-6 py-4 font-medium">Usuario</th>
-                <th className="px-6 py-4 font-medium">Detalle</th>
-                <th className="px-6 py-4 font-medium">Fecha</th>
+                <th className="px-6 py-4 font-medium">Usuario (Maker)</th>
+                <th className="px-6 py-4 font-medium">Operación</th>
+                <th className="px-6 py-4 font-medium">Fee (PachaNova)</th>
                 <th className="px-6 py-4 font-medium">Estado</th>
                 <th className="px-6 py-4 font-medium text-right">Acción (Checker)</th>
               </tr>
@@ -88,14 +91,13 @@ export default function ApprovalsPage() {
                       <div className={cn(
                         "p-1.5 rounded-md",
                         item.type === "DEPOSIT" ? "bg-emerald-500/10 text-emerald-500" :
+                        item.type === "P2P_TRADE" ? "bg-purple-500/10 text-purple-500" :
                         item.type === "WITHDRAWAL" ? "bg-orange-500/10 text-orange-500" :
                         "bg-blue-500/10 text-blue-500"
                       )}>
-                        <ArrowUpRight className={cn(
-                          "w-4 h-4",
-                          item.type === "WITHDRAWAL" && "rotate-180",
-                          item.type === "KYC" && "hidden"
-                        )} />
+                        {item.type === "DEPOSIT" && <ArrowUpRight className="w-4 h-4" />}
+                        {item.type === "P2P_TRADE" && <ArrowRightLeft className="w-4 h-4" />}
+                        {item.type === "WITHDRAWAL" && <ArrowUpRight className="w-4 h-4 rotate-180" />}
                         {item.type === "KYC" && <ShieldAlert className="w-4 h-4" />}
                       </div>
                       <div>
@@ -111,8 +113,13 @@ export default function ApprovalsPage() {
                   <td className="px-6 py-4">
                     <span className="font-mono text-pn-gold">{item.amount}</span>
                   </td>
-                  <td className="px-6 py-4 text-pn-text-soft">
-                    {item.date}
+                  <td className="px-6 py-4">
+                    <span className={cn(
+                      "font-mono text-sm",
+                      item.fee !== "-" ? "text-pn-success font-medium" : "text-pn-text-soft"
+                    )}>
+                      {item.fee}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className={cn(

@@ -27,6 +27,7 @@ export const p2pTrades = pgTable("p2p_trades", {
   pricePerToken: numeric("price_per_token", { precision: 18, scale: 2 }).notNull(),
   totalAmount: numeric("total_amount", { precision: 18, scale: 2 }).notNull(),
   feeAmount: numeric("fee_amount", { precision: 18, scale: 2 }).default("0"),
+  status: p2pStatusEnum("status").notNull().default("pending_approval"),
   isDemo: boolean("is_demo").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

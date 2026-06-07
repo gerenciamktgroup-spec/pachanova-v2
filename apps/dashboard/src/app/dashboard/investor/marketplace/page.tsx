@@ -1,175 +1,178 @@
-import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
-import { HologramPncCard } from "@/components/product/HologramPncCard";
-import { eq, and } from "drizzle-orm";
-import { schema } from "@pachanova/database";
-import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
-import { Suspense } from "react";
-import { db } from "@/server/db";
-import { createServerClient } from "@/utils/supabase/server";
-import InvestorMarketplaceClient from "./InvestorMarketplaceClient";
+"use client";
 
-export const dynamic = 'force-dynamic';
+import { useState } from "react";
+import { RouteBreadcrumbs } from "@/components/mission";
+import { ArrowRightLeft, TrendingUp, TrendingDown, Tag, Clock, CheckCircle2 } from "lucide-react";
 
-async function fetchMarketplaceData() {
-  try {
-    const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+// Mock data para el libro de órdenes
+const MOCK_ORDERS = [
+  { id: "ord-001", property: "San Bartolo", type: "SELL", tokens: 100, price: 8.00, originalPrice: 8.50, seller: "Usuario_X" },
+  { id: "ord-002", property: "Resort Paracas", type: "SELL", tokens: 50, price: 52.00, originalPrice: 50.00, seller: "Usuario_Y" },
+  { id: "ord-003", property: "San Bartolo", type: "SELL", tokens: 250, price: 8.20, originalPrice: 8.50, seller: "Usuario_Z" },
+];
 
-    const userEmail = user?.email || "investor@pachanova.local";
+export default function MarketplacePage() {
+  const [activeTab, setActiveTab] = useState<"book" | "my_orders">("book");
+  const [isBuying, setIsBuying] = useState<string | null>(null);
 
-    // Fetch current investor - using db singleton
-    const investor = await db.query.investors.findFirst({
-      where: eq(schema.investors.email, userEmail)
-    });
-
-    if (!investor) {
-      return { error: "Perfil de inversor no encontrado. Inicie sesión para operar." };
-    }
-
-    // Fetch open P2P orders - Fase2: tied to landbank 5PNC properties (Master launches feed liquidity, real orq data)
-    const orders = await db.query.p2pOrders.findMany({
-      where: eq(schema.p2pOrders.status, 'open'),
-      orderBy: (o, { desc }) => [desc(o.createdAt)]
-    });
-
-    // Enrich orders with landbank 5PNC for full project view (rich demo with orq numbers)
-    const landbankProperties = await db.query.properties.findMany({
-      where: (p, { like }) => like(p.name, 'PNC-%')
-    });
-    const enrichedOrders = orders.map(o => {
-      const pnc = landbankProperties.find(p => p.id === o.propertyId) || landbankProperties[0];
-      return {
-        ...o,
-        pncCode: (pnc?.metadata as any)?.pncCode || '5PNC',
-        net: (pnc?.metadata as any)?.net || 68112.5,
-      };
-    });
-
-    // Fetch investor balance for the first available property
-    const property = await db.query.properties.findFirst();
-    let balance = null;
-    if (property) {
-      balance = await db.query.balances.findFirst({
-        where: and(
-          eq(schema.balances.investorId, investor.id),
-          eq(schema.balances.propertyId, property.id)
-        )
-      });
-    }
-
-    return {
-      investor,
-      orders: enrichedOrders.map(o => ({
-        id: o.id,
-        sellerInvestorId: o.sellerInvestorId,
-        propertyId: o.propertyId,
-        quantity: parseFloat(o.quantity),
-        pricePerToken: parseFloat(o.pricePerToken),
-        totalAmount: parseFloat(o.totalAmount),
-        status: o.status,
-        createdAt: o.createdAt,
-        pncCode: o.pncCode,
-        net: o.net
-      })),
-      balance: balance ? {
-        availableTokens: parseFloat(balance.availableTokens),
-        availableUsd: parseFloat(balance.availableUsd)
-      } : null
-    };
-
-  } catch (e: any) {
-    console.error('[P2P FETCH ERROR]:', e);
-    return { error: e.message || 'Error fetching P2P data' };
-  }
-}
-
-async function P2PMarketplaceContent({ initialPnc }: { initialPnc?: string }) {
-  const data = await fetchMarketplaceData();
-
-  if (data.error) {
-    return <ErrorState title="Error del Mercado Secundario" message={data.error} />;
-  }
-
-  const { investor, orders, balance } = data;
-
-  // MACRO-FASE 141: real holograms for P2P marketplace section using shared helper
-  const realP2PHolos = await (await import('../../../../server/db')).getRealHologramPncs(3);
+  const handleBuy = (id: string) => {
+    setIsBuying(id);
+    setTimeout(() => {
+      setIsBuying(null);
+      alert("Transacción P2P enviada. Esperando aprobación del Administrador Maestro.");
+    }, 1500);
+  };
 
   return (
-    <div className="space-y-8">
-      <RouteBreadcrumbs items={[
-        { label: 'Inversor' }, 
-        { label: 'Marketplace' }
-      ]} />
-
-      {/* Full Project - P2P is part of entire PachaNova Landbanking + tools (user clarification) */}
-      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">P2P ON LANDBANK 5PNC — FULL PACHA NOVA PROJECT (MASTER LAUNCHES → P2P LIQUIDITY + CREDITS + ORQ + AUTONOMY + YIELDS + GOV)</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
-        {/* MACRO-FASE 141: real DB holograms for P2P section */}
-        {(realP2PHolos || []).map((pnc: any, i: number) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
-      </div>
-      <div className="text-[9px] text-white/50 -mt-2 mb-4"><a href="#ver-avances" className="text-emerald-400">VER TODOS LOS AVANCES → Fase1 Consolidation + Fase4 Visuals (Hologram expansion to yields/gov/hero/admin/market)</a></div>
-
-      {/* Land Banking Marketplace Section */}
-      <div className="bg-[#0a111f] rounded-2xl border border-white/10 p-6 md:p-8">
-        <div className="flex justify-between items-end mb-6">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">🌎 Land Banking — Activos RWA</h2>
-            <p className="text-sm text-white/50">Activos inmobiliarios tokenizados disponibles para inversión en primario y mercado secundario.</p>
-          </div>
-        </div>
-        <Suspense fallback={<LoadingState message="Cargando activos..." />}>
-          <InvestorMarketplaceClient />
-        </Suspense>
+    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-2">
+        <RouteBreadcrumbs />
+        <h1 className="text-3xl font-light tracking-tight text-pn-text">
+          Marketplace <span className="font-semibold text-pn-gold">P2P</span>
+        </h1>
+        <p className="text-pn-text-muted">
+          Mercado secundario de fracciones RWA. Compra y vende tokens con otros inversores de la red.
+        </p>
       </div>
 
-      {/* P2P Secondary Market */}
-      <div className="bg-[#0a111f] min-h-[50vh] text-white rounded-2xl border border-white/10 p-6 md:p-8">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-white mb-1">Mercado Secundario (OTC / P2P)</h2>
-            <p className="text-sm text-white/50">Liquidez instantánea. Compra y vende tus fracciones PACHA con otros inversores de la red de forma atómica.</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-[#0f172a] p-5 rounded-xl border border-blue-500/20">
-            <h3 className="text-[10px] uppercase tracking-wider text-white/50 mb-1">Tu Saldo Disponible</h3>
-            <div className="text-2xl font-semibold text-blue-400">${balance?.availableUsd?.toLocaleString() || '0.00'} USD</div>
-          </div>
-          <div className="bg-[#0f172a] p-5 rounded-xl border border-white/10">
-            <h3 className="text-[10px] uppercase tracking-wider text-white/50 mb-1">Órdenes Activas</h3>
-            <div className="text-2xl font-semibold text-white">{(orders || []).length}</div>
-          </div>
-          <div className="bg-[#0f172a] p-5 rounded-xl border border-white/10">
-            <h3 className="text-[10px] uppercase tracking-wider text-white/50 mb-1">Spread Promedio</h3>
-            <div className="text-2xl font-semibold text-white">0.8%</div>
-          </div>
-        </div>
-
-        <P2PMarketplaceClient
-          orders={orders || []}
-          balance={balance || null}
-          kycStatus={investor!.kycStatus}
-          currentUserId={investor!.id}
-          initialPnc={initialPnc}
-        />
-
-        <div className="mt-8 text-center">
-          <p className="text-[10px] text-white/30">
-            * El mercado secundario está operado mediante lógica transaccional de base de datos local y Smart Contracts simulados. Las liquidaciones son instantáneas y de tipo entrega contra pago (DVP).
-          </p>
-        </div>
+      {/* Tabs */}
+      <div className="flex items-center gap-4 border-b border-pn-border/50">
+        <button
+          onClick={() => setActiveTab("book")}
+          className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+            activeTab === "book" ? "border-pn-gold text-pn-gold" : "border-transparent text-pn-text-soft hover:text-pn-text"
+          }`}
+        >
+          Libro de Órdenes
+        </button>
+        <button
+          onClick={() => setActiveTab("my_orders")}
+          className={`pb-3 text-sm font-medium transition-colors border-b-2 ${
+            activeTab === "my_orders" ? "border-pn-gold text-pn-gold" : "border-transparent text-pn-text-soft hover:text-pn-text"
+          }`}
+        >
+          Mis Órdenes (Crear)
+        </button>
       </div>
+
+      {activeTab === "book" ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-xl font-semibold text-pn-text flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5 text-pn-gold" />
+              Mercado Abierto
+            </h2>
+            
+            <div className="bg-pn-surface/50 border border-pn-border rounded-xl overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-pn-surface-strong/50 border-b border-pn-border text-pn-text-soft">
+                  <tr>
+                    <th className="px-6 py-4 font-medium">Bóveda (Proyecto)</th>
+                    <th className="px-6 py-4 font-medium">Fracciones</th>
+                    <th className="px-6 py-4 font-medium">Precio P2P</th>
+                    <th className="px-6 py-4 font-medium">Diferencial</th>
+                    <th className="px-6 py-4 font-medium text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-pn-border/50">
+                  {MOCK_ORDERS.map((order) => {
+                    const discount = ((order.price - order.originalPrice) / order.originalPrice) * 100;
+                    const isDiscount = discount < 0;
+
+                    return (
+                      <tr key={order.id} className="hover:bg-pn-surface-strong/30 transition-colors">
+                        <td className="px-6 py-4 font-medium text-pn-text">
+                          {order.property}
+                        </td>
+                        <td className="px-6 py-4 text-pn-text-soft">
+                          {order.tokens} Tokens
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-pn-gold">${order.price.toFixed(2)}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className={`inline-flex items-center gap-1 text-xs font-medium ${isDiscount ? 'text-pn-success' : 'text-pn-danger'}`}>
+                            {isDiscount ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                            {Math.abs(discount).toFixed(2)}%
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => handleBuy(order.id)}
+                            disabled={isBuying === order.id}
+                            className="px-4 py-1.5 bg-pn-surface-strong hover:bg-pn-gold hover:text-black border border-pn-border hover:border-pn-gold rounded-md text-pn-text text-xs font-medium transition-all"
+                          >
+                            {isBuying === order.id ? "Procesando..." : "Comprar"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Info Lateral */}
+          <div className="space-y-6">
+            <div className="p-6 rounded-xl border border-pn-border/50 bg-gradient-to-br from-pn-surface-strong/20 to-transparent">
+              <h3 className="font-semibold text-pn-text mb-4">Mecánica del Mercado</h3>
+              <ul className="space-y-3 text-sm text-pn-text-soft">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
+                  <span>Los precios P2P son definidos libremente por los vendedores.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
+                  <span>Al comprar, la orden pasa a un estado <strong>Pendiente de Aprobación</strong> por la Tesorería.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Tag className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
+                  <span>Se aplica un Fee de red del <strong>3.4%</strong> para mantener la liquidez institucional.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-2xl">
+          <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30 backdrop-blur-sm space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-pn-text mb-1">Nueva Orden de Venta</h2>
+              <p className="text-sm text-pn-text-soft">
+                Crea liquidez vendiendo tus fracciones. Tú defines el precio.
+              </p>
+            </div>
+            
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("Orden creada."); }}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-pn-text-muted">Bóveda (Propiedad)</label>
+                <select className="w-full px-4 py-3 bg-pn-bg border border-pn-border rounded-lg focus:outline-none focus:ring-1 focus:ring-pn-gold text-pn-text transition-colors">
+                  <option>San Bartolo (Disponible: 1250 tokens)</option>
+                  <option>Resort Paracas (Disponible: 500 tokens)</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-pn-text-muted">Cantidad a Vender</label>
+                  <input type="number" required min="1" className="w-full px-4 py-3 bg-pn-bg border border-pn-border rounded-lg focus:outline-none focus:ring-1 focus:ring-pn-gold text-pn-text transition-colors" placeholder="Ej. 100" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-pn-text-muted">Precio por Token (USD)</label>
+                  <input type="number" required min="0.01" step="0.01" className="w-full px-4 py-3 bg-pn-bg border border-pn-border rounded-lg focus:outline-none focus:ring-1 focus:ring-pn-gold text-pn-text transition-colors" placeholder="Ej. 8.50" />
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <button type="submit" className="w-full bg-pn-gold hover:bg-pn-gold/90 text-black font-semibold py-3 px-4 rounded-lg transition-all">
+                  Publicar Oferta P2P
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
-  );
-}
-
-export default async function P2PMarketplacePage({ searchParams }: { searchParams?: Promise<{ pnc?: string }> }) {
-  const params = searchParams ? await searchParams : undefined;
-  return (
-    <Suspense fallback={<LoadingState message="Cargando Marketplace..." />}>
-      <P2PMarketplaceContent initialPnc={params?.pnc} />
-    </Suspense>
   );
 }
