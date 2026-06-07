@@ -2,38 +2,17 @@ export type AppRoute = {
   id: string;
   label: string;
   path: string;
-  section: "investor" | "experto" | "demo";
-  role: "public" | "investor" | "admin" | "fiduciario" | "operator";
+  section: "investor" | "experto";
+  role: "investor" | "admin" | "fiduciario";
   icon: string;
-  status: "active" | "simulated" | "pending_credentials" | "pending_foundry" | "disabled" | "planned";
+  status: "active" | "simulated" | "planned";
   description: string;
-  primaryAction?: string;
-  secondaryAction?: string;
 };
 
 export const ROUTE_REGISTRY: AppRoute[] = [
-  // --- INVERSOR: Flujo Limpio (Maker) ---
-  {
-    id: "investor-learn",
-    label: "Aprende",
-    path: "/dashboard/investor/learn",
-    section: "investor",
-    role: "investor",
-    icon: "book-open",
-    status: "active",
-    description: "Centro educativo sobre el modelo de Tokenización y RWA.",
-  },
-  {
-    id: "investor-wallet",
-    label: "Billetera (Fondeo)",
-    path: "/dashboard/investor/wallet",
-    section: "investor",
-    role: "investor",
-    icon: "banknote",
-    status: "active",
-    description: "Inyecta capital puente vía MercadoPago para adquirir propiedades.",
-    primaryAction: "Fondear Cuenta",
-  },
+  // ═══════════════════════════════════════════════════
+  // INVERSOR: Flujo del Holder / Comprador
+  // ═══════════════════════════════════════════════════
   {
     id: "investor-portfolio",
     label: "Mi Portafolio",
@@ -45,14 +24,24 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     description: "Visualiza tus fracciones inmobiliarias y rendimiento.",
   },
   {
+    id: "investor-wallet",
+    label: "Billetera (Fondeo)",
+    path: "/dashboard/investor/wallet",
+    section: "investor",
+    role: "investor",
+    icon: "banknote",
+    status: "active",
+    description: "Inyecta capital vía MercadoPago para adquirir propiedades.",
+  },
+  {
     id: "investor-marketplace",
-    label: "Marketplace RWA",
+    label: "Marketplace P2P",
     path: "/dashboard/investor/marketplace",
     section: "investor",
     role: "investor",
     icon: "activity",
     status: "active",
-    description: "Mercado primario y P2P de participaciones PACHA.",
+    description: "Mercado secundario de fracciones RWA.",
   },
   {
     id: "investor-borrow",
@@ -64,52 +53,73 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     status: "active",
     description: "Solicita liquidez en USD usando tus tokens como colateral.",
   },
+  {
+    id: "investor-learn",
+    label: "Aprende",
+    path: "/dashboard/investor/learn",
+    section: "investor",
+    role: "investor",
+    icon: "book-open",
+    status: "active",
+    description: "Centro educativo sobre Tokenización y RWA.",
+  },
 
-  // --- ADMINISTRADOR MAESTRO: Consola Bancaria (Checker) ---
+  // ═══════════════════════════════════════════════════
+  // ADMINISTRADOR: Consola Bancaria (Checker / Tesorería)
+  // ═══════════════════════════════════════════════════
+  {
+    id: "admin-dashboard",
+    label: "Panel Admin",
+    path: "/dashboard/admin",
+    section: "experto",
+    role: "admin",
+    icon: "layout-dashboard",
+    status: "active",
+    description: "Visión operativa global del sistema.",
+  },
   {
     id: "admin-approvals",
-    label: "Aprobaciones (Maker/Checker)",
+    label: "Aprobaciones",
     path: "/dashboard/admin/approvals",
     section: "experto",
     role: "admin",
     icon: "shield",
     status: "active",
-    description: "Bandeja de entrada para aprobar Fondeos, Retiros y KYC.",
-    primaryAction: "Revisar Pendientes",
+    description: "Bandeja para aprobar Fondeos, Retiros y KYC.",
   },
   {
     id: "admin-landbank",
-    label: "Bóvedas RWA (Landbank)",
+    label: "Bóvedas RWA",
     path: "/dashboard/admin/landbank",
     section: "experto",
     role: "admin",
     icon: "landmark",
     status: "active",
-    description: "Control absoluto sobre los 3 modelos de propiedades y su circulante.",
+    description: "Control sobre propiedades y circulante de tokens.",
   },
   {
     id: "admin-treasury",
-    label: "Tesorería y Liquidación",
+    label: "Tesorería Central",
     path: "/dashboard/admin/treasury",
     section: "experto",
     role: "admin",
     icon: "layout-dashboard",
     status: "active",
-    description: "Gestión de caja, yield distribuido y liquidación de colaterales (Préstamos).",
+    description: "Bóveda Central, yield y liquidación.",
   },
   {
     id: "admin-audit",
-    label: "Ledger Institucional",
+    label: "Ledger Inmutable",
     path: "/dashboard/admin/audit",
     section: "experto",
     role: "admin",
     icon: "file-search",
     status: "active",
-    description: "Registro inmutable de todas las transacciones de tokens en la plataforma.",
+    description: "Registro inmutable de transacciones (Double-Entry).",
   },
   {
     id: "admin-fideicomiso",
-    label: "Firmas (Fideicomiso)",
+    label: "Fideicomiso",
     path: "/dashboard/fideicomiso",
     section: "experto",
     role: "admin",
@@ -117,5 +127,4 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     status: "active",
     description: "Control de operaciones legales subyacentes.",
   },
-
 ];

@@ -83,17 +83,26 @@ export function MissionSidebar() {
   }, []);
 
   // Agrupar rutas por sección y filtrar por rol
+  // Section label mapping
+  const SECTION_LABELS: Record<string, string> = {
+    investor: "Mi Cuenta",
+    experto: "Administración",
+  };
+
+  // Strict role-based filtering: admin sees ONLY admin routes, investor sees ONLY investor routes
   const sections: Record<string, AppRoute[]> = {};
   ROUTE_REGISTRY.forEach(route => {
-    // Si el usuario no tiene rol aún (cargando), no mostrar rutas protegidas
-    if (!role && route.role !== "public") return;
-    
-    // El admin ve rutas de admin, experto y públicas.
-    // El investor ve rutas de investor y públicas.
-    const canSee = 
-      route.role === "public" || 
-      route.role === role || 
-      (role === "admin" && (route.role === "fiduciario" || route.section === "experto"));
+    if (!role) return; // Still loading, show nothing
+
+    let canSee = false;
+
+    if (role === "admin") {
+      // Admin sees only "experto" section (admin routes + fideicomiso)
+      canSee = route.role === "admin" || route.role === "fiduciario";
+    } else if (role === "investor") {
+      // Investor sees only "investor" section
+      canSee = route.role === "investor";
+    }
 
     if (canSee) {
       if (!sections[route.section]) {
@@ -119,7 +128,7 @@ export function MissionSidebar() {
         {Object.entries(sections).map(([sectionName, routes]) => (
           <div key={sectionName} className="space-y-1">
             <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-pn-text-soft mb-2">
-              {sectionName}
+              {SECTION_LABELS[sectionName] || sectionName}
             </h3>
             {routes.map((route) => {
               const Icon = ICON_MAP[route.icon] || PlaySquare;
