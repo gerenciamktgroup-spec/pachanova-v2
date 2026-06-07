@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, numeric, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
 import { users } from './users';
 
 export const gamification = pgTable("gamification", {
@@ -13,4 +13,13 @@ export const gamification = pgTable("gamification", {
   currentTier: varchar("current_tier", { length: 50 }).notNull().default("BRONZE"), // BRONZE, SILVER, GOLD, PLATINUM
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const gamificationLedger = pgTable("gamification_ledger", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  action: varchar("action", { length: 50 }).notNull(), // 'KYC_APPROVED', 'FIAT_DEPOSIT', 'P2P_BUY'
+  xpAwarded: integer("xp_awarded").notNull(),
+  metadata: jsonb("metadata"), // Context e.g., { propertyId: '...', orderId: '...' }
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
 });

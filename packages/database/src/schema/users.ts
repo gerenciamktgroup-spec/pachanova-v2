@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, boolean, jsonb, integer } from "drizzle-orm/pg-core";
 import { userRoleEnum, kycStatusEnum } from './enums';
 
 export const users = pgTable("users", {
@@ -18,6 +18,8 @@ export const users = pgTable("users", {
   isAccredited: boolean("is_accredited").notNull().default(false),
   isDemo: boolean("is_demo").notNull().default(false),
   metadata: jsonb("metadata"),
+  xp: integer("xp").notNull().default(0),
+  level: integer("level").notNull().default(1),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

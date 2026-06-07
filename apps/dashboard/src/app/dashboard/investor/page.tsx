@@ -111,6 +111,10 @@ async function fetchInvestorData(): Promise<any> {
   };
 }
 
+import { cookies } from "next/headers";
+import GamificationHUD from "@/components/dashboard/investor/GamificationHUD";
+import { db } from "@/server/db";
+
 async function InvestorDashboardContent() {
   const view = await fetchInvestorData();
 
@@ -119,6 +123,21 @@ async function InvestorDashboardContent() {
 
   if (!view) {
     return <ErrorState title="Error" message="No se pudo cargar el panel del inversor." />;
+  }
+
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
+  let userXP = 0;
+  let userLevel = 1;
+
+  if (userId) {
+    const user = await db.query.users.findFirst({
+      where: eq(schema.users.id, userId)
+    });
+    if (user) {
+      userXP = user.xp;
+      userLevel = user.level;
+    }
   }
 
   return (
@@ -140,6 +159,8 @@ async function InvestorDashboardContent() {
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
         PACHA NOVA LANDBANKING HUB — Plataforma de Inversión en Tierras Tokenizadas
       </div>
+
+      <GamificationHUD xp={userXP} level={userLevel} />
 
       {/* ── Journey Progress ── */}
       <JourneyProgressRail journey={investorJourney} currentStepId="i1" />
