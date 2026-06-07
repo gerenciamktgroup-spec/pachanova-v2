@@ -13,10 +13,10 @@ export default async function ApprovalsPage() {
     const txs = await db.select({
       id: schema.transactions.id,
       type: schema.transactions.type,
-      amount: schema.transactions.amountUsd,
+      amount: schema.transactions.amount,
       date: schema.transactions.createdAt,
       status: schema.transactions.status,
-      investorId: schema.transactions.investorId,
+      investorId: schema.transactions.receiverId,
     }).from(schema.transactions)
       .where(eq(schema.transactions.status, "pending"))
       .orderBy(desc(schema.transactions.createdAt));
@@ -51,8 +51,8 @@ export default async function ApprovalsPage() {
       ...txs.map(t => ({
         id: t.id,
         type: t.type?.toUpperCase() || "UNKNOWN",
-        user: investorMap[t.investorId]?.name || "Desconocido",
-        email: investorMap[t.investorId]?.email || "",
+        user: t.investorId ? investorMap[t.investorId]?.name || "Desconocido" : "Sistema",
+        email: t.investorId ? investorMap[t.investorId]?.email || "" : "",
         amount: `$${t.amount} USD`,
         fee: "-",
         date: t.date.toLocaleString(),

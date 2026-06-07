@@ -20,10 +20,10 @@ export async function createDepositRequest(amountUsd: number) {
     // Crear la transacción en estado PENDING
     const result = await db.insert(schema.transactions).values({
       type: "deposit",
-      investorId: user.id,
-      amountUsd: amountUsd.toString(),
+      receiverId: user.id, // Para depósito, el usuario es el receptor de los fondos
+      amount: amountUsd.toString(),
       status: "pending",
-      description: "Fondeo vía Wallet (Esperando confirmación)",
+      metadata: { description: "Fondeo vía Wallet (Esperando confirmación)" },
       isDemo: true // Marcar como demo hasta tener MercadoPago real
     }).returning();
 
@@ -63,22 +63,22 @@ export async function approveTransaction(transactionId: string) {
       const WALLET_VAULT_ID = "00000000-0000-0000-0000-000000000000";
 
       const [existingBalance] = await db.select().from(schema.balances)
-        .where(eq(schema.balances.investorId, tx.investorId)); // Simplificado para Demo. Ideal: AND eq propertyId.
+        .where(eq(schema.balances.investorId, tx.receiverId!)); // Simplificado para Demo. Ideal: AND eq propertyId.
 
       if (existingBalance) {
         // Actualizar
         const currentUsd = parseFloat(existingBalance.availableUsd) || 0;
-        const newUsd = currentUsd + parseFloat(tx.amountUsd);
+        const newUsd = currentUsd + parseFloat(tx.amount);
         await db.update(schema.balances)
           .set({ availableUsd: newUsd.toString() })
           .where(eq(schema.balances.id, existingBalance.id));
       } else {
         // Crear
         await db.insert(schema.balances).values({
-          investorId: tx.investorId,
+          investorId: tx.receiverId!,
           propertyId: WALLET_VAULT_ID, // Virtual Vault for Fiat
           availableTokens: "0",
-          availableUsd: tx.amountUsd,
+          availableUsd: tx.amount,
           lockedTokens: "0"
         });
       }

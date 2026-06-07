@@ -65,7 +65,7 @@ export function MissionSidebar() {
     const canSee = 
       route.role === "public" || 
       route.role === role || 
-      (role === "admin" && (route.role === "experto" || route.role === "fiduciario" || route.section === "experto"));
+      (role === "admin" && (route.role === "fiduciario" || route.section === "experto"));
 
     if (canSee) {
       if (!sections[route.section]) {
