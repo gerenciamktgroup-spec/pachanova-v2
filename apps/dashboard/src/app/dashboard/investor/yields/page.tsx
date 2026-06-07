@@ -43,11 +43,13 @@ async function YieldsContent() {
       <div className="border border-[#c5a46d]/30 rounded-xl p-4 bg-[#0a111f]">
         <div className="text-[10px] text-[#c5a46d] uppercase tracking-widest mb-1">PACHA NOVA LANDBANKING — YIELDS EN HOLOGRAMA (5PNC ORQ REALES • FASE47 FLYWHEEL • MASTER)</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-          {[
-            {id:"pnc-par-y", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{alquiler_yield:{porcentaje_renta_a_holders:55, yield_estimado_anual:7.8}}, notas_maestro:"Yields from Fase47 flywheel. Full landbanking=everything+tools. Rich fallback."}},
-            {id:"pnc-sb-y", name:"Frente Playa San Bartolo — PNC-SB-003", location:"San Bartolo, Lima Sur, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{porcentaje_ocupacion_a_holders:48}}, notas_maestro:"Yield attribution per product. Master launches feed yields."}},
-            {id:"pnc-chi-y", name:"Chiclayo Reserve — PNC-CHI-004", location:"Chiclayo, Perú", propertyType:"land", status:"trading", totalValuationUsd:"980000", tokenPriceUsd:"390", totalTokens:"4200", availableTokens:"3000", annualYieldExpected:"8.1", metadata:{pncCode:"PNC-CHI-004", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"Ver todos los avances: Fase1 consolidation + Fase4 holograms in yields/gov etc."}}
-          ].map((pnc, i) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
+          {/* MACRO-FASE 141: real DB holograms in yields + Vender P2P + compound already in client */}
+          {(await (await import('../../../../server/db')).getRealHologramPncs(3)).map((pnc: any, i: number) => (
+            <div key={i}>
+              <HologramPncCard pnc={pnc as any} compact />
+              <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+            </div>
+          ))}
         </div>
         <a id="ver-avances" href="/dashboard/admin/landbank#avances" className="text-xs text-emerald-400 hover:underline">→ Ver todos los avances (Fases 1/4 consolidation+visuals, blackboard, 5PNC orq)</a>
       </div>

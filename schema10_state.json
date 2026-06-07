@@ -17,22 +17,24 @@
         "fase36_status": "ready_for_launch",
         "fase42_power": 3250,
         "updated_via_fase49": true,
-        "last_flywheel": "2026-06-05T06:22:35.268Z",
-        "last_compound": "2026-06-05T06:22:35.280Z",
+        "last_flywheel": "2026-06-07T00:29:58.785Z",
+        "last_compound": "2026-06-07T00:29:58.825Z",
         "effHoldings": 32125,
         "fase93_settle": "external treasury-settle-93-pncpar001 Fase16_closed Fase21@25244445",
         "fase95_settle": "external treasury-settle-95-pncpar001 Fase16_closed Fase21@25244445 Fase94",
         "fase96_n2_launch": "from Fase95 settled n2-launch-from-95-pncpar001 Fase16_closed Fase21@25244445 Fase96",
         "fase111_n1_launch": "from Fase110 mail-declared closed n1-launch-from-fase110-closed-pncpar001 Fase16_closed Fase21@25246156 Fase111",
         "fase123_n3_launch": "from Fase121 mail-declared closed n3-launch-from-fase121-closed-pncpar001 Fase16_closed Fase21@25246156 Fase123",
-        "fase126_n3_settle": "external payout n3-settled-external-fase126-pncpar001 Fase16_closed Fase125_launched Fase21@25246156 Fase126"
+        "fase126_n3_settle": "external payout n3-settled-external-fase126-pncpar001 Fase16_closed Fase125_launched Fase21@25246156 Fase126",
+        "fase69_launch": "from Fase68 Ledger SSOT YIELD_CYCLE_LAUNCH_FROM_LEDGER_ATTEST@be0aa1bd0e1dff87@25244445 Fase16_closed Fase21@25244445",
+        "last_fase": "Fase69"
       },
       "created_at": "2026-06-04T00:00:00Z",
       "updated_at": "2026-06-04T00:00:00Z",
-      "effHoldings": 33940.48,
-      "net_yield": 85136.5,
-      "pacha_power": 4611,
-      "last_fase": "Fase83 attested N+2"
+      "effHoldings": 33937.78,
+      "net_yield": 88527,
+      "pacha_power": 5035,
+      "last_fase": "Fase83 attested N+1"
     }
   ],
   "rwa_distribuciones": [
@@ -45,7 +47,7 @@
       "tx_proof": "YIELD_CLAIM_ATTEST@25242xxx + 23125 + predict 0.82 + Fase9/47",
       "status": "COMPOUNDED",
       "claimed_at": "2026-06-04",
-      "compound_at": "2026-06-05T06:22:35.268Z",
+      "compound_at": "2026-06-07T00:29:58.785Z",
       "created_at": "2026-06-04T00:00:00Z"
     },
     {
@@ -71,7 +73,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -86,7 +88,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -101,7 +103,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -116,7 +118,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -131,7 +133,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -146,7 +148,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -161,7 +163,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -176,7 +178,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -191,7 +193,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -206,7 +208,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -221,7 +223,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -236,7 +238,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -251,7 +253,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -266,7 +268,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -281,7 +283,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -296,7 +298,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -311,7 +313,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -326,7 +328,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -341,7 +343,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -356,7 +358,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -371,7 +373,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -382,7 +384,7 @@
       "external_ref": "treasury-settle-93-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-93-pncpar001@25244445",
       "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -397,7 +399,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -412,7 +414,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -427,7 +429,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -442,7 +444,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -453,7 +455,7 @@
       "external_ref": "treasury-settle-93-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-93-pncpar001@25244445",
       "note": "Fase93 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed; Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -464,7 +466,7 @@
       "external_ref": "treasury-settle-95-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
       "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -475,7 +477,7 @@
       "external_ref": "treasury-settle-95-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
       "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -486,7 +488,7 @@
       "external_ref": "treasury-settle-95-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
       "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -497,7 +499,7 @@
       "external_ref": "treasury-settle-95-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
       "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -512,7 +514,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -527,7 +529,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -542,7 +544,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -557,7 +559,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -568,7 +570,7 @@
       "external_ref": "treasury-settle-95-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
       "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -579,7 +581,7 @@
       "external_ref": "n2-launch-from-95-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@n2-launch-from-95-pncpar001@25244445",
       "note": "Fase96 LAUNCHED N+2 from Fase95 SETTLED CLAIMS; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase95 settle/claim (Fase96); Fase21 12.5% @25244445",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -594,7 +596,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -609,7 +611,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -624,7 +626,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -639,7 +641,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -654,7 +656,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -669,7 +671,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -684,7 +686,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -699,7 +701,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -714,7 +716,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -729,7 +731,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -744,7 +746,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -759,7 +761,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -774,7 +776,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -789,7 +791,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -804,7 +806,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -819,7 +821,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -834,7 +836,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -849,7 +851,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -864,7 +866,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -879,7 +881,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -894,7 +896,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -909,7 +911,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -924,7 +926,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -939,7 +941,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -954,7 +956,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -969,7 +971,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -984,7 +986,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -999,7 +1001,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1014,7 +1016,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1029,7 +1031,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1040,7 +1042,7 @@
       "external_ref": "n1-launch-from-fase110-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
       "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1055,7 +1057,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1070,7 +1072,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1085,7 +1087,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1100,7 +1102,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1115,7 +1117,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1130,7 +1132,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1145,7 +1147,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1160,7 +1162,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1175,7 +1177,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1190,7 +1192,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1205,7 +1207,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1220,7 +1222,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1235,7 +1237,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1250,7 +1252,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1265,7 +1267,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1280,7 +1282,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1295,7 +1297,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1310,7 +1312,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1325,7 +1327,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1340,7 +1342,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1355,7 +1357,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1370,7 +1372,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1385,7 +1387,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1400,7 +1402,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1415,7 +1417,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1430,7 +1432,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1445,7 +1447,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1460,7 +1462,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1475,7 +1477,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1490,7 +1492,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1505,7 +1507,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1520,7 +1522,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1535,7 +1537,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1550,7 +1552,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1561,7 +1563,7 @@
       "external_ref": "n1-launch-from-fase110-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
       "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1572,7 +1574,7 @@
       "external_ref": "n3-launch-from-fase121-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
       "note": "Fase123 LAUNCHED N+3 from Fase121 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase121 mail declare closed (Fase123); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1587,7 +1589,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1602,7 +1604,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1617,7 +1619,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1632,7 +1634,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1643,7 +1645,7 @@
       "external_ref": "n1-launch-from-fase110-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
       "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1654,7 +1656,7 @@
       "external_ref": "n3-launch-from-fase121-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
       "note": "Fase123 LAUNCHED N+3 from Fase121 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase121 mail declare closed (Fase123); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1665,7 +1667,7 @@
       "external_ref": "n3-settled-external-fase126-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_N3_SETTLE_ATTEST@n3-settled-external-fase126-pncpar001@25246156",
       "note": "Fase126 N+3 SETTLED & EXTERNAL PAYOUT ... Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + Fase125 launch + Fase126 settle/claim (Fase126)",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1680,7 +1682,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1695,7 +1697,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1710,7 +1712,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1725,7 +1727,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1740,7 +1742,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1755,7 +1757,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1770,7 +1772,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1785,7 +1787,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1800,7 +1802,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1815,7 +1817,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1830,7 +1832,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.785Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1845,7 +1847,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1860,7 +1862,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1875,7 +1877,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1890,7 +1892,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1905,7 +1907,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1920,7 +1922,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1935,7 +1937,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1950,7 +1952,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-82",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1965,7 +1967,7 @@
       "Fase21_onchain": "onchain-verif-12.5% @25244445 publicnode",
       "ledger_id": "Fase81-ledger",
       "external_ref": "Fase81-ledger-recon-83",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1976,7 +1978,7 @@
       "external_ref": "n1-launch-from-fase110-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
       "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1987,7 +1989,7 @@
       "external_ref": "n3-launch-from-fase121-closed-pncpar001",
       "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
       "note": "Fase123 LAUNCHED N+3 from Fase121 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase121 mail declare closed (Fase123); Fase21 12.5% @25246156 + external provenance",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -1998,12 +2000,107 @@
       "external_ref": "n3-settled-external-fase126-pncpar001",
       "tx_proof": "YIELD_PERPETUAL_N3_SETTLE_ATTEST@n3-settled-external-fase126-pncpar001@25246156",
       "note": "Fase126 N+3 SETTLED & EXTERNAL PAYOUT ... Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + Fase125 launch + Fase126 settle/claim (Fase126)",
-      "compound_at": "2026-06-05T06:22:35.268Z"
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+2",
+      "external_ref": "n2-launch-from-95-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@n2-launch-from-95-pncpar001@25244445",
+      "note": "Fase96 LAUNCHED N+2 from Fase95 SETTLED CLAIMS; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase95 settle/claim (Fase96); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "treasury-settle-95-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "note": "Fase95 SETTLED external payout post Fase89 launch; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + settled + claimed (Fase94); Fase21 12.5% @25244445",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 8514,
+      "net_yield_post": 8514,
+      "health_ratio": 1.65,
+      "period": "2026-Fase82",
+      "tx_proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25249673",
+      "status": "COMPOUNDED",
+      "proof": "YIELD_FULL_PERPETUAL_ZERO_DRIFT_ATTEST@cycle82@25249673",
+      "Fase16_multi_snapshot": "23125 base + prior uplifts -> eff 33937.78",
+      "Fase21_onchain": "onchain-verif-12.5% @25249673 publicnode",
+      "ledger_id": "Fase81-ledger",
+      "external_ref": "Fase81-ledger-recon-82",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+1",
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "note": "Fase111 LAUNCHED N+1 from Fase110 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase110 mail declare closed (Fase111); Fase21 12.5% @25246156 + external provenance",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+3",
+      "external_ref": "n3-launch-from-fase121-closed-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
+      "note": "Fase123 LAUNCHED N+3 from Fase121 MAIL-DECLARED FASE16 CLOSED; Fase16 YIELD real distrib processed>=1 from perpetual auto-launched post Fase121 mail declare closed (Fase123); Fase21 12.5% @25246156 + external provenance",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-N+3-SETTLED",
+      "external_ref": "n3-settled-external-fase126-pncpar001",
+      "tx_proof": "YIELD_PERPETUAL_N3_SETTLE_ATTEST@n3-settled-external-fase126-pncpar001@25246156",
+      "note": "Fase126 N+3 SETTLED & EXTERNAL PAYOUT ... Fase16 YIELD real distrib processed>=1 from perpetual auto-launched + Fase125 launch + Fase126 settle/claim (Fase126)",
+      "compound_at": "2026-06-07T00:29:58.786Z"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "distrib_amount": 1700,
+      "net_yield_post": 1700,
+      "status": "COMPOUNDED",
+      "period": "2026-06-Fase69-N+1",
+      "external_ref": "fase69-ledger-pncpar001",
+      "tx_proof": "YIELD_CYCLE_LAUNCH_FROM_LEDGER_ATTEST@be0aa1bd0e1dff87@25244445",
+      "note": "Fase69 CYCLE N+1 FROM FASE68 ZERO-DRIFT LEDGER SSOT EXECUTED; Fase16 YIELD real distrib processed>=1; Fase21 pervasive",
+      "compound_at": "2026-06-07T00:29:58.786Z"
     }
   ],
   "land_meta": {
     "PNC-PAR-001": {
-      "fase139_fideicomiso": "Executed test-op-1 type DEMO_EMISSION qty 500000"
+      "effHoldings": 37806,
+      "net_yield": 88527,
+      "pacha_power": 5035,
+      "fase69": "LAUNCHED_FROM_LEDGER_SSOT YIELD_CYCLE_LAUNCH_FROM_LEDGER_ATTEST@be0aa1bd0e1dff87@25244445"
     }
   },
   "perpetual_settled_claims": [
@@ -2022,6 +2119,37 @@
       },
       "Fase21": "25246156",
       "note": "Fase126 N+3 settled live from Fase125 launch + Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 126,
+      "settled_amount": 1700,
+      "external_ref": "n3-settled-external-fase126-pncpar001",
+      "attest": "YIELD_PERPETUAL_N3_SETTLE_ATTEST@n3-settled-external-fase126-pncpar001@25246156",
+      "Fase16_closed": true,
+      "Fase125_launched": true,
+      "growth_delta": {
+        "eff": 255,
+        "net": 1700,
+        "power": 85
+      },
+      "Fase21": "25246156",
+      "note": "Fase126 N+3 settled live from Fase125 launch + Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 89,
+      "settled_amount": 8514,
+      "external_ref": "treasury-settle-95-pncpar001",
+      "attest": "YIELD_PERPETUAL_SETTLE_ATTEST@treasury-settle-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 812,
+        "net": 1700,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase95 SETTLED & CLAIMABLE (Fase94) Fase16 closed"
     },
     {
       "pnc_codigo": "PNC-PAR-001",
@@ -2108,6 +2236,88 @@
       },
       "Fase21": "25246156",
       "note": "Fase123 N+3 LAUNCHED FROM FASE121 MAIL-DECLARED FASE16 CLOSED (Fase123) Fase16 YIELD real distrib processed>=1"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 96,
+      "launched_amount": 1700,
+      "from_settle_cycle": 95,
+      "external_ref": "n2-launch-from-95-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_SETTLED_ATTEST@n2-launch-from-95-pncpar001@25244445",
+      "Fase16_closed": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25244445",
+      "note": "Fase96 N+2 LAUNCHED FROM FASE95 SETTLED (Fase96) Fase16 closed"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 111,
+      "launched_amount": 1700,
+      "from_closed_fase": 110,
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "Fase16_closed": true,
+      "Fase110_mail_declared": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25246156",
+      "note": "Fase111 N+1 LAUNCHED FROM FASE110 MAIL-DECLARED FASE16 CLOSED (Fase111) Fase16 YIELD real distrib processed>=1"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 111,
+      "launched_amount": 1700,
+      "from_closed_fase": 110,
+      "external_ref": "n1-launch-from-fase110-closed-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_FASE110_CLOSED_ATTEST@n1-launch-from-fase110-closed-pncpar001@25246156",
+      "Fase16_closed": true,
+      "Fase110_mail_declared": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25246156",
+      "note": "Fase111 N+1 LAUNCHED FROM FASE110 MAIL-DECLARED FASE16 CLOSED (Fase111) Fase16 YIELD real distrib processed>=1"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 123,
+      "launched_amount": 1700,
+      "from_closed_fase": 121,
+      "external_ref": "n3-launch-from-fase121-closed-pncpar001",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
+      "Fase16_closed": true,
+      "Fase121_mail_declared": true,
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400,
+        "power": 425
+      },
+      "Fase21": "25246156",
+      "note": "Fase123 N+3 LAUNCHED FROM FASE121 MAIL-DECLARED FASE16 CLOSED (Fase123) Fase16 YIELD real distrib processed>=1"
+    },
+    {
+      "pnc_codigo": "PNC-PAR-001",
+      "cycle": 124,
+      "launched_amount": 1700,
+      "from_ledger": "YIELD_CYCLE_LAUNCH_FROM_FASE121_CLOSED_ATTEST@n3-launch-from-fase121-closed-pncpar001@25246156",
+      "attest": "YIELD_CYCLE_LAUNCH_FROM_LEDGER_ATTEST@be0aa1bd0e1dff87@25244445",
+      "Fase16_closed": true,
+      "Fase21": "25244445",
+      "growth_delta": {
+        "eff": 1700,
+        "net": 3400.5,
+        "power": 425
+      },
+      "note": "Fase69 auto-launched from ledger SSOT"
     }
   ],
   "stakes": [

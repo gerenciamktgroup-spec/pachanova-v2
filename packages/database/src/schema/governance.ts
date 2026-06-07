@@ -1,7 +1,7 @@
 import { pgTable, uuid, varchar, text, timestamp, numeric, uniqueIndex } from "drizzle-orm/pg-core";
-import { investors } from "./investors.ts";
-import { properties } from "./properties.ts";
-import { proposalStatusEnum, voteChoiceEnum } from "./enums.ts";
+import { investors } from './investors';
+import { properties } from './properties';
+import { proposalStatusEnum, voteChoiceEnum } from './enums';
 
 export const proposals = pgTable("proposals", {
   id: uuid("id").primaryKey().defaultRandom(),

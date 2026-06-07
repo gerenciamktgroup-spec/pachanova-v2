@@ -1,17 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MissionCard, CommandButton } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
 import { useRouter } from "next/navigation";
 
-export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId }: { orders: Record<string, unknown>[]; balance: Record<string, unknown> | null; kycStatus: string; currentUserId: string; }) {
+export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId, initialPnc }: { orders: Record<string, unknown>[]; balance: Record<string, unknown> | null; kycStatus: string; currentUserId: string; initialPnc?: string; }) {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(8.40);
-  const [selectedPnc, setSelectedPnc] = useState("PNC-PAR-001"); // Fase2: tie P2P to landbank 5PNC properties for full project
+  const [selectedPnc, setSelectedPnc] = useState("PNC-PAR-001");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  // MACRO-FASE 141: ensure preselect from ?pnc= URL param works on mount and updates
+  useEffect(() => {
+    if (initialPnc) {
+      setSelectedPnc(initialPnc);
+    }
+  }, [initialPnc]);
 
   const handleCreateOrder = async () => {
     setIsSubmitting(true);
@@ -63,6 +70,9 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {initialPnc && (
+        <div className="col-span-full mb-2 text-xs text-blue-400">Preseleccionado desde holograma: {initialPnc} (cableado Fase141)</div>
+      )}
       {/* Create Order Form */}
       <div className="md:col-span-1">
         <MissionCard title="Publicar Orden de Venta">

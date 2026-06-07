@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, numeric, timestamp } from "drizzle-orm/pg-core";
-import { investors } from "./investors.ts";
+import { investors } from './investors';
 
 export const gamification = pgTable("gamification", {
   id: uuid("id").primaryKey().defaultRandom(),

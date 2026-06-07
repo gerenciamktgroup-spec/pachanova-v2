@@ -12,10 +12,32 @@ export async function GET() {
   const startTime = Date.now();
   const checks: Record<string, { status: string; detail: string; ms?: number }> = {};
 
+  const fs = require('fs');
+  const path = require('path');
+  let orq: any = null;
+  try {
+    const paths = [
+      path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../../orchestrator_agent.cjs'),
+    ];
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        orq = eval('require')(p);
+        break;
+      }
+    }
+  } catch (_) {}
+
   // 1. Orchestrator Load Check
   try {
     const orqStart = Date.now();
-    const orq = require('../../../../../orchestrator_agent.cjs');
+    if (!orq) throw new Error('orchestrator_agent.cjs not found');
     const hasRunCycle = typeof orq.runCycle === 'function';
     const hasLoadReal = typeof orq.loadRealSchema10 === 'function';
     const hasPersistReal = typeof orq.persistRealSchema10 === 'function';
@@ -38,8 +60,7 @@ export async function GET() {
   // 2. Schema10 State Check
   try {
     const s10Start = Date.now();
-    const orq = require('../../../../../orchestrator_agent.cjs');
-    if (typeof orq.loadRealSchema10 === 'function') {
+    if (orq && typeof orq.loadRealSchema10 === 'function') {
       const s10 = orq.loadRealSchema10();
       const holdingsCount = (s10?.holdings || []).length;
       const distribsCount = (s10?.distribs || []).length;
@@ -62,8 +83,7 @@ export async function GET() {
 
   // 3. Sane Guard Check (verify no inflation)
   try {
-    const orq = require('../../../../../orchestrator_agent.cjs');
-    if (typeof orq.loadStakes === 'function') {
+    if (orq && typeof orq.loadStakes === 'function') {
       const stakes = orq.loadStakes();
       const par = stakes['PNC-PAR-001'];
       const parEff = par?.effHoldings || 23125;

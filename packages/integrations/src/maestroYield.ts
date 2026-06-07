@@ -19,7 +19,7 @@ export interface MaestroYield {
 export interface MaestroPortfolioYield {
   rendimientosTotal: number;
   distribs: MaestroYield[];
-  source: 'core-maestro-fase16';
+  source: string;
   lastSync: string;
   claimables?: any[]; // Fase46
   cashflowHistory?: any[];
@@ -38,8 +38,23 @@ export async function fetchMaestroYields(investorEmailOrId: string = 'demo', pro
   let orqHistory: any[] = [];
   let orqPortfolio: any[] = [];
   try {
-    const orq = require('../../../orchestrator_agent.cjs');
-    if (typeof orq.runFleetYieldForecastTask === 'function') {
+    const fs = require('fs');
+    const path = require('path');
+    let orq: any = null;
+    const paths = [
+      path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+    ];
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        orq = eval('require')(p);
+        break;
+      }
+    }
+    if (orq && typeof orq.runFleetYieldForecastTask === 'function') {
       const res = await orq.runFleetYieldForecastTask();
       orqHistory = res.cashflowHistory || [];
       orqPortfolio = res.portfolioView || [];
@@ -104,10 +119,25 @@ export async function suggestYieldToCoreMaestro(yieldData: MaestroYield, investo
   console.log('[MAESTRO YIELD SUGGEST TO CORE]', { ...yieldData, investorEmail, action: 'would prefill declare in core rwa_distribuciones + snapshot, trigger realtime in core UI' });
   let orqSuggest: any = { success: true, message: 'Suggestion logged for core Panel Maestro (Fase16 closed loop). In real: opens prefilled declare in core proyectos tab.' };
   try {
-    const orq = require('../../../orchestrator_agent.cjs');
-    if (typeof orq.suggestYieldToCoreOrLocal === 'function') {
+    const fs = require('fs');
+    const path = require('path');
+    let orq: any = null;
+    const paths = [
+      path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+    ];
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        orq = eval('require')(p);
+        break;
+      }
+    }
+    if (orq && typeof orq.suggestYieldToCoreOrLocal === 'function') {
       orqSuggest = await orq.suggestYieldToCoreOrLocal(yieldData, investorEmail);
-    } else if (typeof orq.runFleetYieldForecastTask === 'function') {
+    } else if (orq && typeof orq.runFleetYieldForecastTask === 'function') {
       const res = await orq.runFleetYieldForecastTask();
       if (res && typeof res.suggestYieldToCoreOrLocal === 'function') orqSuggest = res.suggestYieldToCoreOrLocal(yieldData, investorEmail);
     }

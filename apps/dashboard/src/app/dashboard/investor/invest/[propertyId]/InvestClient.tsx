@@ -127,9 +127,9 @@ export default function InvestClient({ property, kycStatus }: { property: any, k
         </div>
       )}
 
-      {/* Step 3: Evidencia Sandbox */}
+      {/* Step 3: Evidencia Sandbox + Fase142 Recibo Fideicomiso digital post-compra */}
       {currentStep === 3 && result && (
-        <MissionCard title="Paso 4: Trazabilidad Sandbox" variant="elevated">
+        <MissionCard title="Paso 4: Trazabilidad + Recibo Fideicomiso Digital" variant="elevated">
           <div className="space-y-6">
             <WorkflowResultNotice 
               type={result.ok ? "success" : "error"} 
@@ -137,9 +137,19 @@ export default function InvestClient({ property, kycStatus }: { property: any, k
               message={result.message} 
             />
             
+            {result.ok && result.message.includes("Recibo Fideicomiso") && (
+              <div className="p-4 border border-emerald-600/30 bg-emerald-900/10 rounded-xl">
+                <div className="text-emerald-400 text-xs uppercase tracking-widest mb-1">RECIBO / SMART-CONTRACT DIGITAL (Fideicomiso)</div>
+                <div className="font-mono text-sm text-white">ID: {result.message.match(/Recibo Fideicomiso: (FID-\d+)/)?.[1] || 'N/A'}</div>
+                <div className="font-mono text-xs text-white/70">Hash: {result.message.match(/hash: (0x[0-9a-f.]+)/)?.[1] || 'N/A'}</div>
+                <div className="text-[10px] text-white/50 mt-1">Registrado en DB (fideicomiso_audits). Ver /dashboard/fideicomiso para auditoría completa.</div>
+              </div>
+            )}
+            
             {result.ok && (
               <div className="pt-4 flex justify-end gap-3">
                 <Link href="/dashboard/investor"><CommandButton variant="outline">Ir al Portafolio</CommandButton></Link>
+                <Link href="/dashboard/fideicomiso"><CommandButton variant="primary">Ver Fideicomiso</CommandButton></Link>
               </div>
             )}
             {!result.ok && (

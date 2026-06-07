@@ -1,0 +1,18 @@
+[2026-06-05T07:48:27.261Z] [ORCHESTRATOR_INFO] === CICLO DE SINGULARIDAD (orchestrator_agent.cjs) ===
+[2026-06-05T07:48:27.312Z] [ORCHESTRATOR_WARN] Python check: stable 3.11 not found or error at expected path (prefer node/JS for all tools to avoid env issues). Antigravity may hit python errors.
+[2026-06-05T07:48:27.313Z] [ORCHESTRATOR_INFO] Iniciando consulta cruda a Grok Build vía el comando oficial del proyecto (ejecutar_grok.ps1)...
+[2026-06-05T07:48:27.315Z] [ORCHESTRATOR_INFO] DRY RUN activado.
+[2026-06-05T07:48:27.320Z] [ORCHESTRATOR_INFO] Plan masivo inyectado: C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova\plan_fase15_2026-06-05T07-48-27.txt
+[2026-06-05T07:48:27.322Z] [ORCHESTRATOR_INFO] Canal cerrado. Implementador autónomo: inyecta el código ahora.
+[2026-06-05T07:48:27.323Z] [ORCHESTRATOR_INFO] --- Fase9 dry exercise (onchain borrow locks + live net portfolio + accrual) wired in runCycle ---
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Starting (rich PNC multi-product for Fase32/34 cards; DATOS REALES Fase16 refs + Fase32 nets + Fase9 borrow; 15 PNC fleet incl AET + gcloud 0.73 + 23125)
+[Fase21 #14 onchain holdings sync E2E] Starting (real public RPC + demo adapter for Fase16 23125 + onchain_verified 12.5%; grounds prorrateo/snap/declare/rationale)
+[Fase21 #14 onchain holdings sync E2E] ONCHAIN SYNC for AET-002: 12.5% verified (real RPC block 25249790) tx=0xa5033fb1b7... @25249790 (Fase16 23125 grounded; enriches fleet/declare/snap)
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9: real onchain borrow lock (no random) for PNC-PAR-001: tx=0x87824be6f7... @25249790 (publicnode RPC fresh 25235xxx, payload BORROW_LOCK_ATTEST + 23125)
+[Fase9 runAccrueBorrowInterestTask] Starting (pro-rata 8.5% APY, scheduler 15m + post-execute wire; real PNC-PAR + others)
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-PAR-001: +212.5 interest (8.5% APY pro-rata) debt 30000->30212.5 net 68325->68112.5 health->1.65
+[Fase9 accrueBorrowInterestTask] Fase9 ACCRUED for PNC-SB-003: +0 interest (8.5% APY pro-rata) debt 0->0 net 105840->105840 health->2.1
+[Fase9 runAccrueBorrowInterestTask] done: Fase9 ACCRUED (PAR) + Fase9 ACCRUED
+[v2 thin port Fase18+34 fleet_yield_forecast_task + Fase9 full E2E Onchain Borrow Locks + Live Net Yield Portfolio + Accrual] Fase9 accrue wired after borrow net: Fase9 ACCRUED (PAR debt/net/health updated in return; scheduler 15m in loop)
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-PAR-001 alquiler_yield (Fase44 wired from orq Fase43)" related to PNC-PAR-001...
+[Fase42 Vertex Gov Predict] Generating prediction for: "Yield / cashflow predict for PNC-SB-003 hotel_revenue_share (Fase44 wired from orq Fase43)" related to PNC-SB-003...

@@ -143,6 +143,25 @@ async function FideicomisoDashboardContent() {
           <TrustAnchorTimeline view={view} />
         </div>
       </div>
+
+      {/* Fase142: Recibos Digitales Fideicomiso (post-compra from invest checkout) - real DB */}
+      <div className="p-4 border border-emerald-600/30 bg-emerald-900/10 rounded-xl">
+        <div className="text-emerald-400 text-xs uppercase tracking-widest mb-2">RECIBOS FIDEICOMISO DIGITALES EMITIDOS (post-compra)</div>
+        {(await db.query.fideicomisoAudits.findMany({ where: eq(schema.fideicomisoAudits.documentType, "RECIBO_COMPRA"), orderBy: (t, { desc }) => [desc(t.createdAt)], limit: 5 })).length > 0 ? (
+          <div className="space-y-2">
+            {(await db.query.fideicomisoAudits.findMany({ where: eq(schema.fideicomisoAudits.documentType, "RECIBO_COMPRA"), orderBy: (t, { desc }) => [desc(t.createdAt)], limit: 5 })).map((r: any) => {
+              let meta: any = {};
+              try { meta = JSON.parse(r.metadata || '{}'); } catch (_) {}
+              return (
+                <div key={r.id} className="p-2 border border-emerald-700/30 rounded text-xs font-mono text-white/90">
+                  {r.arweaveTxId || 'FID-NONE'} • {meta.note || `Compra de tokens`} • {meta.status || 'completed'}
+                </div>
+              );
+            })}
+          </div>
+        ) : <div className="text-xs text-white/50">No hay recibos aún. Realiza una compra en /invest/[id] para emitir.</div>}
+        <div className="text-[9px] text-white/50 mt-1">Datos reales de DB (fideicomiso_audits). Smart-contract hash incluido en detalles.</div>
+      </div>
     </div>
   );
 }

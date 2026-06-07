@@ -83,7 +83,7 @@ async function fetchMarketplaceData() {
   }
 }
 
-async function P2PMarketplaceContent() {
+async function P2PMarketplaceContent({ initialPnc }: { initialPnc?: string }) {
   const data = await fetchMarketplaceData();
 
   if (data.error) {
@@ -91,6 +91,9 @@ async function P2PMarketplaceContent() {
   }
 
   const { investor, orders, balance } = data;
+
+  // MACRO-FASE 141: real holograms for P2P marketplace section using shared helper
+  const realP2PHolos = await (await import('../../../../server/db')).getRealHologramPncs(3);
 
   return (
     <div className="space-y-8">
@@ -102,9 +105,8 @@ async function P2PMarketplaceContent() {
       {/* Full Project - P2P is part of entire PachaNova Landbanking + tools (user clarification) */}
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">P2P ON LANDBANK 5PNC — FULL PACHA NOVA PROJECT (MASTER LAUNCHES → P2P LIQUIDITY + CREDITS + ORQ + AUTONOMY + YIELDS + GOV)</div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
-        <HologramPncCard pnc={{id:"pnc-par-p2p", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"P2P liquidity fed by Master. Full project tools."}} as any} compact />
-        <HologramPncCard pnc={{id:"pnc-sb-p2p", name:"San Bartolo Premium — PNC-SB-003", location:"San Bartolo, Lima Sur, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{}}, notas_maestro:"P2P from landbank launches. Fase4 holograms + Fase1 hub."}} as any} compact />
-        <HologramPncCard pnc={{id:"pnc-chi-p2p", name:"Chiclayo — PNC-CHI-004", location:"Chiclayo, Perú", propertyType:"land", status:"trading", totalValuationUsd:"980000", tokenPriceUsd:"390", totalTokens:"4200", availableTokens:"3000", annualYieldExpected:"8.1", metadata:{pncCode:"PNC-CHI-004", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"VER TODOS LOS AVANCES: holograms everywhere, banners 'PachaNova Landbanking', clean demo."}} as any} compact />
+        {/* MACRO-FASE 141: real DB holograms for P2P section */}
+        {(realP2PHolos || []).map((pnc: any, i: number) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
       </div>
       <div className="text-[9px] text-white/50 -mt-2 mb-4"><a href="#ver-avances" className="text-emerald-400">VER TODOS LOS AVANCES → Fase1 Consolidation + Fase4 Visuals (Hologram expansion to yields/gov/hero/admin/market)</a></div>
 
@@ -150,6 +152,7 @@ async function P2PMarketplaceContent() {
           balance={balance}
           kycStatus={investor.kycStatus}
           currentUserId={investor.id}
+          initialPnc={initialPnc}
         />
 
         <div className="mt-8 text-center">
@@ -162,10 +165,11 @@ async function P2PMarketplaceContent() {
   );
 }
 
-export default function P2PMarketplacePage() {
+export default async function P2PMarketplacePage({ searchParams }: { searchParams?: Promise<{ pnc?: string }> }) {
+  const params = searchParams ? await searchParams : undefined;
   return (
     <Suspense fallback={<LoadingState message="Cargando Marketplace..." />}>
-      <P2PMarketplaceContent />
+      <P2PMarketplaceContent initialPnc={params?.pnc} />
     </Suspense>
   );
 }

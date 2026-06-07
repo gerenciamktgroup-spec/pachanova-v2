@@ -2,8 +2,7 @@ import postgres from 'postgres';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
-console.log("Connecting to:", process.env.DATABASE_URL);
-const sql = postgres(process.env.DATABASE_URL + "?sslmode=require&pgbouncer=true");
+const sql = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
 
 async function test() {
   try {

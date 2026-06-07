@@ -1,4 +1,12 @@
 # PACHANOVA 9H WINDOW PROTOCOL (PachaNova-Continue Autonomous Window, 40% capacity)
+
+> [!CAUTION]
+> **ANTI-LOOP DIRECTIVE (CODE-FIRST PROTOCOL) - CRITICAL**
+> 1. **CODE-FIRST RATIO (95/5):** Your primary directive is to WRITE REAL CODE (.ts, .jsx, .sql, etc.). Do NOT use compute cycles just to write metadata or append lines to Markdown files. Blackboard/PROGRESS updates MUST be limited to a maximum of 3 short lines per cycle. If a cycle does not modify real application code, the cycle is FAILED.
+> 2. **STRICT PATH VALIDATION:** Before any operation, verify CWD is EXACTLY `C:\Users\LENOVO\Desktop\labotarorio lihue\pachanova` (for Pachanova). If you are in a Github clone or legacy path like `Documents\GitHub\pachanovafullstack`, EXIT IMMEDIATELY (exit 1).
+> 3. **NO REPETITIVE LOGGING:** Do not spam repetitive logs like "high sync 10h fire". Only log when real logic is successfully tested and integrated.
+> 4. **AUTONOMOUS RESEARCH & MACRO-PHASES:** Always generate the next long-term macro-phases of the project. If you don't know what to build next, DO NOT STOP or ask the user. Use your internet search tools to research. Only inform the user about large, high-level phases to maintain true autonomy.
+
 **Per MULTI_PROJECT_9H_AUTONOMOUS_PROTOCOLS.md (central, read from Desktop/labotarorio lihue/MULTI_PROJECT_9H_AUTONOMOUS_PROTOCOLS.md)**
 **Date**: 2026-06-03 (continuation of existing 9h flow)
 **Window**: PachaNova-Continue (isolated, work ONLY in Desktop/labotarorio lihue/pachanova and linked core if in path; use cwd tools strictly). Prefix: 'pachanova-9h-'

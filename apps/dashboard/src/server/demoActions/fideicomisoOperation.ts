@@ -84,11 +84,27 @@ export async function executeFideicomisoOperation(
           .where(eq(schema.fideicomisoOperations.id, operationId))
           .returning();
 
-        // Llamada al Orquestador (Fase 139)
         let attestObj = null;
         try {
-          const orq = require('../../../../../../orchestrator_agent.cjs');
-          if (typeof orq.runFideicomisoMultiSigTask === 'function') {
+          const fs = require('fs');
+          const path = require('path');
+          let orq: any = null;
+          const paths = [
+            path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+            path.resolve(process.cwd(), '../../../../../../orchestrator_agent.cjs'),
+          ];
+          for (const p of paths) {
+            if (fs.existsSync(p)) {
+              orq = eval('require')(p);
+              break;
+            }
+          }
+          if (orq && typeof orq.runFideicomisoMultiSigTask === 'function') {
              const sigs = await tx.query.fideicomisoSignatures.findMany({ where: eq(schema.fideicomisoSignatures.operationId, operationId) });
              const actorIds = sigs.map(s => s.signerRole);
              const pnc = "PNC-PAR-001";

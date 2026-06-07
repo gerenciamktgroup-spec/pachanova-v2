@@ -20,10 +20,8 @@ export async function login(formData: FormData) {
   const role = user?.app_metadata?.role as string | undefined
 
   if (role === 'admin' || role === 'operator') {
-    redirect('/dashboard/investor')
-  } else if (role === 'investor') {
-    redirect('/unauthorized')
+    redirect('/dashboard/admin')
   } else {
-    redirect('/unauthorized')
+    redirect('/dashboard/investor')
   }
 }

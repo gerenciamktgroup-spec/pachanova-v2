@@ -96,8 +96,26 @@ export async function POST(req: Request) {
 
       // 7. Call Orchestrator para el Attest y estado de Yield
       try {
-        const orq = require('../../../../../../../orchestrator_agent.cjs');
-        if (typeof orq.runP2PMatchingTask === 'function') {
+        const fs = require('fs');
+        const path = require('path');
+        let orq: any = null;
+        const paths = [
+          path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../../../../../orchestrator_agent.cjs'),
+          path.resolve(process.cwd(), '../../../../../../../orchestrator_agent.cjs'),
+        ];
+        for (const p of paths) {
+          if (fs.existsSync(p)) {
+            orq = eval('require')(p);
+            break;
+          }
+        }
+        if (orq && typeof orq.runP2PMatchingTask === 'function') {
            // property PNC is needed. Let's find it.
            const property = await tx.query.properties.findFirst({ where: eq(schema.properties.id, order.propertyId) });
            let pnc_codigo = property?.metadata?.pncCode || 'PNC-PAR-001';

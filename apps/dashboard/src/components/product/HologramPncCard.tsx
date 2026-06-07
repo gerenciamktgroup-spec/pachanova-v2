@@ -43,7 +43,7 @@ export function HologramPncCard({ pnc, onMasterEdit, onLaunchProduct, compact = 
   const eff = meta.effectiveYield || 31639;
   const pct = meta.effectivePct || '17.1%';
   const power = meta.pachaPower || 3250;
-  const phase = meta.phase || 'Fase15/36/42/47/49';
+  const phase = meta.phase || 'Fase141';
   const gov = meta.govQuorum || 'PASSED 4x';
 
   // Simple hologram glow + layered effect (pure CSS + SVG for no deps)
@@ -81,6 +81,10 @@ export function HologramPncCard({ pnc, onMasterEdit, onLaunchProduct, compact = 
           <div className="mt-1 flex flex-col gap-0.5 items-end">
             <span className="inline-block px-1.5 py-px text-[8px] font-mono rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/50">ORQ EXERCISED</span>
             <span className="inline-block px-1 py-px text-[7px] text-pn-sand/70 border border-pn-sand/30 rounded">F16/21/36/47/51/53 bridge</span>
+            {/* Fase72 Phase6 #35: pervasive onchain badge for SB-003 (when pncCode matches) + YIELD_PERPETUAL_ATTEST N+2 Fase21 12.5% */}
+            {meta.pncCode === 'PNC-SB-003' && (
+              <span className="inline-block px-1 py-px text-[7px] font-mono rounded bg-violet-900/50 text-violet-300 border border-violet-700/50">YIELD_PERPETUAL_ATTEST N+2 Fase21 12.5% + Fase36 PASSED • SB-003 25% buy wire • 105840 net h2.1</span>
+            )}
           </div>
         </div>
       </div>

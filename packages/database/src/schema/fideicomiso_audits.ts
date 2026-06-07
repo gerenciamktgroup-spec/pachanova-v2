@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, text, timestamp } from "drizzle-orm/pg-core";
-import { properties } from "./properties.ts";
-import { investors } from "./investors.ts";
+import { properties } from './properties';
+import { investors } from './investors';
 
 export const fideicomisoAudits = pgTable("fideicomiso_audits", {
   id: uuid("id").primaryKey().defaultRandom(),

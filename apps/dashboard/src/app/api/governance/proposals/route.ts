@@ -25,10 +25,26 @@ export async function POST(req: Request) {
     // Fase42: compute Vertex prediction and store it
     let vertexPrediction: any = null;
     try {
+      const fs = require('fs');
       const path = require('path');
-      const orqPath = path.join(process.cwd(), '../../orchestrator_agent.cjs');
-      const { computeGovernanceVertexPrediction } = require(orqPath);
-      vertexPrediction = await computeGovernanceVertexPrediction(title, relatedPNC || 'PNC-PAR-001');
+      let orq: any = null;
+      const paths = [
+        path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+        path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+        path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+        path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+        path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+        path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+      ];
+      for (const p of paths) {
+        if (fs.existsSync(p)) {
+          orq = eval('require')(p);
+          break;
+        }
+      }
+      if (orq && typeof orq.computeGovernanceVertexPrediction === 'function') {
+        vertexPrediction = await orq.computeGovernanceVertexPrediction(title, relatedPNC || 'PNC-PAR-001');
+      }
     } catch (predErr: any) {
       console.warn('[GOV PROPOSALS CREATE] Vertex prediction compute error:', predErr.message);
     }

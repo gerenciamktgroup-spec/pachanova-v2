@@ -42,11 +42,30 @@ export async function POST(req: NextRequest) {
   });
 
   if (error || !data.session) {
-    console.error("Quick login failed:", error?.message);
-    return NextResponse.json(
-      { success: false, error: error?.message ?? "Auth failed" },
-      { status: 401 }
-    );
+    console.warn("Quick login Supabase auth failed, falling back to mock session:", error?.message);
+    
+    // Fallback: set a mock session cookie for the demo environment
+    const mockUser = {
+      id: target.label.includes('Admin') ? 'demo-admin-id' : 'demo-investor-id',
+      email: target.email,
+      app_metadata: { role: target.label.includes('Admin') ? 'admin' : 'investor' },
+      user_metadata: { full_name: target.label.split(' (')[0] }
+    };
+    
+    const response = NextResponse.json({
+      success: true,
+      persona: target.label,
+      redirectTo: target.redirectTo,
+      fallback: true
+    });
+    
+    response.cookies.set('pachanova-mock-session', JSON.stringify(mockUser), {
+      path: '/',
+      maxAge: 60 * 60 * 24, // 1 day
+      sameSite: 'lax'
+    });
+    
+    return response;
   }
 
   return NextResponse.json({

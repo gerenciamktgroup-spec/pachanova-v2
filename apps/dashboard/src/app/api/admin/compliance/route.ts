@@ -53,21 +53,8 @@ export async function GET() {
       note: 'Fase140 Compliance KYC Dashboard • Real investor data from Supabase. P2P trades require KYC approved (Fase138). Fideicomiso operations audit-logged (Fase139).',
     });
   } catch (e: any) {
-    // Thin fallback for when DB is not connected
-    return NextResponse.json({
-      success: true,
-      stats: {
-        total: 0,
-        approved: 0,
-        pending: 0,
-        rejected: 0,
-        notStarted: 0,
-        note: 'DB not connected - thin fallback. Connect Supabase for live compliance data.',
-      },
-      complianceRate: 'N/A',
-      recentActivity: [],
-      note: `Fase140 Compliance API (thin fallback): ${e.message}`,
-    });
+    // Fase142: no thin fallback - real error for KYC real in interfaz (prod will have DB)
+    return NextResponse.json({ success: false, error: e.message || 'DB error' }, { status: 500 });
   }
 }
 

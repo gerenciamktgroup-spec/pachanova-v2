@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { RouteBreadcrumbs, ErrorState, LoadingState, MissionCard } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { createServerClient } from "@/utils/supabase/server";
@@ -151,7 +151,14 @@ export default async function InvestorGovernancePage() {
       {/* Fase4 + full project: Hologram for landbank PNC in governance context (votes on 5PNC launches) */}
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2 mt-2">GOBERNANZA SOBRE LANDBANK 5PNC — FULL PACHA NOVA PROJECT (votes power from holdings + Fase42 stake + Master launches gated)</div>
       <div className="mb-4">
-        <HologramPncCard pnc={{id:"pnc-par-gov", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"Gov quorum on landbank launches. Full project + tools."}} as any} compact />
+        {/* MACRO-FASE 141: real DB data for hologram in governance (Maestro/Inversor) */}
+        {(await (await import('../../../../server/db')).getRealHologramPncs(1)).map((pnc: any, i: number) => (
+          <div key={i}>
+            <HologramPncCard pnc={pnc as any} compact />
+            {/* MACRO-FASE 141: cablear Vender P2P button */}
+            <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+          </div>
+        ))}
       </div>
             <p className="text-pn-text-soft mt-2 max-w-2xl">
               Vota decisiones clave sobre activos reales (PNC-*). Tu voto está ponderado por tus tenencias reales de tokens PACHA (holdings + staked Fase42 DeFi). Bloquea PACHA para accrual de poder de voto + descuentos. Fase34 net + Fase35 onchain intactos.
@@ -182,10 +189,13 @@ export default async function InvestorGovernancePage() {
       <div className="border border-violet-500/30 rounded-xl p-4 bg-[#0a111f]">
         <div className="text-[10px] uppercase tracking-[2px] text-violet-400 mb-2">PACHA NOVA LANDBANKING — GOVERNANCE SOBRE 5PNC (PODR FASE42 + HOLOGRAMAS DE PROPIEDADES • QUORUM REAL ORQ)</div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-2">
-          {[
-            {id:"pnc-par-gov", name:"Paracas Land Reserve — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", govQuorum:"PASSED 4x", product_configs:{vivienda_token:{}, alquiler_yield:{}}, notas_maestro:"Governance gates launches/yields. Full project. Fase36/42 power 3250."}},
-            {id:"pnc-sel-gov", name:"Finca Selva Alta — PNC-SEL-007", location:"Selva Perú", propertyType:"land", status:"funded", totalValuationUsd:"980000", tokenPriceUsd:"100", totalTokens:"9800", availableTokens:"8000", annualYieldExpected:"9.2", metadata:{pncCode:"PNC-SEL-007", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15/36", govQuorum:"PASSED", product_configs:{alquiler_yield:{}, hotel_revenue_share:{}}, notas_maestro:"Vote affects net yield Fase34. Landbanking = entire PachaNova + tools."}}
-          ].map((pnc, i) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
+          {/* MACRO-FASE 141: real DB for gov holograms + Vender P2P */}
+          {(await (await import('../../../../server/db')).getRealHologramPncs(2)).map((pnc: any, i: number) => (
+            <div key={i}>
+              <HologramPncCard pnc={pnc as any} compact />
+              <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+            </div>
+          ))}
         </div>
         <div className="text-[9px] mt-1"><a href="#ver-avances" className="text-emerald-400 hover:underline">VER TODOS LOS AVANCES (Fase1 consolidation + Fase4 holograms expansion en yields/gov/market/hero/admin) → blackboard</a></div>
       </div>

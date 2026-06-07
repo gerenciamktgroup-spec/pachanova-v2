@@ -11,9 +11,27 @@ import { NextResponse } from 'next/server';
  */
 export async function GET() {
   try {
-    const orq = require('../../../../../../orchestrator_agent.cjs');
+    const fs = require('fs');
+    const path = require('path');
+    let orq: any = null;
+    const paths = [
+      path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../../orchestrator_agent.cjs'),
+    ];
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        orq = eval('require')(p);
+        break;
+      }
+    }
     
-    if (typeof orq.runFleetStatusTask === 'function') {
+    if (orq && typeof orq.runFleetStatusTask === 'function') {
       const result = await orq.runFleetStatusTask();
       return NextResponse.json({
         success: true,
@@ -46,7 +64,25 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { action } = body || {};
-    const orq = require('../../../../../../orchestrator_agent.cjs');
+    const fs = require('fs');
+    const path = require('path');
+    let orq: any = null;
+    const paths = [
+      path.resolve(process.cwd(), 'orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../orchestrator_agent.cjs'),
+      path.resolve(process.cwd(), '../../../../../../../orchestrator_agent.cjs'),
+    ];
+    for (const p of paths) {
+      if (fs.existsSync(p)) {
+        orq = eval('require')(p);
+        break;
+      }
+    }
     
     if (action === 'health_check') {
       if (typeof orq.runHealthCheckTask === 'function') {

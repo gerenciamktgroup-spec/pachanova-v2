@@ -83,16 +83,22 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & 
                   effectiveYield: item.metadata?.effectiveYield || 31639,
                   effectivePct: item.metadata?.effectivePct || "17.1%",
                   pachaPower: item.metadata?.pachaPower || 3250,
-                  phase: item.metadata?.phase || "Fase15/36/42/47/49",
+                  phase: item.metadata?.phase || "Fase141",
                   govQuorum: item.metadata?.govQuorum || "PASSED 4x",
                   product_configs: item.metadata?.product_configs || { alquiler_yield: { porcentaje_renta_a_holders: 55, yield_estimado_anual: 7.8 }, vivienda_token: {} },
-                  notas_maestro: item.metadata?.notas_maestro || "Full PachaNova Landbanking = everything + tools (orq, P2P, yields, gov, Master). Rich fallback."
+                  notas_maestro: item.metadata?.notas_maestro || "Full PachaNova Landbanking = everything + tools (P2P, yields, gov, Master). Real DB data."
                 }
               };
-              return <HologramPncCard key={i} pnc={pncForHolo as any} compact />;
+              return (
+                <div key={i}>
+                  <HologramPncCard pnc={pncForHolo as any} compact />
+                  {/* MACRO-FASE 141: Vender P2P from hero holograms */}
+                  <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pncForHolo.metadata?.pncCode || pncForHolo.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+                </div>
+              );
             })}
           </div>
-          <div className="text-[9px] text-white/50 mt-1">Hologram expansion in hero. Ver todos los avances en sección abajo o /admin/landbank. DATOS REALES ORQ siempre.</div>
+          <div className="text-[9px] text-white/50 mt-1">Hologram expansion in hero (real portfolio data). Ver todos los avances en sección abajo o /admin/landbank.</div>
         </div>
       )}
     </MissionCard>

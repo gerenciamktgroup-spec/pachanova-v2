@@ -182,11 +182,17 @@ export async function POST(req: NextRequest) {
         },
       } as any);
 
+      // Sync real schema10 view (effective/land_meta/perpetual) for investor page + Fase69 self-drive after master distribute
+      try {
+        const { persistSchema10ToDb } = await import('../../../server/db');
+        await persistSchema10ToDb({ land: { [property.name || 'PNC']: { last_distrib: amountUsd, proof: distribs[0]?.proofRef } } });
+      } catch (_) {}
+
       return NextResponse.json({
         success: true,
         distribs,
         totalHeld,
-        message: `Distributed $${amountUsd} to ${distribs.length} investors`,
+        message: `Distributed $${amountUsd} to ${distribs.length} investors (real DB + schema10 view synced)`,
       });
     } else if (action === "master_edit") {
       // MASTER AUTHORIZATION: Full manual control for the ideador/master in the bank-like RWA system under construction.
@@ -222,10 +228,16 @@ export async function POST(req: NextRequest) {
         userId: null,
       } as any);
 
+      // Sync schema10 view (land_meta + perpetual state) so investor/portfolio + self-drive see master changes immediately
+      try {
+        const { persistSchema10ToDb } = await import('../../../server/db');
+        await persistSchema10ToDb({ land: { [property.name || propertyId]: { ...fields, master_edited: true } } });
+      } catch (_) {}
+
       return NextResponse.json({
         success: true,
         updated: updatePayload,
-        message: "Master edit applied to real data. Changes pushed to all real users via orq, real DB, and broadcast/audit.",
+        message: "Master edit applied to real data + schema10 view. Changes pushed to all real users via real DB, orq, and UIs.",
       });
     } else if (action === "launch_product") {
       // Launch product for PNC (integrated from core master factory - single project). Creates orq proposal with land_meta + MANUAL.

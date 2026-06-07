@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
+import { KycActions } from "./KycActions";
 import { 
   AdminMissionOverview, 
   TreasuryMetricsPanel, 
@@ -175,21 +176,26 @@ async function AdminDashboardContent() {
         </div>
       </div>
 
-      {/* Full Project Banner - Landbanking Hub principal (Fase1 Consolidación & Cleanup) */}
-      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">PACHA NOVA LANDBANKING HUB — UN SOLO PROYECTO: beta tokenización RWA Genesis → 5PNC Master Landbanking (P2P + CRÉDITOS + MASTER + orq real 5PNC + AUTONOMY + YIELDS + GOV). Demo siempre "Modo Visual / DATOS REALES simulado" (muestra 5PNC + orq numbers). Primary = landbank. Genesis legacy deprecate visible. Fase1+4: holograms expandidos, hub feel, ver avances.</div>
-
-      {/* Fase4 expansion + Fase1 hub: HologramPncCard in main admin hero + simple central hub feel */}
+      {/* Full Project Banner - Landbanking Hub principal */}
+      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
+        PACHA NOVA LANDBANKING HUB — Panel Administrativo y Orquestador de Operaciones
+      </div>
+      
+      {/* HologramPncCard in main admin hero */}
       <div className="p-4 border border-[#c5a46d]/30 bg-[#0a111f] rounded-xl mb-4">
-        <div className="text-[10px] text-[#c5a46d] tracking-widest mb-2">PACHA NOVA LANDBANKING — ADMIN OVERVIEW EN HOLOGRAMA (5PNC ORQ • MASTER CONTROL • VER TODOS AVANCES)</div>
+        <div className="text-[10px] text-[#c5a46d] tracking-widest mb-2">RESUMEN DE PROPIEDADES LANDBANKING EN HOLOGRAMA</div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          {[
-            {id:"pnc-par-adm", name:"Paracas — PNC-PAR-001", location:"Paracas, Ica, Perú", propertyType:"land", status:"trading", totalValuationUsd:"1250000", tokenPriceUsd:"500", totalTokens:"2500", availableTokens:"2000", annualYieldExpected:"7.8", metadata:{pncCode:"PNC-PAR-001", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15/36/42/47/49", product_configs:{alquiler_yield:{}}, notas_maestro:"Admin Master hub. Full project identity everywhere. Rich fallbacks."}},
-            {id:"pnc-sb-adm", name:"San Bartolo — PNC-SB-003", location:"San Bartolo, Perú", propertyType:"residential", status:"funded", totalValuationUsd:"2450000", tokenPriceUsd:"1350", totalTokens:"1800", availableTokens:"1500", annualYieldExpected:"12.5", metadata:{pncCode:"PNC-SB-003", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15", product_configs:{hotel_revenue_share:{}}, notas_maestro:"Cleaned more beta remnants. Holograms in yields/gov/market/hero/admin."}},
-            {id:"pnc-sel-adm", name:"Selva — PNC-SEL-007", location:"Selva, Perú", propertyType:"land", status:"funded", totalValuationUsd:"980000", tokenPriceUsd:"100", totalTokens:"9800", availableTokens:"8000", annualYieldExpected:"9.2", metadata:{pncCode:"PNC-SEL-007", net:105840, effectiveYield:13230, effectivePct:"12.5%", pachaPower:3250, phase:"Fase15/36", product_configs:{}, notas_maestro:"Fase1 Consolidation: central hub feel + banners 'PachaNova Landbanking'."}},
-            {id:"pnc-chi-adm", name:"Chiclayo — PNC-CHI-004", location:"Chiclayo, Perú", propertyType:"land", status:"trading", totalValuationUsd:"980000", tokenPriceUsd:"390", totalTokens:"4200", availableTokens:"3000", annualYieldExpected:"8.1", metadata:{pncCode:"PNC-CHI-004", net:68112.5, effectiveYield:31639, effectivePct:"17.1%", pachaPower:3250, phase:"Fase15", product_configs:{vivienda_token:{}}, notas_maestro:"Concrete UI for 'ver todos los avances' implemented."}}
-          ].map((pnc, i) => <HologramPncCard key={i} pnc={pnc as any} compact />)}
+          {/* Real data from shared helper for Maestro holograms + Vender P2P */}
+          {(await (await import('../../../server/db')).getRealHologramPncs(4)).map((pnc: any, i: number) => (
+            <div key={i}>
+              <HologramPncCard pnc={pnc as any} compact />
+              <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+            </div>
+          ))}
         </div>
-        <div id="ver-avances" className="mt-3 text-[10px] text-emerald-400">VER TODOS LOS AVANCES: Fase 1 Consolidation (hub, clean remnants, banners everywhere) + Fase 4 Visuals (HologramPncCard expanded to yields/governance/marketplace/hero/portfolio/admin). Update blackboard. Landbanking = everything + tools. Rich 5PNC orq fallbacks kept. <a href="/dashboard/admin/landbank" className="underline">Ir a Landbank Hub →</a></div>
+        <div id="ver-avances" className="mt-3 text-[10px] text-emerald-400">
+          <a href="/dashboard/admin/landbank" className="underline">Ir a Gestión de Tierras (Landbank Hub) →</a>
+        </div>
       </div>
 
       <JourneyProgressRail journey={adminJourney} currentStepId="a1" />
@@ -208,26 +214,27 @@ async function AdminDashboardContent() {
 
       <TreasuryOverview />
 
-      {/* Fase 140/141: Fleet Status & Ecosystem Health Panel */}
-      <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(16,185,129,0.08)] mb-8">
-        <div className="flex items-center justify-between mb-3">
+      {/* Fleet Status & Ecosystem Health Panel */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-emerald-400 tracking-widest font-bold text-xs flex items-center gap-2">
+            <h2 className="text-xl font-bold text-pn-gold tracking-tight flex items-center gap-2">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              FLEET STATUS & COMPLIANCE (FASE 140)
-            </div>
-            <div className="text-emerald-200/70 text-[10px]">Monitoreo de Infraestructura y Orquestador</div>
+              ESTADO DEL ECOSISTEMA
+            </h2>
+            <p className="text-xs text-pn-text-muted mt-1 uppercase tracking-widest">
+              FLEET STATUS & COMPLIANCE
+            </p>
           </div>
-          <div className="flex gap-2">
-            <a href="/api/admin/fleet-status" target="_blank" className="px-3 py-1 bg-emerald-900/40 border border-emerald-600 text-emerald-300 rounded hover:bg-emerald-800/50 text-xs font-semibold shadow-inner">
-              📡 FLEET API
-            </a>
+          <div className="flex items-center gap-2">
             <a href="/api/admin/compliance" target="_blank" className="px-3 py-1 bg-violet-900/40 border border-violet-600 text-violet-300 rounded hover:bg-violet-800/50 text-xs font-semibold shadow-inner">
               🛡️ COMPLIANCE API
             </a>
+            {/* Botones de KYC (actualiza DB investors + audit) */}
+            <KycActions />
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -250,8 +257,8 @@ async function AdminDashboardContent() {
             <div className="text-sm text-emerald-300 font-mono">100% VERIFIED</div>
           </div>
         </div>
-        <div className="mt-3 text-[10px] text-emerald-500/50 font-mono">
-          Datos en vivo desde el Orquestador Autónomo. Sane Guard previene inflación exponencial en el flywheel. Fases 138-140 integradas. DATOS REALES.
+        <div className="mt-3 text-[10px] text-emerald-400 font-mono">
+          Datos en vivo desde el Orquestador Autónomo. Los mecanismos de seguridad (Sane Guard) previenen la inflación exponencial. DATOS VERIFICADOS.
         </div>
       </div>
 

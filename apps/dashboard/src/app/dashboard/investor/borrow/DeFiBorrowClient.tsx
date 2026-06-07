@@ -354,7 +354,7 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
                   effectiveYield: (property?.metadata?.effectiveYield || 31639),
                   effectivePct: (property?.metadata?.effectivePct || '17.1%'),
                   pachaPower: (property?.metadata?.pachaPower || 3250),
-                  phase: 'Fase3/9/15',
+                  phase: 'Fase141',
                   notas_maestro: `Loan ${loan.id.slice(0,8)} • health ${loan.healthFactor || '1.5'} • LTV ${(parseFloat(loan.borrowedAmount)/parseFloat(loan.collateralValueUsd)*100).toFixed(0)}% • accrued ${loan.accumulatedInterest}`,
                   borrow_debt: loan.borrowedAmount,
                   health: loan.healthFactor,
@@ -363,6 +363,8 @@ export default function DeFiBorrowClient({ investor, portfolio, initialLoans, pr
               return (
                 <div key={loan.id} className="scale-[0.92] origin-top">
                   <HologramPncCard pnc={pncForHolo as any} compact />
+                  {/* MACRO-FASE 141: Vender P2P from borrow holograms */}
+                  <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pncForHolo.metadata?.pncCode || pncForHolo.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
                 </div>
               );
             })}

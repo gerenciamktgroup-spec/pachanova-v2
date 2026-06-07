@@ -5,7 +5,9 @@
     "rootDir": "./src",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": ["src/**/*"]
 }
