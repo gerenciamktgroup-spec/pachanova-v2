@@ -1,9 +1,22 @@
 import { RouteBreadcrumbs } from "@/components/mission";
 import SettingsClient from "./SettingsClient";
+import { getDb, schema } from "@pachanova/database";
+import { createServerClient } from "@/utils/supabase/server";
+import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect('/auth/login');
+  }
+
+  const db = getDb();
+  const [dbUser] = await db.select().from(schema.users).where(eq(schema.users.supabaseAuthId, user.id));
+
   return (
     <div className="space-y-6">
       <RouteBreadcrumbs items={[
@@ -22,7 +35,7 @@ export default function SettingsPage() {
         </div>
 
         <div className="relative z-10">
-          <SettingsClient />
+          <SettingsClient user={dbUser || { email: user.email }} />
         </div>
       </div>
     </div>

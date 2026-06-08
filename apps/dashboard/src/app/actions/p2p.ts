@@ -61,60 +61,39 @@ export async function initiateP2PTrade(orderId: string) {
 
     const db = getDb();
     
-    // Para simplificar el MVP y evitar bloqueos anidados con el webhook de gamificación,
-    // extraemos datos que se usarán post-transacción.
     let sellerId = "";
     
     await db.transaction(async (tx) => {
       const [order] = await tx.select().from(schema.p2pOrders).where(eq(schema.p2pOrders.id, orderId));
-      if (!order || order.status !== "open") throw new Error("Orden inválida o ya comprada");
-      if (order.sellerInvestorId === user.id) throw new Error("No puedes comprar tu propia orden");
+      if (!order || order.status !== "open") throw new Error("Orden inválida o ya está en negociación");
+      if (order.sellerInvestorId === user.id) throw new Error("No puedes negociar tu propia orden");
 
       sellerId = order.sellerInvestorId;
 
-      // Calcular Fee 2% (Marketplace Bóveda)
+      // Calcular Fee 5% (PachaNova Escrow Fee)
       const total = parseFloat(order.totalAmount);
-      const feeAmount = total * 0.02;
-      const sellerReceives = total - feeAmount;
+      const feeAmount = total * 0.05;
       const quantity = parseFloat(order.quantity);
 
-      // Chequear saldo del comprador
-      const [buyerBalance] = await tx.select().from(schema.balances)
-        .where(eq(schema.balances.investorId, user.id));
+      // 1. Bloquear Tokens del Vendedor (Mover de available a reserved)
+      const [sellerBalance] = await tx.select().from(schema.balances)
+        .where(and(eq(schema.balances.investorId, sellerId), eq(schema.balances.propertyId, order.propertyId)));
       
-      if (!buyerBalance || parseFloat(buyerBalance.availableUsd) < total) {
-        throw new Error(`Saldo insuficiente. Requieres $${total.toFixed(2)} USD.`);
+      if (!sellerBalance || parseFloat(sellerBalance.availableTokens) < quantity) {
+        throw new Error("El vendedor ya no tiene los tokens disponibles.");
       }
 
-      // 1. Descontar USD comprador y darle Tokens
       await tx.update(schema.balances)
         .set({
-          availableUsd: sql`${schema.balances.availableUsd} - ${total}`,
-          availableTokens: sql`${schema.balances.availableTokens} + ${quantity}`,
+          availableTokens: sql`${schema.balances.availableTokens} - ${quantity}`,
+          reservedTokens: sql`${schema.balances.reservedTokens} + ${quantity}`,
         })
-        .where(eq(schema.balances.investorId, user.id));
+        .where(eq(schema.balances.id, sellerBalance.id));
 
-      // 2. Dar USD neto al Vendedor y quitarle los tokens reservados (Escrow)
-      await tx.update(schema.balances)
-        .set({
-          availableUsd: sql`${schema.balances.availableUsd} + ${sellerReceives}`,
-          reservedTokens: sql`${schema.balances.reservedTokens} - ${quantity}`,
-        })
-        .where(eq(schema.balances.investorId, sellerId));
+      // 2. Actualizar estado de la Orden
+      await tx.update(schema.p2pOrders).set({ status: "pending_approval" }).where(eq(schema.p2pOrders.id, order.id));
 
-      // 3. Entregar Comisión (Fee) a la Bóveda Central (Tesorería)
-      const [centralVault] = await tx.select().from(schema.treasury_vaults)
-        .where(eq(schema.treasury_vaults.propertyId, order.propertyId));
-      
-      if (centralVault) {
-        await tx.update(schema.treasury_vaults)
-          .set({ accumulatedYieldUsd: sql`${schema.treasury_vaults.accumulatedYieldUsd} + ${feeAmount}` })
-          .where(eq(schema.treasury_vaults.id, centralVault.id));
-      }
-
-      // 4. Actualizar estado y crear Trade
-      await tx.update(schema.p2pOrders).set({ status: "filled" }).where(eq(schema.p2pOrders.id, order.id));
-
+      // 3. Crear Trade en pending_approval (Off-Platform Fiat)
       const tradeId = crypto.randomUUID();
       await tx.insert(schema.p2pTrades).values({
         id: tradeId,
@@ -126,42 +105,15 @@ export async function initiateP2PTrade(orderId: string) {
         pricePerToken: order.pricePerToken,
         totalAmount: order.totalAmount,
         feeAmount: feeAmount.toString(),
-        status: "filled",
+        status: "pending_approval",
         isDemo: false
       });
-
-      // 5. Auditar Ledger (Double-Entry)
-      const txHashSell = crypto.randomBytes(32).toString('hex');
-      const txHashBuy = crypto.randomBytes(32).toString('hex');
-
-      await tx.insert(schema.tokenLedger).values([
-        {
-          investorId: sellerId,
-          propertyId: order.propertyId,
-          amount: (-quantity).toString(),
-          operation: 'p2p_sell',
-          txHash: txHashSell,
-          previousHash: txHashBuy,
-          currentHash: crypto.randomBytes(32).toString('hex'),
-        },
-        {
-          investorId: user.id,
-          propertyId: order.propertyId,
-          amount: quantity.toString(),
-          operation: 'p2p_buy',
-          txHash: txHashBuy,
-          previousHash: txHashSell,
-          currentHash: crypto.randomBytes(32).toString('hex'),
-        }
-      ]);
     });
 
-    // Otorgar XP de Gamificación fuera de la transacción para no bloquear
     try {
-      await awardXP(user.id, 'P2P_BUY', 200, { orderId });
-      await awardXP(sellerId, 'P2P_SELL', 100, { orderId });
+      await awardXP(user.id, 'P2P_BUY', 50, { orderId });
     } catch (e) {
-      console.warn("Gamification error (ignoring for trade):", e);
+      console.warn("Gamification error:", e);
     }
 
     revalidatePath("/dashboard/investor/marketplace");
@@ -171,9 +123,6 @@ export async function initiateP2PTrade(orderId: string) {
   }
 }
 
-/**
- * CHECKER (Admin): Aprueba el P2P Trade. Intercambia Saldos y cobra Fee.
- */
 export async function approveP2PTrade(tradeId: string, action: "APPROVED" | "REJECTED" = "APPROVED") {
   try {
     const supabase = await createServerClient();
@@ -183,27 +132,112 @@ export async function approveP2PTrade(tradeId: string, action: "APPROVED" | "REJ
 
     const db = getDb();
     
-    const [trade] = await db.select().from(schema.p2pTrades).where(eq(schema.p2pTrades.id, tradeId));
-    if (!trade || trade.status !== "pending_approval") throw new Error("Trade inválido");
+    await db.transaction(async (tx) => {
+      const [trade] = await tx.select().from(schema.p2pTrades).where(eq(schema.p2pTrades.id, tradeId));
+      if (!trade || trade.status !== "pending_approval") throw new Error("Trade inválido");
 
-    if (action === "REJECTED") {
-      await db.update(schema.p2pTrades).set({ status: "cancelled" }).where(eq(schema.p2pTrades.id, trade.id));
-      await db.update(schema.p2pOrders).set({ status: "open" }).where(eq(schema.p2pOrders.id, trade.orderId));
-      revalidatePath("/dashboard/admin/approvals");
-      return { success: true };
-    }
+      const quantity = parseFloat(trade.quantity);
 
-    // LÓGICA ATÓMICA DE SWAP DE BALANCES (Simplificada para la Fase 6 MVP)
-    // En un entorno de producción estricto, esto debe ir dentro de un db.transaction()
-    
-    // 1. Quitar Tokens al Vendedor y darlos al Comprador (Revisar / Crear Balances)
-    // 2. Quitar USD al Comprador, dar USD al Vendedor (menos Fee), dar USD a Tesorería
+      if (action === "REJECTED") {
+        // Devolver tokens bloqueados al vendedor
+        const [sellerBalance] = await tx.select().from(schema.balances)
+          .where(and(eq(schema.balances.investorId, trade.sellerInvestorId), eq(schema.balances.propertyId, trade.propertyId)));
 
-    await db.update(schema.p2pTrades).set({ status: "filled" }).where(eq(schema.p2pTrades.id, trade.id));
+        if (sellerBalance) {
+           await tx.update(schema.balances)
+             .set({
+               availableTokens: sql`${schema.balances.availableTokens} + ${quantity}`,
+               reservedTokens: sql`${schema.balances.reservedTokens} - ${quantity}`,
+             })
+             .where(eq(schema.balances.id, sellerBalance.id));
+        }
+
+        await tx.update(schema.p2pTrades).set({ status: "cancelled" }).where(eq(schema.p2pTrades.id, trade.id));
+        await tx.update(schema.p2pOrders).set({ status: "open" }).where(eq(schema.p2pOrders.id, trade.orderId));
+        return;
+      }
+
+      // ACCIÓN = APPROVED (El Admin validó el pago Fiat Off-Platform)
+
+      // 1. Quitar Tokens Reservados al Vendedor
+      const [sellerBalance] = await tx.select().from(schema.balances)
+          .where(and(eq(schema.balances.investorId, trade.sellerInvestorId), eq(schema.balances.propertyId, trade.propertyId)));
+      
+      if (sellerBalance) {
+         await tx.update(schema.balances)
+           .set({ reservedTokens: sql`${schema.balances.reservedTokens} - ${quantity}` })
+           .where(eq(schema.balances.id, sellerBalance.id));
+      }
+
+      // 2. Dar Tokens al Comprador
+      const [buyerBalance] = await tx.select().from(schema.balances)
+          .where(and(eq(schema.balances.investorId, trade.buyerInvestorId), eq(schema.balances.propertyId, trade.propertyId)));
+
+      if (buyerBalance) {
+        await tx.update(schema.balances)
+          .set({ availableTokens: sql`${schema.balances.availableTokens} + ${quantity}` })
+          .where(eq(schema.balances.id, buyerBalance.id));
+      } else {
+        await tx.insert(schema.balances).values({
+          investorId: trade.buyerInvestorId,
+          propertyId: trade.propertyId,
+          availableTokens: quantity.toString(),
+          availableUsd: "0",
+          lockedTokens: "0"
+        });
+      }
+
+      // 3. Registrar Fee del 5% en la Bóveda Central (Tesorería) para contabilidad
+      // Nota: El cobro real en fiat se realiza administrativamente, aquí solo se refleja en el dashboard.
+      const [centralVault] = await tx.select().from(schema.treasury_vaults)
+        .where(eq(schema.treasury_vaults.propertyId, trade.propertyId));
+      
+      if (centralVault) {
+        await tx.update(schema.treasury_vaults)
+          .set({ accumulatedYieldUsd: sql`${schema.treasury_vaults.accumulatedYieldUsd} + ${trade.feeAmount}` })
+          .where(eq(schema.treasury_vaults.id, centralVault.id));
+      }
+
+      // 4. Actualizar Estado
+      await tx.update(schema.p2pTrades).set({ status: "filled" }).where(eq(schema.p2pTrades.id, trade.id));
+      await tx.update(schema.p2pOrders).set({ status: "filled" }).where(eq(schema.p2pOrders.id, trade.orderId));
+
+      // 5. Auditar Ledger (Double-Entry)
+      const txHashSell = crypto.randomBytes(32).toString('hex');
+      const txHashBuy = crypto.randomBytes(32).toString('hex');
+
+      await tx.insert(schema.tokenLedger).values([
+        {
+          investorId: trade.sellerInvestorId,
+          propertyId: trade.propertyId,
+          amount: (-quantity).toString(),
+          operation: 'p2p_sell',
+          txHash: txHashSell,
+          previousHash: txHashBuy,
+          currentHash: crypto.randomBytes(32).toString('hex'),
+        },
+        {
+          investorId: trade.buyerInvestorId,
+          propertyId: trade.propertyId,
+          amount: quantity.toString(),
+          operation: 'p2p_buy',
+          txHash: txHashBuy,
+          previousHash: txHashSell,
+          currentHash: crypto.randomBytes(32).toString('hex'),
+        }
+      ]);
+    });
+
+    try {
+      // El vendedor gana su XP en la confirmación real
+      const [tradeData] = await getDb().select().from(schema.p2pTrades).where(eq(schema.p2pTrades.id, tradeId));
+      await awardXP(tradeData.sellerInvestorId, 'P2P_SELL', 100, { tradeId });
+    } catch (e) {}
 
     revalidatePath("/dashboard/admin/approvals");
     return { success: true };
   } catch (error: any) {
+    console.error("Approve P2P Error:", error);
     return { success: false, error: error.message };
   }
 }

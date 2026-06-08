@@ -21,10 +21,10 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
     const res = await initiateP2PTrade(orderId);
     setIsProcessing(null);
     if (res.success) {
-      alert("Transacción P2P enviada. Esperando aprobación de Tesorería.");
+      alert("Negociación P2P Iniciada. Por favor, coordina el pago FIAT con el vendedor directamente (fuera de la plataforma). Los tokens han sido bloqueados en Escrow.");
       router.refresh();
     } else {
-      alert("Error al comprar: " + res.error);
+      alert("Error al iniciar negociación: " + res.error);
     }
   };
 
@@ -125,9 +125,9 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
                             <button
                               onClick={() => handleBuy(order.id)}
                               disabled={isProcessing === order.id}
-                              className="px-4 py-1.5 bg-pn-success/10 hover:bg-pn-success hover:text-white border border-pn-success/20 text-pn-success text-xs font-medium rounded transition-all w-24"
+                              className="px-4 py-1.5 bg-pn-success/10 hover:bg-pn-success hover:text-white border border-pn-success/20 text-pn-success text-xs font-medium rounded transition-all w-28 whitespace-nowrap"
                             >
-                              {isProcessing === order.id ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto"/> : "Comprar"}
+                              {isProcessing === order.id ? <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin mx-auto"/> : "Iniciar Escrow"}
                             </button>
                           </div>
                         </div>
@@ -146,15 +146,15 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
               <ul className="space-y-3 text-sm text-pn-text-soft">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
-                  <span>Los precios P2P son definidos libremente por los vendedores.</span>
+                  <span>Los precios P2P son definidos libremente por los vendedores. PachaNova no influye.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Clock className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
-                  <span>Al comprar, la orden pasa a un estado <strong>Pendiente de Aprobación</strong> por la Tesorería.</span>
+                  <span>Al iniciar un Escrow, la orden se bloquea. El pago FIAT se debe coordinar por fuera con el vendedor.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Tag className="w-4 h-4 text-pn-gold shrink-0 mt-0.5" />
-                  <span>Se aplica un Fee de red del <strong>3.4%</strong> para mantener la liquidez institucional.</span>
+                  <span>Se aplica un Fee de Red P2P del <strong>5%</strong> descontado de los tokens (comprador).</span>
                 </li>
               </ul>
             </div>

@@ -1,62 +1,31 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { ThumbsUp, ThumbsDown, Minus, Clock, CheckCircle2, ChevronRight, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { castVote } from '@/app/actions/governance';
+import { useRouter } from 'next/navigation';
 
-const mockProposals = [
-  {
-    id: 'prop_1',
-    title: 'Aprobación de Venta: Lote "Valle Sagrado #4"',
-    description: 'Se ha recibido una oferta de compra por el lote completo por $120,000 USD (20% por encima de la valuación actual). Si se aprueba, se liquidará la bóveda y se distribuirán los fondos a los tokenholders.',
-    status: 'active',
-    endDate: '2023-12-15T23:59:59Z',
-    votesFor: 45000,
-    votesAgainst: 12000,
-    votesAbstain: 5000,
-    totalEligible: 100000,
-  },
-  {
-    id: 'prop_2',
-    title: 'Cambio de Proveedor de Auditoría KYC',
-    description: 'Propuesta para migrar el proveedor de validación de identidad de Sumsub a Onfido para reducir costos operativos del fideicomiso en un 15%.',
-    status: 'active',
-    endDate: '2023-12-10T23:59:59Z',
-    votesFor: 30000,
-    votesAgainst: 40000,
-    votesAbstain: 10000,
-    totalEligible: 100000,
-  },
-  {
-    id: 'prop_3',
-    title: 'Distribución de Dividendos Q3 2023',
-    description: 'Aprobar la distribución de $45,000 USD generados por rentas agrícolas en el Lote Ica-Sur a las billeteras de los inversores.',
-    status: 'executed',
-    endDate: '2023-10-01T23:59:59Z',
-    votesFor: 85000,
-    votesAgainst: 2000,
-    votesAbstain: 1000,
-    totalEligible: 100000,
-  }
-];
-
-export default function GovernanceClient() {
-  const [proposals, setProposals] = useState(mockProposals);
-  const [votedProps, setVotedProps] = useState<Record<string, 'for' | 'against' | 'abstain'>>({});
+export default function GovernanceClient({ initialProposals, pachaPower }: { initialProposals: any[], pachaPower: number }) {
   const [isVoting, setIsVoting] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleVote = (propId: string, voteType: 'for' | 'against' | 'abstain') => {
+  const handleVote = async (propId: string, voteType: 'for' | 'against' | 'abstain') => {
     setIsVoting(propId);
     
-    // Simular delay de blockchain/BD
-    setTimeout(() => {
-      setVotedProps(prev => ({ ...prev, [propId]: voteType }));
-      setIsVoting(null);
-      
+    const result = await castVote(propId, voteType);
+    
+    setIsVoting(null);
+    if (result.success) {
       toast.success('Voto Registrado Exitosamente', {
-        description: `Has votado ${voteType === 'for' ? 'A FAVOR' : voteType === 'against' ? 'EN CONTRA' : 'ABSTENCIÓN'} con un peso de 1,250 PACHA.`
+        description: `Has votado ${voteType === 'for' ? 'A FAVOR' : voteType === 'against' ? 'EN CONTRA' : 'ABSTENCIÓN'} con un peso de ${result.votingPower} PACHA.`
       });
-    }, 1500);
+      router.refresh();
+    } else {
+      toast.error('Error al emitir voto', {
+        description: result.error
+      });
+    }
   };
 
   const calculatePercentage = (value: number, total: number) => {
@@ -71,12 +40,16 @@ export default function GovernanceClient() {
       <div className="space-y-4">
         <h3 className="text-xl font-medium text-white mb-4">Votaciones Activas</h3>
         
-        {proposals.filter(p => p.status === 'active').map(prop => {
+        {initialProposals.filter(p => p.status === 'active').length === 0 ? (
+          <div className="p-8 text-center border border-white/10 rounded-2xl bg-white/5 text-white/50">
+            No hay propuestas activas en este momento.
+          </div>
+        ) : initialProposals.filter(p => p.status === 'active').map(prop => {
           const totalVotes = prop.votesFor + prop.votesAgainst + prop.votesAbstain;
           const forPct = calculatePercentage(prop.votesFor, totalVotes);
           const againstPct = calculatePercentage(prop.votesAgainst, totalVotes);
           const abstainPct = calculatePercentage(prop.votesAbstain, totalVotes);
-          const hasVoted = votedProps[prop.id];
+          const hasVoted = prop.userVote;
 
           return (
             <div key={prop.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 transition-all hover:border-purple-500/30">
@@ -88,7 +61,7 @@ export default function GovernanceClient() {
                     <span className="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2.5 py-1 rounded text-xs font-medium uppercase flex items-center gap-1.5">
                       <Clock className="w-3 h-3" /> Activa
                     </span>
-                    <span className="text-xs text-white/50">Cierra en 5 días</span>
+                    {prop.endDate && <span className="text-xs text-white/50">Cierra: {new Date(prop.endDate).toLocaleDateString()}</span>}
                   </div>
                   
                   <div>
@@ -134,7 +107,7 @@ export default function GovernanceClient() {
                     <div className="grid grid-cols-3 gap-2">
                       <button 
                         onClick={() => handleVote(prop.id, 'for')}
-                        disabled={isVoting !== null}
+                        disabled={isVoting !== null || pachaPower <= 0}
                         className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 py-2 rounded-lg flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-50"
                       >
                         {isVoting === prop.id ? <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin"/> : <ThumbsUp className="w-4 h-4" />}
@@ -142,7 +115,7 @@ export default function GovernanceClient() {
                       </button>
                       <button 
                         onClick={() => handleVote(prop.id, 'against')}
-                        disabled={isVoting !== null}
+                        disabled={isVoting !== null || pachaPower <= 0}
                         className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 py-2 rounded-lg flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-50"
                       >
                         {isVoting === prop.id ? <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-400 rounded-full animate-spin"/> : <ThumbsDown className="w-4 h-4" />}
@@ -150,13 +123,16 @@ export default function GovernanceClient() {
                       </button>
                       <button 
                         onClick={() => handleVote(prop.id, 'abstain')}
-                        disabled={isVoting !== null}
+                        disabled={isVoting !== null || pachaPower <= 0}
                         className="bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 py-2 rounded-lg flex flex-col items-center justify-center gap-1 transition-all disabled:opacity-50"
                       >
                         {isVoting === prop.id ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : <Minus className="w-4 h-4" />}
                         <span className="text-xs font-medium">Abstenerse</span>
                       </button>
                     </div>
+                  )}
+                  {pachaPower <= 0 && !hasVoted && (
+                    <p className="text-[10px] text-red-400 mt-2 text-center">Poder de voto insuficiente.</p>
                   )}
                 </div>
 
@@ -171,14 +147,18 @@ export default function GovernanceClient() {
         <h3 className="text-xl font-medium text-white mb-4">Votaciones Pasadas</h3>
         
         <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-          {proposals.filter(p => p.status !== 'active').map((prop, idx) => (
+          {initialProposals.filter(p => p.status !== 'active').length === 0 ? (
+            <div className="p-8 text-center text-white/50">
+              No hay votaciones históricas.
+            </div>
+          ) : initialProposals.filter(p => p.status !== 'active').map((prop, idx) => (
             <div key={prop.id} className={`p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${idx !== 0 ? 'border-t border-white/10' : ''} hover:bg-white/5 transition-colors cursor-pointer group`}>
               <div>
                 <div className="flex items-center gap-3 mb-1">
                   <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                    Ejecutada
+                    {prop.status}
                   </span>
-                  <span className="text-xs text-white/50">{new Date(prop.endDate).toLocaleDateString()}</span>
+                  {prop.endDate && <span className="text-xs text-white/50">{new Date(prop.endDate).toLocaleDateString()}</span>}
                 </div>
                 <h4 className="text-base font-medium text-white group-hover:text-[#c5a46d] transition-colors">{prop.title}</h4>
               </div>

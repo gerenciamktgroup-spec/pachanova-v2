@@ -33,6 +33,12 @@ export default async function WalletPage() {
     .orderBy(desc(schema.transactions.createdAt))
     .limit(10);
 
+  // Fetch pending dividends
+  const pendingDist = await db.select()
+    .from(schema.distributions)
+    .where(and(eq(schema.distributions.investorId, user.id), eq(schema.distributions.status, "PENDIENTE")));
+  const pendingDividends = pendingDist.reduce((acc, dist) => acc + parseFloat(dist.amountUsd), 0);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-2">
@@ -59,7 +65,7 @@ export default async function WalletPage() {
           </div>
 
           <div className="p-6 rounded-xl border border-pn-border bg-pn-surface-strong/30 backdrop-blur-sm space-y-6">
-            <WalletClient totalUsd={totalUsd} />
+            <WalletClient totalUsd={totalUsd} pendingDividends={pendingDividends} />
           </div>
         </div>
 

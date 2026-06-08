@@ -74,6 +74,16 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     description: "Participa en las decisiones de la comunidad.",
   },
   {
+    id: "investor-staking",
+    label: "Staking",
+    path: "/dashboard/investor/staking",
+    section: "investor",
+    role: "investor",
+    icon: "lock",
+    status: "active",
+    description: "Bloquea tokens para ganar Multiplicador de Voto y Yield.",
+  },
+  {
     id: "investor-kyc",
     label: "Verificación KYC",
     path: "/dashboard/investor/kyc",
@@ -146,6 +156,16 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     icon: "layout-dashboard",
     status: "active",
     description: "Bóveda Central, yield y liquidación.",
+  },
+  {
+    id: "admin-governance",
+    label: "Emisor de Propuestas",
+    path: "/dashboard/admin/governance",
+    section: "experto",
+    role: "admin",
+    icon: "file-text",
+    status: "active",
+    description: "Publicar propuestas de gobernanza a la comunidad.",
   },
   {
     id: "admin-audit",

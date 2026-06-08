@@ -3,20 +3,31 @@
 import { useState } from 'react';
 import { User, Shield, Bell, Save, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { updateUserProfile } from '@/app/actions/users';
 
-export default function SettingsClient() {
+export default function SettingsClient({ user }: { user?: any }) {
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications'>('profile');
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    phone: user?.phone || '',
+    country: user?.country || 'pe'
+  });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsLoading(true);
-    // Simulated API call
-    setTimeout(() => {
-      setIsLoading(false);
+    const res = await updateUserProfile(formData);
+    setIsLoading(false);
+    
+    if (res.success) {
       toast.success('Cambios guardados', {
         description: 'Tu configuración ha sido actualizada exitosamente en la bóveda de PachaNova.'
       });
-    }, 1000);
+    } else {
+      toast.error('Error al guardar', { description: res.error });
+    }
   };
 
   return (
@@ -62,38 +73,30 @@ export default function SettingsClient() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Nombre(s)</label>
-                  <input type="text" defaultValue="Inversor" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
+                  <input type="text" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Apellidos</label>
-                  <input type="text" defaultValue="PachaNova" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
+                  <input type="text" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Correo Electrónico</label>
-                  <input type="email" defaultValue="inversor@pachanova.com" disabled className="w-full bg-black/50 border border-white/5 rounded-lg px-4 py-2.5 text-white/50 cursor-not-allowed" />
-                  <p className="text-xs text-[#c5a46d]/80 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Verificado</p>
+                  <input type="email" value={user?.email || ''} disabled className="w-full bg-black/50 border border-white/5 rounded-lg px-4 py-2.5 text-white/50 cursor-not-allowed" />
+                  <p className="text-xs text-[#c5a46d]/80 mt-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {user?.isVerified ? 'Verificado (KYC)' : 'Validado'}</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Teléfono</label>
-                  <input type="tel" defaultValue="+51 987 654 321" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
+                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+51 987 654 321" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
                 </div>
               </div>
             </div>
             
             <div className="pt-6 border-t border-white/10">
-              <h3 className="text-xl font-medium text-white mb-4">Dirección Fiscal</h3>
+              <h3 className="text-xl font-medium text-white mb-4">Ubicación y Facturación</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Dirección</label>
-                  <input type="text" placeholder="Av. Principal 123" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">Ciudad</label>
-                  <input type="text" placeholder="Lima" className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors" />
-                </div>
                 <div className="space-y-2">
                   <label className="text-xs text-white/50 uppercase tracking-wider font-semibold">País</label>
-                  <select className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors appearance-none">
+                  <select value={formData.country} onChange={(e) => setFormData({...formData, country: e.target.value})} className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#c5a46d]/50 transition-colors appearance-none">
                     <option value="pe">Perú</option>
                     <option value="cl">Chile</option>
                     <option value="co">Colombia</option>

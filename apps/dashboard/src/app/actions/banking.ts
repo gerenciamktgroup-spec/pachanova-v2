@@ -2,7 +2,7 @@
 
 import { getDb, schema } from "@pachanova/database";
 import { createServerClient } from "@/utils/supabase/server";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -103,6 +103,68 @@ export async function approveTransaction(transactionId: string, action: "APPROVE
 
   } catch (error: any) {
     console.error("Error approving transaction:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * INVERSOR: Reclama dividendos acumulados
+ */
+export async function claimDividends() {
+  try {
+    const supabase = await createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) throw new Error("No autenticado");
+
+    const db = getDb();
+    const [dbUser] = await db.select().from(schema.users).where(eq(schema.users.supabaseAuthId, user.id));
+    if (!dbUser) throw new Error("Usuario no encontrado");
+
+    // 1. Buscar dividendos pendientes ("PENDIENTE")
+    const pendingDistributions = await db.select()
+      .from(schema.distributions)
+      .where(and(eq(schema.distributions.investorId, dbUser.id), eq(schema.distributions.status, "PENDIENTE")));
+
+    if (pendingDistributions.length === 0) {
+      throw new Error("No tienes dividendos pendientes por reclamar.");
+    }
+
+    // 2. Sumar total USD
+    const totalToClaim = pendingDistributions.reduce((acc, dist) => acc + parseFloat(dist.amountUsd), 0);
+
+    // 3. Añadir a Balance USD (Virtual Vault)
+    const WALLET_VAULT_ID = "00000000-0000-0000-0000-000000000000";
+    const [existingBalance] = await db.select().from(schema.balances).where(eq(schema.balances.investorId, dbUser.id));
+
+    if (existingBalance) {
+      const currentUsd = parseFloat(existingBalance.availableUsd) || 0;
+      await db.update(schema.balances)
+        .set({ availableUsd: (currentUsd + totalToClaim).toString() })
+        .where(eq(schema.balances.id, existingBalance.id));
+    } else {
+      await db.insert(schema.balances).values({
+        investorId: dbUser.id,
+        propertyId: WALLET_VAULT_ID,
+        availableTokens: "0",
+        availableUsd: totalToClaim.toString(),
+        lockedTokens: "0"
+      });
+    }
+
+    // 4. Marcar distribuciones como PAGADO
+    for (const dist of pendingDistributions) {
+      await db.update(schema.distributions)
+        .set({ status: "PAGADO", claimedAt: new Date() })
+        .where(eq(schema.distributions.id, dist.id));
+    }
+
+    revalidatePath("/dashboard/investor/wallet");
+    revalidatePath("/dashboard/investor");
+    return { success: true, amountClaimed: totalToClaim };
+
+  } catch (error: any) {
+    console.error("Error claiming dividends:", error);
     return { success: false, error: error.message };
   }
 }
