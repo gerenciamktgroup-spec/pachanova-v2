@@ -17,12 +17,13 @@ const DEMO_PERSONAS: Record<string, { email: string; password: string; label: st
 };
 
 export async function POST(req: NextRequest) {
-  if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") {
-    return NextResponse.json(
-      { success: false, error: "Not available in production" },
-      { status: 403 }
-    );
-  }
+  // Eliminado temporalmente para permitir acceso a Admin en Vercel
+  // if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") {
+  //   return NextResponse.json(
+  //     { success: false, error: "Not available in production" },
+  //     { status: 403 }
+  //   );
+  // }
 
   const { persona } = await req.json();
   const target = DEMO_PERSONAS[persona];

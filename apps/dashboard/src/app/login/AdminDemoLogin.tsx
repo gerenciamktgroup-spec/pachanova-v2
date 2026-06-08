@@ -8,7 +8,8 @@ export function AdminDemoLogin() {
   const [activePersona, setActivePersona] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") return null;
+  // Eliminamos la restricción temporalmente para permitir Demo en Vercel de manera directa
+  // if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") return null;
 
   const handleLogin = async (persona: "carlos" | "holder") => {
     setLoading(true);

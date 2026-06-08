@@ -54,16 +54,21 @@ export async function updateSession(request: NextRequest) {
 
   const isApiRoute = request.nextUrl.pathname.startsWith('/api');
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/unauthorized');
+  
+  // Páginas públicas que no requieren autenticación (como Landing Page y FAQ)
+  const isPublicPage = request.nextUrl.pathname === '/' || 
+                       request.nextUrl.pathname.startsWith('/como-funciona') || 
+                       request.nextUrl.pathname.startsWith('/preguntas-frecuentes');
 
-  // Si no hay usuario y trata de entrar al dashboard (y no es una API ni una página de login/unauthorized), mandarlo al login
-  if (!user && !isAuthPage && !isApiRoute) {
+  // Si no hay usuario y trata de entrar al dashboard (y no es una API, ni Auth, ni Pública), mandarlo al login
+  if (!user && !isAuthPage && !isApiRoute && !isPublicPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Si está autenticado, verificamos el rol (solo para páginas normales, no para APIs ni login)
-  if (user && !isAuthPage && !isApiRoute) {
+  // Si está autenticado, verificamos el rol (solo para páginas normales, no para APIs, login, ni públicas)
+  if (user && !isAuthPage && !isApiRoute && !isPublicPage) {
     // Rol sincronizado vía trigger Supabase: public.investors.role → auth.users.raw_app_meta_data.role
     const role = (user.app_metadata?.role as string | undefined) || 'investor';
     if (request.nextUrl.pathname === '/dashboard') {
