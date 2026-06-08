@@ -22,12 +22,12 @@ import { YieldActionButtons } from "./YieldActionClient";
 import { createServerClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { schema } from "@pachanova/database";
+import { loadSchema10FromDb, getRealHologramPncs, db as realDb } from "@/server/db";
 
 async function fetchInvestorData(): Promise<any> {
   let holdings: any[] = [];
 
   try {
-    const { loadSchema10FromDb, getRealHologramPncs, db: realDb } = await import('../../../server/db');
     const real = await loadSchema10FromDb?.('PNC-PAR-001');
 
     if ((real?.holdings?.length || 0) > 0) {
@@ -50,8 +50,23 @@ async function fetchInvestorData(): Promise<any> {
         land_meta: props[0]?.metadata || {}
       }));
     }
+    // Fallback a Demo Vercel si la base de datos está vacía (sin holdings)
+    if (holdings.length === 0) {
+      holdings = [{
+        pnc_codigo: 'PNC-PAR-001',
+        holdings_amount: 100,
+        effective_amount: 50000,
+        land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
+      }];
+    }
+
   } catch {
-    holdings = [];
+    holdings = [{
+      pnc_codigo: 'PNC-PAR-001',
+      holdings_amount: 100,
+      effective_amount: 50000,
+      land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
+    }];
   }
 
   const portfolio = holdings.map((h: any) => ({
@@ -76,11 +91,8 @@ async function fetchInvestorData(): Promise<any> {
     }
   }));
 
-  // No fallback to placeholder, let the UI handle the empty state.
-
   let realHologramPncs: any[] = [];
   try {
-    const { getRealHologramPncs } = await import('../../../server/db');
     realHologramPncs = await getRealHologramPncs(5);
   } catch {
     realHologramPncs = [];

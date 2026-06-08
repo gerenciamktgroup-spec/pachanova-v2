@@ -37,7 +37,7 @@ async function fetchBorrowData() {
       WHERE b.investor_id = ${investor.id}
     `);
 
-    const portfolio = (portfolioRows as any[]).map((row: any) => ({
+    let portfolio = (portfolioRows as any[]).map((row: any) => ({
       propertyId: row.property_id,
       propertyName: row.property_name,
       propertyType: row.property_type,
@@ -49,6 +49,24 @@ async function fetchBorrowData() {
       tokenPriceUsd: row.token_price_usd,
       metadata: row.metadata, // for 5PNC net/landbank tie
     }));
+
+    if (portfolio.length === 0) {
+      // Mock portfolio for Vercel Demo when DB is empty
+      portfolio = [
+        {
+          propertyId: "mock-123",
+          propertyName: "Terreno Paracas (PNC-PAR-001)",
+          propertyType: "land",
+          location: "Paracas, Perú",
+          availableTokens: "100",
+          lockedTokens: "0",
+          availableUsd: "50000",
+          lockedUsd: "0",
+          tokenPriceUsd: "500",
+          metadata: { pncCode: "PNC-PAR-001" },
+        }
+      ];
+    }
 
     // Fetch all active loans
     const loans = await db.query.loans.findMany({

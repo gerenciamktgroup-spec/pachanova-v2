@@ -3,6 +3,7 @@ import { treasury_vaults, escrow_vaults, burn_vaults } from "./vaults";
 import { properties } from "./properties";
 import { p2pOrders, p2pTrades } from "./p2p";
 import { users } from "./users";
+import { proposals } from "./governance";
 
 export const treasuryVaultsRelations = relations(treasury_vaults, ({ one }) => ({
   property: one(properties, {
@@ -54,4 +55,11 @@ export const usersRelations = relations(users, ({ many }) => ({
   p2pOrders: many(p2pOrders),
   p2pTradesBought: many(p2pTrades, { relationName: "buyer" }),
   p2pTradesSold: many(p2pTrades, { relationName: "seller" }),
+}));
+
+export const proposalsRelations = relations(proposals, ({ one }) => ({
+  relatedProperty: one(properties, {
+    fields: [proposals.relatedPropertyId],
+    references: [properties.id],
+  }),
 }));
