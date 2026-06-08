@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRightLeft, TrendingUp, TrendingDown, Tag, Clock, CheckCircle2 } from "lucide-react";
+import { ArrowRightLeft, TrendingUp, TrendingDown, Tag, Clock, CheckCircle2, Shield } from "lucide-react";
 import { createP2POrder, initiateP2PTrade } from "@/app/actions/p2p";
 import { useRouter } from "next/navigation";
+import { PropertyDataRoom } from "./PropertyDataRoom";
 
 export function MarketplaceClient({ orders, properties }: { orders: any[], properties: any[] }) {
   const [activeTab, setActiveTab] = useState<"book" | "my_orders">("book");
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [activeDataRoom, setActiveDataRoom] = useState<string | null>(null);
   const router = useRouter();
 
   // New Order Form state
@@ -106,7 +108,15 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
                           />
                           
                           <div className="col-span-2 relative z-10 flex flex-col">
-                            <span className="font-medium text-pn-text">{order.property?.name || "Propiedad Desconocida"}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-pn-text">{order.property?.name || "Propiedad Desconocida"}</span>
+                              <button 
+                                onClick={() => setActiveDataRoom(order.property?.name || "Propiedad")}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#c5a46d]/10 hover:bg-[#c5a46d]/20 text-[#c5a46d] text-[10px] font-medium transition-colors"
+                              >
+                                <Shield className="w-3 h-3" /> Data Room
+                              </button>
+                            </div>
                             <div className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide mt-0.5 ${isDiscount ? 'text-pn-success' : 'text-pn-danger'}`}>
                               {isDiscount ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
                               {Math.abs(discount).toFixed(2)}% {isDiscount ? "Descuento" : "Premium"}
@@ -224,6 +234,14 @@ export function MarketplaceClient({ orders, properties }: { orders: any[], prope
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal de Data Room */}
+      {activeDataRoom && (
+        <PropertyDataRoom 
+          propertyName={activeDataRoom} 
+          onClose={() => setActiveDataRoom(null)} 
+        />
       )}
     </>
   );

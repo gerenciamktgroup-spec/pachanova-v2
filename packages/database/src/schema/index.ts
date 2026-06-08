@@ -21,3 +21,4 @@ export * from './governance';
 export * from './fideicomiso_audits';
 export * from './gamification';
 export * from './relations';
+export * from './documents';
