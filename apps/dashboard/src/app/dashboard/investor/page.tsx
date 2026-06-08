@@ -143,12 +143,19 @@ async function InvestorDashboardContent() {
   let userLevel = 1;
 
   if (userId) {
-    const user = await db.query.users.findFirst({
-      where: eq(schema.users.id, userId)
-    });
-    if (user) {
-      userXP = user.xp;
-      userLevel = user.level;
+    try {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+      if (isUuid) {
+        const user = await db.query.users.findFirst({
+          where: eq(schema.users.id, userId)
+        });
+        if (user) {
+          userXP = user.xp;
+          userLevel = user.level;
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching user XP:", e);
     }
   }
 
