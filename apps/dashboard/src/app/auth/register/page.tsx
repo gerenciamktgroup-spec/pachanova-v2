@@ -1,8 +1,7 @@
-import { login } from './actions'
-import { AdminDemoLogin } from './AdminDemoLogin'
+import { register } from './actions'
 import Link from 'next/link'
 
-export default async function LoginPage({
+export default async function RegisterPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -11,7 +10,7 @@ export default async function LoginPage({
   const errorMsg = resolvedSearchParams?.message as string | undefined;
 
   return (
-    <div className="min-h-screen bg-pn-bg text-pn-text flex flex-col justify-center items-center relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-pn-bg text-pn-text flex flex-col justify-center items-center relative overflow-hidden font-sans py-12">
       {/* Background gradients and grid */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -34,7 +33,7 @@ export default async function LoginPage({
         <div className="backdrop-blur-xl bg-pn-surface/40 border border-pn-border rounded-2xl shadow-2xl p-8 relative">
           <div className="absolute inset-x-0 -top-px h-px w-full bg-gradient-to-r from-transparent via-pn-gold/50 to-transparent"></div>
           
-          <h2 className="text-xl font-medium text-white mb-6">Iniciar Sesión</h2>
+          <h2 className="text-xl font-medium text-white mb-6">Crear Cuenta</h2>
 
           {errorMsg && (
             <div className="mb-6 p-3 bg-red-950/50 border border-red-900/50 rounded-lg text-sm text-red-200">
@@ -42,7 +41,36 @@ export default async function LoginPage({
             </div>
           )}
 
-          <form action={login} className="flex flex-col gap-5">
+          <form action={register} className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label htmlFor="firstName" className="block text-xs font-medium text-pn-text-muted uppercase tracking-wider mb-2">
+                  Nombre
+                </label>
+                <input 
+                  id="firstName" 
+                  name="firstName" 
+                  type="text" 
+                  placeholder="Juan"
+                  required 
+                  className="w-full bg-black/40 text-white p-3 rounded-lg border border-pn-border-strong focus:border-pn-gold focus:ring-1 focus:ring-pn-gold outline-none transition-all placeholder:text-gray-600" 
+                />
+              </div>
+              <div className="flex-1">
+                <label htmlFor="lastName" className="block text-xs font-medium text-pn-text-muted uppercase tracking-wider mb-2">
+                  Apellido
+                </label>
+                <input 
+                  id="lastName" 
+                  name="lastName" 
+                  type="text" 
+                  placeholder="Pérez"
+                  required 
+                  className="w-full bg-black/40 text-white p-3 rounded-lg border border-pn-border-strong focus:border-pn-gold focus:ring-1 focus:ring-pn-gold outline-none transition-all placeholder:text-gray-600" 
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-xs font-medium text-pn-text-muted uppercase tracking-wider mb-2">
                 Correo Electrónico
@@ -51,7 +79,7 @@ export default async function LoginPage({
                 id="email" 
                 name="email" 
                 type="email" 
-                placeholder="inversor@pachanova.local"
+                placeholder="inversor@ejemplo.com"
                 required 
                 className="w-full bg-black/40 text-white p-3 rounded-lg border border-pn-border-strong focus:border-pn-gold focus:ring-1 focus:ring-pn-gold outline-none transition-all placeholder:text-gray-600" 
               />
@@ -72,18 +100,16 @@ export default async function LoginPage({
             
             <button 
               type="submit" 
-              className="mt-2 w-full bg-gradient-to-r from-pn-gold/80 to-pn-terracotta/80 hover:from-pn-gold hover:to-pn-terracotta text-black font-semibold p-3 rounded-lg transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_25px_rgba(212,175,55,0.5)]"
+              className="mt-4 w-full bg-gradient-to-r from-pn-gold/80 to-pn-terracotta/80 hover:from-pn-gold hover:to-pn-terracotta text-black font-semibold p-3 rounded-lg transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_25px_rgba(212,175,55,0.5)]"
             >
-              Acceder a mi Portafolio
+              Completar Registro
             </button>
           </form>
 
-          <AdminDemoLogin />
-
           <div className="mt-6 text-center text-sm text-pn-text-soft">
-            ¿No tienes una cuenta?{' '}
-            <Link href="/auth/register" className="text-pn-gold hover:text-white transition-colors">
-              Crea una aquí
+            ¿Ya tienes una cuenta?{' '}
+            <Link href="/login" className="text-pn-gold hover:text-white transition-colors">
+              Inicia sesión aquí
             </Link>
           </div>
         </div>
