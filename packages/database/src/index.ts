@@ -29,6 +29,7 @@ export function getDb(): DrizzleDB {
   const useSsl = dbUrl.includes('sslmode=require') || dbUrl.includes('ssl=') || dbUrl.includes('supabase')
   const client = postgres(dbUrl, {
     prepare: false,
+    max: 1, // Crucial for serverless environments to avoid connection exhaustion (504 errors)
     ssl: useSsl ? { rejectUnauthorized: false } : undefined
   })
   _db = drizzle(client, { schema })

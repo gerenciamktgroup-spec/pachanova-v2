@@ -10,3 +10,7 @@ export const notificationTypeEnum = pgEnum("notification_type_enum", ["system", 
 export const propertyTypeEnum = pgEnum("property_type_enum", ["land", "residential", "hotel", "rental"]);
 export const proposalStatusEnum = pgEnum("proposal_status_enum", ["draft", "active", "passed", "rejected", "executed", "cancelled"]);
 export const voteChoiceEnum = pgEnum("vote_choice_enum", ["for", "against", "abstain"]);
+export const trustAuditStatusEnum = pgEnum("trust_audit_status_enum", ["pending", "audited", "flagged"]);
+
+export const assetStatusEnum = pgEnum("asset_status", ["active", "in_liquidation", "liquidated"]);
+export const kycStatusEnum2 = pgEnum("kyc_status", ["pending", "approved", "rejected"]);

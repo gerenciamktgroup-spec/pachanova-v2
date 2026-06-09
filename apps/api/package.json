@@ -8,14 +8,15 @@
     "build": "echo 'Skipping API build (no esbuild)'"
   },
   "dependencies": {
-    "@pachanova/database": "workspace:*",
-    "@neondatabase/serverless": "^0.10.0",
-    "@supabase/supabase-js": "^2.105.4",
-    "drizzle-orm": "^0.45.2",
-    "hono": "^4.6.12",
     "@hono/node-server": "^1.13.7",
-    "typescript": "^5",
+    "@neondatabase/serverless": "^0.10.0",
+    "@pachanova/database": "workspace:*",
+    "@supabase/supabase-js": "^2.105.4",
+    "@types/node": "^20",
+    "drizzle-orm": "^0.45.2",
+    "ethers": "^6.16.0",
+    "hono": "^4.6.12",
     "tsx": "^4.21.0",
-    "@types/node": "^20"
+    "typescript": "^5"
   }
 }

@@ -22,3 +22,6 @@ export * from './fideicomiso_audits';
 export * from './gamification';
 export * from './relations';
 export * from './documents';
+export * from './trusts';
+export * from './assets';
+export * from './users_identity';

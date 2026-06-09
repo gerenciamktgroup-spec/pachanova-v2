@@ -4,6 +4,8 @@ import { investors } from './routes/investors'
 import { properties } from './routes/properties'
 import { payments } from './routes/payments'
 import { analytics } from './analytics/analytics'
+import { kyc } from './routes/kyc'
+import { webhooks } from './routes/webhooks'
 
 const app = new Hono()
 
@@ -36,6 +38,8 @@ app.route('/api/investors', investors)
 app.route('/api/properties', properties)
 app.route('/api/payments', payments)
 app.route('/api/analytics', analytics)
+app.route('/api/kyc', kyc)
+app.route('/api/webhooks', webhooks)
 
 app.get('/', (c) => {
   return c.json({ status: 'ok', message: 'PachaNova API is running!' })
