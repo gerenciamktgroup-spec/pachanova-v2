@@ -185,7 +185,7 @@ export default function KycClient() {
 
             <div className="bg-black/40 border border-white/10 rounded-xl p-4 max-h-48 overflow-y-auto text-xs text-white/60 space-y-3 font-mono">
               <p><strong>CONTRATO DE ADHESIÓN A FIDEICOMISO INMOBILIARIO</strong></p>
-              <p>Entre PACHANOVA TRUST LLC (el "Fiduciario") y el "Inversor".</p>
+              <p>Entre PACHANOVA TRUST LLC (el &quot;Fiduciario&quot;) y el &quot;Inversor&quot;.</p>
               <p>1. <strong>Custodia Institucional:</strong> El Inversor reconoce que los activos subyacentes (inmuebles) son administrados exclusiva y legalmente por el Fiduciario.</p>
               <p>2. <strong>Participación Digital:</strong> La tenencia de tokens en la plataforma representa un derecho de cobro (beneficio) sobre las utilidades del inmueble, no una escritura directa sobre el mismo.</p>
               <p>3. <strong>Prevención de Lavado:</strong> El Inversor garantiza bajo declaración jurada que los fondos provienen de fuentes lícitas.</p>

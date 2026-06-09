@@ -1,40 +1,21 @@
-import { RouteBreadcrumbs } from "@/components/mission";
-import AdminGovClient from "./AdminGovClient";
-import { getDb, schema } from "@pachanova/database";
-import { createServerClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
 
-export const dynamic = 'force-dynamic';
-
-export default async function AdminGovernancePage() {
-  const supabase = await createServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/auth/login');
-
-  const role = user.app_metadata?.role || user.user_metadata?.role;
-  if (role !== "admin") redirect('/dashboard/investor');
-
-  const db = getDb();
-
-  // Obtener todas las propuestas
-  const rawProposals = await db.query.proposals.findMany({
-    orderBy: (proposals, { desc }) => [desc(proposals.createdAt)],
-  });
-
+export default function AdminGovernancePage() {
   return (
-    <div className="space-y-6">
-      <RouteBreadcrumbs items={[
-        { label: 'Administración' }, 
-        { label: 'Gobernanza (Emisor)' }
-      ]} />
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 relative overflow-hidden text-white">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
       
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 mb-1">Centro de Emisión de Propuestas</h2>
-          <p className="text-sm text-gray-500">Publica nuevas propuestas para someterlas a la votación de los tokenholders.</p>
+      <div className="max-w-md w-full text-center relative z-10 p-8 rounded-3xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl shadow-2xl">
+        <div className="text-4xl mb-4">⚙️</div>
+        <h2 className="text-2xl font-bold text-[#c5a46d] tracking-tight mb-2">Administración de Gobernanza</h2>
+        <p className="text-sm text-white/60 mb-6 leading-relaxed">
+          Este panel estará disponible en la versión definitiva de PachaNova V2.0 para la creación y gestión de propuestas regulatorias.
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#c5a46d]">
+          <span className="w-2 h-2 rounded-full bg-[#c5a46d] animate-pulse"></span>
+          PRÓXIMAMENTE
         </div>
-
-        <AdminGovClient proposals={rawProposals} />
       </div>
     </div>
   );

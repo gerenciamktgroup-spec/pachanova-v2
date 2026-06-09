@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -21,33 +21,29 @@ export async function GET(req: NextRequest) {
       whereConditions.push(eq(schema.distributions.status, status));
     }
 
-    const distributions = await db
-      .select({
-        id: schema.distributions.id,
-        propertyId: schema.distributions.propertyId,
-        investorId: schema.distributions.investorId,
-        amountUsd: schema.distributions.amountUsd,
-        periodStart: schema.distributions.periodStart,
-        periodEnd: schema.distributions.periodEnd,
-        status: schema.distributions.status,
-        proofRef: schema.distributions.proofRef,
-        claimedAt: schema.distributions.claimedAt,
-        createdAt: schema.distributions.createdAt,
-        propertyName: schema.properties.name,
-        propertyType: schema.properties.propertyType,
-        location: schema.properties.location,
-      })
-      .from(schema.distributions)
-      .innerJoin(
-        schema.properties,
-        eq(schema.distributions.propertyId, schema.properties.id)
-      )
-      .where(
-        whereConditions.length > 1
-          ? and(...(whereConditions as [any, any]))
-          : whereConditions[0]
-      )
-      .orderBy(desc(schema.distributions.createdAt));
+    const rawDists = await db.execute(sql`
+      SELECT 
+        d.id,
+        d.property_id as "propertyId",
+        d.investor_id as "investorId",
+        d.amount_usd as "amountUsd",
+        d.period_start as "periodStart",
+        d.period_end as "periodEnd",
+        d.status,
+        d.proof_ref as "proofRef",
+        d.claimed_at as "claimedAt",
+        d.created_at as "createdAt",
+        p.name as "propertyName",
+        p.property_type as "propertyType",
+        p.location
+      FROM public.distributions d
+      INNER JOIN public.properties p ON d.property_id = p.id
+      WHERE d.investor_id = ${investorId}
+        ${status ? sql`AND d.status = ${status}` : sql``}
+      ORDER BY d.created_at DESC
+    `);
+
+    const distributions = rawDists as any[];
 
     const totalClaimable = distributions
       .filter((d) => d.status === "CLAIMABLE")

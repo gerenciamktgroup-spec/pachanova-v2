@@ -5,10 +5,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@pachanova/ui", "@pachanova/contracts", "@pachanova/integrations"],
   serverExternalPackages: ["@supabase/supabase-js", "dotenv", "postgres"],
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   turbopack: {
     root: path.resolve(__dirname, "../.."),

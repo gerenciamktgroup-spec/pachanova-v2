@@ -21,18 +21,6 @@ export default async function ApprovalsPage() {
       .where(eq(schema.transactions.status, "pending"))
       .orderBy(desc(schema.transactions.createdAt));
 
-    // 2. Obtener P2P Trades pendientes
-    const p2p = await db.select({
-      id: schema.p2pTrades.id,
-      amount: schema.p2pTrades.totalAmount,
-      fee: schema.p2pTrades.feeAmount,
-      date: schema.p2pTrades.createdAt,
-      status: schema.p2pTrades.status,
-      buyerId: schema.p2pTrades.buyerInvestorId,
-    }).from(schema.p2pTrades)
-      .where(eq(schema.p2pTrades.status, "pending_approval"))
-      .orderBy(desc(schema.p2pTrades.createdAt));
-
     // Obtener inversores para mapear nombres (Simplificado, idealmente usar JOINs)
     const investors = await db.select({
       id: schema.users.id,
@@ -46,29 +34,17 @@ export default async function ApprovalsPage() {
       return acc;
     }, {} as Record<string, {name: string, email: string}>);
 
-    // Mapear al formato del Client Component
-    const unifiedApprovals = [
-      ...txs.map(t => ({
-        id: t.id,
-        type: t.type?.toUpperCase() || "UNKNOWN",
-        user: t.investorId ? investorMap[t.investorId]?.name || "Desconocido" : "Sistema",
-        email: t.investorId ? investorMap[t.investorId]?.email || "" : "",
-        amount: `$${t.amount} USD`,
-        fee: "-",
-        date: t.date.toLocaleString(),
-        status: t.status.toUpperCase(),
-      })),
-      ...p2p.map(p => ({
-        id: p.id,
-        type: "P2P_TRADE",
-        user: investorMap[p.buyerId]?.name || "Desconocido",
-        email: investorMap[p.buyerId]?.email || "",
-        amount: `$${p.amount} USD`,
-        fee: `$${p.fee} USD`,
-        date: p.date.toLocaleString(),
-        status: p.status === "pending_approval" ? "PENDING" : p.status.toUpperCase(),
-      }))
-    ];
+    // 2. No P2P Trades (Quarantined in MVP)
+    const unifiedApprovals = txs.map(t => ({
+      id: t.id,
+      type: t.type?.toUpperCase() || "UNKNOWN",
+      user: t.investorId ? investorMap[t.investorId]?.name || "Desconocido" : "Sistema",
+      email: t.investorId ? investorMap[t.investorId]?.email || "" : "",
+      amount: `$${t.amount} USD`,
+      fee: "-",
+      date: t.date.toLocaleString(),
+      status: t.status.toUpperCase(),
+    }));
 
     // Ordenar por fecha (más recientes primero)
     unifiedApprovals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

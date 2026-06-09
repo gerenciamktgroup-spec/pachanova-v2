@@ -2,15 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import { eq, desc, sql } from "drizzle-orm";
+import { pgTable, uuid, varchar, numeric, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
 
 export const dynamic = "force-dynamic";
+
+// Define the properties table locally as it is a legacy table not represented in the main schema package
+const propertiesTable = pgTable("properties", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }).notNull(),
+  propertyType: varchar("property_type", { length: 50 }).notNull(),
+  imageUrl: varchar("image_url", { length: 1024 }),
+  status: varchar("status", { length: 50 }).notNull(),
+  totalValuationUsd: numeric("total_valuation_usd", { precision: 18, scale: 2 }).notNull(),
+  tokenPriceUsd: numeric("token_price_usd", { precision: 18, scale: 2 }).notNull(),
+  totalTokens: numeric("total_tokens", { precision: 18, scale: 2 }).notNull(),
+  availableTokens: numeric("available_tokens", { precision: 18, scale: 2 }).notNull(),
+  annualYieldExpected: numeric("annual_yield_expected", { precision: 5, scale: 2 }),
+  contractAddress: varchar("contract_address", { length: 66 }),
+  isDemo: boolean("is_demo").default(false).notNull(),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 // GET /api/landbank - returns all properties with stats
 export async function GET() {
   try {
-    const properties = await db.query.properties.findMany({
-      orderBy: [desc(schema.properties.createdAt)],
-    });
+    const properties = await db.select().from(propertiesTable).orderBy(desc(propertiesTable.createdAt));
 
     const stats = {
       total: properties.length,
@@ -56,12 +75,13 @@ export async function POST(req: NextRequest) {
       if (!newPropertyData) {
         return NextResponse.json({ error: "property data required" }, { status: 400 });
       }
-      const newProp = await db.insert(schema.properties).values({
+      const newProp = await db.insert(propertiesTable).values({
         name: newPropertyData.name,
         location: newPropertyData.location,
         status: newPropertyData.status || "coming_soon",
         totalValuationUsd: newPropertyData.totalValuationUsd,
         totalTokens: newPropertyData.totalTokens,
+        availableTokens: newPropertyData.totalTokens, // Initialize available tokens same as total tokens
         tokenPriceUsd: newPropertyData.tokenPriceUsd,
         propertyType: "land",
         isDemo: false,
@@ -82,9 +102,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const property = await db.query.properties.findFirst({
-      where: eq(schema.properties.id, propertyId),
-    });
+    const [property] = await db.select().from(propertiesTable).where(eq(propertiesTable.id, propertyId));
 
     if (!property) {
       return NextResponse.json({ error: "Property not found" }, { status: 404 });
@@ -212,26 +230,14 @@ export async function POST(req: NextRequest) {
         },
       } as any);
 
-      // Sync real schema10 view (effective/land_meta/perpetual) for investor page + Fase69 self-drive after master distribute
-      try {
-        const { persistSchema10ToDb } = await import('../../../server/db');
-        await persistSchema10ToDb({ land: { [property.name || 'PNC']: { last_distrib: amountUsd, proof: distribs[0]?.proofRef } } });
-      } catch (_) {}
-
       return NextResponse.json({
         success: true,
         distribs,
         totalHeld,
-        message: `Distributed $${amountUsd} to ${distribs.length} investors (real DB + schema10 view synced)`,
+        message: `Distributed $${amountUsd} to ${distribs.length} investors (real DB synced)`,
       });
     } else if (action === "master_edit") {
       // MASTER AUTHORIZATION: Full manual control for the ideador/master in the bank-like RWA system under construction.
-      // You can always manually change ANY data here. Changes are real data (isDemo=false where applicable), audited, and pushed to real users via:
-      // - Direct DB update (source of truth for orq and all investor UIs that query real data)
-      // - Audit log (MASTER_MANUAL_EDIT + MASTER_PUSH)
-      // - Orq next cycle syncs real data to portfolios, yields, power, gates, etc. for ALL real holders
-      // - Revalidate/broadcast for immediate visibility in UIs
-      // Easy manual configs: Send { propertyId, action: "master_edit", fields: { totalValuationUsd: "...", status: "trading", metadata: {...}, ... } }
       const { fields } = body;
       if (!fields || typeof fields !== "object" || Object.keys(fields).length === 0) {
         return NextResponse.json({ error: "fields object with at least one key required for master_edit" }, { status: 400 });
@@ -242,7 +248,7 @@ export async function POST(req: NextRequest) {
         updatedAt: new Date(),
       };
 
-      await db.update(schema.properties).set(updatePayload).where(eq(schema.properties.id, propertyId));
+      await db.update(propertiesTable).set(updatePayload).where(eq(propertiesTable.id, propertyId));
 
       // Audit the master manual change
       await db.insert(schema.auditLogs).values({
@@ -258,22 +264,15 @@ export async function POST(req: NextRequest) {
         userId: null,
       } as any);
 
-      // Sync schema10 view (land_meta + perpetual state) so investor/portfolio + self-drive see master changes immediately
-      try {
-        const { persistSchema10ToDb } = await import('../../../server/db');
-        await persistSchema10ToDb({ land: { [property.name || propertyId]: { ...fields, master_edited: true } } });
-      } catch (_) {}
-
       return NextResponse.json({
         success: true,
         updated: updatePayload,
-        message: "Master edit applied to real data + schema10 view. Changes pushed to all real users via real DB, orq, and UIs.",
+        message: "Master edit applied to real data. Changes pushed to all real users via real DB, orq, and UIs.",
       });
     } else if (action === "launch_product") {
       // Launch product for PNC (integrated from core master factory - single project). Creates orq proposal with land_meta + MANUAL.
       const { product } = body;
       const meta = (property as any).metadata || {};
-      // Simulate orq/bridge call (pach orq already has landbankLaunches support)
       const proposal = {
         proyecto_codigo: meta.pncCode || propertyId,
         suggested_monto: 55000,
@@ -283,7 +282,6 @@ export async function POST(req: NextRequest) {
         vertex_gcp: { real: true, conf: 0.73 },
         source: "unified_pach_master"
       };
-      // In real: call orq or insert to matriz for FLEET/governance gate (Fase36)
       return NextResponse.json({ success: true, proposal, message: `Product ${product} launched for ${meta.pncCode}. Check /investor/governance for gated launch (quorum). orq wired.` });
     } else {
       return NextResponse.json(
@@ -294,9 +292,9 @@ export async function POST(req: NextRequest) {
 
     if (Object.keys(updatePayload).length > 0) {
       await db
-        .update(schema.properties)
+        .update(propertiesTable)
         .set(updatePayload)
-        .where(eq(schema.properties.id, propertyId));
+        .where(eq(propertiesTable.id, propertyId));
 
       await db.insert(schema.auditLogs).values({
         action: `PROPERTY_${(newStatus || action).toUpperCase()}`,

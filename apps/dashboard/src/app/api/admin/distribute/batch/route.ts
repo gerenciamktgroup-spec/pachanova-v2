@@ -3,6 +3,13 @@ import { eq, and } from 'drizzle-orm';
 import { db } from "@/server/db";
 import { schema } from '@pachanova/database';
 import crypto from 'crypto';
+import { pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
+
+// Define the properties table locally as it is a legacy table not represented in the main schema package
+const propertiesTable = pgTable("properties", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+});
 
 // POST /api/admin/distribute/batch { propertyId: string, totalAmountUsd: number }
 export async function POST(req: NextRequest) {
@@ -14,11 +21,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'propertyId and positive totalAmountUsd are required' }, { status: 400 });
     }
 
-
     // 1. Fetch the property
-    const property = await db.query.properties.findFirst({
-      where: eq(schema.properties.id, propertyId)
-    });
+    const [property] = await db.select().from(propertiesTable).where(eq(propertiesTable.id, propertyId));
 
     if (!property) {
         return NextResponse.json({ success: false, error: 'Property not found' }, { status: 404 });
@@ -74,8 +78,8 @@ export async function POST(req: NextRequest) {
           amountUsd: shareUsd.toFixed(2),
           periodStart,
           periodEnd,
-          isDemo: false, // fixed per v3 45m loop demo0 strict + Master safety (was remnant)
-          status: 'CLAIMABLE', // So investors can claim this payout
+          isDemo: false,
+          status: 'CLAIMABLE',
           proofRef
         } as any).returning();
 
@@ -118,7 +122,6 @@ export async function POST(req: NextRequest) {
       });
     } catch (_) {}
 
-
     return NextResponse.json({
       success: true,
       batchId,
@@ -135,4 +138,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: e.message || 'Internal error in batch distribution' }, { status: 500 });
   }
 }
-

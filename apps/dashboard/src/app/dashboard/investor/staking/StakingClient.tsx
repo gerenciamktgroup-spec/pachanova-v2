@@ -155,7 +155,7 @@ export default function StakingClient({ liquidTokens, stakedTokens }: { liquidTo
             <Shield className="w-4 h-4 text-white/50" /> Audited Contract
           </h3>
           <p className="text-xs text-white/40 leading-relaxed mb-4">
-            El mecanismo de Staking de PachaNova está protegido mediante contratos inteligentes de Escrow en el registro contable inmutable. No hay periodo de "cooldown" (puedes retirar cuando desees).
+            El mecanismo de Staking de PachaNova está protegido mediante contratos inteligentes de Escrow en el registro contable inmutable. No hay periodo de &quot;cooldown&quot; (puedes retirar cuando desees).
           </p>
           <a href="#" className="text-[#c5a46d] text-xs hover:underline flex items-center gap-1">
             Ver auditoría en explorador <ChevronRight className="w-3 h-3" />

@@ -1,47 +1,23 @@
-import { RouteBreadcrumbs } from "@/components/mission";
-import { MarketplaceClient } from "./MarketplaceClient";
-import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
-import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
 
-export default async function MarketplacePage() {
-  const cookieStore = await cookies();
-  const sessionStr = cookieStore.get('pachanova-mock-session')?.value;
-  if (!sessionStr) redirect('/login');
-  
-  const user = JSON.parse(sessionStr);
-  if (user.role !== 'investor') redirect('/dashboard/admin');
-
-  // Fetch open P2P orders
-  const openOrders = await db.query.p2pOrders.findMany({
-    where: eq(schema.p2pOrders.status, "open"),
-    with: {
-      property: true,
-      sellerInvestor: true,
-    }
-  });
-
-  // Fetch properties for the sell form
-  const properties = await db.select().from(schema.properties);
-
+export default function MarketplacePage() {
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-2">
-        <RouteBreadcrumbs />
-        <h1 className="text-3xl font-light tracking-tight text-pn-text">
-          Marketplace <span className="font-semibold text-pn-gold">P2P</span>
-        </h1>
-        <p className="text-pn-text-muted">
-          Mercado secundario de fracciones RWA. Compra y vende tokens con otros inversores de la red.
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 relative overflow-hidden text-white">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div className="max-w-md w-full text-center relative z-10 p-8 rounded-3xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl shadow-2xl">
+        <div className="text-4xl mb-4">🤝</div>
+        <h2 className="text-2xl font-bold text-[#c5a46d] tracking-tight mb-2">Mercado Secundario (P2P)</h2>
+        <p className="text-sm text-white/60 mb-6 leading-relaxed">
+          Este módulo está siendo preparado para la versión definitiva de PachaNova V2.0.
+          Permitirá la transferencia controlada de derechos económicos entre inversores registrados.
         </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#c5a46d]">
+          <span className="w-2 h-2 rounded-full bg-[#c5a46d] animate-pulse"></span>
+          MODO CONSULTA • PRÓXIMAMENTE
+        </div>
       </div>
-
-      <MarketplaceClient 
-        orders={openOrders} 
-        properties={properties} 
-      />
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-import { db } from '@pachanova/database';
-import { usersIdentity } from '@pachanova/database/src/schema';
+import { db } from '@/server/db';
+import { usersIdentity } from '@pachanova/database';
 import { eq } from 'drizzle-orm';
 
 export async function processFiatInvestment(formData: FormData) {
@@ -16,7 +16,7 @@ export async function processFiatInvestment(formData: FormData) {
     }
 
     // a) Verificación de Sesión
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

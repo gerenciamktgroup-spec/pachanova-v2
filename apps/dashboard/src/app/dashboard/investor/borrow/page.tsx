@@ -1,144 +1,23 @@
-import { Suspense } from "react";
-import { RouteBreadcrumbs, LoadingState, ErrorState } from "@/components/mission";
-import { createServerClient } from "@/utils/supabase/server";
-import { eq, inArray, sql } from "drizzle-orm";
-import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
-import DeFiBorrowClient from "./DeFiBorrowClient";
-
-export const dynamic = 'force-dynamic';
-
-async function fetchBorrowData() {
-  try {
-    const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // Default to mock investor if not logged in for demo ease
-    const userEmail = user?.email || "investor@pachanova.local";
-
-
-    // Fetch investor profile
-    const investor = await db.query.users.findFirst({
-      where: eq(schema.users.email, userEmail),
-    });
-
-    if (!investor) {
-      return { error: "Investor profile not found. Please log in first." };
-    }
-
-    // Fetch all active balances/holdings - Fase3 real paths (landbank 5PNC collateral PAR etc via DB join)
-    const portfolioRows = await db.execute(sql`
-      SELECT 
-        b.available_tokens, b.locked_tokens, b.available_usd, b.locked_usd,
-        p.id as property_id, p.name as property_name, p.property_type, p.location, p.status,
-        p.token_price_usd, p.annual_yield_expected, p.metadata
-      FROM balances b
-      JOIN properties p ON b.property_id = p.id
-      WHERE b.investor_id = ${investor.id}
-    `);
-
-    let portfolio = (portfolioRows as any[]).map((row: any) => ({
-      propertyId: row.property_id,
-      propertyName: row.property_name,
-      propertyType: row.property_type,
-      location: row.location,
-      availableTokens: row.available_tokens,
-      lockedTokens: row.locked_tokens,
-      availableUsd: row.available_usd,
-      lockedUsd: row.locked_usd,
-      tokenPriceUsd: row.token_price_usd,
-      metadata: row.metadata, // for 5PNC net/landbank tie
-    }));
-
-    if (portfolio.length === 0) {
-      // Mock portfolio for Vercel Demo when DB is empty
-      portfolio = [
-        {
-          propertyId: "mock-123",
-          propertyName: "Terreno Paracas (PNC-PAR-001)",
-          propertyType: "land",
-          location: "Paracas, Perú",
-          availableTokens: "100",
-          lockedTokens: "0",
-          availableUsd: "50000",
-          lockedUsd: "0",
-          tokenPriceUsd: "500",
-          metadata: { pncCode: "PNC-PAR-001" },
-        }
-      ];
-    }
-
-    // Fetch all active loans
-    const loans = await db.query.loans.findMany({
-      where: eq(schema.loans.investorId, investor.id),
-      orderBy: (l, { desc }) => [desc(l.createdAt)],
-    });
-
-    // Fetch all properties to have the dynamic reference list
-    const properties = await db.query.properties.findMany({
-      where: inArray(schema.properties.status, ['trading', 'funding', 'funded']),
-    });
-
-    return {
-      investor: {
-        id: investor.id,
-        fullName: `${investor.firstName} ${investor.lastName}`.trim(),
-        email: investor.email,
-      },
-      portfolio,
-      loans: loans.map(l => ({ ...l, createdAt: l.createdAt.toISOString(), updatedAt: l.updatedAt.toISOString() })),
-      properties: properties.map(p => ({
-        id: p.id,
-        name: p.name,
-        location: p.location,
-        tokenPriceUsd: p.tokenPriceUsd,
-        annualYieldExpected: p.annualYieldExpected || "0",
-        imageUrl: p.imageUrl,
-      })),
-    };
-  } catch (error: any) {
-    console.error("Error loading borrow data:", error);
-    return { error: error.message };
-  }
-}
-
-async function BorrowContent() {
-  const data = await fetchBorrowData();
-
-  if (data.error) {
-    return (
-      <ErrorState 
-        title="Error al Cargar Módulo DeFi" 
-        message={data.error} 
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-        <RouteBreadcrumbs items={[
-          { label: "Dashboard" },
-          { label: "Inversor" },
-          { label: "Préstamos DeFi" }
-        ]} />
-      </div>
-
-      <DeFiBorrowClient
-        investor={data.investor!}
-        portfolio={data.portfolio!}
-        initialLoans={data.loans!}
-        properties={data.properties!}
-      />
-    </div>
-  );
-}
+export const dynamic = "force-dynamic";
 
 export default function BorrowPage() {
   return (
-    <Suspense fallback={<LoadingState message="Cargando panel de préstamos DeFi..." />}>
-      <BorrowContent />
-    </Suspense>
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 relative overflow-hidden text-white">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+      
+      <div className="max-w-md w-full text-center relative z-10 p-8 rounded-3xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl shadow-2xl">
+        <div className="text-4xl mb-4">🏦</div>
+        <h2 className="text-2xl font-bold text-[#c5a46d] tracking-tight mb-2">Línea de Crédito & Préstamos</h2>
+        <p className="text-sm text-white/60 mb-6 leading-relaxed">
+          Este módulo está siendo preparado para la versión definitiva de PachaNova V2.0.
+          Podrás solicitar préstamos respaldados por tus participaciones en fideicomisos reales.
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#c5a46d]">
+          <span className="w-2 h-2 rounded-full bg-[#c5a46d] animate-pulse"></span>
+          MODO CONSULTA • PRÓXIMAMENTE
+        </div>
+      </div>
+    </div>
   );
 }
-

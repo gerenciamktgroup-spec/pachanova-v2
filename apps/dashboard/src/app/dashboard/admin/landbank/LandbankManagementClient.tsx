@@ -389,10 +389,10 @@ export default function LandbankManagementClient() {
           <a href="#ver-avances" className="text-emerald-400 text-xs underline">ver en investor/admin →</a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-[11px] text-white/80">
-          <div>✅ Fase 1: Hub central investor/admin + banners "PachaNova Landbanking" + identity everywhere + clean more beta/demo remnants (kept rich 5PNC orq fallbacks) + nav unificado.</div>
+          <div>✅ Fase 1: Hub central investor/admin + banners &quot;PachaNova Landbanking&quot; + identity everywhere + clean more beta/demo remnants (kept rich 5PNC orq fallbacks) + nav unificado.</div>
           <div>✅ Fase 4: HologramPncCard expanded to yields, governance, marketplace, main investor hero/portfolio, admin sections. Per-product, flywheel, orq data rich viz.</div>
-          <div>✅ Central hub feel: Landbanking Hub primary entry, quick holograms + links in every dashboard page. Simple unified "one project".</div>
-          <div>✅ "Ver todos los avances" concrete: this panel + anchors + summary of Fases + orq numbers + progress links. Full project + tools (P2P/credits/yields/gov/orq/Master/autonomy).</div>
+          <div>✅ Central hub feel: Landbanking Hub primary entry, quick holograms + links in every dashboard page. Simple unified &quot;one project&quot;.</div>
+          <div>✅ &quot;Ver todos los avances&quot; concrete: this panel + anchors + summary of Fases + orq numbers + progress links. Full project + tools (P2P/credits/yields/gov/orq/Master/autonomy).</div>
           <div>✅ Blackboard update + plan sync (landbanking = everything + tools). No touch other sessions.</div>
           <div>✅ Post-F6: live orq high-level bridge (ORQ EXERCISED badges + F16/21/36/47/51/53 refs in Hologram + clients), permanent demo bootstrap (scripts/demo-visuals.ps1), E2E/hologram expansions to more surfaces (investor hero, marketplace, yields/gov/borrow in showcase), more ver avances + cross links, reinforced full project banners + rich permanent demo. All integrated. NOT STOPPING.</div>
         </div>

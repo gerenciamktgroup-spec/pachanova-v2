@@ -2,8 +2,16 @@ import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
 import { Building2, PieChart, TrendingUp, Coins } from "lucide-react";
 
+import { sql } from "drizzle-orm";
+
 export default async function LandbankAnalytics() {
-  const properties = await db.query.properties.findMany();
+  let properties: any[] = [];
+  try {
+    const rawProps = await db.execute(sql`SELECT * FROM public.properties`);
+    properties = rawProps as any[];
+  } catch (err) {
+    console.error("Error querying properties for analytics:", err);
+  }
   const distributions = await db.query.distributions.findMany();
   const balances = await db.query.balances.findMany();
 

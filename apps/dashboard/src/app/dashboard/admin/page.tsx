@@ -16,6 +16,8 @@ import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { adminJourney } from "@/lib/navigation/userJourneys";
 import { HologramPncCard } from "@/components/product/HologramPncCard"; // Fase4: expand to admin sections + central hub + PachaNova Landbanking identity
+import { db } from "@/server/db";
+import { sql } from "drizzle-orm";
 
 async function fetchTreasury() {
   try {
@@ -161,6 +163,21 @@ async function AdminDashboardContent() {
     return <ErrorState title="Error de Simulación" message="No se pudo construir el ViewModel de administrador." />;
   }
 
+  let pncs: any[] = [];
+  try {
+    const rawProps = await db.execute(sql`
+      SELECT id, name, location, property_type as "propertyType", status, 
+             total_valuation_usd as "totalValuationUsd", token_price_usd as "tokenPriceUsd", 
+             total_tokens as "totalTokens", available_tokens as "availableTokens", 
+             annual_yield_expected as "annualYieldExpected", metadata 
+      FROM public.properties 
+      LIMIT 4
+    `);
+    pncs = rawProps as any[];
+  } catch (err) {
+    console.error("Error querying properties for admin page:", err);
+  }
+
   return (
     <div className="space-y-8 pb-24">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -184,8 +201,8 @@ async function AdminDashboardContent() {
       <div className="p-4 border border-[#c5a46d]/30 bg-[#0a111f] rounded-xl mb-4">
         <div className="text-[10px] text-[#c5a46d] tracking-widest mb-2">RESUMEN DE PROPIEDADES LANDBANKING EN HOLOGRAMA</div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          {/* Real data from shared helper for Maestro holograms + Vender P2P */}
-          {(await (await import('../../../server/db')).getRealHologramPncs(4)).map((pnc: any, i: number) => (
+          {/* Real data from public.properties in database */}
+          {pncs.map((pnc: any, i: number) => (
             <div key={i}>
               <HologramPncCard pnc={pnc as any} compact />
               <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
