@@ -1,0 +1,18 @@
+import { pgTable, uuid, numeric, timestamp, boolean, varchar, jsonb } from "drizzle-orm/pg-core";
+
+export const distributions = pgTable("distributions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  propertyId: uuid("property_id").notNull(),
+  investorId: uuid("investor_id").notNull(),
+  amountUsd: numeric("amount_usd", { precision: 18, scale: 2 }).notNull(),
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  isDemo: boolean("is_demo").notNull().default(false),
+  status: varchar("status", { length: 50 }).notNull().default("PAGADO"),
+  proofRef: varchar("proof_ref", { length: 255 }),
+  claimedAt: timestamp("claimed_at"),
+  compoundDetails: jsonb("compound_details"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  onchainProof: varchar("onchain_proof", { length: 255 }),
+  lastOnchainSync: timestamp("last_onchain_sync"),
+});

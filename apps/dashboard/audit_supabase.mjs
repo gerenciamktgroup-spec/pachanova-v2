@@ -15,6 +15,7 @@ const cleanUrl = dbUrl
   .replace('pgbouncer=true&', '')
   .replace('&pgbouncer=true', '')
   .replace('?pgbouncer=true', '');
+const cleanUrl2 = cleanUrl; // to match cleanUrl variable usage if needed
 
 console.log("Connecting to:", cleanUrl.split('@')[1] || "Supabase");
 
