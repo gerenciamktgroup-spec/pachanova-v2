@@ -22,7 +22,6 @@ import { YieldActionButtons } from "./YieldActionClient";
 import { createServerClient } from "@/utils/supabase/server";
 import { eq } from "drizzle-orm";
 import { schema } from "@pachanova/database";
-import { loadSchema10FromDb, getRealHologramPncs, db as realDb } from "@/server/db";
 
 async function fetchInvestorData(): Promise<any> {
   let holdings: any[] = [{
@@ -55,12 +54,6 @@ async function fetchInvestorData(): Promise<any> {
   }));
 
   let realHologramPncs: any[] = [];
-  try {
-    realHologramPncs = await getRealHologramPncs(5);
-  } catch {
-    realHologramPncs = [];
-  }
-
   return {
     investor: {
       id: "real-investor",
@@ -89,7 +82,6 @@ async function fetchInvestorData(): Promise<any> {
 import { cookies } from "next/headers";
 import GamificationHUD from "@/components/dashboard/investor/GamificationHUD";
 import { db } from "@/server/db";
-
 async function InvestorDashboardContent() {
   const view = await fetchInvestorData();
 
