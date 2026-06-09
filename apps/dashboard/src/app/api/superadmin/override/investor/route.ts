@@ -20,16 +20,16 @@ export async function POST(req: NextRequest) {
     let oldValue = null;
 
     if (field === "kycStatus") {
-      const inv = await db.query.users.findFirst({
-        where: eq(schema.users.id, investorId),
+      const inv = await db.query.investors.findFirst({
+        where: eq(schema.investors.id, investorId),
       });
       if (!inv) return NextResponse.json({ success: false, error: "Investor not found" }, { status: 404 });
       oldValue = inv.kycStatus;
 
       await db
-        .update(schema.users)
+        .update(schema.investors)
         .set({ kycStatus: value } as any)
-        .where(eq(schema.users.id, investorId));
+        .where(eq(schema.investors.id, investorId));
     } else if (field === "availableUsd" || field === "availableTokens") {
       // Find balance
       const whereClause = propertyId 

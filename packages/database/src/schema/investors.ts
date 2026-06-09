@@ -1,7 +1,7 @@
 import { pgTable, uuid, varchar, timestamp, boolean, jsonb, integer } from "drizzle-orm/pg-core";
 import { userRoleEnum, kycStatusEnum } from './enums';
 
-export const users = pgTable("users", {
+export const investors = pgTable("investors", {
   id: uuid("id").primaryKey().defaultRandom(),
   supabaseAuthId: uuid("supabase_auth_id"), // FK to auth.users.id
   firstName: varchar("first_name", { length: 255 }).notNull(),

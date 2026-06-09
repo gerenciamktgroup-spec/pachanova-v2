@@ -118,7 +118,7 @@ export async function claimDividends() {
     if (!user) throw new Error("No autenticado");
 
     const db = getDb();
-    const [dbUser] = await db.select().from(schema.users).where(eq(schema.users.supabaseAuthId, user.id));
+    const [dbUser] = await db.select().from(schema.investors).where(eq(schema.investors.supabaseAuthId, user.id));
     if (!dbUser) throw new Error("Usuario no encontrado");
 
     // 1. Buscar dividendos pendientes ("PENDIENTE")

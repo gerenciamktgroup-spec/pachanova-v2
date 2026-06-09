@@ -20,10 +20,10 @@ export async function updateUserProfile(data: {
 
     const db = getDb();
     
-    const [existingUser] = await db.select().from(schema.users).where(eq(schema.users.supabaseAuthId, user.id));
+    const [existingUser] = await db.select().from(schema.investors).where(eq(schema.investors.supabaseAuthId, user.id));
     if (!existingUser) throw new Error("Usuario no encontrado en la base de datos");
 
-    await db.update(schema.users)
+    await db.update(schema.investors)
       .set({
         firstName: data.firstName ?? existingUser.firstName,
         lastName: data.lastName ?? existingUser.lastName,
@@ -31,7 +31,7 @@ export async function updateUserProfile(data: {
         country: data.country ?? existingUser.country,
         updatedAt: new Date()
       })
-      .where(eq(schema.users.id, existingUser.id));
+      .where(eq(schema.investors.id, existingUser.id));
 
     revalidatePath("/dashboard/investor/settings");
     return { success: true };

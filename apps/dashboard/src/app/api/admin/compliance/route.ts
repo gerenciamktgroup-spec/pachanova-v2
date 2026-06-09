@@ -14,7 +14,7 @@ import { eq, sql, count } from 'drizzle-orm';
 export async function GET() {
   try {
     // Aggregate KYC stats
-    const allInvestors = await db.query.users.findMany({
+    const allInvestors = await db.query.investors.findMany({
       columns: {
         id: true,
         kycStatus: true,
@@ -68,9 +68,9 @@ export async function POST(req: Request) {
     }
 
     if (kycAction === 'approve') {
-      await db.update(schema.users)
+      await db.update(schema.investors)
         .set({ kycStatus: 'approved' })
-        .where(eq(schema.users.id, investorId));
+        .where(eq(schema.investors.id, investorId));
 
       await db.insert(schema.auditLogs).values({
         action: 'KYC_APPROVED',
@@ -81,9 +81,9 @@ export async function POST(req: Request) {
     }
 
     if (kycAction === 'reject') {
-      await db.update(schema.users)
+      await db.update(schema.investors)
         .set({ kycStatus: 'rejected' })
-        .where(eq(schema.users.id, investorId));
+        .where(eq(schema.investors.id, investorId));
 
       await db.insert(schema.auditLogs).values({
         action: 'KYC_REJECTED',

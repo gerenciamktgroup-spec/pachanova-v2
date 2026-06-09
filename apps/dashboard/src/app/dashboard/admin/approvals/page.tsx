@@ -23,11 +23,11 @@ export default async function ApprovalsPage() {
 
     // Obtener inversores para mapear nombres (Simplificado, idealmente usar JOINs)
     const investors = await db.select({
-      id: schema.users.id,
-      email: schema.users.email,
-      firstName: schema.users.firstName,
-      lastName: schema.users.lastName
-    }).from(schema.users);
+      id: schema.investors.id,
+      email: schema.investors.email,
+      firstName: schema.investors.firstName,
+      lastName: schema.investors.lastName
+    }).from(schema.investors);
 
     const investorMap = investors.reduce((acc, inv) => {
       acc[inv.id] = { name: `${inv.firstName || ''} ${inv.lastName || ''}`.trim() || 'Inversor', email: inv.email };

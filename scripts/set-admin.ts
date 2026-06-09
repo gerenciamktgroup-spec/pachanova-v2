@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import path from 'path'
 import { eq } from 'drizzle-orm'
-import { getDb, users } from '../packages/database/src/index.js'
+import { getDb, investors } from '../packages/database/src/index.js'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
@@ -54,9 +54,9 @@ async function main() {
     // 3. Actualizar tabla public.users (si existe)
     try {
       const db = getDb()
-      await db.update(users)
+      await db.update(investors)
         .set({ role: 'admin' })
-        .where(eq(users.supabaseAuthId, user.id))
+        .where(eq(investors.supabaseAuthId, user.id))
       console.log(`✅ Rol actualizado a 'admin' en tabla public.users`)
     } catch (dbError: any) {
       console.warn(`⚠️ No se pudo actualizar public.users, es posible que no tenga registro aún: ${dbError.message}`)

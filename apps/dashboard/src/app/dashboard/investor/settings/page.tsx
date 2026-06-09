@@ -15,7 +15,7 @@ export default async function SettingsPage() {
   }
 
   const db = getDb();
-  const [dbUser] = await db.select().from(schema.users).where(eq(schema.users.supabaseAuthId, user.id));
+  const [dbUser] = await db.select().from(schema.investors).where(eq(schema.investors.supabaseAuthId, user.id));
 
   return (
     <div className="space-y-6">
