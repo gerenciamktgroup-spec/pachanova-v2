@@ -9,7 +9,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     alias: {
-      '@': path.resolve(__dirname, './apps/web/src'),
+      '@': path.resolve(__dirname, './apps/dashboard/src'),
       '@pachanova/database': path.resolve(__dirname, './packages/database'),
       '@pachanova/integrations': path.resolve(__dirname, './packages/integrations/src/index.ts')
     }

@@ -233,6 +233,19 @@ export function DarkFooter() {
             </div>
           </div>
         </div>
+
+        {/* Descargo de Responsabilidad Legal / Institutional RWA Disclaimers */}
+        <div className="mb-12 p-6 bg-white/[0.02] border border-white/10 rounded-xl text-[11px] text-white/40 leading-relaxed space-y-3">
+          <p>
+            <strong className="text-white/60">ADVERTENCIA DE RIESGO Y DESCARGO DE RESPONSABILIDAD LEGAL:</strong> La participación en proyectos inmobiliarios a través de esquemas de co-inversión o fideicomisos conlleva riesgos significativos, incluyendo la posible pérdida del capital aportado, la falta de liquidez inmediata y la fluctuación de los rendimientos proyectados. Los rendimientos históricos o estimados mostrados en esta plataforma no garantizan resultados futuros.
+          </p>
+          <p>
+            PachaNova es una plataforma tecnológica que facilita la estructuración y seguimiento de aportes a fideicomisos inmobiliarios administrados por fiduciarias debidamente reguladas. La adquisición de tokens fiduciarios representa la titularidad sobre derechos de participación fiduciaria (derechos de cobro y beneficios económicos) derivados del patrimonio autónomo de cada fideicomiso, y no constituye un título de propiedad directa inscrito en registros públicos de la propiedad raíz, ni una oferta pública de valores.
+          </p>
+          <p>
+            Esta plataforma no realiza intermediación financiera, captación de ahorro público, ni asesoramiento financiero, legal o fiscal. Se recomienda a los participantes realizar su propio análisis de diligencia y consultar con asesores profesionales independientes antes de realizar cualquier aporte.
+          </p>
+        </div>
         
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/40">
           <p>&copy; {new Date().getFullYear()} PachaNova LLC. Todos los derechos reservados.</p>
