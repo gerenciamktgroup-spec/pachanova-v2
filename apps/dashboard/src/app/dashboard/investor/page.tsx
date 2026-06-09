@@ -20,8 +20,6 @@ import { fetchMaestroYields, fetchMaestroYieldForecast } from "@pachanova/integr
 import { YieldActionButtons } from "./YieldActionClient";
 
 import { createServerClient } from "@/utils/supabase/server";
-import { eq } from "drizzle-orm";
-import { schema } from "@pachanova/database";
 
 async function fetchInvestorData(): Promise<any> {
   let holdings: any[] = [{
@@ -81,7 +79,6 @@ async function fetchInvestorData(): Promise<any> {
 
 import { cookies } from "next/headers";
 import GamificationHUD from "@/components/dashboard/investor/GamificationHUD";
-import { db } from "@/server/db";
 async function InvestorDashboardContent() {
   const view = await fetchInvestorData();
 
@@ -101,16 +98,12 @@ async function InvestorDashboardContent() {
     try {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
       if (isUuid) {
-        const user = await db.query.users.findFirst({
-          where: eq(schema.users.id, userId)
-        });
-        if (user) {
-          userXP = user.xp;
-          userLevel = user.level;
-        }
+        // Fallback genérico para V2.0 hasta migrar Gamification a SQL-First
+        userXP = 1500;
+        userLevel = 3;
       }
     } catch (e) {
-      console.error("Error fetching user XP:", e);
+      console.error("Error setting up generic user XP:", e);
     }
   }
 
