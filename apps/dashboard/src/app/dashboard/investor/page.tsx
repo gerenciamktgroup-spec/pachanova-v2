@@ -25,49 +25,12 @@ import { schema } from "@pachanova/database";
 import { loadSchema10FromDb, getRealHologramPncs, db as realDb } from "@/server/db";
 
 async function fetchInvestorData(): Promise<any> {
-  let holdings: any[] = [];
-
-  try {
-    const real = await loadSchema10FromDb?.('PNC-PAR-001');
-
-    if ((real?.holdings?.length || 0) > 0) {
-      holdings = real!.holdings;
-    } else {
-      const props = await realDb
-        .select()
-        .from(schema.properties)
-        .where(eq(schema.properties.name, 'PNC-PAR-001'))
-        .limit(1);
-
-      const bals = props[0]
-        ? await realDb.select().from(schema.balances).where(eq(schema.balances.propertyId, props[0].id)).limit(3)
-        : [];
-
-      holdings = bals.map((b: any) => ({
-        pnc_codigo: 'PNC-PAR-001',
-        holdings_amount: Number(b.availableTokens || 0),
-        effective_amount: Number(b.availableUsd || 0),
-        land_meta: props[0]?.metadata || {}
-      }));
-    }
-    // Fallback a Demo Vercel si la base de datos está vacía (sin holdings)
-    if (holdings.length === 0) {
-      holdings = [{
-        pnc_codigo: 'PNC-PAR-001',
-        holdings_amount: 100,
-        effective_amount: 50000,
-        land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
-      }];
-    }
-
-  } catch {
-    holdings = [{
-      pnc_codigo: 'PNC-PAR-001',
-      holdings_amount: 100,
-      effective_amount: 50000,
-      land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
-    }];
-  }
+  let holdings: any[] = [{
+    pnc_codigo: 'PNC-PAR-001',
+    holdings_amount: 100,
+    effective_amount: 50000,
+    land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
+  }];
 
   const portfolio = holdings.map((h: any) => ({
     propertyId: h.pnc_codigo?.toLowerCase() || 'pnc-par-001',
