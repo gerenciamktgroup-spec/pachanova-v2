@@ -2,6 +2,7 @@ import { execSync } from 'child_process';
 import path from 'path';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import { sql } from 'drizzle-orm';
 import { DemoEnvironmentConfig, DemoEnvironmentStatus, ApplyScenarioOptions } from './types';
 import { getScenario, type DemoScenarioRunner } from './scenarios';
 import * as schema from '@pachanova/database'; // for schema access if needed
@@ -141,20 +142,20 @@ export class DemoEnvironmentManager {
     try {
       const status = await this.withDb(async (db) => {
         // Contar usuarios de demo
-        const usersResult = await db.execute`
+        const usersResult = await db.execute(sql`
           SELECT COUNT(*) as count FROM investors 
           WHERE email LIKE '%@pachanova.local'
-        `;
+        `);
         const demoUsersCount = Number(usersResult[0]?.count || 0);
 
         // Balance del holder (usuario principal de demo)
-        const balanceResult = await db.execute`
+        const balanceResult = await db.execute(sql`
           SELECT available_tokens, available_usd 
           FROM balances 
           WHERE investor_id = (
             SELECT id FROM investors WHERE email = 'demo.investor.holder@pachanova.local'
           )
-        `;
+        `);
         const holderBalance = balanceResult[0] 
           ? { 
               availableTokens: balanceResult[0].available_tokens, 
@@ -163,26 +164,26 @@ export class DemoEnvironmentManager {
           : undefined;
 
         // Eventos de integración recientes (últimas 24h)
-        const eventsResult = await db.execute`
+        const eventsResult = await db.execute(sql`
           SELECT COUNT(*) as count FROM integration_events 
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        `;
+          WHERE timestamp > NOW() - INTERVAL '24 hours'
+        `);
         const recentIntegrationEvents = Number(eventsResult[0]?.count || 0);
 
         // ¿Existen pagos fallidos recientes?
-        const failedResult = await db.execute`
+        const failedResult = await db.execute(sql`
           SELECT COUNT(*) as count FROM genesis_purchases 
           WHERE status = 'failed' 
             AND timestamp > NOW() - INTERVAL '7 days'
-        `;
+        `);
         const hasFailedPayments = Number(failedResult[0]?.count || 0) > 0;
 
         // ¿Existen documentos KYC pendientes?
-        const kycResult = await db.execute`
+        const kycResult = await db.execute(sql`
           SELECT COUNT(*) as count FROM kyc_documents 
           WHERE status = 'pending' 
             AND is_demo = true
-        `;
+        `);
         const hasPendingKyc = Number(kycResult[0]?.count || 0) > 0;
 
         return {

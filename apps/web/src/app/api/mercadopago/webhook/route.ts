@@ -130,6 +130,12 @@ export async function POST(req: Request) {
          return NextResponse.json({ success: false, error: 'Currency mismatch' }, { status: 400 });
       }
 
+      // Validate UUID format to prevent database crashes on invalid strings
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(external_reference)) {
+         return NextResponse.json({ success: false, error: 'Unknown orderId' }, { status: 404 });
+      }
+
       // Buscar order
       const order = await db.query.tokenOrders.findFirst({
          where: eq(schema.tokenOrders.id, external_reference)

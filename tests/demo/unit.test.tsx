@@ -230,9 +230,12 @@ describe('Demo Local Acceptance Tests', () => {
 
     it('acepta localhost pachanova_demo', () => {
       const origMode = process.env.DEMO_MODE;
+      const origUrl = process.env.SUPABASE_URL;
       process.env.DEMO_MODE = 'true';
+      process.env.SUPABASE_URL = 'https://cndppfspgqomgwixlfkw.supabase.co';
       expect(() => validateDemoDatabaseUrl("postgresql://demo:demo@localhost:5433/pachanova_demo")).not.toThrow();
       process.env.DEMO_MODE = origMode;
+      process.env.SUPABASE_URL = origUrl;
     });
   });
 

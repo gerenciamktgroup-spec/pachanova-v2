@@ -56,10 +56,28 @@ async function seed() {
     });
   }
 
-  // 2. Seed Valuation
+  // 2. Seed Property first
+  await db.delete(schema.properties).where(eq(schema.properties.isDemo, true));
+  const [property] = await db.insert(schema.properties).values({
+    name: "San Bartolo Terreno Demo",
+    location: "Lima, Peru",
+    status: "trading",
+    totalValuationUsd: "4200000.00",
+    tokenPriceUsd: "8.40",
+    totalTokens: "500000.00",
+    availableTokens: "500000.00",
+    annualYieldExpected: "8.50",
+    isDemo: true
+  }).returning();
+
+  const propertyId = property.id;
+
+  // 3. Seed Valuation
   await db.delete(schema.annualValuations).where(eq(schema.annualValuations.source, "DEMO_VALUATION"));
   await db.insert(schema.annualValuations).values({
+    propertyId: propertyId,
     year: 2026,
+    totalValuationUsd: "4200000.00",
     pricePerSqm: "84.00",
     pricePerToken: "8.40",
     source: "DEMO_VALUATION",
