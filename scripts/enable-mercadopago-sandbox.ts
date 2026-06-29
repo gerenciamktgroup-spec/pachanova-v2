@@ -28,8 +28,8 @@ for (const key of requiredKeys) {
   }
 }
 
-if (!process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('TEST_')) {
-  console.error("❌ MERCADOPAGO_ACCESS_TOKEN must start with TEST_");
+if (!process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('TEST_') && !process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('TEST-')) {
+  console.error("❌ MERCADOPAGO_ACCESS_TOKEN must start with TEST_ or TEST-");
   valid = false;
 }
 

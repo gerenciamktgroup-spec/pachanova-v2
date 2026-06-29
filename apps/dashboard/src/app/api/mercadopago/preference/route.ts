@@ -20,8 +20,8 @@ export async function POST(req: Request) {
     }
 
     const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN || '';
-    if (!accessToken.startsWith('TEST_') || accessToken.startsWith('APP_USR')) {
-      return NextResponse.json({ success: false, error: 'Sandbox requires TEST_ access token' }, { status: 403 });
+    if ((!accessToken.startsWith('TEST_') && !accessToken.startsWith('TEST-')) || accessToken.startsWith('APP_USR')) {
+      return NextResponse.json({ success: false, error: 'Sandbox requires TEST_ or TEST- access token' }, { status: 403 });
     }
 
     const body = await req.json();
