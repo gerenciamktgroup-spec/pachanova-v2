@@ -26,3 +26,4 @@ playwright-report/
 test-results/
 test-*.mjs
 verify-*.mjs
+.vercel

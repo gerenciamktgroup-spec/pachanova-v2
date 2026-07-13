@@ -1,9 +1,84 @@
 import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { InvestorDashboardView } from "@/types/product";
+import { db } from "@/server/db";
+import * as schema from "@pachanova/database/src/schema";
+import { eq } from "drizzle-orm";
 
 export async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
   try {
+    if (process.env.DEMO_MODE === 'true') {
+      // 1. Fetch default demo investor from Drizzle
+      const investor = await db.query.investors.findFirst({
+        where: eq(schema.investors.email, "demo.investor.approved@pachanova.local")
+      });
+
+      if (!investor) {
+        console.error("Demo investor not found in local Drizzle DB!");
+        return null;
+      }
+
+      // 2. Balance
+      const balance = await db.query.balances.findFirst({
+        where: eq(schema.balances.investorId, investor.id)
+      });
+
+      // 3. Transactions
+      const transactions = await db.query.tokenLedger.findMany({
+        where: eq(schema.tokenLedger.investorId, investor.id),
+        orderBy: (table, { desc }) => [desc(table.timestamp)],
+        limit: 10
+      });
+
+      // 4. KYC Status
+      const kycDocs = await db.query.kycDocuments.findMany({
+        where: eq(schema.kycDocuments.investorId, investor.id),
+        orderBy: (table, { desc }) => [desc(table.createdAt)],
+        limit: 1
+      });
+
+      const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kycStatus || "pending");
+
+      return {
+        investor: {
+          id: investor.id,
+          fullName: `${investor.firstName} ${investor.lastName}`.trim(),
+          email: investor.email,
+          kycStatus: kycStatus as "pending" | "approved" | "rejected",
+          isVerified: investor.isVerified || false,
+          balance: {
+            investorId: investor.id,
+            availableTokens: balance?.availableTokens?.toString() || "0",
+            lockedTokens: balance?.lockedTokens?.toString() || "0",
+            availableUsd: balance?.availableUsd?.toString() || "0",
+            lockedUsd: "0",
+            lastUpdated: balance?.updatedAt?.toISOString() || new Date().toISOString()
+          }
+        },
+        recentTransactions: transactions.map((tx: any) => ({
+          id: tx.id,
+          operationType: tx.type || "TRANSFER",
+          amount: tx.amount?.toString() || "0",
+          timestamp: tx.createdAt?.toISOString(),
+          txHash: tx.txHash || null,
+          status: tx.status || "confirmed"
+        })),
+        kycVerificationProvider: "SIMULATED",
+        paymentsReadiness: {
+          provider: "MERCADOPAGO",
+          status: "PENDING_CREDENTIALS",
+          lastPing: null,
+          message: "No credentials"
+        },
+        contractReadiness: {
+          provider: "FOUNDRY",
+          status: "PENDING_FOUNDRY",
+          lastPing: null,
+          message: "Node inactive"
+        }
+      };
+    }
+
     const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 

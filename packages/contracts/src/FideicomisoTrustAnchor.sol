@@ -26,6 +26,9 @@ contract FideicomisoTrustAnchor is AccessControl, Pausable {
 
     // Mapping from a unique hash (e.g., SUNARP hash document) to its confirmation state
     mapping(bytes32 => ConfirmationState) public documentConfirmations;
+    
+    // Rastrear si una dirección específica ya firmó un documento específico
+    mapping(bytes32 => mapping(address => bool)) public hasSigned;
 
     event RespaldoConfirmado(bytes32 indexed sunarpHash, uint256 timestamp);
     event RespaldoFirmaAgregada(bytes32 indexed sunarpHash, address signer, bytes32 role);
@@ -44,6 +47,7 @@ contract FideicomisoTrustAnchor is AccessControl, Pausable {
      */
     function confirmarRespaldo(bytes32 sunarpHash) external whenNotPaused {
         require(!documentConfirmations[sunarpHash].executed, "El respaldo ya fue ejecutado");
+        require(!hasSigned[sunarpHash][msg.sender], "Esta direccion ya firmo la confirmacion");
         
         bool hasFiduciario = hasRole(FIDUCIARIO_SBS_ROLE, msg.sender);
         bool hasAdmin = hasRole(ADMIN_PACHANOVA_ROLE, msg.sender);
@@ -56,17 +60,20 @@ contract FideicomisoTrustAnchor is AccessControl, Pausable {
         if (hasFiduciario && !state.fiduciarioSigned) {
             state.fiduciarioSigned = true;
             state.signatureCount++;
+            hasSigned[sunarpHash][msg.sender] = true;
             emit RespaldoFirmaAgregada(sunarpHash, msg.sender, FIDUCIARIO_SBS_ROLE);
         } else if (hasAdmin && !state.adminSigned) {
             state.adminSigned = true;
             state.signatureCount++;
+            hasSigned[sunarpHash][msg.sender] = true;
             emit RespaldoFirmaAgregada(sunarpHash, msg.sender, ADMIN_PACHANOVA_ROLE);
         } else if (hasComite && !state.comiteSigned) {
             state.comiteSigned = true;
             state.signatureCount++;
+            hasSigned[sunarpHash][msg.sender] = true;
             emit RespaldoFirmaAgregada(sunarpHash, msg.sender, COMITE_ROLE);
         } else {
-            revert("Ya firmaste esta confirmacion o rol invalido");
+            revert("Rol ya firmo esta confirmacion o rol invalido");
         }
 
         // Si se alcanzan las firmas requeridas (2 de 3), se confirma el respaldo

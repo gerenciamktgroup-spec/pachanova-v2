@@ -33,6 +33,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       DEMO_MODE: 'true',
+      NEXT_PUBLIC_IS_DEMO: 'true',
       DATABASE_URL: process.env.DATABASE_URL || 'postgresql://pachanova_demo:pachanova_demo@localhost:5433/pachanova_demo',
     }
   },

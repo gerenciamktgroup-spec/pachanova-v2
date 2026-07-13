@@ -5,8 +5,45 @@ import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { InvestorGenesisClient } from "./GenesisClient";
 import { requireRole } from "@/utils/auth/requireRole";
+import { db } from "@/server/db";
+import * as schema from "@pachanova/database/src/schema";
+import { eq } from "drizzle-orm";
 
 export default async function InvestorGenesisPage() {
+  if (process.env.DEMO_MODE === 'true') {
+    const investor = await db.query.investors.findFirst({
+      where: eq(schema.investors.email, "demo.investor.approved@pachanova.local")
+    });
+
+    if (!investor) {
+      return <div className="p-8 text-center text-pn-danger">Error: Perfil de inversor de demo no encontrado.</div>;
+    }
+
+    const kycDocs = await db.query.kycDocuments.findMany({
+      where: eq(schema.kycDocuments.investorId, investor.id),
+      orderBy: (table, { desc }) => [desc(table.createdAt)],
+      limit: 1
+    });
+    const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kycStatus || "pending");
+
+    const balance = await db.query.balances.findFirst({
+      where: eq(schema.balances.investorId, investor.id)
+    });
+    const availableUsd = balance?.availableUsd ? Number(balance.availableUsd) : 0;
+
+    const property = await db.query.properties.findFirst();
+    const propertyId = property?.id || "00000000-0000-0000-0000-000000000000";
+
+    return (
+      <InvestorGenesisClient 
+        kycStatus={kycStatus}
+        availableUsd={availableUsd}
+        investorId={investor.id}
+        propertyId={propertyId}
+      />
+    );
+  }
+
   await requireRole(["investor"]);
   
   const authClient = await createServerClient();

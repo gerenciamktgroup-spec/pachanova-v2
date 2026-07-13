@@ -25,66 +25,55 @@ export async function POST(req: Request) {
     const { investorId, propertyId, quantity, unitPrice } = result.data;
     const totalAmount = quantity * unitPrice;
 
-    // Use Supabase Service Role
-    const { createClient } = require('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // Query current balance via Drizzle
+    const currentBalance = await db.query.balances.findFirst({
+      where: eq(schema.balances.investorId, investorId)
+    });
 
-    const { data: currentBalance } = await supabase
-      .from('balances')
-      .select('*')
-      .eq('investor_id', investorId)
-      .single();
-
-    if (!currentBalance || Number(currentBalance.available_usd || 0) < totalAmount) {
+    if (!currentBalance || Number(currentBalance.availableUsd || 0) < totalAmount) {
       return NextResponse.json({ error: 'Fondos insuficientes' }, { status: 400 });
     }
 
-    // a) INSERT en token_orders
-    const { data: newOrderData } = await supabase.from('token_orders').insert({
-      investor_id: investorId,
-      property_id: propertyId,
+    // a) INSERT en token_orders via Drizzle
+    const [newOrderData] = await db.insert(schema.tokenOrders).values({
+      investorId,
+      propertyId,
       quantity: quantity.toString(),
-      unit_price: unitPrice.toString(),
-      total_amount: totalAmount.toString(),
+      unitPrice: unitPrice.toString(),
+      totalAmount: totalAmount.toString(),
       currency: 'USD',
       status: 'completed',
-      is_demo: true,
+      isDemo: true,
       metadata: { source: 'genesis_wizard' },
-    }).select().single();
+    }).returning();
 
-    // b) UPDATE balances
-    await supabase.from('balances').update({
-      available_tokens: (Number(currentBalance.available_tokens || 0) + quantity).toString(),
-      available_usd: (Number(currentBalance.available_usd || 0) - totalAmount).toString(),
-    }).eq('investor_id', investorId);
+    // b) UPDATE balances via Drizzle
+    const newTokens = (Number(currentBalance.availableTokens || 0) + quantity).toString();
+    const newUsd = (Number(currentBalance.availableUsd || 0) - totalAmount).toString();
+    
+    await db.update(schema.balances).set({
+      availableTokens: newTokens,
+      availableUsd: newUsd,
+    }).where(eq(schema.balances.investorId, investorId));
 
-    const { data: updatedBalance } = await supabase
-      .from('balances')
-      .select('available_tokens')
-      .eq('investor_id', investorId)
-      .single();
-
-    // c) INSERT en token_ledger
+    // c) INSERT en token_ledger via Drizzle
     const randomHash = crypto.randomUUID().replace(/-/g, '');
-    await supabase.from('token_ledger').insert({
-      investor_id: investorId,
+    await db.insert(schema.tokenLedger).values({
+      investorId,
       operation: 'GENESIS_PURCHASE',
       amount: quantity.toString(),
-      tx_hash: 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase(),
-      previous_hash: 'DEMO_PREV_' + randomHash,
-      current_hash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
+      txHash: 'DEMO_' + crypto.randomUUID().slice(0, 8).toUpperCase(),
+      previousHash: 'DEMO_PREV_' + randomHash,
+      currentHash: 'DEMO_CURR_' + crypto.randomUUID().replace(/-/g, ''),
     });
 
-    // d) INSERT en audit_logs
-    await supabase.from('audit_logs').insert({
+    // d) INSERT en audit_logs via Drizzle
+    await db.insert(schema.auditLogs).values({
       action: 'GENESIS_ORDER_COMPLETED',
       details: `Investor ${investorId} purchased ${quantity} PACHA tokens at $${unitPrice}`,
     });
 
-    return NextResponse.json({ success: true, orderId: newOrderData?.id, newBalance: updatedBalance?.available_tokens || '0' });
+    return NextResponse.json({ success: true, orderId: newOrderData?.id, newBalance: newTokens });
   } catch (error) {
     console.error("Genesis order error:", error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });

@@ -39,12 +39,29 @@ async function seed() {
   }).returning();
 
   const holder = users.find(u => u.email === "demo.investor.holder@pachanova.local");
+  const approved = users.find(u => u.email === "demo.investor.approved@pachanova.local");
   
   if (holder) {
     await db.insert(schema.balances).values({
       investorId: holder.id,
       availableTokens: "1250",
       availableUsd: "5000",
+      lockedTokens: "0"
+    }).onConflictDoUpdate({
+      target: schema.balances.investorId,
+      set: {
+        availableTokens: sql`EXCLUDED.available_tokens`,
+        availableUsd: sql`EXCLUDED.available_usd`,
+        lockedTokens: sql`EXCLUDED.locked_tokens`
+      }
+    });
+  }
+
+  if (approved) {
+    await db.insert(schema.balances).values({
+      investorId: approved.id,
+      availableTokens: "0",
+      availableUsd: "10000",
       lockedTokens: "0"
     }).onConflictDoUpdate({
       target: schema.balances.investorId,

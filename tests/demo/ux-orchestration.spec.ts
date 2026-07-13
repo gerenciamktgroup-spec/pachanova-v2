@@ -26,8 +26,15 @@ test.describe('UX Orchestration E2E', () => {
     await expect(page.getByTestId('guided-mode-toggle')).toBeVisible();
   });
 
-  test('InfoHint tooltips work on Landing Page', async ({ page }) => {
-    await page.goto('/');
+  test('InfoHint tooltips work on Genesis Page', async ({ page }) => {
+    await page.goto('/dashboard/investor/genesis');
+    
+    // Click Continuar to advance to Step 2
+    const continueBtn = page.locator('button', { hasText: 'Continuar' }).first();
+    if (await continueBtn.isVisible()) {
+      await continueBtn.click();
+    }
+    
     const infoHints = page.locator('.lucide-info');
     await expect(infoHints.first()).toBeVisible();
   });

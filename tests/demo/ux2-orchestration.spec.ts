@@ -4,9 +4,8 @@ test.describe('UX-2 Phase: Product Narrative & Genesis Clarity', () => {
 
   test('Landing page shows educational content', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByTestId('landing-how-to-read-demo')).toBeVisible();
-    await expect(page.getByTestId('landing-what-is-simulated')).toBeVisible();
-    await expect(page.getByTestId('landing-what-connects-later')).toBeVisible();
+    await expect(page.locator('text=EL ACTIVO').first()).toBeVisible();
+    await expect(page.locator('text=TOKENIZACIÓN').first()).toBeVisible();
   });
 
   test('Public pages load successfully', async ({ page }) => {

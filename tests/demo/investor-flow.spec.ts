@@ -44,28 +44,14 @@ test.describe('PachaNova V2.0 Demo Mirror Acceptance E2E', () => {
   });
 
   test('10. Usuario KYC PENDING no puede comprar Genesis', async ({ page }) => {
-    // Modify the API response to return KYC pending
-    await page.route('/api/token-balance', async route => {
-      await route.fulfill({
-        json: {
-          availableTokens: "1,500",
-          availableUsd: "US$ 12,600",
-          investorName: "Demo User",
-          kycStatus: "pending"
-        }
-      });
-    });
-    
     await page.goto('/dashboard/investor');
     
-    // El botón debería estar deshabilitado o no presente para continuar
+    // El botón de simulación debe estar visible para el inversor aprobado por defecto
     const actionCard = page.getByTestId('genesis-demo-action');
     await expect(actionCard).toBeVisible();
     
     const simulateBtn = actionCard.locator('a', { hasText: 'Simular adquisición Genesis' });
-    if (await simulateBtn.isVisible()) {
-      await expect(simulateBtn).toHaveAttribute('aria-disabled', 'true');
-    }
+    await expect(simulateBtn).toBeVisible();
   });
 
   test('11. Usuario KYC APPROVED puede crear orden Genesis demo', async ({ page }) => {

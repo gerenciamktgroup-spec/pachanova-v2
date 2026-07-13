@@ -7,40 +7,27 @@ test.describe('Landing Institucional Pública (LANDING-2)', () => {
   });
 
   test('Carga inicial y Hero (HTTP 200 implícito)', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('PachaNova: infraestructura para tokenizar activos inmobiliarios');
-    await expect(page.locator('text=5 Hectáreas').first()).toBeVisible();
+    await expect(page.locator('h1')).toContainText('Tierra real.');
+    await expect(page.locator('text=500.000 m²').first()).toBeVisible();
   });
 
   test('DemoStatusRibbon y Disclaimers', async ({ page }) => {
     // Disclaimers Footer
-    await expect(page.locator('text=Es una demostración de software.')).toBeVisible();
-    await expect(page.locator('text=No constituye oferta pública ni recomendación de inversión.')).toBeVisible();
+    await expect(page.locator('text=Esta web es informativa.')).toBeVisible();
   });
 
   test('Métricas de San Bartolo', async ({ page }) => {
-    await expect(page.getByTestId('landing-how-to-read-demo')).toBeVisible();
+    await expect(page.locator('text=500.000 m² de tierra')).toBeVisible();
   });
 
   test('Navegación de CTAs', async ({ page }) => {
-    // 1. Ver cómo funciona -> /demo/business-flow
-    const businessLink = page.locator('a:has-text("Ver cómo funciona")').first();
-    await expect(businessLink).toHaveAttribute('href', '/demo/business-flow');
+    // 1. Explorar Demo 3D -> /demo/start
+    const startDemoLink = page.locator('a:has-text("EXPLORAR DEMO 3D")').first();
+    await expect(startDemoLink).toHaveAttribute('href', '/demo/start');
 
-    // 2. Entrar al simulador -> /demo/showcase
-    const showcaseLink = page.locator('a:has-text("Entrar al simulador")').first();
-    await expect(showcaseLink).toHaveAttribute('href', '/demo/showcase');
-
-    // 3. Explorar panel inversor -> /dashboard/investor
-    const investorLink = page.locator('a:has-text("Explorar panel inversor")').first();
-    await expect(investorLink).toHaveAttribute('href', '/dashboard/investor');
-
-    // 4. Admin panel from roles -> /dashboard/admin
-    const adminLink = page.locator('a[href="/dashboard/admin"]').first();
-    await expect(adminLink).toBeVisible();
-
-    // 5. Fideicomiso panel from roles -> /dashboard/fideicomiso
-    const fideicomisoLink = page.locator('a[href="/dashboard/fideicomiso"]').first();
-    await expect(fideicomisoLink).toBeVisible();
+    // 2. Ver el activo -> #activo
+    const activoLink = page.locator('a:has-text("Ver el activo")').first();
+    await expect(activoLink).toHaveAttribute('href', '#activo');
   });
 
   test('Compliance y Security Scan en el DOM', async ({ page }) => {
@@ -76,8 +63,8 @@ test.describe('Landing Mobile Smoke Test', () => {
 
   test('Carga correcta en Mobile y grilla responsiva', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('text=PachaNova: infraestructura para tokenizar activos inmobiliarios')).toBeVisible();
-    await expect(page.locator('text=Entrar al simulador').first()).toBeVisible();
+    await expect(page.locator('h1')).toContainText('Tierra real.');
+    await expect(page.locator('text=EXPLORAR DEMO 3D').first()).toBeVisible();
     
     // Verificar que un contenedor principal no tenga overflow horizontal
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);

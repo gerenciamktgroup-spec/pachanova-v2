@@ -3,7 +3,7 @@ import { PrecisionFooter } from "../../components/PrecisionFooter";
 
 export default function ComoFuncionaPage() {
   return (
-    <div className="min-h-screen bg-[#0a111f] text-white">
+    <div className="min-h-screen bg-[#0a111f] text-white" data-testid="how-it-works-page">
       <PrecisionNavbar />
 
       <main className="max-w-4xl mx-auto px-8 pt-28 pb-20">
@@ -17,7 +17,7 @@ export default function ComoFuncionaPage() {
           </p>
         </div>
 
-        <div className="space-y-10 text-[15px] text-white/70 max-w-3xl">
+        <div className="space-y-10 text-[15px] text-white/70 max-w-3xl" data-testid="how-it-works-steps">
           <div>
             <div className="font-semibold text-white mb-2 tracking-tight">1. Constitución del Fideicomiso</div>
             <p>Se formaliza un fideicomiso inmobiliario ante notario público sobre el predio de San Bartolo (inscrito en SUNARP). Tres fiduciarios profesionales son designados con poderes específicos.</p>

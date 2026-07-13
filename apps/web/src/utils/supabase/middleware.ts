@@ -16,6 +16,11 @@ export async function updateSession(request: NextRequest) {
 
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
 
+  // === DEMO MODE BYPASS ===
+  if (process.env.DEMO_MODE === 'true') {
+    return NextResponse.next()
+  }
+
   // === GRACEFUL DEGRADATION: No Supabase configured ===
   if (!supabaseUrl || !supabaseAnonKey) {
     // Only protect dashboard routes

@@ -7,8 +7,102 @@ import { createServerClient } from "@/utils/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { requireRole } from "@/utils/auth/requireRole";
+import { db } from "@/server/db";
+import * as schema from "@pachanova/database/src/schema";
+import { eq } from "drizzle-orm";
 
 async function MarketplaceContent() {
+  if (process.env.DEMO_MODE === 'true') {
+    const investor = await db.query.investors.findFirst({
+      where: eq(schema.investors.email, "demo.investor.approved@pachanova.local")
+    });
+
+    if (!investor) {
+      return <ErrorState title="Error" message="Perfil de inversor de demo no encontrado." />;
+    }
+
+    const kycDocs = await db.query.kycDocuments.findMany({
+      where: eq(schema.kycDocuments.investorId, investor.id),
+      orderBy: (table, { desc }) => [desc(table.createdAt)],
+      limit: 1
+    });
+    const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kycStatus || "pending");
+
+    const balance = await db.query.balances.findFirst({
+      where: eq(schema.balances.investorId, investor.id)
+    });
+
+    const rawOrders = await db.query.p2pOrders.findMany({
+      where: eq(schema.p2pOrders.status, "open"),
+      orderBy: (table, { desc }) => [desc(table.createdAt)]
+    });
+
+    const mappedOrders = [];
+    for (const order of rawOrders) {
+      if (order.sellerInvestorId === investor.id) continue;
+      const seller = await db.query.investors.findFirst({
+        where: eq(schema.investors.id, order.sellerInvestorId)
+      });
+      const prop = await db.query.properties.findFirst({
+        where: eq(schema.properties.id, order.propertyId)
+      });
+      mappedOrders.push({
+        ...order,
+        investor: {
+          full_name: `${seller?.firstName || ''} ${seller?.lastName || ''}`.trim() || 'Usuario'
+        },
+        property: {
+          name: prop?.name || 'Propiedad'
+        }
+      });
+    }
+
+    const rawMyOrders = await db.query.p2pOrders.findMany({
+      where: eq(schema.p2pOrders.sellerInvestorId, investor.id),
+      orderBy: (table, { desc }) => [desc(table.createdAt)]
+    });
+    
+    const myOrders = [];
+    for (const order of rawMyOrders) {
+      const prop = await db.query.properties.findFirst({
+        where: eq(schema.properties.id, order.propertyId)
+      });
+      myOrders.push({
+        ...order,
+        property: {
+          name: prop?.name || 'Propiedad'
+        }
+      });
+    }
+
+    const property = await db.query.properties.findFirst();
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <RouteBreadcrumbs items={[
+            { label: "Dashboard" },
+            { label: "Panel Inversor", href: "/dashboard/investor" },
+            { label: "Mercado Secundario (P2P)" }
+          ]} className="mb-4" />
+          <SectionHeader 
+            title="Mercado Secundario P2P"
+            description="Compra y vende tokens PACHA directamente con otros miembros de la red."
+          />
+        </div>
+
+        <P2PMarketplaceClient 
+          availableOrders={mappedOrders || []}
+          myOrders={myOrders || []}
+          balance={balance}
+          kycStatus={kycStatus}
+          currentUserId={investor.id}
+          propertyId={property?.id || "00000000-0000-0000-0000-000000000000"}
+        />
+      </div>
+    );
+  }
+
   await requireRole(["investor"]);
   const authClient = await createServerClient();
   const { data: { user } } = await authClient.auth.getUser();

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { MercadoPagoSandboxProvider, createIntegrationRegistry } from '@pachanova/integrations';
 
 export async function POST(req: Request) {
@@ -195,7 +195,10 @@ export async function POST(req: Request) {
 
         if (currentBalance) {
            await tx.update(schema.balances)
-             .set({ availableTokens: (Number(currentBalance.availableTokens) + Number(quantityStr)).toString(), lastUpdatedAt: new Date() })
+             .set({ 
+                availableTokens: sql`available_tokens + ${Number(quantityStr)}`, 
+                lastUpdatedAt: new Date() 
+             })
              .where(eq(schema.balances.investorId, user.id));
         } else {
            await tx.insert(schema.balances).values({

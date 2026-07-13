@@ -18,8 +18,11 @@ contract PachaNovaAuction is Ownable {
 
     bool public auctionEnded;
 
+    mapping(address => uint256) public pendingReturns;
+
     event HighestBidIncreased(address bidder, uint256 amount);
     event AuctionEnded(address winner, uint256 amount);
+    event RefundWithdrawn(address indexed bidder, uint256 amount);
 
     constructor(address _pachaToken, address _usdtToken, uint256 _biddingTime) Ownable(msg.sender) {
         pachaToken = IERC20(_pachaToken);
@@ -31,9 +34,9 @@ contract PachaNovaAuction is Ownable {
         require(block.timestamp <= auctionEndTime, "Subasta terminada");
         require(amount > highestBid, "La oferta debe ser mayor a la actual");
 
-        // Reembolsar al postor anterior
+        // Registrar el reembolso del postor anterior en la lista de retiros
         if (highestBid != 0) {
-            usdtToken.transfer(highestBidder, highestBid);
+            pendingReturns[highestBidder] += highestBid;
         }
 
         // Bloquear nuevos fondos
@@ -43,6 +46,24 @@ contract PachaNovaAuction is Ownable {
         highestBid = amount;
 
         emit HighestBidIncreased(msg.sender, amount);
+    }
+
+    /**
+     * @dev Permite a los ofertantes retirar de forma segura sus fondos reembolsados.
+     * Implementa protección contra reentrada modificando el balance antes de transferir.
+     */
+    function withdraw() external returns (bool) {
+        uint256 amount = pendingReturns[msg.sender];
+        if (amount > 0) {
+            pendingReturns[msg.sender] = 0;
+
+            if (!usdtToken.transfer(msg.sender, amount)) {
+                pendingReturns[msg.sender] = amount;
+                return false;
+            }
+            emit RefundWithdrawn(msg.sender, amount);
+        }
+        return true;
     }
 
     function endAuction() external onlyOwner {
