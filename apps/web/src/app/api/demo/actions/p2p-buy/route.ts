@@ -1,16 +1,20 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
+import { db } from '@/server/db';
+import { schema } from '@pachanova/database';
+import { eq, sql } from 'drizzle-orm';
+import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 
 const bodySchema = z.object({
-  orderId: z.string(),
-  buyerInvestorId: z.string(),
+  orderId: z.string().uuid(),
+  buyerInvestorId: z.string().uuid(),
   quantity: z.number().positive(),
 });
 
 export async function POST(req: Request) {
   try {
     if (process.env.DEMO_MODE !== 'true') return NextResponse.json({ error: 'DEMO_MODE=true required' }, { status: 403 });
+    validateDemoDatabaseUrl(process.env.DATABASE_URL || '');
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
@@ -18,101 +22,109 @@ export async function POST(req: Request) {
 
     const { orderId, buyerInvestorId, quantity } = result.data;
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // Transaction
+    const responseData = await db.transaction(async (tx) => {
+      // 1. Fetch order
+      const order = await tx.query.p2pOrders.findFirst({
+        where: eq(schema.p2pOrders.id, orderId)
+      });
 
-    // 1. Fetch order -> validate status='open', quantity disponible
-    const { data: order } = await supabase
-      .from('p2p_orders')
-      .select('*')
-      .eq('id', orderId)
-      .single();
+      if (!order || order.status !== 'open') {
+        throw new Error('Orden no disponible');
+      }
 
-    if (!order || order.status !== 'open') {
-      return NextResponse.json({ error: 'Orden no disponible' }, { status: 400 });
-    }
+      const orderQuantity = Number(order.quantity);
+      if (quantity > orderQuantity) {
+        throw new Error('Cantidad solicitada excede la orden');
+      }
 
-    if (quantity > Number(order.quantity)) {
-      return NextResponse.json({ error: 'Cantidad solicitada excede la orden' }, { status: 400 });
-    }
+      if (buyerInvestorId === order.sellerInvestorId) {
+        throw new Error('No puedes comprar tu propia orden');
+      }
 
-    if (buyerInvestorId === order.seller_investor_id) {
-      return NextResponse.json({ error: 'No puedes comprar tu propia orden' }, { status: 400 });
-    }
+      const pricePerToken = Number(order.pricePerToken);
+      const totalAmount = quantity * pricePerToken;
 
-    // 2. Calcular total
-    const totalAmount = quantity * Number(order.price_per_token);
+      // 2. Validate buyer balance
+      const buyerBalance = await tx.query.balances.findFirst({
+        where: eq(schema.balances.investorId, buyerInvestorId)
+      });
 
-    // 3. Validar buyer tiene available_usd >= total
-    const { data: buyerBalance } = await supabase
-      .from('balances')
-      .select('*')
-      .eq('investor_id', buyerInvestorId)
-      .single();
+      if (!buyerBalance || Number(buyerBalance.availableUsd || 0) < totalAmount) {
+        throw new Error('Fondos insuficientes USD');
+      }
 
-    if (!buyerBalance || Number(buyerBalance.available_usd || 0) < totalAmount) {
-      return NextResponse.json({ error: 'Fondos insuficientes USD' }, { status: 400 });
-    }
+      // 3. Validate seller balance
+      const sellerBalance = await tx.query.balances.findFirst({
+        where: eq(schema.balances.investorId, order.sellerInvestorId)
+      });
 
-    // Fetch seller balance to update later
-    const { data: sellerBalance } = await supabase
-      .from('balances')
-      .select('*')
-      .eq('investor_id', order.seller_investor_id)
-      .single();
+      if (!sellerBalance) {
+        throw new Error('Vendedor sin balance configurado');
+      }
 
-    if (!sellerBalance) {
-      return NextResponse.json({ error: 'Vendedor sin balance configurado' }, { status: 400 });
-    }
+      // 4. Create trade
+      const [newTrade] = await tx.insert(schema.p2pTrades).values({
+        orderId,
+        propertyId: order.propertyId,
+        buyerInvestorId,
+        sellerInvestorId: order.sellerInvestorId,
+        quantity: quantity.toString(),
+        pricePerToken: order.pricePerToken,
+        totalAmount: totalAmount.toString(),
+        feeAmount: '0',
+        isDemo: true
+      }).returning();
 
-    // 4. INSERT p2p_trades
-    const { data: newTrade } = await supabase.from('p2p_trades').insert({
-      order_id: orderId,
-      property_id: order.property_id,
-      buyer_investor_id: buyerInvestorId,
-      seller_investor_id: order.seller_investor_id,
-      quantity: quantity.toString(),
-      price_per_token: order.price_per_token,
-      total_amount: totalAmount.toString(),
-      fee_amount: '0',
-      is_demo: true
-    }).select().single();
+      // 5. Update buyer balances
+      const newBuyerTokens = (Number(buyerBalance.availableTokens || 0) + quantity).toString();
+      const newBuyerUsd = (Number(buyerBalance.availableUsd || 0) - totalAmount).toString();
 
-    // 5. UPDATE balances del buyer
-    await supabase.from('balances').update({
-      available_usd: (Number(buyerBalance.available_usd || 0) - totalAmount).toString(),
-      available_tokens: (Number(buyerBalance.available_tokens || 0) + quantity).toString(),
-    }).eq('investor_id', buyerInvestorId);
+      await tx.update(schema.balances)
+        .set({
+          availableTokens: newBuyerTokens,
+          availableUsd: newBuyerUsd,
+          updatedAt: new Date()
+        })
+        .where(eq(schema.balances.investorId, buyerInvestorId));
 
-    // 6. UPDATE balances del seller (seller had locked tokens, now they are transferred so we decrement locked_tokens)
-    await supabase.from('balances').update({
-      available_usd: (Number(sellerBalance.available_usd || 0) + totalAmount).toString(),
-      locked_tokens: (Number(sellerBalance.locked_tokens || 0) - quantity).toString(),
-    }).eq('investor_id', order.seller_investor_id);
+      // 6. Update seller balances
+      const newSellerUsd = (Number(sellerBalance.availableUsd || 0) + totalAmount).toString();
+      const newSellerLockedTokens = (Number(sellerBalance.lockedTokens || 0) - quantity).toString();
 
-    // 7. UPDATE p2p_orders
-    const newOrderQuantity = Number(order.quantity) - quantity;
-    await supabase.from('p2p_orders').update({
-      quantity: newOrderQuantity.toString(),
-      status: newOrderQuantity <= 0 ? 'closed' : 'open'
-    }).eq('id', orderId);
+      await tx.update(schema.balances)
+        .set({
+          availableUsd: newSellerUsd,
+          lockedTokens: newSellerLockedTokens,
+          updatedAt: new Date()
+        })
+        .where(eq(schema.balances.investorId, order.sellerInvestorId));
 
-    // 8. INSERT audit_logs
-    await supabase.from('audit_logs').insert({
-      action: 'P2P_TRADE_EXECUTED',
-      details: `Trade executed: ${quantity} tokens for order ${orderId}`,
+      // 7. Update order quantity and status
+      const remainingQuantity = orderQuantity - quantity;
+      const newStatus = remainingQuantity <= 0 ? 'filled' : 'open';
+
+      await tx.update(schema.p2pOrders)
+        .set({
+          quantity: remainingQuantity.toString(),
+          status: newStatus,
+          updatedAt: new Date()
+        })
+        .where(eq(schema.p2pOrders.id, orderId));
+
+      // 8. Insert audit logs
+      await tx.insert(schema.auditLogs).values({
+        action: 'P2P_TRADE_EXECUTED',
+        details: `Trade executed: ${quantity} tokens for order ${orderId}`,
+      });
+
+      return {
+        tradeId: newTrade?.id,
+        newBalance: newBuyerTokens
+      };
     });
 
-    // Return the new buyer balance
-    const { data: updatedBuyerBalance } = await supabase
-      .from('balances')
-      .select('available_tokens')
-      .eq('investor_id', buyerInvestorId)
-      .single();
-
-    return NextResponse.json({ success: true, tradeId: newTrade?.id, newBalance: updatedBuyerBalance?.available_tokens });
+    return NextResponse.json({ success: true, ...responseData });
   } catch (error) {
     console.error("P2P buy error:", error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });

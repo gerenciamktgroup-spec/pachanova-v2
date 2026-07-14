@@ -1,15 +1,19 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
+import { db } from '@/server/db';
+import { schema } from '@pachanova/database';
+import { eq, and } from 'drizzle-orm';
+import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 
 const bodySchema = z.object({
-  orderId: z.string(),
-  investorId: z.string(),
+  orderId: z.string().uuid(),
+  investorId: z.string().uuid(),
 });
 
 export async function POST(req: Request) {
   try {
     if (process.env.DEMO_MODE !== 'true') return NextResponse.json({ error: 'DEMO_MODE=true required' }, { status: 403 });
+    validateDemoDatabaseUrl(process.env.DATABASE_URL || '');
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
@@ -17,50 +21,54 @@ export async function POST(req: Request) {
 
     const { orderId, investorId } = result.data;
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    await db.transaction(async (tx) => {
+      // 1. Fetch order
+      const order = await tx.query.p2pOrders.findFirst({
+        where: and(
+          eq(schema.p2pOrders.id, orderId),
+          eq(schema.p2pOrders.sellerInvestorId, investorId)
+        )
+      });
 
-    // 1. Fetch order
-    const { data: order } = await supabase
-      .from('p2p_orders')
-      .select('*')
-      .eq('id', orderId)
-      .eq('seller_investor_id', investorId)
-      .single();
+      if (!order || order.status !== 'open') {
+        throw new Error('Orden no disponible o no te pertenece');
+      }
 
-    if (!order || order.status !== 'open') {
-      return NextResponse.json({ error: 'Orden no disponible o no te pertenece' }, { status: 400 });
-    }
+      // 2. Fetch seller balance
+      const sellerBalance = await tx.query.balances.findFirst({
+        where: eq(schema.balances.investorId, investorId)
+      });
 
-    // 2. Fetch seller balance
-    const { data: sellerBalance } = await supabase
-      .from('balances')
-      .select('*')
-      .eq('investor_id', investorId)
-      .single();
+      if (!sellerBalance) {
+        throw new Error('Balance no encontrado');
+      }
 
-    if (!sellerBalance) {
-      return NextResponse.json({ error: 'Balance no encontrado' }, { status: 400 });
-    }
+      // 3. Update order status to cancelled
+      await tx.update(schema.p2pOrders)
+        .set({
+          status: 'cancelled',
+          updatedAt: new Date()
+        })
+        .where(eq(schema.p2pOrders.id, orderId));
 
-    // 3. UPDATE order status
-    await supabase.from('p2p_orders').update({
-      status: 'cancelled'
-    }).eq('id', orderId);
+      // 4. Refund tokens: available += quantity, locked -= quantity
+      const refundQuantity = Number(order.quantity);
+      const newAvailable = (Number(sellerBalance.availableTokens || 0) + refundQuantity).toString();
+      const newLocked = (Number(sellerBalance.lockedTokens || 0) - refundQuantity).toString();
 
-    // 4. Refund tokens: available += quantity, locked -= quantity
-    const quantity = Number(order.quantity);
-    await supabase.from('balances').update({
-      available_tokens: (Number(sellerBalance.available_tokens || 0) + quantity).toString(),
-      locked_tokens: (Number(sellerBalance.locked_tokens || 0) - quantity).toString(),
-    }).eq('investor_id', investorId);
+      await tx.update(schema.balances)
+        .set({
+          availableTokens: newAvailable,
+          lockedTokens: newLocked,
+          updatedAt: new Date()
+        })
+        .where(eq(schema.balances.investorId, investorId));
 
-    // 5. INSERT audit_logs
-    await supabase.from('audit_logs').insert({
-      action: 'P2P_ORDER_CANCELLED',
-      details: `Investor ${investorId} cancelled order ${orderId}`,
+      // 5. Insert audit logs
+      await tx.insert(schema.auditLogs).values({
+        action: 'P2P_ORDER_CANCELLED',
+        details: `Investor ${investorId} cancelled order ${orderId}`,
+      });
     });
 
     return NextResponse.json({ success: true });

@@ -4,7 +4,6 @@ import { schema } from '@pachanova/database';
 import { eq, sql } from 'drizzle-orm';
 import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
 
 const bodySchema = z.object({
   investorId: z.string().uuid(),
@@ -22,40 +21,36 @@ export async function POST(req: Request) {
 
     const { investorId, amountUsd } = result.data;
 
-    // Use Supabase Service Role
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    // 1. Fetch existing balance
-    const { data: existing } = await supabase
-      .from('balances')
-      .select('*')
-      .eq('investor_id', investorId)
-      .single();
-
-    if (!existing) {
-      await supabase.from('balances').insert({
-        investor_id: investorId,
-        available_usd: amountUsd.toString()
+    await db.transaction(async (tx) => {
+      // 1. Fetch existing balance
+      const existing = await tx.query.balances.findFirst({
+        where: eq(schema.balances.investorId, investorId)
       });
-    } else {
-      await supabase.from('balances').update({
-        available_usd: (Number(existing.available_usd || 0) + amountUsd).toString()
-      }).eq('investor_id', investorId);
-    }
 
-    await supabase.from('audit_logs').insert({
-      action: 'DEMO_SIMULATED_DEPOSIT',
-      details: `Simulated deposit of ${amountUsd} USD for investor ${investorId}`,
-    });
+      if (!existing) {
+        await tx.insert(schema.balances).values({
+          investorId,
+          availableUsd: amountUsd.toString(),
+        });
+      } else {
+        await tx.update(schema.balances)
+          .set({
+            availableUsd: sql`${schema.balances.availableUsd} + ${amountUsd}`
+          })
+          .where(eq(schema.balances.investorId, investorId));
+      }
 
-    await supabase.from('integration_events').insert({
-      provider: 'DEMO_SYSTEM',
-      event_type: 'SIMULATED_DEPOSIT',
-      payload: { investorId, amountUsd },
-      simulated: true,
+      await tx.insert(schema.auditLogs).values({
+        action: 'DEMO_SIMULATED_DEPOSIT',
+        details: `Simulated deposit of ${amountUsd} USD for investor ${investorId}`,
+      });
+
+      await tx.insert(schema.integrationEvents).values({
+        provider: 'DEMO_SYSTEM',
+        eventType: 'SIMULATED_DEPOSIT',
+        payload: { investorId, amountUsd },
+        simulated: true,
+      });
     });
 
     return NextResponse.json({ success: true, message: `Deposited ${amountUsd} USD` });
