@@ -1,16 +1,38 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, MissionCard } from "@/components/mission";
+import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
 import { AuditLogTimeline } from "@/components/product";
 import { AuditLogView } from "@/types/product";
 import { createClient } from "@supabase/supabase-js";
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
+import { desc } from "drizzle-orm";
+import { requireRole } from "@/utils/auth/requireRole";
+
+async function fetchAuditLogsDemo(): Promise<AuditLogView[]> {
+  const logs = await db.query.auditLogs.findMany({
+    orderBy: [desc(schema.auditLogs.timestamp)],
+    limit: 100,
+  });
+  return logs.map((log: any) => ({
+    id: log.id,
+    action: log.action ?? "UNKNOWN",
+    details: typeof log.details === "string"
+      ? log.details
+      : JSON.stringify(log.details ?? {}),
+    timestamp: log.timestamp?.toISOString?.() ?? new Date().toISOString(),
+    actor: log.userId ? `User:${log.userId}` : "System",
+  }));
+}
 
 async function fetchAuditLogs(): Promise<AuditLogView[]> {
+  if (process.env.DEMO_MODE === 'true') {
+    return fetchAuditLogsDemo();
+  }
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-  
   const { data, error } = await supabaseAdmin
     .from("audit_logs")
     .select("id, action, details, timestamp, user_id")
@@ -31,7 +53,14 @@ async function fetchAuditLogs(): Promise<AuditLogView[]> {
 }
 
 export default async function AdminAuditPage() {
-  const logs = await fetchAuditLogs();
+  await requireRole(["admin", "operator"]);
+  let logs: AuditLogView[] = [];
+  try {
+    logs = await fetchAuditLogs();
+  } catch (e) {
+    console.error("Audit fetch error:", e);
+    return <ErrorState title="Error de Auditoría" message="No se pudo cargar el log de auditoría." />;
+  }
   const view = { recentAuditLogs: logs } as any;
 
   return (
@@ -42,13 +71,12 @@ export default async function AdminAuditPage() {
           { label: "Consola Admin", href: "/dashboard/admin" },
           { label: "Auditoría" }
         ]} className="mb-4" />
-        <SectionHeader 
+        <SectionHeader
           eyebrow="Seguridad"
           title="Logs de Auditoría"
-          description="Registro inmutable de eventos del sistema y mutaciones simuladas."
+          description={`${logs.length} eventos registrados. ${process.env.DEMO_MODE === 'true' ? '(Sandbox — Drizzle ORM)' : '(Producción — Supabase)'}`}
         />
       </div>
-
       <MissionCard>
         <AuditLogTimeline view={view} />
       </MissionCard>

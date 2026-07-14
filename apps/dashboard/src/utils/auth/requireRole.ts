@@ -7,6 +7,15 @@ export async function requireRole(
   allowedRoles: Role[],
   redirectTo = "/unauthorized"
 ): Promise<{ userId: string; role: Role; email: string }> {
+  // DEMO_MODE bypass: return admin role without Supabase verification
+  if (process.env.DEMO_MODE === 'true') {
+    return {
+      userId: "demo-admin-00000000-0000-0000-0000-000000000001",
+      role: "admin",
+      email: "demo.admin@pachanova.local",
+    };
+  }
+
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
 
