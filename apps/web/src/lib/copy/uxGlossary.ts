@@ -1,70 +1,71 @@
 export const uxGlossary = {
   PACHA: {
-    title: "Token PACHA",
-    description: "Representación digital fraccional de la propiedad. En el Sandbox, existe solo como un registro en la base de datos local."
+    title: "Fracción Digital PACHA",
+    description: "La unidad mínima representativa de tu participación en el proyecto PachaNova. Un registro digital seguro que certifica tus derechos económicos sobre la tierra."
   },
   "1 PACHA = 0.1 m²": {
-    title: "Paridad Matemática",
-    description: "Cada token equivale a 0.1 m² de los 50,000 m² totales del activo San Bartolo (500,000 tokens en total)."
+    title: "Paridad de Área Real",
+    description: "La regla matemática de respaldo: cada 10 tokens adquiridos representan exactamente 1.0 m² físico de los 50,000 m² totales del terreno en San Bartolo."
   },
   RWA: {
-    title: "Real World Asset",
-    description: "Activo del mundo real (inmueble) cuyo valor y propiedad legal es fraccionalizado y administrado por el Fideicomiso."
+    title: "Activo del Mundo Real (RWA)",
+    description: "La sigla en inglés para 'Real World Assets'. Hace referencia a bienes inmuebles físicos que han sido digitalizados para permitir su co-propiedad y compra fraccionada."
   },
   "Fideicomiso demo": {
-    title: "Fideicomiso Simulado",
-    description: "Entidad legal que mantiene la propiedad. La interfaz permite autorizar órdenes simuladas, pero no genera transacciones on-chain."
+    title: "Fideicomiso de Respaldo",
+    description: "Estructura jurídica regulada bajo la legislación peruana. Garantiza que la propiedad física de la tierra esté blindada, custodiada y administrada únicamente en beneficio de los adquirentes."
   },
   "Ledger local": {
-    title: "Ledger Simulado",
-    description: "Registro de tenencias de tokens que existe puramente en la base de datos Postgres de demostración, sin despliegue blockchain."
+    title: "Registro de Copropietarios",
+    description: "Libro de registro electrónico, inmutable y transparente donde se listan todas las tenencias y transferencias de fracciones para evitar la doble venta."
   },
   "Audit logs": {
-    title: "Trazabilidad Inmutable Demo",
-    description: "Registro cronológico de todas las mutaciones realizadas en la base de datos local para fines de auditoría del sistema."
+    title: "Libro de Actas Digital",
+    description: "Historial de auditoría cronológico que registra cada acción administrativa, tasación y movimiento financiero para una transparencia absoluta."
   },
   "Integration readiness": {
-    title: "Listo para Integración",
-    description: "La arquitectura del software soporta la conexión externa, a la espera de inyección de credenciales productivas."
+    title: "Conectores Listos para Producción",
+    description: "Arquitectura de software lista para enlazarse con pasarelas de pago y proveedores de identidad oficiales tras ingresar credenciales corporativas."
   },
   "Pending credentials": {
-    title: "Credenciales Pendientes",
-    description: "El flujo está bloqueado porque las llaves productivas (ej. MercadoPago) han sido explícitamente omitidas por seguridad."
+    title: "Entorno de Pruebas Seguro",
+    description: "Modo sandbox donde los movimientos de capital y verificaciones son simulados para garantizar la seguridad antes de conectar flujos de dinero real."
   },
   "Pending Foundry": {
-    title: "Bloqueo On-Chain",
-    description: "La ejecución de contratos inteligentes está pausada hasta la provisión de un nodo Foundry/Anvil o despliegue en Testnet."
+    title: "Sincronización Blockchain",
+    description: "El estado de espera técnica del sistema antes de acuñar los certificados definitivos en la red descentralizada Arbitrum."
   },
   Simulated: {
-    title: "Simulación Local",
-    description: "La operación se ha completado únicamente alterando variables en la memoria o base de datos local. Sin impacto externo."
+    title: "Simulación Operativa",
+    description: "Ejecución simulada en el entorno de desarrollo local (sandbox) para demostrar el flujo transaccional sin riesgo financiero."
   },
   "No production connections": {
-    title: "Aislamiento Productivo",
-    description: "Este entorno (Demo Mirror) no tiene visibilidad ni acceso a las bases de datos o servicios de PachaNova V2.0 en producción."
+    title: "Aislamiento de Seguridad",
+    description: "Garantía de que las pruebas realizadas en este espejo de demostración no alteran ni tienen visibilidad sobre los activos y cuentas reales de producción."
   },
   "External-ready": {
-    title: "Preparado para Externos",
-    description: "Interfaces y webhooks construidos y testeados contra mocks, listos para conmutar a proveedores reales."
+    title: "Preparado para Producción",
+    description: "Interfaces validadas y listas para operar con Sumsub para KYC y MercadoPago para procesamiento de cobros reales."
   },
   "Genesis demo": {
-    title: "Adquisición Simulada",
-    description: "Flujo que imita la compra inicial de tokens, generando una 'Token Order' sin solicitar fondos reales."
+    title: "Adquisición Simulación Inicial",
+    description: "El flujo pedagógico que simula la compra inicial de fracciones durante la ronda de lanzamiento, sin requerir transferencias de dinero real."
   },
   "Trust Anchor": {
-    title: "Ancla de Confianza",
-    description: "Smart Contract principal que vincula la existencia legal del activo físico con su representación digital."
+    title: "Anclaje Jurídico-Digital",
+    description: "El contrato inteligente principal que enlaza legalmente la existencia del terreno físico inscrito en SUNARP con sus fracciones de tenencia digital."
   },
   "Quorum 2/3": {
-    title: "Multifirma Simulada",
-    description: "Regla que exige que 2 de las 3 partes (Admin, Fiduciario, Oráculo) aprueben una operación antes de considerarse válida."
+    title: "Regla de Firma Colectiva",
+    description: "Medida de seguridad que exige la aprobación conjunta de al menos 2 firmantes (Fiduciaria, Administrador o Tasador) para validar operaciones de tesorería."
   },
   "Token order demo": {
-    title: "Intención de Compra",
-    description: "Registro en base de datos que indica que un inversor completó el flujo UI, pendiente de revisión administrativa."
+    title: "Reserva de Fracción",
+    description: "Registro de intención de compra de metros cuadrados dentro de la plataforma, pendiente de conciliación bancaria simulada por el operador."
   },
   "Safe local mutation": {
-    title: "Mutación Segura",
-    description: "Escritura en base de datos que está auditada y no produce efectos secundarios colaterales en producción."
+    title: "Operación de Prueba Segura",
+    description: "Modificación de datos simulada en base de datos local que cumple con todas las reglas de negocio del sistema real."
   }
 };
+export type UxGlossaryType = typeof uxGlossary;
