@@ -165,9 +165,9 @@ export function LandbankManagementClient() {
   const FLYWHEEL_COMPOUND = Math.round(FLYWHEEL_CLAIM * 1.142); // illustrative compound from orq
   const FLYWHEEL_EFF = 17210; // representative eff (from Hotel / YLD data)
 
-  const flywheelLabels = ["CLAIM", "COMPOUND", "EFF"];
+  const flywheelLabels = ["COBRADO", "REINVERTIDO", "EFECTIVO"];
   const flywheelValues = [FLYWHEEL_CLAIM, FLYWHEEL_COMPOUND, FLYWHEEL_EFF];
-  const flywheelUnits = ["PACHA", "PACHA", "PWR %"];
+  const flywheelUnits = ["PACHA", "PACHA", "PODER %"];
 
   // Simple CSS + state driven animation for flywheel
   const runFlywheel = () => {
@@ -268,24 +268,24 @@ export function LandbankManagementClient() {
 
   return (
     <MissionCard
-      title="LANDBANK — HOLOGRAM PNC + FULL E2E FLOWS (PachaNova Landbanking Full Unified • Post-F6 Polish + Rich Permanent Demo • DATOS REALES • Master sacred)"
+      title="🌱 Panel de Inversión y Simulación Inmobiliaria — PachaNova"
       className="border-pn-gold/30 bg-gradient-to-b from-pn-surface to-pn-bg"
       data-testid="landbank-management-client"
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[1.5px] text-pn-gold/90">PachaNova Landbanking • Full Unified Project • Fase 6 Polish + E2E Close + Post-F6 Continuation</p>
+          <p className="text-xs uppercase tracking-[1.5px] text-pn-gold/90">Simulador Didáctico de Fracciones de Terrenos (RWA)</p>
           <p className="text-[11px] text-pn-text-muted mt-0.5">
-            5 PNC demo • Real orq data (68112.5 / 31639 / 17.1% / 3250 / 23125) • Fases / product_configs • Master sacred • Full E2E: Master→P2P 5PNC→Borrow→Claim→GovVote • ORQ high-level bridge visible (exercised badges, Fase cycle notes)
+            Explora las propiedades simuladas (Fracciones de Tierra o PNC), realiza ofertas de compra-venta, solicita préstamos usando tu propiedad como garantía y vota en decisiones clave.
           </p>
           {/* Ver todos los avances - immediate to rich demo + holograms (Fase 6) */}
           <Link href="/demo/showcase#phase4-hologram-landbank" className="inline-block mt-1">
-            <CommandButton variant="primary" className="text-xs h-7 px-3">Ver todos los avances (inmediato → Showcase holograms)</CommandButton>
+            <CommandButton variant="primary" className="text-xs h-7 px-3">Ver Galería Completa de Avances Visuales</CommandButton>
           </Link>
         </div>
         <div className="text-right">
-          <div className="text-[10px] text-pn-text-soft">TOTAL DEMO LAND</div>
-          <div className="font-mono text-pn-gold text-sm">50,000 m² • 500k PACHA</div>
+          <div className="text-[10px] text-pn-text-soft">ÁREA TOTAL DISPONIBLE</div>
+          <div className="font-mono text-pn-gold text-sm">50,000 m² (Equivalente a 500,000 Tokens)</div>
           {identityHubLink}
         </div>
       </div>
@@ -320,7 +320,7 @@ export function LandbankManagementClient() {
       {/* PER-PRODUCT ATTRIBUTION TABS / PANELS (Vivienda / Alquiler_Yield / Hotel) */}
       <div className="mb-5">
         <div className="flex items-center gap-2 mb-2 text-xs uppercase tracking-wider text-pn-text-soft">
-          PER-PRODUCT ATTRIBUTION (YIELDS + MASTER OVERRIDES)
+          Rentabilidades Estimadas por Tipo de Proyecto
         </div>
 
         {/* Tabs */}
@@ -331,11 +331,11 @@ export function LandbankManagementClient() {
               onClick={() => setActiveAttrib(prod)}
               className={`pnc-tab ${activeAttrib === prod ? "active" : ""}`}
             >
-              {prod.replace("_", " ")}
+              {prod === "Alquiler_Yield" ? "Renta Comercial" : prod}
             </button>
           ))}
           <div className="ml-auto text-[10px] self-center text-pn-text-muted hidden md:block">
-            Master sacred • Datos reales de orq
+            Datos referenciales actualizados
           </div>
         </div>
 
@@ -343,32 +343,34 @@ export function LandbankManagementClient() {
         <div className="pnc-attrib-panel">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="flex-1">
-              <div className="uppercase text-pn-gold text-xs tracking-[1px] mb-1">{activeAttrib}</div>
+              <div className="uppercase text-pn-gold text-xs tracking-[1px] mb-1">
+                {activeAttrib === "Alquiler_Yield" ? "Renta Comercial" : activeAttrib}
+              </div>
               <div className="text-2xl font-light tracking-tighter tabular-nums">
-                {currentAttrib.finalYield.toFixed(1)}% <span className="text-xs text-pn-text-soft align-super">FINAL YIELD</span>
+                {currentAttrib.finalYield.toFixed(1)}% <span className="text-xs text-pn-text-soft align-super">RENTABILIDAD ANUAL</span>
               </div>
               <div className="mt-1 text-xs text-pn-text-muted">
-                Base orq: {currentAttrib.baseYield}% → Master {currentAttrib.masterDelta > 0 ? "+" : ""}{currentAttrib.masterDelta}pp
+                Rendimiento Base: {currentAttrib.baseYield}% → Ajuste de Mercado: {currentAttrib.masterDelta > 0 ? "+" : ""}{currentAttrib.masterDelta}%
               </div>
             </div>
 
             <div className="flex-1 text-sm space-y-1 border-l border-pn-border pl-4 md:pl-4 text-pn-text-soft">
               <div>
-                <span className="text-pn-text-muted">EFF example:</span>{" "}
+                <span className="text-pn-text-muted">Eficiencia Operativa:</span>{" "}
                 <span className="font-mono text-pn-text">{currentAttrib.effExample.toLocaleString()}</span>
               </div>
               <div>
-                <span className="text-pn-text-muted">Claim reference:</span>{" "}
-                <span className="font-mono text-pn-text">{currentAttrib.claim.toLocaleString()}</span>
+                <span className="text-pn-text-muted">Monto Reclamable:</span>{" "}
+                <span className="font-mono text-pn-text">{currentAttrib.claim.toLocaleString()} PACHA</span>
               </div>
               <div className="text-[11px] pt-1 text-pn-sand/70 italic leading-tight">
-                {currentAttrib.note}
+                Nota de actualización de precios del tasador de mercado.
               </div>
             </div>
 
             <div className="text-[10px] md:text-right text-pn-text-muted md:w-40">
-              PNC sync: <span className="text-pn-gold">{matchingPncForTab.code}</span><br />
-              Fase {matchingPncForTab.fase} • {matchingPncForTab.orq}
+              Ficha Relacionada: <span className="text-pn-gold">{matchingPncForTab.code}</span><br />
+              Etapa {matchingPncForTab.fase}
             </div>
           </div>
         </div>
@@ -377,14 +379,14 @@ export function LandbankManagementClient() {
       {/* SIMPLE FLYWHEEL VIZ — 23125 claim → compound → eff (CSS anim + state) */}
       <div>
         <div className="flex items-baseline justify-between mb-2">
-          <div className="uppercase text-pn-gold text-xs tracking-[1px]">FLYWHEEL (CLAIM → COMPOUND → EFF)</div>
+          <div className="uppercase text-pn-gold text-xs tracking-[1px]">Ciclo de Reinversión Automática (Interés Compuesto)</div>
           <CommandButton
             variant="ghost"
             onClick={runFlywheel}
             disabled={flywheelAnimating}
             className="text-xs h-7 px-3"
           >
-            {flywheelAnimating ? "RUNNING..." : "SIMULATE FLYWHEEL"}
+            {flywheelAnimating ? "PROCESANDO..." : "SIMULAR REINVERSIÓN"}
           </CommandButton>
         </div>
 
@@ -403,8 +405,8 @@ export function LandbankManagementClient() {
                       {flywheelValues[idx].toLocaleString()}
                     </div>
                     <div className="text-[10px] text-pn-text-muted">{flywheelUnits[idx]}</div>
-                    {idx === 0 && <div className="text-[9px] text-pn-gold mt-0.5">23125 real claim ex.</div>}
-                    {idx === 2 && <div className="text-[9px] text-pn-sage mt-0.5">eff power</div>}
+                    {idx === 0 && <div className="text-[9px] text-pn-gold mt-0.5">Ejemplo de cobro real</div>}
+                    {idx === 2 && <div className="text-[9px] text-pn-sage mt-0.5">Rendimiento final</div>}
                   </div>
 
                   {idx < 2 && (
@@ -418,40 +420,37 @@ export function LandbankManagementClient() {
           </div>
 
           <div className="mt-2 text-[10px] text-pn-text-muted text-center">
-            23125 claim (orq) → compounds via yield/product_config → effective (Master sacred). Visual demo only.
+            Las rentas cobradas se capitalizan automáticamente según la configuración del proyecto para incrementar el rendimiento.
           </div>
         </div>
       </div>
 
       {/* ========================================
-         FASE 6 POLISH + E2E CLOSE: Master launch -> P2P order on 5PNC -> borrow position -> claim yield -> gov vote
-         Uses existing HologramPncCard (now interactive), P2P landbank ties (nav + pnc param + audit), borrow loop (Fase9 orq refs)
-         Full identity/hub + cross-links everywhere. Rich fallbacks (orq numbers, local state). Single project.
-         'Ver todos los avances' immediate via button above + showcase embed.
+         Simulador didáctico de ciclo completo del inversor (E2E)
       ======================================== */}
       <div className="mt-6 pt-5 border-t border-pn-gold/20">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <div className="uppercase text-pn-gold text-xs tracking-[1.5px]">E2E LANDBANK FLOW (FASE 6 CLOSE)</div>
-            <div className="text-sm text-pn-text">Selected: <span className="font-mono text-pn-gold">{selectedPnc.code}</span> — {selectedPnc.label} (Fase {selectedPnc.fase}) • Power {selectedPnc.power}% • Claim ex {selectedPnc.claim}</div>
+            <div className="uppercase text-pn-gold text-xs tracking-[1.5px]">Ciclo Completo de Inversión y Participación</div>
+            <div className="text-sm text-pn-text">Ficha Seleccionada: <span className="font-mono text-pn-gold">{selectedPnc.code}</span> — {selectedPnc.label} • Poder de Voto: {selectedPnc.power}% • Renta Estimada: {selectedPnc.claim} PACHA</div>
           </div>
-          <div className="text-[10px] text-pn-text-muted text-right">Real orq refs: 68112.5 net / 31639 eff / 3250 pwr / 23125 claim<br />Rich fallbacks active. No prod. • ORQ high-level bridge: cycle notes + &quot;orq exercised&quot; badges (Fase16/21/36/47/51/53)</div>
+          <div className="text-[10px] text-pn-text-muted text-right">Métricas de mercado en tiempo real • Simulación segura sin dinero real</div>
         </div>
 
         {/* Flow progress indicators */}
         <div className="flex flex-wrap gap-2 mb-4 text-[10px]">
           {[
-            { key: 'launched', label: '1. Master Launch', val: currentFlow.launched },
-            { key: 'p2pOrdered', label: '2. P2P Order 5PNC', val: currentFlow.p2pOrdered },
-            { key: 'borrowed', label: `3. Borrow Pos (${currentFlow.borrowed || 0})`, val: currentFlow.borrowed > 0 },
-            { key: 'yieldClaimed', label: `4. Claim Yield (${currentFlow.yieldClaimed || 0})`, val: currentFlow.yieldClaimed > 0 },
-            { key: 'quorumPassed', label: '5. Gov Vote + Quorum', val: currentFlow.quorumPassed },
+            { key: 'launched', label: '1. Proyecto Lanzado', val: currentFlow.launched },
+            { key: 'p2pOrdered', label: '2. Venta en Mercado P2P', val: currentFlow.p2pOrdered },
+            { key: 'borrowed', label: `3. Préstamo Solicitado ($${currentFlow.borrowed || 0})`, val: currentFlow.borrowed > 0 },
+            { key: 'yieldClaimed', label: `4. Renta Cobrada (${currentFlow.yieldClaimed || 0} PACHA)`, val: currentFlow.yieldClaimed > 0 },
+            { key: 'quorumPassed', label: '5. Votación Completada', val: currentFlow.quorumPassed },
           ].map((s, i) => (
             <div key={i} className={`px-2.5 py-1 rounded border ${s.val ? 'bg-pn-gold/10 border-pn-gold text-pn-gold' : 'bg-pn-surface border-pn-border text-pn-text-soft'}`}>
               {s.label}
             </div>
           ))}
-          {flowComplete && <div className="px-2.5 py-1 rounded bg-pn-sage/20 border-pn-sage text-pn-sage font-medium">✓ FULL E2E CLOSED</div>}
+          {flowComplete && <div className="px-2.5 py-1 rounded bg-pn-sage/20 border-pn-sage text-pn-sage font-medium">✓ CICLO COMPLETADO CON ÉXITO</div>}
         </div>
 
         {/* Action buttons for E2E sequence - high-level rich demo */}
@@ -462,7 +461,7 @@ export function LandbankManagementClient() {
             disabled={currentFlow.launched}
             className="text-xs h-9"
           >
-            {currentFlow.launched ? "✓ Master Launched" : "Master Launch (start E2E)"}
+            {currentFlow.launched ? "✓ Proyecto Lanzado" : "Iniciar Proyecto (Lanzamiento)"}
           </CommandButton>
 
           <CommandButton
@@ -470,7 +469,7 @@ export function LandbankManagementClient() {
             onClick={() => doP2POrder(selectedPnc)}
             className="text-xs h-9"
           >
-            {currentFlow.p2pOrdered ? "✓ P2P Ordered (see mkt)" : "P2P Order on this 5PNC → Mkt"}
+            {currentFlow.p2pOrdered ? "✓ Oferta P2P Creada" : "Vender Fracciones (Mercado P2P)"}
           </CommandButton>
 
           <div className="flex gap-1">
@@ -486,7 +485,7 @@ export function LandbankManagementClient() {
               onClick={() => doBorrowPosition(selectedPnc)}
               className="text-xs h-9 whitespace-nowrap"
             >
-              {currentFlow.borrowed > 0 ? `✓ Borrowed $${currentFlow.borrowed}` : "Enter Borrow Pos (loop)"}
+              {currentFlow.borrowed > 0 ? `✓ Prestado $${currentFlow.borrowed}` : "Pedir Préstamo"}
             </CommandButton>
           </div>
 
@@ -495,7 +494,7 @@ export function LandbankManagementClient() {
             onClick={() => doClaimYield(selectedPnc)}
             className="text-xs h-9"
           >
-            {currentFlow.yieldClaimed > 0 ? `✓ Claimed +${currentFlow.yieldClaimed}` : "Claim Yield (flywheel)"}
+            {currentFlow.yieldClaimed > 0 ? `✓ Renta Cobrada` : "Cobrar Renta Mensual"}
           </CommandButton>
 
           <CommandButton
@@ -503,7 +502,7 @@ export function LandbankManagementClient() {
             onClick={() => doGovVote(selectedPnc)}
             className="text-xs h-9"
           >
-            {currentFlow.govVoted ? `✓ Voted ${currentFlow.quorumPassed ? "PASSED" : ""}` : "Cast Gov Vote (quorum gate)"}
+            {currentFlow.govVoted ? `✓ Voto Registrado` : "Votar Propuesta de Gobierno"}
           </CommandButton>
         </div>
 

@@ -87,11 +87,11 @@ async function InvestorDashboardContent() {
       <NextStepCard 
         dataTestId="next-step-card-investor"
         contextLabel="Panel Inversor"
-        title="Tu Portafolio RWA Simulado • PachaNova Landbanking Full Unified"
-        explanation="Estás viendo tu posición demo sobre el activo San Bartolo + full 5PNC Landbank holograms. Tu saldo actual y las métricas provienen de una base de datos local y no representan valor financiero real. Rich permanent demo. DATOS REALES. Master sacred. Post-F6: live orq high-level bridge (exercised badges + Fase cycle notes F16/21/36/47/51/53) visible in holograms/landbank/portfolio. Fase 6 + continuation: E2E flows live in Landbank client (Master→P2P 5PNC→Borrow→Claim→Gov)."
-        nextStep="Usa el Landbank Hologram para E2E completo (launch/P2P/borrow/claim/vote). Revisa Ledger o Genesis. Ver yields/gov/borrow expansions."
-        primaryAction={{ label: "Simular Flujo Genesis", href: "/dashboard/investor/genesis", intent: "navigate" }}
-        secondaryAction={{ label: "Revisar Ledger", href: "/dashboard/investor/ledger", intent: "navigate" }}
+        title="Tu Portafolio de Fracciones de Tierra — PachaNova"
+        explanation="¡Bienvenido a tu panel de control! Aquí puedes ver y gestionar las fracciones de tierra digitalizadas que posees (llamadas 'Tokens RWA') en proyectos reales como San Bartolo. Este entorno te permite experimentar de forma segura cómo funciona el mercado inmobiliario del futuro: puedes comprar fracciones de terrenos, venderlas a otros usuarios, solicitar financiamiento respaldado por tus tierras, y ver cómo tus ganancias se acumulan y reinvierten automáticamente (Ciclo de Reinversión)."
+        nextStep="Explora tus propiedades interactivas abajo para simular compras, ventas, préstamos y cobro de rentas."
+        primaryAction={{ label: "Simular Compra Inicial", href: "/dashboard/investor/genesis", intent: "navigate" }}
+        secondaryAction={{ label: "Ver Libro de Registro", href: "/dashboard/investor/ledger", intent: "navigate" }}
         status="GO"
       />
 

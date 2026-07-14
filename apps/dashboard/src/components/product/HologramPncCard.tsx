@@ -200,19 +200,19 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
       {/* Layered metadata: net / eff / power + yield */}
       <div className="grid grid-cols-4 gap-x-2 gap-y-1 text-[11px] tabular-nums">
         <div className="col-span-1">
-          <div className="text-pn-text-soft/80 tracking-wider text-[9px]">NET</div>
+          <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">NETO</div>
           <div className="font-medium text-pn-text">{pnc.net.toLocaleString()}</div>
         </div>
         <div className="col-span-1">
-          <div className="text-pn-text-soft/80 tracking-wider text-[9px]">EFF</div>
+          <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">EFIC.</div>
           <div className="font-medium text-pn-text">{pnc.eff.toLocaleString()}</div>
         </div>
         <div className="col-span-1">
-          <div className="text-pn-text-soft/80 tracking-wider text-[9px]">PWR</div>
+          <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">VOTO</div>
           <div className="font-semibold text-pn-gold">{pnc.power.toFixed(1)}%</div>
         </div>
         <div className="col-span-1 text-right">
-          <div className="text-pn-text-soft/80 tracking-wider text-[9px]">YIELD</div>
+          <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">RENTA</div>
           <div className="font-medium text-pn-sage">{pnc.yieldPct.toFixed(1)}%</div>
         </div>
       </div>
