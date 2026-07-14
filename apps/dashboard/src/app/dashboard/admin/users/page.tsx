@@ -29,7 +29,7 @@ async function fetchUsersDemo(): Promise<UserAdminView[]> {
         lockedTokens: balance?.lockedTokens?.toString() || "0",
         availableUsd: balance?.availableUsd?.toString() || "0",
         lockedUsd: "0",
-        lastUpdated: balance?.updatedAt?.toISOString() || new Date().toISOString()
+        lastUpdated: balance?.lastUpdatedAt?.toISOString() || new Date().toISOString()
       }
     };
   });

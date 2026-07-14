@@ -105,7 +105,7 @@ export default function ShowcasePage() {
       {/* Post-F6 expansion: full gov surface + borrow E2E + more per-PNC ver avances */}
       <section id="gov-surface" data-testid="gov-surface-expanded">
         <MissionCard title="FULL GOV + BORROW E2E SURFACE (Post-F6 Expanded + Hologram Panels)">
-          <div className="text-xs text-pn-text-muted mb-3">Expanded E2E flows + hologram panels to gov/borrow surfaces. More 'ver avances' + cross links per PNC. Investor hero/portfolio interactive. Marketplace orderbook PNC ties. Rich permanent.</div>
+          <div className="text-xs text-pn-text-muted mb-3">Expanded E2E flows + hologram panels to gov/borrow surfaces. More &quot;ver avances&quot; + cross links per PNC. Investor hero/portfolio interactive. Marketplace orderbook PNC ties. Rich permanent.</div>
           <div className="mb-3 p-3 border border-pn-border rounded bg-pn-surface text-xs">
             <div>Gov: Fase36 quorum PASSED power 2250 • orq exercised • Master override gate</div>
             <div className="mt-1">Borrow (Fase9): net 68112.5 - debt health 1.65 • per PNC E2E buttons in Landbank</div>

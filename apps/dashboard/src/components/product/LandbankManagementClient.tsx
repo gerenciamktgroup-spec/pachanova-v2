@@ -435,7 +435,7 @@ export function LandbankManagementClient() {
             <div className="uppercase text-pn-gold text-xs tracking-[1.5px]">E2E LANDBANK FLOW (FASE 6 CLOSE)</div>
             <div className="text-sm text-pn-text">Selected: <span className="font-mono text-pn-gold">{selectedPnc.code}</span> — {selectedPnc.label} (Fase {selectedPnc.fase}) • Power {selectedPnc.power}% • Claim ex {selectedPnc.claim}</div>
           </div>
-          <div className="text-[10px] text-pn-text-muted text-right">Real orq refs: 68112.5 net / 31639 eff / 3250 pwr / 23125 claim<br />Rich fallbacks active. No prod. • ORQ high-level bridge: cycle notes + 'orq exercised' badges (Fase16/21/36/47/51/53)</div>
+          <div className="text-[10px] text-pn-text-muted text-right">Real orq refs: 68112.5 net / 31639 eff / 3250 pwr / 23125 claim<br />Rich fallbacks active. No prod. • ORQ high-level bridge: cycle notes + &quot;orq exercised&quot; badges (Fase16/21/36/47/51/53)</div>
         </div>
 
         {/* Flow progress indicators */}

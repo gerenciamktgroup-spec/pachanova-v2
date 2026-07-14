@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import fs from 'fs'
 
 export async function login(formData: FormData) {
   const email = formData.get('email') as string
@@ -18,7 +19,6 @@ export async function login(formData: FormData) {
   debugInfo.push(`ANON_KEY ends: ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.slice(-20)}`)
   debugInfo.push('===================')
   console.log(debugInfo.join('\n'))
-  const fs = require('fs')
   fs.writeFileSync('C:/tmp/login-debug.txt', debugInfo.join('\n'), 'utf-8')
 
   const supabase = await createServerClient()

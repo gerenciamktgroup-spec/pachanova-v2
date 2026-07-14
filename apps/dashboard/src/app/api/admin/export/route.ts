@@ -61,7 +61,7 @@ export async function GET(req: Request) {
       );
     } else if (type === 'transactions') {
       const ledger = await db.query.tokenLedger.findMany({
-        orderBy: [desc(schema.tokenLedger.createdAt)],
+        orderBy: [desc(schema.tokenLedger.timestamp)],
         limit: 1000,
       });
       filename = 'transacciones-ledger.csv';
@@ -74,7 +74,7 @@ export async function GET(req: Request) {
           tx.amount?.toString() || '0',
           tx.txHash || '',
           tx.status || 'confirmed',
-          tx.createdAt?.toISOString() || '',
+          tx.timestamp?.toISOString() || '',
         ])
       );
     } else if (type === 'orders') {

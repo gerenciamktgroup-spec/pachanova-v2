@@ -24,7 +24,7 @@ export default async function InvestorGenesisPage() {
       orderBy: (table, { desc }) => [desc(table.createdAt)],
       limit: 1
     });
-    const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kycStatus || "pending");
+    const kycStatus = (kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kycStatus || "pending")) as "pending" | "approved" | "rejected";
 
     const balance = await db.query.balances.findFirst({
       where: eq(schema.balances.investorId, investor.id)
@@ -79,7 +79,7 @@ export default async function InvestorGenesisPage() {
     .order("created_at", { ascending: false })
     .limit(1);
 
-  const kycStatus = kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending");
+  const kycStatus = (kycDocs && kycDocs.length > 0 ? kycDocs[0].status : (investor.kyc_status || "pending")) as "pending" | "approved" | "rejected";
 
   // 3. Get Balance
   const { data: balance } = await supabase

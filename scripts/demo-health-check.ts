@@ -109,9 +109,9 @@ async function runHealthCheck() {
     }
 
     if (route === '/api/treasury') {
-      const totalTokens = res.data?.treasury?.totalTokens;
-      if (totalTokens !== 500000) {
-        console.error(`  ⚠️ ERROR: /api/treasury totalTokens should be 500000`);
+      const totalSupply = res.data?.treasury?.totalSupply;
+      if (totalSupply !== 500000) {
+        console.error(`  ⚠️ ERROR: /api/treasury totalSupply should be 500000`);
         hasErrors = true;
       }
     }

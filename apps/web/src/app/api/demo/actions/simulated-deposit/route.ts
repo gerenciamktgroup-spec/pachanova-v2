@@ -4,6 +4,7 @@ import { schema } from '@pachanova/database';
 import { eq, sql } from 'drizzle-orm';
 import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 import { z } from 'zod';
+import { createClient } from '@supabase/supabase-js';
 
 const bodySchema = z.object({
   investorId: z.string().uuid(),
@@ -22,7 +23,6 @@ export async function POST(req: Request) {
     const { investorId, amountUsd } = result.data;
 
     // Use Supabase Service Role
-    const { createClient } = require('@supabase/supabase-js');
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
