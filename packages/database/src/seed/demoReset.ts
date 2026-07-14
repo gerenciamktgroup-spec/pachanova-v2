@@ -29,6 +29,7 @@ async function reset() {
     // Fideicomiso actions by demo users
     await db.delete(schema.fideicomisoSignatures).where(inArray(schema.fideicomisoSignatures.signerId, demoUserIds));
     await db.delete(schema.fideicomisoOperations).where(inArray(schema.fideicomisoOperations.createdBy, demoUserIds));
+    await db.delete(schema.tokenLedger).where(inArray(schema.tokenLedger.investorId, demoUserIds));
     await db.delete(schema.investors).where(inArray(schema.investors.id, demoUserIds));
   }
 
