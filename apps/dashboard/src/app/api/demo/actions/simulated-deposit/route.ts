@@ -4,6 +4,7 @@ import { schema } from '@pachanova/database';
 import { eq, sql } from 'drizzle-orm';
 import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 import { z } from 'zod';
+import { emitNotification } from '@/lib/notifications/emitNotification';
 
 const bodySchema = z.object({
   investorId: z.string().uuid(),
@@ -46,6 +47,15 @@ export async function POST(req: Request) {
         payload: { investorId, amountUsd },
         simulated: true,
       });
+    });
+
+    // Emit notification (fire-and-forget, errors swallowed inside)
+    await emitNotification({
+      investorId,
+      type: 'transaction',
+      title: 'Depósito Acreditado',
+      message: `Se acreditaron $${amountUsd} USD a tu cuenta`,
+      isDemo: true,
     });
 
     return NextResponse.json({ success: true, message: `Deposited ${amountUsd} USD` });

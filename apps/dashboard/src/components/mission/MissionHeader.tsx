@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DemoStatusRibbon } from "./DemoStatusRibbon";
 import { RoleSwitcherDemo } from "@/components/product/RoleSwitcherDemo";
 import { GuidedModeToggle } from "@/components/product/GuidedModeToggle";
+import { NotificationInbox } from "@/components/product/NotificationInbox";
 
 export function MissionHeader() {
   return (
@@ -26,6 +27,7 @@ export function MissionHeader() {
           </Link>
           <div className="h-6 w-px bg-pn-border hidden sm:block mx-2"></div>
           <GuidedModeToggle />
+          <NotificationInbox />
           <div data-testid="role-switcher">
             <RoleSwitcherDemo />
           </div>

@@ -4,6 +4,7 @@ import { schema } from '@pachanova/database';
 import { eq } from 'drizzle-orm';
 import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
 import { z } from 'zod';
+import { emitNotification } from '@/lib/notifications/emitNotification';
 
 const bodySchema = z.object({
   investorId: z.string().uuid(),
@@ -37,6 +38,14 @@ export async function POST(req: Request) {
         payload: { investorId, status },
         simulated: true,
       });
+    });
+
+    await emitNotification({
+      investorId,
+      type: 'kyc',
+      title: 'Verificación de Identidad (KYC)',
+      message: `Tu estado de KYC ha sido actualizado a: ${status.toUpperCase()}`,
+      isDemo: true
     });
 
     return NextResponse.json({ success: true, investorId, status });

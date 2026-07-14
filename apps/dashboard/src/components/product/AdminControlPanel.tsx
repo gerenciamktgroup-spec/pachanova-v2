@@ -185,6 +185,9 @@ export function AdminControlPanel({ users }: AdminControlPanelProps) {
         <a href="/dashboard/admin/audit" className="text-xs text-pn-text-soft border border-pn-border px-3 py-1.5 rounded hover:bg-pn-surface transition-colors">
           📋 Logs de Auditoría
         </a>
+        <a href="/dashboard/admin/settings" className="text-xs text-pn-text-soft border border-pn-border px-3 py-1.5 rounded hover:bg-pn-surface transition-colors">
+          ⚙️ Configuración
+        </a>
         <a href="/dashboard/admin/landbank" className="text-xs text-pn-text-soft border border-pn-border px-3 py-1.5 rounded hover:bg-pn-surface transition-colors">
           🏗️ Landbank + Holograms
         </a>
@@ -197,6 +200,35 @@ export function AdminControlPanel({ users }: AdminControlPanelProps) {
         <a href="/api/demo/health" target="_blank" className="text-xs text-pn-text-soft border border-pn-border px-3 py-1.5 rounded hover:bg-pn-surface transition-colors">
           🩺 Health Check
         </a>
+      </div>
+
+      {/* ── CSV Export Row ── */}
+      <div className="mt-3">
+        <p className="text-xs text-pn-text-soft mb-2 font-medium">📥 Exportar datos:</p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { type: 'users', label: '👥 Usuarios CSV' },
+            { type: 'audit', label: '📋 Auditoría CSV' },
+            { type: 'transactions', label: '💱 Transacciones CSV' },
+            { type: 'orders', label: '🪙 Órdenes CSV' },
+          ].map(({ type, label }) => (
+            <a
+              key={type}
+              href={`/api/admin/export?type=${type}`}
+              download
+              className="text-xs text-pn-gold border border-pn-gold/30 px-3 py-1.5 rounded hover:bg-pn-gold/10 transition-colors"
+            >
+              {label}
+            </a>
+          ))}
+          <a
+            href="/api/admin/webhook-queue"
+            target="_blank"
+            className="text-xs text-pn-text-soft border border-pn-border px-3 py-1.5 rounded hover:bg-pn-surface transition-colors"
+          >
+            🔁 Cola Webhooks
+          </a>
+        </div>
       </div>
 
       {/* ── Feedback banner ── */}

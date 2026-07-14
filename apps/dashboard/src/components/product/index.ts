@@ -5,3 +5,5 @@ export * from "./AdminComponents";
 export * from "./FideicomisoComponents";
 export * from "./HologramPncCard";
 export * from "./LandbankManagementClient";
+export * from "./NotificationInbox";
+export * from "./AdminSettingsPanel";
