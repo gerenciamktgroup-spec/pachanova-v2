@@ -135,6 +135,7 @@ const ATTRIBUTION_DATA: Record<
 
 export function LandbankManagementClient() {
   const router = useRouter();
+  const [properties, setProperties] = useState<PNC[]>(DEMO_5_PNC);
   const [activeAttrib, setActiveAttrib] = useState<AttributionProduct>("Vivienda");
   const [flywheelStep, setFlywheelStep] = useState<0 | 1 | 2>(0); // 0: claim, 1: compound, 2: eff
   const [flywheelAnimating, setFlywheelAnimating] = useState(false);
@@ -155,7 +156,24 @@ export function LandbankManagementClient() {
   const [claimMessage, setClaimMessage] = useState("");
   const [govMessage, setGovMessage] = useState("");
 
-  const selectedPnc = DEMO_5_PNC.find(p => p.id === selectedPncId) || DEMO_5_PNC[0];
+  // Load properties from database
+  const loadProperties = async () => {
+    try {
+      const res = await fetch("/api/properties");
+      const data = await res.json();
+      if (data.success && data.properties) {
+        setProperties(data.properties);
+      }
+    } catch (err) {
+      console.warn("Error cargando propiedades desde la API, usando mockups locales:", err);
+    }
+  };
+
+  React.useEffect(() => {
+    loadProperties();
+  }, []);
+
+  const selectedPnc = properties.find(p => p.id === selectedPncId) || properties[0] || DEMO_5_PNC[0];
   const currentFlow = flowStatus[selectedPncId] || { launched: false, p2pOrdered: false, borrowed: 0, yieldClaimed: 0, govVoted: false, quorumPassed: false };
 
   const currentAttrib = ATTRIBUTION_DATA[activeAttrib];
@@ -193,9 +211,9 @@ export function LandbankManagementClient() {
   };
 
   // Auto highlight matching PNC when tab changes (visual sync)
-  const matchingPncForTab = DEMO_5_PNC.find((p) =>
+  const matchingPncForTab = properties.find((p) =>
     p.product_config.toLowerCase().includes(activeAttrib.toLowerCase().split("_")[0])
-  ) || DEMO_5_PNC[1];
+  ) || properties[1] || DEMO_5_PNC[1];
 
   // Fase 6 E2E handlers - rich client fallbacks, use existing patterns + orq data, cross to P2P/identity/hub
   const selectPnc = (id: string) => {
@@ -204,52 +222,124 @@ export function LandbankManagementClient() {
     setGovMessage("");
   };
 
-  const doMasterLaunch = (pnc: PNC) => {
-    setFlowStatus(prev => ({
-      ...prev,
-      [pnc.id]: { ...prev[pnc.id], launched: true }
-    }));
-    setClaimMessage(`Master launch executed for ${pnc.code} (Fase ${pnc.fase}). Ready for P2P/borrow.`);
+  const doMasterLaunch = async (pnc: PNC) => {
+    try {
+      const res = await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "launch" })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFlowStatus(prev => ({
+          ...prev,
+          [pnc.id]: { ...prev[pnc.id], launched: true }
+        }));
+        setClaimMessage(`¡Éxito! Proyecto ${pnc.code} lanzado en la base de datos.`);
+        await loadProperties();
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setClaimMessage(`Simulación local ejecutada para ${pnc.code}.`);
+      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], launched: true } }));
+    }
   };
 
-  const doP2POrder = (pnc: PNC) => {
-    // Use existing P2P landbank ties: navigate with pnc param (ties to 5PNC E2E)
+  const doP2POrder = async (pnc: PNC) => {
+    try {
+      await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "vote" })
+      });
+    } catch (err) {
+      console.warn("DB logging bypassed for P2P order link:", err);
+    }
     setFlowStatus(prev => ({
       ...prev,
       [pnc.id]: { ...prev[pnc.id], p2pOrdered: true }
     }));
-    // immediate cross-link to marketplace prefilled for this PNC
     router.push(`/dashboard/investor/marketplace?pnc=${pnc.code}`);
   };
 
-  const doBorrowPosition = (pnc: PNC) => {
-    const debt = Math.max(1000, Math.min(100000, borrowInput)); // rich clamp fallback
-    setFlowStatus(prev => ({
-      ...prev,
-      [pnc.id]: { ...prev[pnc.id], borrowed: debt }
-    }));
-    setClaimMessage(`Borrow position entered: $${debt.toLocaleString()} debt on ${pnc.code} (Fase9 borrow loop simulated, colat ~50k orq ref).`);
+  const doBorrowPosition = async (pnc: PNC) => {
+    const debt = Math.max(1000, Math.min(100000, borrowInput));
+    try {
+      const res = await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "borrow", payload: { borrowedAmount: debt } })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFlowStatus(prev => ({
+          ...prev,
+          [pnc.id]: { ...prev[pnc.id], borrowed: debt }
+        }));
+        setClaimMessage(`Préstamo de $${debt.toLocaleString()} guardado en base de datos. USD disponible actualizado.`);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setClaimMessage(`Préstamo de $${debt.toLocaleString()} aprobado (simulado localmente).`);
+      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], borrowed: debt } }));
+    }
   };
 
-  const doClaimYield = (pnc: PNC) => {
-    const claimAmt = pnc.claim || 23125; // fallback orq 23125 real ex
-    setFlowStatus(prev => ({
-      ...prev,
-      [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + claimAmt }
-    }));
-    // trigger flywheel visual too
-    runFlywheel();
-    setClaimMessage(`Yield claimed: ${claimAmt.toLocaleString()} PACHA on ${pnc.code}. Flywheel compound → eff live. (rich fallback from orq Fase47/48)`);
+  const doClaimYield = async (pnc: PNC) => {
+    const claimAmt = pnc.claim || 23125;
+    try {
+      const res = await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "claim", payload: { claimAmount: claimAmt } })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFlowStatus(prev => ({
+          ...prev,
+          [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + claimAmt }
+        }));
+        setClaimMessage(`Renta de ${claimAmt.toLocaleString()} PACHA registrada en base de datos.`);
+        runFlywheel();
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setClaimMessage(`Renta de ${claimAmt.toLocaleString()} PACHA cobrada (simulado offline).`);
+      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + claimAmt } }));
+      runFlywheel();
+    }
   };
 
-  const doGovVote = (pnc: PNC) => {
+  const doGovVote = async (pnc: PNC) => {
     const power = pnc.power || 17.1;
-    const passed = power >= 6.5; // quorum sim using real power from orq (3250 equiv)
-    setFlowStatus(prev => ({
-      ...prev,
-      [pnc.id]: { ...prev[pnc.id], govVoted: true, quorumPassed: passed }
-    }));
-    setGovMessage(`Gov vote cast on ${pnc.code} (power ${power}%). Quorum ${passed ? 'PASSED (Fase36 gate ready for launch)' : 'pending'}. Master sacred.`);
+    const passed = power >= 6.5;
+    try {
+      const res = await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "vote" })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFlowStatus(prev => ({
+          ...prev,
+          [pnc.id]: { ...prev[pnc.id], govVoted: true, quorumPassed: passed }
+        }));
+        setGovMessage(`Voto guardado en base de datos. Quórum: ${passed ? "APROBADO" : "PENDIENTE"}.`);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setGovMessage(`Voto procesado localmente.`);
+      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], govVoted: true, quorumPassed: passed } }));
+    }
   };
 
   // Full flow status for selected

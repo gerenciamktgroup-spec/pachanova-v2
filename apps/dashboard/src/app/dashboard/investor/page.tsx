@@ -15,20 +15,87 @@ import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { investorJourney } from "@/lib/navigation/userJourneys";
 
+import { db } from "@/server/db";
+import { schema } from "@pachanova/database";
+import { eq } from "drizzle-orm";
+
 async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
   try {
+    // 1. Fetch default holder investor from database
+    const investor = await db.query.investors.findFirst({
+      where: eq(schema.investors.email, "demo.investor.holder@pachanova.local")
+    });
+
+    if (!investor) {
+      throw new Error("Default holder investor not found in database");
+    }
+
+    // 2. Fetch balance
+    const balance = await db.query.balances.findFirst({
+      where: eq(schema.balances.investorId, investor.id)
+    });
+
+    // 3. Fetch recent transactions
+    const rawTxs = await db.query.transactions.findMany({
+      where: eq(schema.transactions.senderId, investor.id),
+      orderBy: (fields, { desc }) => [desc(fields.createdAt)],
+      limit: 10
+    });
+
+    const recentTransactions = rawTxs.map(tx => ({
+      id: tx.id,
+      amount: tx.amount,
+      type: tx.type,
+      status: tx.status,
+      timestamp: tx.createdAt.toISOString()
+    }));
+
+    return {
+      investor: {
+        id: investor.id,
+        fullName: `${investor.firstName || ''} ${investor.lastName || ''}`.trim() || "Inversor Demo",
+        email: investor.email,
+        kycStatus: (investor.kycStatus || "approved") as any,
+        isVerified: investor.isVerified || true,
+        balance: {
+          investorId: investor.id,
+          availableTokens: balance?.availableTokens || "0",
+          lockedTokens: balance?.lockedTokens || "0",
+          availableUsd: balance?.availableUsd || "0",
+          lockedUsd: "0",
+          lastUpdated: balance?.lastUpdatedAt?.toISOString() || new Date().toISOString()
+        }
+      },
+      recentTransactions,
+      kycVerificationProvider: "SIMULATED",
+      paymentsReadiness: {
+        provider: "MERCADOPAGO",
+        status: "PENDING_CREDENTIALS",
+        lastPing: null,
+        message: "No credentials"
+      },
+      contractReadiness: {
+        provider: "FOUNDRY",
+        status: "PENDING_FOUNDRY",
+        lastPing: null,
+        message: "Node inactive"
+      }
+    };
+  } catch (error) {
+    console.error("Error fetching investor view model from DB, using fallback:", error);
+    // Return a high-fidelity fallback in case database connection fails on Vercel
     return {
       investor: {
         id: "demo-investor-123",
-        fullName: "Inversor Demo",
+        fullName: "Inversor Demo (Respaldo)",
         email: "investor@pachanova.local",
-        kycStatus: "pending",
-        isVerified: false,
+        kycStatus: "approved",
+        isVerified: true,
         balance: {
           investorId: "demo-investor-123",
-          availableTokens: "5000",
+          availableTokens: "1250",
           lockedTokens: "0",
-          availableUsd: "42000",
+          availableUsd: "5000",
           lockedUsd: "0",
           lastUpdated: new Date().toISOString()
         }
@@ -48,9 +115,6 @@ async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
         message: "Node inactive"
       }
     };
-  } catch (error) {
-    console.error("Error fetching investor view model:", error);
-    return null;
   }
 }
 
