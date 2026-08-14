@@ -7,12 +7,33 @@ export async function requireRole(
   allowedRoles: Role[],
   redirectTo = "/unauthorized"
 ): Promise<{ userId: string; role: Role; email: string }> {
-  // DEMO_MODE bypass: return admin role without Supabase verification
+  // DEMO_MODE bypass: verify via session cookie, or default to admin
   if (process.env.DEMO_MODE === 'true') {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const demoSessionStr = cookieStore.get("pachanova_demo_session")?.value;
+
+    if (demoSessionStr) {
+      try {
+        const session = JSON.parse(demoSessionStr);
+        if (allowedRoles.includes(session.role)) {
+          return {
+            userId: "demo-user-" + session.role,
+            role: session.role,
+            email: session.email,
+          };
+        } else {
+          redirect(redirectTo);
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+
     return {
       userId: "demo-admin-00000000-0000-0000-0000-000000000001",
       role: "admin",
-      email: "demo.admin@pachanova.local",
+      email: "gerencia.mktgroup@gmail.com",
     };
   }
 

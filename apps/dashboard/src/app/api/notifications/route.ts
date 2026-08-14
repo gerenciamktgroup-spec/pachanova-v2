@@ -3,11 +3,24 @@ import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { eq, and, desc, count } from 'drizzle-orm';
 import { createServerClient } from '@/utils/supabase/server';
+import { errorMessage } from '@/lib/errors';
 
 async function getInvestorId() {
   if (process.env.DEMO_MODE === 'true') {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const demoSessionStr = cookieStore.get("pachanova_demo_session")?.value;
+    let email = 'demo.investor.approved@pachanova.local';
+
+    if (demoSessionStr) {
+      try {
+        const session = JSON.parse(demoSessionStr);
+        email = session.email;
+      } catch (e) {}
+    }
+
     const investor = await db.query.investors.findFirst({
-      where: eq(schema.investors.email, 'demo.investor.approved@pachanova.local'),
+      where: eq(schema.investors.email, email),
     });
     return investor?.id || null;
   }
@@ -56,8 +69,8 @@ export async function GET() {
       notifications: notificationsList,
       unreadCount,
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, error: errorMessage(error) }, { status: 500 });
   }
 }
 
@@ -95,7 +108,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, error: errorMessage(error) }, { status: 500 });
   }
 }
