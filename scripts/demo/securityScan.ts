@@ -14,7 +14,7 @@ const FORBIDDEN_PATTERNS = [
 ];
 
 const IGNORE_DIRS = ['node_modules', '.git', 'dist', '.next', 'artifacts'];
-const IGNORE_FILES = ['pnpm-lock.yaml', 'package-lock.json', '.env.local', '.env.demo.local', 'securityScan.ts'];
+const IGNORE_FILES = ['pnpm-lock.yaml', 'package-lock.json', '.env.local', '.env.demo.local', 'securityScan.ts', '.env.sepolia.example', '.env.example', '.env.demo.example', '.env.demo.local.example'];
 
 function scanDir(dir: string): boolean {
   let isClean = true;
