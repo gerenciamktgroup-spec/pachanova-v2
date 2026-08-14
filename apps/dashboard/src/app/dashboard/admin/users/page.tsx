@@ -5,8 +5,14 @@ import { AdminUsersDataGrid } from "@/components/product/AdminComponents";
 import { createClient } from "@supabase/supabase-js";
 import { UserAdminView } from "@/types/product";
 import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
 import { requireRole } from "@/utils/auth/requireRole";
+
+function adminRole(role: string | null | undefined): UserAdminView["role"] {
+  const normalized = role?.toUpperCase();
+  return normalized === "ADMIN" || normalized === "OPERATOR" || normalized === "FIDUCIARIO" || normalized === "COMITE"
+    ? normalized
+    : "INVESTOR";
+}
 
 async function fetchUsersDemo(): Promise<UserAdminView[]> {
   const investors = await db.query.investors.findMany({ limit: 100 });
@@ -21,7 +27,7 @@ async function fetchUsersDemo(): Promise<UserAdminView[]> {
       email: inv.email,
       kycStatus: (inv.kycStatus || 'pending') as "pending" | "approved" | "rejected",
       isVerified: inv.isVerified || false,
-      role: ((inv.role as string | undefined) || "INVESTOR").toUpperCase() as any,
+      role: adminRole(inv.role),
       status: "ACTIVE",
       balance: {
         investorId: inv.id,

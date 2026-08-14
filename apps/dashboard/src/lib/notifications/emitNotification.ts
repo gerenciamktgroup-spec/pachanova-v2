@@ -16,7 +16,7 @@ export async function emitNotification({
   message: string;
   actionUrl?: string;
   isDemo?: boolean;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }) {
   try {
     await db.insert(schema.notifications).values({

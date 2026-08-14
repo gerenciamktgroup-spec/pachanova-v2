@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +17,7 @@ const FALLBACK_PROPERTIES = [
     yieldPct: 8.70,
     claim: 23125,
     orq: "SYNC",
-    masterNote: "Master: orq real inject 68112.5 base net",
+    masterNote: "Referencia Master/ORQ: base net 68112.5",
     color: "#7A9A7E",
     status: "trading",
     totalValuationUsd: "4200000.00",

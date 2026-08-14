@@ -23,7 +23,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
       const res = await fetch("/api/demo/actions/p2p/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellerInvestorId: currentUserId, quantity, pricePerToken: price, pncCode: effectivePnc || undefined })
+        body: JSON.stringify({ quantity, pricePerToken: price, pncCode: effectivePnc || undefined })
       });
       const data = await res.json();
       if (data.success) {
@@ -46,7 +46,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
       const res = await fetch("/api/demo/actions/p2p/buy-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ buyerInvestorId: currentUserId, orderId })
+        body: JSON.stringify({ orderId })
       });
       const data = await res.json();
       if (data.success) {
@@ -76,8 +76,9 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
             </div>
             
             <div className="space-y-1">
-              <label className="text-sm text-pn-text-muted">Cantidad a vender</label>
+              <label htmlFor="p2p-quantity" className="text-sm text-pn-text-muted">Cantidad a vender</label>
               <input 
+                id="p2p-quantity"
                 type="number" min={1} 
                 value={quantity} onChange={e => setQuantity(Number(e.target.value))}
                 className="w-full bg-pn-bg border border-pn-border rounded px-3 py-2 text-sm focus:outline-none focus:border-pn-gold"
@@ -92,8 +93,9 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
             )}
 
             <div className="space-y-1">
-              <label className="text-sm text-pn-text-muted">Precio por PACHA (USD)</label>
+              <label htmlFor="p2p-price" className="text-sm text-pn-text-muted">Precio por PACHA (USD)</label>
               <input 
+                id="p2p-price"
                 type="number" step="0.01" min={0.01} 
                 value={price} onChange={e => setPrice(Number(e.target.value))}
                 className="w-full bg-pn-bg border border-pn-border rounded px-3 py-2 text-sm focus:outline-none focus:border-pn-gold"
@@ -112,7 +114,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
               </CommandButton>
               {!isKycApproved && <p className="text-xs text-pn-warning mt-2">KYC Pendiente</p>}
             </div>
-            {message && <p className="text-xs text-pn-gold">{message}</p>}
+            {message && <p className="text-xs text-pn-gold" aria-live="polite">{message}</p>}
           </div>
         </MissionCard>
       </div>
@@ -134,7 +136,7 @@ export function P2PMarketplaceClient({ orders, balance, kycStatus, currentUserId
                   <DataGridCell>${String(o.totalAmount)}</DataGridCell>
                   <DataGridCell>
                     <span className="font-mono text-[10px] text-pn-gold/80">{effectivePnc || "5PNC"}</span>
-                    <span className="block text-[9px] text-pn-text-muted">landbank tie • orq exercised F16/51</span>
+                    <span className="block text-[9px] text-pn-text-muted">vínculo landbank • referencia ORQ F16/51</span>
                     <Link href="/demo/showcase#phase4-hologram-landbank" className="text-[8px] underline text-pn-gold/60">ver avances per-PNC</Link>
                   </DataGridCell>
                   <DataGridCell>

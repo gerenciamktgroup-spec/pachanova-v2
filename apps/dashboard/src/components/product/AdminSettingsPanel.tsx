@@ -50,8 +50,8 @@ export function AdminSettingsPanel({ initialParams }: AdminSettingsPanelProps) {
       } else {
         setFeedback({ status: "error", message: data.error || "Error al actualizar" });
       }
-    } catch (e: any) {
-      setFeedback({ status: "error", message: e.message });
+    } catch (error: unknown) {
+      setFeedback({ status: "error", message: error instanceof Error ? error.message : "Error de red" });
     } finally {
       setLoading(null);
     }
@@ -82,8 +82,8 @@ export function AdminSettingsPanel({ initialParams }: AdminSettingsPanelProps) {
       } else {
         setFeedback({ status: "error", message: data.error || "Error al guardar" });
       }
-    } catch (e: any) {
-      setFeedback({ status: "error", message: e.message });
+    } catch (error: unknown) {
+      setFeedback({ status: "error", message: error instanceof Error ? error.message : "Error de red" });
     } finally {
       setLoading(null);
     }

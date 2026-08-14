@@ -14,7 +14,7 @@ async function fetchAuditLogsDemo(): Promise<AuditLogView[]> {
     orderBy: [desc(schema.auditLogs.timestamp)],
     limit: 100,
   });
-  return logs.map((log: any) => ({
+  return logs.map((log) => ({
     id: log.id,
     action: log.action ?? "UNKNOWN",
     details: typeof log.details === "string"
@@ -41,7 +41,8 @@ async function fetchAuditLogs(): Promise<AuditLogView[]> {
 
   if (error || !data) return [];
 
-  return data.map((log: any) => ({
+  const rows = data as Array<{ id: string; action: string | null; details: unknown; timestamp: string; user_id: string | null }>;
+  return rows.map((log) => ({
     id: log.id,
     action: log.action ?? "UNKNOWN",
     details: typeof log.details === "string"
@@ -61,7 +62,7 @@ export default async function AdminAuditPage() {
     console.error("Audit fetch error:", e);
     return <ErrorState title="Error de Auditoría" message="No se pudo cargar el log de auditoría." />;
   }
-  const view = { recentAuditLogs: logs } as any;
+  const view = { recentAuditLogs: logs };
 
   return (
     <div className="space-y-8 pb-24">

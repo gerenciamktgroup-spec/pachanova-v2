@@ -2,7 +2,7 @@
 
 import React from "react";
 import { MissionCard, SafeActionButton } from "@/components/mission";
-import { MapPin, ArrowRight, ShieldAlert } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
 import { SystemStatus, getStatusBadgeVariant, getStatusCopy } from "@/lib/product/statusModel";
 import { ActionIntent } from "@/lib/product/actionIntent";
 

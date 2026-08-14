@@ -104,7 +104,7 @@ describe('Demo Local Acceptance Tests', () => {
           headers: { 'x-signature': 'invalid', 'x-request-id': '123' },
           body: JSON.stringify({ type: 'payment', data: { id: '999' } })
        });
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/webhook/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/webhook/route');
        const res = await POST(req);
        expect(res.status).toBe(401);
     });
@@ -118,7 +118,7 @@ describe('Demo Local Acceptance Tests', () => {
        // Force unsigned bypass for test
        process.env.MP_WEBHOOK_ALLOW_UNSIGNED = 'true';
        process.env.DEMO_PROFILE = 'offline';
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/webhook/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/webhook/route');
        const res = await POST(req);
        // Should fail amount mismatch or unknown order because external_reference doesn't exist
        expect(res.status === 404 || res.status === 400 || res.status === 401).toBe(true);
@@ -131,7 +131,7 @@ describe('Demo Local Acceptance Tests', () => {
           body: JSON.stringify({ type: 'payment', data: { id: '999', status: 'rejected', external_reference: 'mock' } })
        });
        process.env.DEMO_PROFILE = 'offline';
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/webhook/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/webhook/route');
        const res = await POST(req);
        expect(res.status === 200 || res.status === 401).toBe(true);
        const json = await res.json();
@@ -150,7 +150,7 @@ describe('Demo Local Acceptance Tests', () => {
           body: JSON.stringify({ type: 'payment', data: { id: '999', status: 'approved', external_reference: 'mock', currency_id: 'PEN' } })
        });
        process.env.DEMO_PROFILE = 'offline';
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/webhook/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/webhook/route');
        const res = await POST(req);
        expect(res.status === 400 || res.status === 404 || res.status === 401).toBe(true);
     });
@@ -162,7 +162,7 @@ describe('Demo Local Acceptance Tests', () => {
           body: JSON.stringify({ type: 'payment', data: { id: '999', status: 'approved', external_reference: 'fake-id', currency_id: 'USD' } })
        });
        process.env.DEMO_PROFILE = 'offline';
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/webhook/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/webhook/route');
        const res = await POST(req);
        expect(res.status === 404 || res.status === 401).toBe(true);
     });
@@ -175,7 +175,7 @@ describe('Demo Local Acceptance Tests', () => {
        process.env.DEMO_PROFILE = 'sandbox';
        process.env.PAYMENTS_EXTERNAL_ENABLED = 'true';
        process.env.MERCADOPAGO_ACCESS_TOKEN = 'TEST_placeholder';
-       const { POST } = await import('../../apps/web/src/app/api/mercadopago/preference/route');
+       const { POST } = await import('../../apps/dashboard/src/app/api/mercadopago/preference/route');
        const res = await POST(req);
        expect(res.status === 503 || res.status === 403 || res.status === 404).toBe(true);
     });
@@ -200,7 +200,7 @@ describe('Demo Local Acceptance Tests', () => {
     });
 
     it('simpleProductCopy no contiene claims prohibidos', async () => {
-      const { simpleProductCopy } = await import('../../apps/web/src/lib/copy/simpleProductCopy');
+      const { simpleProductCopy } = await import('../../apps/dashboard/src/lib/copy/simpleProductCopy');
       const copyStr = JSON.stringify(simpleProductCopy).toLowerCase();
       
       const forbiddenClaims = [

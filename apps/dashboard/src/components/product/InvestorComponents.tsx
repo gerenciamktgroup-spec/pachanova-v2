@@ -6,11 +6,17 @@ import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBa
 import { CommandButton } from "@/components/mission/CommandButton";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { TokenAmount, SquareMeterAmount, MoneyAmount, UserStatusPill, DataGrid, DataGridRow, DataGridCell, ProductEmptyState } from "./SharedComponents";
-import { tokenOwnershipPercent, tokensToSquareMeters } from "@/lib/product/math";
+import { formatPacha, tokenOwnershipPercent, tokensToSquareMeters } from "@/lib/product/math";
 import { InvestorDashboardView } from "@/types/product";
 import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
+
+function formatInvestorTimestamp(value: string | Date): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return `${date.toISOString().slice(0, 19).replace("T", " ")} UTC`;
+}
 
 export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView }) {
   const availableTokensStr = String(view.investor.balance.availableTokens || "0");
@@ -26,14 +32,14 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
             Bienvenido, <span className="font-semibold text-pn-gold">{view.investor.fullName}</span> • PachaNova Landbanking
           </h1>
           <p className="text-sm text-pn-text-muted max-w-xl">
-            {PRODUCT_COPY.disclaimers.noRealMoney} Su cuenta se encuentra en el entorno Demo Local. Rich permanent demo. DATOS REALES • Master sacred. Post-F6 polish: full orq high-level bridge visibility + E2E on yields/gov/borrow/landbank surfaces.
+            {PRODUCT_COPY.disclaimers.noRealMoney} Su cuenta usa datos de referencia persistidos en el entorno Demo Local; las integraciones externas mantienen su estado visible.
           </p>
-          {/* more interactive: per-PNC ver avances + cross links + orq exercised badges */}
+          {/* Per-PNC progress links and ORQ demo-reference badges. */}
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <a href="/demo/showcase#phase4-hologram-landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Ver avances (Holograms + E2E 5PNC)</a>
             <a href="/dashboard/investor/marketplace?pnc=PAR" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">P2P Orderbook (PAR tie)</a>
             <a href="/dashboard/admin/landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Admin Landbank</a>
-            <span className="px-2 py-0.5 bg-emerald-900/30 text-emerald-300 rounded border border-emerald-700/50">ORQ EXERCISED • F16/21/36/47/51/53</span>
+            <span className="px-2 py-0.5 bg-emerald-900/30 text-emerald-300 rounded border border-emerald-700/50">ORQ DEMO BRIDGE • F16/21/36/47/51/53</span>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -121,7 +127,7 @@ export function InvestorLedgerPanel({ view }: { view: InvestorDashboardView }) {
             <DataGridRow key={tx.id}>
               <DataGridCell><span className="text-xs font-medium px-2 py-1 bg-pn-surface-strong rounded border border-pn-border">{tx.operationType}</span></DataGridCell>
               <DataGridCell><TokenAmount amount={tx.amount} /></DataGridCell>
-              <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{new Date(tx.timestamp).toLocaleString()}</span></DataGridCell>
+              <DataGridCell><span className="font-mono text-xs text-pn-text-muted">{formatInvestorTimestamp(tx.timestamp)}</span></DataGridCell>
               <DataGridCell>
                 <span className="font-mono text-[10px] text-pn-text-soft truncate max-w-[120px] block">
                   {tx.txHash || "PENDING"}
@@ -164,7 +170,6 @@ export function InvestorKycStatusPanel({ view }: { view: InvestorDashboardView }
 
 export function GenesisDemoActionCard({ view }: { view: InvestorDashboardView }) {
   const isKycApproved = view.investor.kycStatus === "approved";
-  const isPaymentsReady = view.paymentsReadiness.status === "SIMULATED" || view.paymentsReadiness.status === "CONNECTED";
 
   return (
     <MissionCard title="Oferta Genesis (Simulación)" variant="elevated" data-testid="genesis-demo-action">
@@ -226,7 +231,7 @@ export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardVie
       } else {
         setMessage(data.error || "Error al depositar");
       }
-    } catch (e) {
+    } catch {
       setMessage("Error de red");
     } finally {
       setIsDepositing(false);
@@ -238,7 +243,7 @@ export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardVie
       <div className="space-y-4">
         <div className="p-3 bg-pn-surface-strong rounded border border-pn-border">
           <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible</p>
-          <p className="text-xl font-medium text-pn-gold">${Number(view.investor.balance.availableUsd).toLocaleString()}</p>
+          <p className="text-xl font-medium text-pn-gold">${formatPacha(Number(view.investor.balance.availableUsd))}</p>
         </div>
 
         <div className="space-y-2 mt-4 pt-4 border-t border-pn-border">

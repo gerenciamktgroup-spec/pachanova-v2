@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm --filter web start -p ${port}`,
+    command: `pnpm --filter dashboard start -p ${port}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     env: {

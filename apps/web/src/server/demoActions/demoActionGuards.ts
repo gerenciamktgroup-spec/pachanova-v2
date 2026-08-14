@@ -1,15 +1,13 @@
 
+import { validateDemoDatabaseUrl as assertDemoDatabaseUrl } from "@pachanova/database/src/utils/demoValidation";
+
 export function validateDemoDatabaseUrl(): boolean {
-  if (process.env.DEMO_MODE !== 'true') return false;
-  
-  const target = `${process.env.DATABASE_URL ?? ''} ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''} ${process.env.SUPABASE_URL ?? ''}`
-  const DEMO_REF = 'cndppfspgqomgwixlfkw'
-  const PROD_REF = 'wdrhurnbxkhwmqrcbgpu'
-
-  if (target.includes(PROD_REF)) return false;
-  if (!target.includes(DEMO_REF)) return false;
-
-  return true;
+  try {
+    assertDemoDatabaseUrl(process.env.DATABASE_URL);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function assertDemoMode() {

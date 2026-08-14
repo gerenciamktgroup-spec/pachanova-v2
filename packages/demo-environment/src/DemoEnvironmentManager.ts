@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
-import path from 'path';
+import { dirname, resolve } from 'path';
+import { existsSync } from 'fs';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { sql } from 'drizzle-orm';
@@ -38,9 +39,14 @@ export class DemoEnvironmentManager {
    * Encuentra la raíz del proyecto (pachanova-v2-git)
    */
   private findProjectRoot(): string {
-    // Asumimos que este paquete está en packages/demo-environment
-    // Subimos dos niveles para llegar a la raíz del monorepo
-    return path.resolve(__dirname, '../../../../');
+    let current = resolve(process.cwd());
+    while (true) {
+      if (existsSync(resolve(current, 'pnpm-workspace.yaml'))) return current;
+      const parent = dirname(current);
+      if (parent === current) break;
+      current = parent;
+    }
+    throw new Error('No se encontró la raíz del monorepo desde el directorio actual');
   }
 
   /**

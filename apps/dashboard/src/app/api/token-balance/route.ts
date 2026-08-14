@@ -32,7 +32,7 @@ export async function GET(req: Request) {
         m2
       } 
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

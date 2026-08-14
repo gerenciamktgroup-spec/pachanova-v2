@@ -76,7 +76,7 @@ export default function ShowcasePage() {
         <LandbankManagementClient />
       </section>
 
-      {/* Post-F6 expansion: full yields page surface (E2E + hologram panels + per-PNC ver avances + orq exercised) */}
+      {/* Post-F6 expansion: yields surface, hologram panels, progress links and ORQ demo references. */}
       <section id="yields-surface" data-testid="yields-surface-expanded">
         <MissionCard title="📈 Mapeo de Rentas y Rendimientos de Proyectos">
           <div className="text-xs text-pn-text-muted mb-3">Aquí puedes analizar el rendimiento estimado y la renta acumulada de cada tipo de terreno digitalizado. Los fondos se reinvierten automáticamente para generar interés compuesto.</div>

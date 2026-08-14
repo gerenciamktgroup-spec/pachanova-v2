@@ -9,11 +9,14 @@
  */
 
 import { config } from 'dotenv';
+import { resolve } from 'path';
 import { createDemoEnvironmentManager } from '../DemoEnvironmentManager';
 
 // Cargar variables de entorno de demo
 config({ path: '.env.demo' });
 config({ path: '.env.demo.local' });
+config({ path: resolve(process.cwd(), '../../.env.demo') });
+config({ path: resolve(process.cwd(), '../../.env.demo.local'), override: true });
 
 async function main() {
   const scenarioName = process.argv[2];
@@ -35,9 +38,9 @@ async function main() {
     await manager.applyScenario(scenarioName);
     console.log(`\n✅ Escenario "${scenarioName}" aplicado exitosamente.`);
     process.exit(0);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`\n❌ Error aplicando el escenario "${scenarioName}":`);
-    console.error(error.message || error);
+    console.error(error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }

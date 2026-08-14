@@ -1,14 +1,11 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/components/mission";
+import { RouteBreadcrumbs, SectionHeader, ErrorState } from "@/components/mission";
 import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
+import { DEFAULT_DEMO_INVESTOR, schema } from "@pachanova/database";
 import { eq } from "drizzle-orm";
 import { Suspense } from "react";
 import { P2PMarketplaceClient } from "./P2PMarketplaceClient";
-
-// Dummy logged in user for demo purposes
-const DEMO_USER_ID = "00000000-0000-0000-0000-000000000123";
 
 async function fetchMarketplaceData() {
   try {
@@ -17,15 +14,16 @@ async function fetchMarketplaceData() {
       orderBy: (orders, { desc }) => [desc(orders.createdAt)],
     });
 
-    const balance = await db.query.balances.findFirst({
-      where: eq(schema.balances.investorId, DEMO_USER_ID),
-    });
-
     const user = await db.query.investors.findFirst({
-      where: eq(schema.investors.id, DEMO_USER_ID),
+      where: eq(schema.investors.email, DEFAULT_DEMO_INVESTOR.email),
+    });
+    if (!user) return null;
+
+    const balance = await db.query.balances.findFirst({
+      where: eq(schema.balances.investorId, user.id),
     });
 
-    return { orders, balance, kycStatus: user?.kycStatus || 'pending' };
+    return { orders, balance, userId: user.id, kycStatus: user.kycStatus };
   } catch (error) {
     console.error("Error fetching P2P data:", error);
     return null;
@@ -39,7 +37,7 @@ async function MarketplaceContent({ searchParams }: { searchParams?: Promise<{ p
   const data = await fetchMarketplaceData();
 
   if (!data) {
-    return <ErrorState title="Error (PachaNova Landbanking Rich Permanent Demo)" message="No se pudo cargar el mercado P2P. Full unified. DATOS REALES. Master sacred. Hard refresh for holograms." />;
+    return <ErrorState title="Mercado no disponible" message="No se pudo cargar el mercado P2P. Verifica PostgreSQL y reconstruye el dataset demo." />;
   }
 
   const pncLabel = pncFromQuery ? ` • PNC ${pncFromQuery} (from Landbank E2E)` : "";
@@ -54,7 +52,7 @@ async function MarketplaceContent({ searchParams }: { searchParams?: Promise<{ p
         ]} className="mb-4" />
         <SectionHeader 
           title={`Mercado P2P Demo${pncLabel} • PachaNova Landbanking Full`}
-          description="Compra y vende tokens PACHA simulados con otros usuarios de la red local. Rich permanent demo. DATOS REALES. Fase 6 + Post-F6: P2P orders tied directly to 5PNC holograms via Landbank flow + more PNC ties + orq exercised + ver avances. Full unified project."
+          description="Compra y vende PACHA simulados con usuarios del dataset local. Las órdenes, saldos y trades se persisten en PostgreSQL y se asocian al PNC seleccionado."
         />
       </div>
 
@@ -62,7 +60,7 @@ async function MarketplaceContent({ searchParams }: { searchParams?: Promise<{ p
         orders={data.orders} 
         balance={data.balance || null} 
         kycStatus={data.kycStatus}
-        currentUserId={DEMO_USER_ID}
+        currentUserId={data.userId}
         pncCode={pncFromQuery}
       />
     </div>

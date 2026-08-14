@@ -16,7 +16,7 @@ export async function GET() {
       .leftJoin(schema.balances, eq(schema.investors.id, schema.balances.investorId));
     
     return NextResponse.json({ success: true, users: usersData });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Failed to fetch users' }, { status: 500 });
   }
 }

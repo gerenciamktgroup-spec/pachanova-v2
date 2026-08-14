@@ -20,9 +20,53 @@ import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { db } from "@/server/db";
 import { schema } from "@pachanova/database";
-import { desc, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { requireRole } from "@/utils/auth/requireRole";
 import { AdminControlPanel } from "@/components/product/AdminControlPanel";
+
+type TreasuryData = {
+  balanceUsd?: number | string;
+  tokensSold?: number | string;
+  totalSupply?: number | string;
+  totalUsdRaised?: number | string;
+  p2pVolume?: number | string;
+  utilizationPercent?: number;
+};
+
+type SupabaseInvestor = {
+  id: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  email: string;
+  role?: string | null;
+  kyc_status?: string | null;
+  is_verified?: boolean | null;
+  balances?: Array<{
+    available_tokens?: string | number;
+    locked_tokens?: string | number;
+    available_usd?: string | number;
+    locked_usd?: string | number;
+    last_updated_at?: string;
+  }>;
+  kyc_documents?: Array<{ status?: string }>;
+};
+
+type SupabaseAudit = { id: string; action: string; details: string; timestamp: string; user_id?: string | null };
+type SupabaseEvent = { id: string; provider: string; event_type: string; timestamp: string; status?: string | null };
+type SupabaseTokenOrder = { quantity: string | number; total_amount: string | number };
+
+function normalizeKycStatus(value: unknown): UserAdminView["kycStatus"] {
+  return value === "approved" || value === "rejected" ? value : "pending";
+}
+
+function normalizeAdminRole(value: unknown): UserAdminView["role"] {
+  const role = typeof value === "string" ? value.toUpperCase() : "INVESTOR";
+  return role === "ADMIN" || role === "OPERATOR" || role === "FIDUCIARIO" || role === "COMITE" ? role : "INVESTOR";
+}
+
+function normalizeEventStatus(value: unknown): IntegrationEventView["status"] {
+  return value === "error" || value === "pending" ? value : "success";
+}
 
 // Fetch treasury via local API
 async function fetchTreasury() {
@@ -30,8 +74,8 @@ async function fetchTreasury() {
     const dashUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3000';
     const res = await fetch(`${dashUrl}/api/treasury`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Treasury API returned ${res.status}`);
-    const data = await res.json();
-    return data.treasury;
+    const data = await res.json() as { treasury?: TreasuryData };
+    return data.treasury ?? null;
   } catch (err) {
     console.error("Error fetching treasury:", err);
     return null;
@@ -101,7 +145,7 @@ function getFallbackData(): { view: AdminDashboardView, users: UserAdminView[] }
     recentIntegrationEvents: [
       {
         id: "event-1",
-        provider: "MERCADOPAGO" as any,
+        provider: "MERCADOPAGO",
         event: "pago.acreditado",
         timestamp: new Date().toISOString(),
         status: "success",
@@ -176,9 +220,9 @@ async function fetchAdminDataDemo(): Promise<{ view: AdminDashboardView, users: 
         id: inv.id,
         fullName: `${inv.firstName || ''} ${inv.lastName || ''}`.trim() || 'Usuario',
         email: inv.email,
-        kycStatus: (inv.kycStatus || 'pending') as any,
+        kycStatus: inv.kycStatus || 'pending',
         isVerified: inv.isVerified || false,
-        role: ((inv.role as string | undefined) || "INVESTOR").toUpperCase() as any,
+        role: normalizeAdminRole(inv.role),
         status: "ACTIVE",
         balance: {
           investorId: inv.id,
@@ -191,7 +235,7 @@ async function fetchAdminDataDemo(): Promise<{ view: AdminDashboardView, users: 
       };
     });
 
-    const recentAuditLogs = auditLogs.map((log: any) => ({
+    const recentAuditLogs = auditLogs.map((log) => ({
       id: log.id,
       action: log.action ?? "UNKNOWN",
       details: typeof log.details === "string" ? log.details : JSON.stringify(log.details ?? {}),
@@ -199,12 +243,12 @@ async function fetchAdminDataDemo(): Promise<{ view: AdminDashboardView, users: 
       actor: log.userId ? `User:${log.userId}` : "System",
     }));
 
-    const recentIntegrationEvents: IntegrationEventView[] = integrationEvents.map((ev: any) => ({
+    const recentIntegrationEvents: IntegrationEventView[] = integrationEvents.map((ev) => ({
       id: ev.id,
-      provider: ev.provider as any,
+      provider: ev.provider,
       event: ev.eventType,
       timestamp: ev.timestamp?.toISOString?.() ?? new Date().toISOString(),
-      status: (ev.status || 'success') as IntegrationEventView['status'],
+      status: normalizeEventStatus(ev.status),
     }));
 
     const view: AdminDashboardView = {
@@ -218,7 +262,7 @@ async function fetchAdminDataDemo(): Promise<{ view: AdminDashboardView, users: 
         totalUsdRaised: "$0",
         totalTokensIssued: totalTokens.toString(),
         totalTokensAvailable: (500000 - totalTokens).toString(),
-        fideicomisoStatus: "PENDING" as "PENDING",
+        fideicomisoStatus: "PENDING",
       },
       recentAuditLogs,
       recentIntegrationEvents,
@@ -261,7 +305,7 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
       .order("created_at", { ascending: false })
       .limit(50);
 
-    const users: UserAdminView[] = (rawInvestors || []).map((inv: any) => {
+    const users: UserAdminView[] = ((rawInvestors || []) as SupabaseInvestor[]).map((inv) => {
       const balance = (inv.balances && inv.balances.length > 0) ? inv.balances[0] : null;
       const kycDocs = inv.kyc_documents || [];
       const computedKycStatus = kycDocs.length > 0 ? kycDocs[0].status : (inv.kyc_status || "pending");
@@ -269,9 +313,9 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
         id: inv.id,
         fullName: `${inv.first_name || ''} ${inv.last_name || ''}`.trim() || "Usuario",
         email: inv.email,
-        kycStatus: computedKycStatus as any,
+        kycStatus: normalizeKycStatus(computedKycStatus),
         isVerified: inv.is_verified || false,
-        role: (inv.role || "INVESTOR").toUpperCase() as any,
+        role: normalizeAdminRole(inv.role),
         status: "ACTIVE",
         balance: {
           investorId: inv.id,
@@ -290,7 +334,7 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
       .order("timestamp", { ascending: false })
       .limit(20);
 
-    const recentAuditLogs = (rawAuditLogs || []).map((log: any) => ({
+    const recentAuditLogs = ((rawAuditLogs || []) as SupabaseAudit[]).map((log) => ({
       id: log.id,
       action: log.action,
       details: log.details,
@@ -304,12 +348,12 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
       .order("timestamp", { ascending: false })
       .limit(10);
 
-    const recentIntegrationEvents = (rawEvents || []).map((ev: any) => ({
+    const recentIntegrationEvents: IntegrationEventView[] = ((rawEvents || []) as SupabaseEvent[]).map((ev) => ({
       id: ev.id,
-      provider: ev.provider as any,
+      provider: ev.provider,
       event: ev.event_type,
       timestamp: ev.timestamp,
-      status: ev.status as IntegrationEventView['status'],
+      status: normalizeEventStatus(ev.status),
     }));
 
     const { data: tokenOrders } = await supabaseAdmin
@@ -317,8 +361,9 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
       .select("quantity, total_amount")
       .eq("status", "filled");
 
-    const tokensSold = tokenOrders?.reduce((acc, o: any) => acc + Number(o.quantity), 0) ?? 0;
-    const usdRaised = tokenOrders?.reduce((acc, o: any) => acc + Number(o.total_amount), 0) ?? 0;
+    const typedOrders = (tokenOrders || []) as SupabaseTokenOrder[];
+    const tokensSold = typedOrders.reduce((acc, order) => acc + Number(order.quantity), 0);
+    const usdRaised = typedOrders.reduce((acc, order) => acc + Number(order.total_amount), 0);
 
     const view: AdminDashboardView = {
       overview: {
@@ -331,7 +376,7 @@ async function fetchAdminDataProd(): Promise<{ view: AdminDashboardView, users: 
         totalUsdRaised: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(usdRaised),
         totalTokensIssued: tokensSold.toString(),
         totalTokensAvailable: (500000 - tokensSold).toString(),
-        fideicomisoStatus: "PENDING" as "PENDING",
+        fideicomisoStatus: "PENDING",
       },
       recentAuditLogs,
       recentIntegrationEvents,

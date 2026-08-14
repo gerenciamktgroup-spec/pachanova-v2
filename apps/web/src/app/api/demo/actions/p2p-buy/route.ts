@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         .set({
           availableTokens: newBuyerTokens,
           availableUsd: newBuyerUsd,
-          updatedAt: new Date()
+          lastUpdatedAt: new Date()
         })
         .where(eq(schema.balances.investorId, buyerInvestorId));
 
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
         .set({
           availableUsd: newSellerUsd,
           lockedTokens: newSellerLockedTokens,
-          updatedAt: new Date()
+          lastUpdatedAt: new Date()
         })
         .where(eq(schema.balances.investorId, order.sellerInvestorId));
 

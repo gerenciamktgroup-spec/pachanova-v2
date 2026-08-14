@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
+import { RouteBreadcrumbs, LoadingState } from "@/components/mission";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { LandbankManagementClient } from "@/components/product";
 import { Suspense } from "react";
@@ -13,7 +13,7 @@ import Link from "next/link";
  * Admin Landbank page (Post-F6 polish support for /admin/landbank URL).
  * Embeds full LandbankManagementClient + holograms + E2E for yields/gov/borrow/5PNC.
  * High-level only. Full project identity + rich permanent demo banners.
- * DATOS REALES. Master sacred. orq high-level visibility included (via client).
+ * Datos de referencia persistidos en el demo; reglas Master visibles.
  * Single unified project.
  */
 
@@ -42,8 +42,8 @@ async function AdminLandbankContent() {
         dataTestId="next-step-card-admin-landbank"
         contextLabel="Admin • Landbanking"
         title="PachaNova Landbanking — Admin Master Console (Full Unified @3000)"
-        explanation="Full 5PNC Landbank holograms + E2E flows (Master launch, P2P, borrow Fase9, claim yields/flywheel, gov quorum Fase36). Post-F6 polish: live orq high-level bridge visibility (orq exercised badges, Fase cycle notes F16/21/36/47/51/53) in holograms/landbank/investor. Expanded surfaces: yields page, gov, investor hero/portfolio interactive, marketplace orderbook +PNC ties. More per-PNC 'ver avances' + cross links. Rich permanent demo. DATOS REALES. Master sacred. No beta remnants."
-        nextStep="Usa los hologramas interactivos + botones E2E. Hard refresh para ver datos reales PAR 68112.5 etc. Navega a /investor y /marketplace?pnc=PAR."
+        explanation="Consola 5PNC con flujos persistidos de lanzamiento, P2P, préstamo, renta, voto y atestación perpetua. Los valores ORQ mostrados son referencias del dataset demo; no representan liquidación externa ni una promesa de rendimiento."
+        nextStep="Usa los hologramas y botones E2E; luego verifica cada evidencia en mercado, ledger, auditoría e integraciones."
         primaryAction={{ label: "Ver Showcase Holograms", href: "/demo/showcase#phase4-hologram-landbank", intent: "navigate" }}
         secondaryAction={{ label: "Panel Inversor", href: "/dashboard/investor", intent: "navigate" }}
         status="GO"

@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -50,25 +50,26 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/unauthorized');
-
-  // Si no hay usuario y trata de entrar al dashboard, mandarlo al login
-  if (!user && !isAuthPage) {
+  if (!user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Si está autenticado, verificamos el rol
-  if (user && !isAuthPage) {
-    // Rol sincronizado vía trigger Supabase: public.investors.role → auth.users.raw_app_meta_data.role
-    const role = (user.app_metadata?.role as string | undefined) || 'investor';
-    
-    if (role !== 'admin' && role !== 'operator') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/unauthorized'
-      return NextResponse.redirect(url)
-    }
+  const role = (user.app_metadata?.role as string | undefined) || 'investor'
+  const pathname = request.nextUrl.pathname
+  const allowedRoles = pathname.startsWith('/dashboard/investor')
+    ? ['investor', 'admin', 'operator']
+    : pathname.startsWith('/dashboard/fideicomiso')
+      ? ['fiduciario', 'comite', 'admin', 'operator']
+      : pathname.startsWith('/demo')
+        ? ['investor', 'fiduciario', 'comite', 'admin', 'operator']
+        : ['admin', 'operator']
+
+  if (!allowedRoles.includes(role)) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/unauthorized'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse

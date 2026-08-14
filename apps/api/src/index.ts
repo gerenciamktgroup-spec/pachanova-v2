@@ -4,10 +4,14 @@ import { investors } from './routes/investors'
 import { properties } from './routes/properties'
 
 const app = new Hono()
+const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000,https://pachanova-v2.vercel.app')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
 // CORS
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:3002', 'https://pachanova-v2.vercel.app'],
+  origin: allowedOrigins,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -19,8 +23,7 @@ app.use('/api/*', async (c, next) => {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!serviceRoleKey || serviceRoleKey.startsWith('[')) {
-    console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY no configurada — acceso permitido sin autenticación')
-    return next()
+    return c.json({ error: 'API authentication is not configured' }, 503)
   }
 
   if (!authHeader || authHeader !== `Bearer ${serviceRoleKey}`) {

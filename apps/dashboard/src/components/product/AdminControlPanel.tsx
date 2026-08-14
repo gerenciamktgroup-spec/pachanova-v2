@@ -37,14 +37,12 @@ export function AdminControlPanel({ users }: AdminControlPanelProps) {
       } else {
         setLastResult(`❌ Error: ${data.error || JSON.stringify(data)}`);
       }
-    } catch (e: any) {
-      setLastResult(`❌ Error de red: ${e.message}`);
+    } catch (error: unknown) {
+      setLastResult(`❌ Error de red: ${error instanceof Error ? error.message : "error desconocido"}`);
     } finally {
       setLoading(null);
     }
   }
-
-  const selectedUserObj = users.find(u => u.id === selectedUser);
 
   return (
     <div
@@ -88,7 +86,7 @@ export function AdminControlPanel({ users }: AdminControlPanelProps) {
               <select
                 className="w-full bg-pn-surface border border-pn-border rounded px-2 py-1 text-sm text-pn-text"
                 value={kycStatus}
-                onChange={e => setKycStatus(e.target.value as any)}
+                onChange={e => setKycStatus(e.target.value as "approved" | "pending" | "rejected")}
               >
                 <option value="approved">✅ Approved</option>
                 <option value="pending">⏳ Pending</option>

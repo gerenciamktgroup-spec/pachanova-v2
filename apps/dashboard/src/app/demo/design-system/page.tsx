@@ -4,7 +4,7 @@ import {
   EmptyState, LoadingState, ErrorState, LegalTrustCard, 
   ExternalReadyNotice, ReportLinkCard, CommandButton, RouteBreadcrumbs 
 } from "@/components/mission";
-import { ShieldCheck, Activity } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 export default function DesignSystemPreview() {
   return (

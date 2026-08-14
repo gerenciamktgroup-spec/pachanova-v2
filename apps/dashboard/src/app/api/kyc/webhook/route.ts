@@ -4,6 +4,7 @@ import { schema } from '@pachanova/database';
 import { eq } from 'drizzle-orm';
 import { getKycProvider } from '@/lib/kyc';
 import { emitNotification } from '@/lib/notifications/emitNotification';
+import { errorMessage } from '@/lib/errors';
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
     let payload;
     try {
       payload = JSON.parse(rawBody);
-    } catch (e) {
+    } catch {
       return NextResponse.json({ success: false, error: 'Invalid JSON payload' }, { status: 400 });
     }
 
@@ -60,8 +61,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("KYC Webhook error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: errorMessage(error) }, { status: 500 });
   }
 }

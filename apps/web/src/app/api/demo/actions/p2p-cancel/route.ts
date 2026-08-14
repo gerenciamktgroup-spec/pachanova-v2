@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         .set({
           availableTokens: newAvailable,
           lockedTokens: newLocked,
-          updatedAt: new Date()
+          lastUpdatedAt: new Date()
         })
         .where(eq(schema.balances.investorId, investorId));
 

@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
-import { eq, and, lte, lt } from 'drizzle-orm';
+import { eq, and, lte } from 'drizzle-orm';
+import { errorMessage } from '@/lib/errors';
 
 // ─── Enqueue a webhook for async processing ───────────────────────────────────
 export async function enqueueWebhook({
@@ -22,9 +22,9 @@ export async function enqueueWebhook({
   const result = await db.insert(schema.webhookQueue).values({
     provider,
     eventType,
-    payload: payload as any,
+    payload,
     rawBody,
-    headers: headers as any,
+    headers,
     isDemo,
     status: 'pending',
     nextRetryAt: new Date(),
@@ -61,19 +61,20 @@ export async function processPendingWebhooks(): Promise<{ processed: number; fai
         .set({ status: 'done', processedAt: new Date() })
         .where(eq(schema.webhookQueue.id, job.id));
       processed++;
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message = errorMessage(error);
       const nextAttempt = job.attempts + 1;
       const maxAttempts = job.maxAttempts;
       if (nextAttempt >= maxAttempts) {
         await db.update(schema.webhookQueue)
-          .set({ status: 'failed', lastError: err.message, processedAt: new Date() })
+          .set({ status: 'failed', lastError: message, processedAt: new Date() })
           .where(eq(schema.webhookQueue.id, job.id));
       } else {
         // Exponential backoff: 30s, 2min, 10min
         const backoffSeconds = [30, 120, 600][nextAttempt - 1] || 600;
         const nextRetry = new Date(Date.now() + backoffSeconds * 1000);
         await db.update(schema.webhookQueue)
-          .set({ status: 'pending', lastError: err.message, nextRetryAt: nextRetry })
+          .set({ status: 'pending', lastError: message, nextRetryAt: nextRetry })
           .where(eq(schema.webhookQueue.id, job.id));
       }
       failed++;
@@ -93,9 +94,9 @@ async function processWebhookJob(job: typeof schema.webhookQueue.$inferSelect): 
   });
 
   await db.insert(schema.integrationEvents).values({
-    provider: provider as any,
+    provider,
     eventType: `QUEUE_${eventType}`,
-    payload: payload as any,
+    payload,
     simulated: job.isDemo,
   });
 

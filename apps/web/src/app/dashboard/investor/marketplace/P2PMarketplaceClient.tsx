@@ -5,6 +5,26 @@ import { MissionCard, CommandButton } from "@/components/mission";
 import { DataGrid, DataGridRow, DataGridCell } from "@/components/product/SharedComponents";
 import { useRouter } from "next/navigation";
 
+type MarketplaceOrder = {
+  id: string;
+  quantity: string | number;
+  price_per_token?: string | number;
+  pricePerToken?: string | number;
+  investor?: { full_name?: string; first_name?: string; last_name?: string } | null;
+  property?: { name?: string } | null;
+};
+
+type MarketplaceBalance = {
+  available_usd?: string | number;
+  available_tokens?: string | number;
+  availableUsd?: string | number;
+  availableTokens?: string | number;
+};
+
+function orderPrice(order: MarketplaceOrder) {
+  return Number(order.price_per_token ?? order.pricePerToken ?? 0);
+}
+
 export function P2PMarketplaceClient({ 
   availableOrders, 
   myOrders, 
@@ -13,9 +33,9 @@ export function P2PMarketplaceClient({
   currentUserId,
   propertyId
 }: { 
-  availableOrders: any[]; 
-  myOrders: any[]; 
-  balance: any | null; 
+  availableOrders: MarketplaceOrder[];
+  myOrders: MarketplaceOrder[];
+  balance?: MarketplaceBalance | null;
   kycStatus: string; 
   currentUserId: string; 
   propertyId: string;
@@ -28,8 +48,8 @@ export function P2PMarketplaceClient({
   const router = useRouter();
 
   const isKycApproved = kycStatus === "approved";
-  const availableUsd = Number(balance?.available_usd || 0);
-  const availableTokens = Number(balance?.available_tokens || 0);
+  const availableUsd = Number(balance?.available_usd ?? balance?.availableUsd ?? 0);
+  const availableTokens = Number(balance?.available_tokens ?? balance?.availableTokens ?? 0);
 
   const handleCreateOrder = async () => {
     setIsSubmitting(true);
@@ -151,7 +171,7 @@ export function P2PMarketplaceClient({
           ) : (
             <DataGrid headers={["Vendedor", "Propiedad", "Cantidad", "Precio/Token", "Total", "Acción"]}>
               {availableOrders.map((o) => {
-                const total = Number(o.quantity) * Number(o.price_per_token);
+                const total = Number(o.quantity) * orderPrice(o);
                 const canAfford = availableUsd >= total;
                 return (
                   <DataGridRow key={o.id}>
@@ -160,7 +180,7 @@ export function P2PMarketplaceClient({
                     </DataGridCell>
                     <DataGridCell>{o.property?.name || 'PACHA Asset'}</DataGridCell>
                     <DataGridCell>{Number(o.quantity)}</DataGridCell>
-                    <DataGridCell>${Number(o.price_per_token).toFixed(2)}</DataGridCell>
+                    <DataGridCell>${orderPrice(o).toFixed(2)}</DataGridCell>
                     <DataGridCell>${total.toFixed(2)}</DataGridCell>
                     <DataGridCell>
                       <div className="relative group">
@@ -241,10 +261,10 @@ export function P2PMarketplaceClient({
                   <div key={order.id} className="p-3 bg-pn-surface border border-pn-border rounded-lg flex justify-between items-center">
                     <div>
                       <p className="text-sm font-medium">{Number(order.quantity)} PACHA</p>
-                      <p className="text-xs text-pn-text-muted">a ${Number(order.price_per_token).toFixed(2)} c/u</p>
+                      <p className="text-xs text-pn-text-muted">a ${orderPrice(order).toFixed(2)} c/u</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-pn-gold">${(Number(order.quantity) * Number(order.price_per_token)).toFixed(2)}</p>
+                      <p className="text-sm text-pn-gold">${(Number(order.quantity) * orderPrice(order)).toFixed(2)}</p>
                       <button 
                         onClick={() => handleCancelOrder(order.id)}
                         disabled={isSubmitting}

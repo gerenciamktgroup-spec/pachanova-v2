@@ -35,7 +35,7 @@ export default async function AdminSettingsPage() {
         <AdminSettingsPanel initialParams={formattedParams} />
       </div>
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error loading settings page:", error);
     return <ErrorState title="Error de Carga" message="No se pudieron cargar las configuraciones del sistema." />;
   }

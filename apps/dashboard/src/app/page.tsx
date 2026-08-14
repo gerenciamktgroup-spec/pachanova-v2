@@ -1,9 +1,8 @@
 import { PublicHeader, PublicFooter } from "@/components/public/LandingComponents";
-import { MissionCard, IntegrationStatusBadge, SafeActionButton } from "@/components/mission";
-import { Activity, ShieldCheck, Database, LayoutDashboard, Eye, CheckCircle2, CircleDashed, Link as LinkIcon, LandPlot, Coins, UserCheck, Wallet, ArrowRightLeft } from "lucide-react";
+import { MissionCard, SafeActionButton } from "@/components/mission";
+import { ShieldCheck, Database, CheckCircle2, CircleDashed, Link as LinkIcon, LandPlot, Coins, UserCheck, Wallet, ArrowRightLeft } from "lucide-react";
 import Link from "next/link";
 import { InfoHint } from "@/components/product/InfoHint";
-import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { visitorJourney } from "@/lib/navigation/userJourneys";
 

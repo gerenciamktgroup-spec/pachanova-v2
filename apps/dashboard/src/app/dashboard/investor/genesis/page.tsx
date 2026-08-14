@@ -24,8 +24,7 @@ export default function InvestorGenesisPage() {
       const res = await fetch("/api/demo/actions/genesis-demo-purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Hardcoded generic UUID for the demo environment since we are rendering on client-side
-        body: JSON.stringify({ investorId: "00000000-0000-0000-0000-000000000123", quantity }), 
+        body: JSON.stringify({ quantity }),
       });
       const data = await res.json();
       setResult({ ok: data.success, message: data.success ? data.message : data.error });
@@ -86,8 +85,9 @@ export default function InvestorGenesisPage() {
         <MissionCard title="Paso 2: Selección de Cantidad Demo" variant="elevated" data-testid="genesis-step-quantity">
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-pn-text mb-2">Cantidad de PACHA a Simular</label>
+              <label htmlFor="genesis-quantity" className="block text-sm font-medium text-pn-text mb-2">Cantidad de PACHA a Simular</label>
               <input 
+                id="genesis-quantity"
                 type="number" 
                 min={1} 
                 max={50000} 
@@ -147,7 +147,7 @@ export default function InvestorGenesisPage() {
       {currentStep === 3 && result && (
         <MissionCard title="Paso 4: Trazabilidad Sandbox" variant="elevated" data-testid="genesis-step-demo-log">
           <div className="space-y-6">
-            <div data-testid="genesis-demo-success">
+            <div data-testid="genesis-demo-success" aria-live="polite">
               <WorkflowResultNotice 
                 type={result.ok ? "success" : "error"} 
                 title={result.ok ? "Intento Registrado Exitosamente" : "Error en Simulación"} 

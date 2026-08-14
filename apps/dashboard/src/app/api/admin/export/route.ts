@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
 import { desc } from 'drizzle-orm';
+import { errorMessage } from '@/lib/errors';
 
 function toCSV(headers: string[], rows: string[][]): string {
   const escape = (v: string) => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -51,7 +52,7 @@ export async function GET(req: Request) {
       filename = 'auditoria.csv';
       csv = toCSV(
         ['ID', 'Acción', 'Detalles', 'Actor', 'Timestamp'],
-        logs.map((l: any) => [
+        logs.map((l) => [
           l.id,
           l.action || '',
           typeof l.details === 'string' ? l.details : JSON.stringify(l.details || ''),
@@ -67,13 +68,13 @@ export async function GET(req: Request) {
       filename = 'transacciones-ledger.csv';
       csv = toCSV(
         ['ID', 'Investor ID', 'Tipo', 'Cantidad', 'TX Hash', 'Estado', 'Fecha'],
-        ledger.map((tx: any) => [
+        ledger.map((tx) => [
           tx.id,
-          tx.investorId,
-          tx.operation || tx.type || '',
+          tx.investorId || '',
+          tx.operation || '',
           tx.amount?.toString() || '0',
           tx.txHash || '',
-          tx.status || 'confirmed',
+          'confirmed',
           tx.timestamp?.toISOString() || '',
         ])
       );
@@ -85,11 +86,11 @@ export async function GET(req: Request) {
       filename = 'ordenes-token.csv';
       csv = toCSV(
         ['ID', 'Investor ID', 'Cantidad', 'Precio Unit.', 'Total USD', 'Estado', 'Fecha'],
-        orders.map((o: any) => [
+        orders.map((o) => [
           o.id,
           o.investorId,
           o.quantity?.toString() || '0',
-          o.pricePerToken?.toString() || '0',
+          o.unitPrice?.toString() || '0',
           o.totalAmount?.toString() || '0',
           o.status || '',
           o.createdAt?.toISOString() || '',
@@ -106,8 +107,8 @@ export async function GET(req: Request) {
         'Content-Disposition': `attachment; filename="${filename}"`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('CSV Export error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: errorMessage(error) }, { status: 500 });
   }
 }

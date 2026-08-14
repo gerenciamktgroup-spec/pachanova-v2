@@ -25,7 +25,7 @@ export const rejectedPaymentScenario: DemoScenario = {
     await runner.withDb(async (db) => {
       // Insertamos un evento de integración que representa un pago rechazado.
       await db.execute`
-        INSERT INTO integration_events (provider, event_type, payload, simulated, created_at)
+        INSERT INTO integration_events (provider, event_type, payload, simulated, timestamp)
         VALUES (
           'MERCADOPAGO', 
           'PAYMENT_REJECTED', 

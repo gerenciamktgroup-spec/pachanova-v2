@@ -62,13 +62,13 @@ export type TreasurySummaryView = {
 };
 
 export type UserAdminView = InvestorSummary & {
-  role: "INVESTOR" | "ADMIN" | "OPERATOR";
+  role: "INVESTOR" | "ADMIN" | "OPERATOR" | "FIDUCIARIO" | "COMITE";
   status: "ACTIVE" | "SUSPENDED";
 };
 
 export type IntegrationEventView = {
   id: string;
-  provider: "MERCADOPAGO" | "FOUNDRY" | "KYC" | "EMAIL";
+  provider: string;
   event: string;
   timestamp: string;
   status: "success" | "error" | "pending";

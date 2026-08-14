@@ -9,7 +9,7 @@ export interface PNC {
   label: string;
   fase: number;
   product_config: string; // Vivienda | Alquiler_Yield | Hotel | PAR | ...
-  net: number; // real orq e.g. 68112.5
+  net: number; // ORQ reference value, e.g. 68112.5
   eff: number;
   power: number; // e.g. 17.1
   sqm: number;
@@ -18,6 +18,12 @@ export interface PNC {
   orq: string; // SYNC | LIVE | ORQ
   masterNote?: string;
   color?: string;
+}
+
+function formatPncNumber(value: number): string {
+  const [integer, decimal] = String(value).split(".");
+  const groupedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return decimal ? `${groupedInteger}.${decimal}` : groupedInteger;
 }
 
 function getIconForConfig(config: string) {
@@ -62,7 +68,7 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
             </span>
             <span className="holo-badge text-pn-text-soft">FASE {pnc.fase}</span>
             <span className="holo-badge text-[#4B8FF0] border-[#4B8FF0]/30">{pnc.orq}</span>
-            <span className="holo-badge text-[8px] bg-emerald-900/40 text-emerald-300 border-emerald-700/50">ORQ EXERCISED</span>
+            <span className="holo-badge text-[8px] bg-emerald-900/40 text-emerald-300 border-emerald-700/50">ORQ DEMO BRIDGE</span>
             <span className="holo-badge text-[8px] text-pn-sand/70 border-pn-sand/30">F16/21/53 bridge</span>
           </div>
           <div className="text-[15px] font-semibold tracking-[-0.2px] text-pn-text mt-px leading-none">
@@ -72,7 +78,7 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
         </div>
 
         <div className="flex flex-col items-end text-right">
-          <div className="text-[10px] text-pn-text-muted">ORQ REAL</div>
+          <div className="text-[10px] text-pn-text-muted">ORQ REF.</div>
           <div style={{ color: accent }} className="font-mono text-xs">{pnc.net.toFixed(1)}</div>
         </div>
       </div>
@@ -193,7 +199,7 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
           <span className="holo-badge text-[9px] bg-black/60 text-pn-gold border-pn-gold/40">
             {pnc.orq} • {pnc.fase}
           </span>
-          <span className="holo-badge text-[7px] bg-emerald-950/70 text-emerald-200 border-emerald-800/60">EXERCISED</span>
+          <span className="holo-badge text-[7px] bg-emerald-950/70 text-emerald-200 border-emerald-800/60">REFERENCE</span>
         </div>
       </div>
 
@@ -201,11 +207,11 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
       <div className="grid grid-cols-4 gap-x-2 gap-y-1 text-[11px] tabular-nums">
         <div className="col-span-1">
           <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">NETO</div>
-          <div className="font-medium text-pn-text">{pnc.net.toLocaleString()}</div>
+          <div className="font-medium text-pn-text">{formatPncNumber(pnc.net)}</div>
         </div>
         <div className="col-span-1">
           <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">EFIC.</div>
-          <div className="font-medium text-pn-text">{pnc.eff.toLocaleString()}</div>
+          <div className="font-medium text-pn-text">{formatPncNumber(pnc.eff)}</div>
         </div>
         <div className="col-span-1">
           <div className="text-pn-text-soft/80 tracking-wider text-[9px] uppercase">VOTO</div>
@@ -219,7 +225,7 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
 
       <div className="mt-auto pt-2.5 flex items-center justify-between border-t border-white/10 text-[10px]">
         <span className="text-pn-text-muted font-mono">
-          {pnc.sqm.toLocaleString()} m²
+          {formatPncNumber(pnc.sqm)} m²
         </span>
 
         {isMasterOverride ? (
@@ -231,9 +237,9 @@ export function HologramPncCard({ pnc }: { pnc: PNC }) {
         )}
       </div>
 
-      {/* orq high-level bridge visibility: cycle notes + exercised (no core orq calls, pure UI) */}
+      {/* ORQ reference-cycle visibility. This card does not invoke the core orchestrator. */}
       <div className="mt-1 text-[8px] text-emerald-400/80 font-mono tracking-tight border-t border-white/5 pt-1 flex justify-between">
-        <span>ORQ CYCLE: exercised @ latest bridge</span>
+        <span>ORQ CYCLE: demo reference bridge</span>
         <span className="text-pn-sand/60">Fase refs: 16/21/36/47/51/53</span>
       </div>
 

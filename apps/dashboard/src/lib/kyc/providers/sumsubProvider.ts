@@ -116,7 +116,13 @@ export class SumsubProvider implements KycProvider {
     };
   }
 
-  async handleWebhook(payload: any, signature: string): Promise<{ investorId: string; result: KycVerificationResult } | null> {
+  async handleWebhook(payload: unknown, signature: string): Promise<{ investorId: string; result: KycVerificationResult } | null> {
+    if (!payload || typeof payload !== "object") return null;
+    const webhook = payload as {
+      applicantId?: string;
+      externalUserId?: string;
+      reviewResult?: { reviewAnswer?: string; rejectType?: string };
+    };
     // Verify payload signature if secret key is present
     if (this.secretKey && signature) {
       const calculatedHmac = crypto.createHmac("sha256", this.secretKey)
@@ -127,9 +133,9 @@ export class SumsubProvider implements KycProvider {
       }
     }
 
-    const applicantId = payload.applicantId;
-    const externalUserId = payload.externalUserId;
-    const reviewResult = payload.reviewResult;
+    const applicantId = webhook.applicantId;
+    const externalUserId = webhook.externalUserId;
+    const reviewResult = webhook.reviewResult;
 
     if (!externalUserId) return null;
 
@@ -147,7 +153,7 @@ export class SumsubProvider implements KycProvider {
         externalId: applicantId,
         reviewAnswer: reviewResult?.reviewAnswer,
         rejectType: reviewResult?.rejectType,
-        metadata: payload,
+        metadata: { ...webhook },
       }
     };
   }

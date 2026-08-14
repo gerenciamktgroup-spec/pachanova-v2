@@ -2,7 +2,28 @@ import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from '@pachanova/database/src/schema';
 
-// This is a singleton instance. 
-// We ensure it falls back to a dummy string to avoid crashing at build time if the env variable is missing.
-const client = postgres(process.env.DATABASE_URL || "postgresql://pachanova_demo:pachanova_demo@localhost:5433/pachanova_demo");
-export const db = drizzle(client, { schema });
+type Database = ReturnType<typeof drizzle<typeof schema>>;
+
+let database: Database | null = null;
+
+function getDatabase(): Database {
+  if (!database) {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL is required for database operations');
+    }
+
+    const client = postgres(databaseUrl, { prepare: false });
+    database = drizzle(client, { schema });
+  }
+
+  return database;
+}
+
+// Preserve the existing `db.query` API while deferring all network setup until
+// the first request that actually needs the database.
+export const db = new Proxy({} as Database, {
+  get(_target, property) {
+    return Reflect.get(getDatabase(), property);
+  },
+});

@@ -9,7 +9,8 @@ import {
   InvestorKycStatusPanel, 
   GenesisDemoActionCard, 
   InvestorWalletStatusPanel,
-  LandbankManagementClient 
+  LandbankManagementClient,
+  InvestorEnhancedToolsClient 
 } from "@/components/product";
 import { InvestorDashboardView } from "@/types/product";
 import { Suspense } from "react";
@@ -44,20 +45,37 @@ async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
       limit: 10
     });
 
-    const recentTransactions = rawTxs.map(tx => ({
-      id: tx.id,
-      amount: tx.amount,
-      type: tx.type,
-      status: tx.status,
-      timestamp: tx.createdAt.toISOString()
-    }));
+    const recentTransactions: InvestorDashboardView["recentTransactions"] = rawTxs.map((tx) => {
+      const operationType = tx.type === "transfer"
+        ? "TRANSFER"
+        : tx.type === "burn"
+          ? "BURN"
+          : tx.type === "mint"
+            ? "MINT"
+            : "GENESIS_PURCHASE";
+
+      const status = tx.status === "completed"
+        ? "confirmed"
+        : tx.status === "failed"
+          ? "failed"
+          : "pending";
+
+      return {
+        id: tx.id,
+        amount: tx.amount,
+        operationType,
+        txHash: tx.txHash,
+        status,
+        timestamp: tx.createdAt.toISOString(),
+      };
+    });
 
     return {
       investor: {
         id: investor.id,
         fullName: `${investor.firstName || ''} ${investor.lastName || ''}`.trim() || "Inversor Demo",
         email: investor.email,
-        kycStatus: (investor.kycStatus || "approved") as any,
+        kycStatus: investor.kycStatus || "approved",
         isVerified: investor.isVerified || true,
         balance: {
           investorId: investor.id,
@@ -85,7 +103,6 @@ async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
     };
   } catch (error) {
     console.error("Error fetching investor view model from DB, using fallback:", error);
-    // Return a high-fidelity fallback in case database connection fails on Vercel
     return {
       investor: {
         id: "demo-investor-123",
@@ -124,8 +141,12 @@ async function InvestorDashboardContent() {
   const view = await fetchInvestorData();
 
   if (!view) {
-    return <ErrorState title="Error (PachaNova Landbanking Full Unified Rich Demo)" message="No se pudo construir el ViewModel del inversor. DATOS REALES. Master sacred. See /admin/landbank for full holograms." />;
+    return <ErrorState title="Panel no disponible" message="No se pudo construir el ViewModel del inversor. Verifica PostgreSQL y ejecuta el reset determinista del entorno demo." />;
   }
+
+  const availableTokensNum = Number(view.investor.balance.availableTokens);
+  const lockedTokensNum = Number(view.investor.balance.lockedTokens);
+  const availableUsdNum = Number(view.investor.balance.availableUsd);
 
   return (
     <div className="space-y-8 pb-24">
@@ -135,15 +156,12 @@ async function InvestorDashboardContent() {
           { label: "Panel Inversor" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          {/* Fase 6: Ver todos los avances immediate + full hub/identity cross-links */}
           <SafeActionButton label="Ver todos los avances" href="/demo/showcase#phase4-hologram-landbank" variant="primary" />
-          <SafeActionButton label="Ver avances (Yields/Gov/Borrow E2E)" href="/demo/showcase#phase4-hologram-landbank" variant="ghost" />
           <SafeActionButton label="Hub Central" href="/demo/showcase" variant="ghost" />
           <SafeActionButton label="Identity/KYC" href="/demo/integrations" variant="ghost" />
-          <SafeActionButton label="P2P Marketplace (5PNC ties)" href="/dashboard/investor/marketplace" variant="ghost" />
+          <SafeActionButton label="P2P Marketplace" href="/dashboard/investor/marketplace" variant="ghost" />
           <SafeActionButton label="Historial Genesis" href="/dashboard/investor/genesis" variant="ghost" />
           <SafeActionButton label="Disclaimers" href="/dashboard/investor/disclosures" variant="ghost" />
-          <SafeActionButton label="Integraciones" href="/demo/integrations" variant="ghost" />
           <SafeActionButton label="Admin Landbank" href="/dashboard/admin/landbank" variant="ghost" />
         </div>
       </div>
@@ -153,22 +171,28 @@ async function InvestorDashboardContent() {
       <NextStepCard 
         dataTestId="next-step-card-investor"
         contextLabel="Panel Inversor"
-        title="Tu Portafolio de Fracciones de Tierra — PachaNova"
-        explanation="¡Bienvenido a tu panel de control! Aquí puedes ver y gestionar las fracciones de tierra digitalizadas que posees (llamadas 'Tokens RWA') en proyectos reales como San Bartolo. Este entorno te permite experimentar de forma segura cómo funciona el mercado inmobiliario del futuro: puedes comprar fracciones de terrenos, venderlas a otros usuarios, solicitar financiamiento respaldado por tus tierras, y ver cómo tus ganancias se acumulan y reinvierten automáticamente (Ciclo de Reinversión)."
-        nextStep="Explora tus propiedades interactivas abajo para simular compras, ventas, préstamos y cobro de rentas."
-        primaryAction={{ label: "Simular Compra Inicial", href: "/dashboard/investor/genesis", intent: "navigate" }}
+        title="Tu Portafolio de Fracciones Inmobiliarias & RWA — PachaNova"
+        explanation="Bienvenido a tu panel de co-propietario. Aquí puedes gestionar tus fracciones de tierra y desarrollos inmobiliarios en San Bartolo, solicitar créditos hipotecando tus tokens, reclamar dividendos de rentas mensuales, y transferir tus derechos en el mercado secundario P2P con custodia fiduciaria regulada."
+        nextStep="Explora las herramientas avanzadas a continuación: descarga tu certificado oficial, solicita liquidez hipotecando tokens o participa en el mercado P2P."
+        primaryAction={{ label: "Simular Compra Genesis", href: "/dashboard/investor/genesis", intent: "navigate" }}
         secondaryAction={{ label: "Ver Libro de Registro", href: "/dashboard/investor/ledger", intent: "navigate" }}
         status="GO"
       />
 
       <InvestorPortfolioHero view={view} />
 
+      {/* Herramientas Avanzadas: Título SUNARP, Modelo Económico & Préstamos Colateralizados */}
+      <InvestorEnhancedToolsClient
+        availableTokens={availableTokensNum}
+        lockedTokens={lockedTokensNum}
+        availableUsd={availableUsdNum}
+        investorEmail={view.investor.email}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          {/* Fase 6 Polish: Full Hologram Landbank client (5 PNC interactive E2E flows + P2P ties + borrow/claim/gov + identity/hub everywhere) - Phase 4 visuals base */}
           <LandbankManagementClient />
           <InvestorLedgerPanel view={view} />
-          {/* Legacy simple pro-rata kept for reference (below) */}
           <ProRataLandCardV2 view={view} />
         </div>
         
@@ -184,7 +208,7 @@ async function InvestorDashboardContent() {
 
 export default function InvestorDashboardPage() {
   return (
-    <Suspense fallback={<LoadingState message="Cargando estado del inversor simulado..." />}>
+    <Suspense fallback={<LoadingState message="Cargando estado del inversor..." />}>
       <InvestorDashboardContent />
     </Suspense>
   );

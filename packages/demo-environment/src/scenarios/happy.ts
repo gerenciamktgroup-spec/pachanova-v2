@@ -32,14 +32,12 @@ export const happyScenario: DemoScenario = {
       await db.execute`
         INSERT INTO genesis_purchases (
           investor_id, 
-          property_id, 
-          quantity, 
-          unit_price, 
-          total_amount, 
-          currency, 
+          token_amount, 
+          usd_price_per_token, 
+          total_usd_amount, 
           status, 
           payment_reference, 
-          created_at
+          timestamp
         )
         SELECT 
           (SELECT id FROM investors WHERE email = 'demo.investor.holder@pachanova.local'),
@@ -58,13 +56,11 @@ export const happyScenario: DemoScenario = {
       `;
 
       // Inyectamos movimientos en el token ledger para que se vea actividad
-      const holderId = `(SELECT id FROM investors WHERE email = 'demo.investor.holder@pachanova.local')`;
-
       await db.execute`
         INSERT INTO token_ledger (investor_id, operation, amount, tx_hash, previous_hash, current_hash, timestamp)
-        VALUES 
-          (${holderId}, 'mint', '1250', '0xhappy001', '0xgenesis', '0xhash001', NOW() - INTERVAL '5 days'),
-          (${holderId}, 'transfer', '400', '0xhappy002', '0xhash001', '0xhash002', NOW() - INTERVAL '4 days')
+        SELECT id, 'transfer', '400', '0xhappy002', '0x00000000000000000000000000000000000000000000000000000000hash0001', '0x00000000000000000000000000000000000000000000000000000000hash0002', NOW() - INTERVAL '4 days'
+        FROM investors
+        WHERE email = 'demo.investor.holder@pachanova.local'
         ON CONFLICT DO NOTHING
       `;
 

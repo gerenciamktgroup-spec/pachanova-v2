@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       pricePerToken,
       source: priceParam ? 'system_parameter' : 'simulated_oracle'
     });
-  } catch (error: unknown) {
+  } catch {
     return NextResponse.json({ success: false, error: 'Internal Error' }, { status: 500 });
   }
 }

@@ -1,9 +1,32 @@
 import { createServerClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { InvestorDashboardView } from "@/types/product";
+import { InvestorDashboardView, LedgerEntryView } from "@/types/product";
 import { db } from "@/server/db";
 import * as schema from "@pachanova/database/src/schema";
 import { eq } from "drizzle-orm";
+
+type SupabaseLedgerRow = {
+  id: string;
+  type?: string | null;
+  operation?: string | null;
+  amount?: string | number | null;
+  created_at?: string | null;
+  timestamp?: string | null;
+  tx_hash?: string | null;
+  status?: string | null;
+};
+
+function operationType(operation: string | null | undefined): LedgerEntryView["operationType"] {
+  const normalized = operation?.toLowerCase();
+  if (normalized === "mint") return "MINT";
+  if (normalized === "burn") return "BURN";
+  if (normalized === "genesis_purchase") return "GENESIS_PURCHASE";
+  return "TRANSFER";
+}
+
+function transactionStatus(status: string | null | undefined): LedgerEntryView["status"] {
+  return status === "failed" ? "failed" : status === "pending" ? "pending" : "confirmed";
+}
 
 export async function fetchInvestorData(): Promise<InvestorDashboardView | null> {
   try {
@@ -55,13 +78,13 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
             lastUpdated: balance?.lastUpdatedAt?.toISOString() || new Date().toISOString()
           }
         },
-        recentTransactions: transactions.map((tx: any) => ({
+        recentTransactions: transactions.map((tx) => ({
           id: tx.id,
-          operationType: tx.type || "TRANSFER",
+          operationType: operationType(tx.operation),
           amount: tx.amount?.toString() || "0",
-          timestamp: tx.createdAt?.toISOString(),
+          timestamp: tx.timestamp.toISOString(),
           txHash: tx.txHash || null,
-          status: tx.status || "confirmed"
+          status: "confirmed"
         })),
         kycVerificationProvider: "SIMULATED",
         paymentsReadiness: {
@@ -149,13 +172,13 @@ export async function fetchInvestorData(): Promise<InvestorDashboardView | null>
           lastUpdated: balance?.last_updated_at || new Date().toISOString()
         }
       },
-      recentTransactions: rawTxs.map((tx: any) => ({
+      recentTransactions: (rawTxs as SupabaseLedgerRow[]).map((tx) => ({
         id: tx.id,
-        operationType: tx.type || "TRANSFER",
+        operationType: operationType(tx.operation || tx.type),
         amount: tx.amount?.toString() || "0",
-        timestamp: tx.created_at,
+        timestamp: tx.timestamp || tx.created_at || new Date().toISOString(),
         txHash: tx.tx_hash || null,
-        status: tx.status || "confirmed"
+        status: transactionStatus(tx.status)
       })),
       kycVerificationProvider: "SIMULATED",
       paymentsReadiness: {

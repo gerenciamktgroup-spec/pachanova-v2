@@ -1,47 +1,53 @@
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
-import { inArray, like, eq } from "drizzle-orm";
-import * as schema from "../schema";
 import * as dotenv from "dotenv";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
+import * as schema from "../schema";
+import { validateDemoDatabaseUrl } from "../utils/demoValidation";
 
 dotenv.config({ path: "../../.env.demo" });
 dotenv.config({ path: "../../.env.demo.local" });
 
-import { validateDemoDatabaseUrl } from "../utils/demoValidation";
-
 const dbUrl = process.env.DATABASE_URL;
 validateDemoDatabaseUrl(dbUrl);
 
-const client = postgres(dbUrl as string);
+const client = postgres(dbUrl, { prepare: false });
 const db = drizzle(client, { schema });
 
 async function reset() {
-  console.log("🗑️ Resetting Demo Database...");
-  // Select demo users
-  const demoUsers = await db.select({ id: schema.investors.id }).from(schema.investors).where(like(schema.investors.email, "%@pachanova.local"));
-  const demoUserIds = demoUsers.map(u => u.id);
+  console.log("Resetting dedicated demo database...");
 
-  if (demoUserIds.length > 0) {
-    await db.delete(schema.balances).where(inArray(schema.balances.investorId, demoUserIds));
-    await db.delete(schema.genesisPurchases).where(inArray(schema.genesisPurchases.investorId, demoUserIds));
-    await db.delete(schema.tokenOrders).where(inArray(schema.tokenOrders.investorId, demoUserIds));
-    await db.delete(schema.auditLogs).where(inArray(schema.auditLogs.userId, demoUserIds));
-    // Fideicomiso actions by demo users
-    await db.delete(schema.fideicomisoSignatures).where(inArray(schema.fideicomisoSignatures.signerId, demoUserIds));
-    await db.delete(schema.fideicomisoOperations).where(inArray(schema.fideicomisoOperations.createdBy, demoUserIds));
-    await db.delete(schema.tokenLedger).where(inArray(schema.tokenLedger.investorId, demoUserIds));
-    await db.delete(schema.investors).where(inArray(schema.investors.id, demoUserIds));
-  }
+  await db.transaction(async (tx) => {
+    await tx.delete(schema.webhookQueue);
+    await tx.delete(schema.notifications);
+    await tx.delete(schema.fideicomisoSignatures);
+    await tx.delete(schema.fideicomisoOperations);
+    await tx.delete(schema.p2pTrades);
+    await tx.delete(schema.p2pOrders);
+    await tx.delete(schema.tokenLedger);
+    await tx.delete(schema.transactions);
+    await tx.delete(schema.distributions);
+    await tx.delete(schema.annualValuations);
+    await tx.delete(schema.genesisPurchases);
+    await tx.delete(schema.tokenOrders);
+    await tx.delete(schema.balances);
+    await tx.delete(schema.kycDocuments);
+    await tx.delete(schema.auditLogs);
+    await tx.delete(schema.integrationEvents);
+    await tx.delete(schema.demoSessions);
+    await tx.delete(schema.properties);
+    await tx.delete(schema.investors);
+    await tx.delete(schema.systemParameters);
+  });
 
-  // Clear generic demo data
-  await db.delete(schema.integrationEvents).where(like(schema.integrationEvents.eventType, "DEMO_%"));
-  await db.delete(schema.annualValuations).where(eq(schema.annualValuations.source, "DEMO_VALUATION"));
-  await db.delete(schema.systemParameters).where(eq(schema.systemParameters.key, "treasury_balance_usd"));
-  console.log("✅ Demo Database Reset Complete!");
-  process.exit(0);
+  console.log("Dedicated demo database reset complete.");
 }
 
-reset().catch((err) => {
-  console.error("Reset failed", err);
-  process.exit(1);
-});
+reset()
+  .catch((error) => {
+    console.error("Demo reset failed", error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await client.end();
+  });

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ChevronDown, FileText, Database, Shield, Hexagon, ArrowRight, Activity, Wallet } from 'lucide-react';
+import { ChevronDown, Database, Shield, Hexagon, ArrowRight, Activity, Wallet } from 'lucide-react';
 import { InfoHint } from '@/components/product/InfoHint';
 import { MissionCard } from '@/components/mission';
 

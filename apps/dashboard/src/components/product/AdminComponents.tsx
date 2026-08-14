@@ -80,7 +80,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       });
       const data = await res.json();
       setResult(data);
-    } catch (e) {
+    } catch {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);
@@ -104,7 +104,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       } else {
         setResult({ ok: false, message: data.error || "Error al actualizar" });
       }
-    } catch (e) {
+    } catch {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);
@@ -206,7 +206,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
   );
 }
 
-export function AuditLogTimeline({ view }: { view: AdminDashboardView }) {
+export function AuditLogTimeline({ view }: { view: Pick<AdminDashboardView, "recentAuditLogs"> }) {
   const items: TimelineItem[] = view.recentAuditLogs.map(log => ({
     id: log.id,
     title: log.action,

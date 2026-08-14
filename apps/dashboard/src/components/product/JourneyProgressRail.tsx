@@ -24,8 +24,6 @@ export function JourneyProgressRail({ journey, currentStepId }: JourneyProgressR
           {journey.steps.map((step, idx) => {
             const isCompleted = currentIndex > idx;
             const isCurrent = currentIndex === idx;
-            const isPending = currentIndex < idx;
-
             return (
               <React.Fragment key={step.id}>
                 <div className={`flex items-center gap-2 ${isCurrent ? "opacity-100" : "opacity-50"}`}>

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { assertDemoMode, assertDemoDatabase } from '../../apps/web/src/server/demoActions/demoActionGuards';
-import { executeInvestorGenesisAttempt } from '../../apps/web/src/server/demoActions/investorGenesisAttempt';
-import { executeAdminUserReview } from '../../apps/web/src/server/demoActions/adminUserReview';
-import { executeFideicomisoOperation } from '../../apps/web/src/server/demoActions/fideicomisoOperation';
+import { assertDemoMode, assertDemoDatabase } from '../../apps/dashboard/src/server/demoActions/demoActionGuards';
+import { executeInvestorGenesisAttempt } from '../../apps/dashboard/src/server/demoActions/investorGenesisAttempt';
+import { executeAdminUserReview } from '../../apps/dashboard/src/server/demoActions/adminUserReview';
+import { executeFideicomisoOperation } from '../../apps/dashboard/src/server/demoActions/fideicomisoOperation';
 
 // Mock the environment variables for testing guards
 describe('Demo Action Guards', () => {

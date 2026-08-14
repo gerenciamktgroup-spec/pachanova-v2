@@ -12,7 +12,7 @@
     "./src/*": "./src/*.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^0.9.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@supabase/supabase-js": "^2.105.4",
     "drizzle-orm": "^0.45.2",
     "postgres": "^3.4.9"
@@ -24,7 +24,8 @@
     "demo:migrate": "drizzle-kit push",
     "demo:seed": "tsx src/seed/demoSeed.ts",
     "demo:reset": "tsx src/seed/demoReset.ts",
-    "test": "echo 'No database tests yet'"
+    "test": "echo 'No database tests yet'",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^20",

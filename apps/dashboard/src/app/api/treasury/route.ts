@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
 import { schema } from '@pachanova/database';
-import { eq, sql, desc } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export async function GET() {
   try {

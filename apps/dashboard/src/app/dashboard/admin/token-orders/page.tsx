@@ -4,6 +4,15 @@ import { RouteBreadcrumbs, SectionHeader, MissionCard, ErrorState } from "@/comp
 import { DataGrid, DataGridRow, DataGridCell, ProductEmptyState, TokenAmount } from "@/components/product/SharedComponents";
 import { createClient } from "@supabase/supabase-js";
 
+type TokenOrderRow = {
+  id: string;
+  quantity: string;
+  total_amount: string;
+  status: string;
+  created_at: string;
+  investor: { email?: string } | null;
+};
+
 export default async function AdminTokenOrdersPage() {
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,7 +56,7 @@ export default async function AdminTokenOrdersPage() {
           />
         ) : (
           <DataGrid headers={["Email Inversor", "Cantidad PACHA", "Total USD", "Status", "Fecha"]}>
-            {orders.map((order: any) => (
+            {(orders as TokenOrderRow[]).map((order) => (
               <DataGridRow key={order.id}>
                 <DataGridCell>{order.investor?.email || "N/A"}</DataGridCell>
                 <DataGridCell><TokenAmount amount={order.quantity} /></DataGridCell>

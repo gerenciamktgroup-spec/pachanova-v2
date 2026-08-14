@@ -8,6 +8,7 @@ export class SimulatedProvider implements KycProvider {
     investorId: string,
     data: { firstName: string; lastName: string; email: string; documentType?: string }
   ): Promise<{ applicantId: string; sdkToken?: string; webSdkLink?: string }> {
+    void data;
     const applicantId = `sim-applicant-${crypto.randomUUID()}`;
     return {
       applicantId,
@@ -26,6 +27,8 @@ export class SimulatedProvider implements KycProvider {
   }
 
   async handleWebhook(payload: unknown, signature: string): Promise<{ investorId: string; result: KycVerificationResult } | null> {
+    void payload;
+    void signature;
     // In simulated mode, webhooks are triggered explicitly via our custom /api/demo/actions/kyc-status API
     return null;
   }

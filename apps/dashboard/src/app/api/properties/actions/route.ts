@@ -1,142 +1,134 @@
+import { createHash, randomUUID } from "crypto";
+
+import { DEFAULT_DEMO_INVESTOR, schema } from "@pachanova/database";
+import { desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
 import { db } from "@/server/db";
-import { schema } from "@pachanova/database";
-import { eq, sql } from "drizzle-orm";
-import crypto from "crypto";
+import { assertDemoRequest } from "@/server/demoActions/demoRequestGuard";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { propertyId, action, payload } = body;
+const requestSchema = z.object({
+  propertyId: z.string().uuid(),
+  action: z.enum(["launch", "borrow", "claim", "vote", "perpetual"]),
+  payload: z.object({
+    borrowedAmount: z.number().positive().max(100000).optional(),
+    claimAmount: z.number().positive().max(100000).optional(),
+  }).optional(),
+});
 
-    if (!propertyId || !action) {
-      return NextResponse.json({ success: false, error: "Missing propertyId or action" }, { status: 400 });
+function ledgerHash(previousHash: string, operation: string, investorId: string, amount: number, timestamp: Date) {
+  return `0x${createHash("sha256").update(`${previousHash}:${operation}:${investorId}:${amount}:${timestamp.toISOString()}`).digest("hex")}`;
+}
+
+export async function POST(request: Request) {
+  try {
+    assertDemoRequest(request);
+    const parsed = requestSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ success: false, error: "Parámetros inválidos", details: parsed.error.flatten() }, { status: 400 });
     }
 
-    // 1. Fetch default investor
-    const investor = await db.query.investors.findFirst({
-      where: eq(schema.investors.email, "demo.investor.holder@pachanova.local")
+    const { propertyId, action, payload } = parsed.data;
+
+    const evidence = await db.transaction(async (tx) => {
+      const [investor, property] = await Promise.all([
+        tx.query.investors.findFirst({ where: eq(schema.investors.email, DEFAULT_DEMO_INVESTOR.email) }),
+        tx.query.properties.findFirst({ where: eq(schema.properties.id, propertyId) }),
+      ]);
+
+      if (!investor || investor.kycStatus !== "approved") throw new Error("El inversor demo aprobado no está inicializado");
+      if (!property || !property.isDemo) throw new Error("El PNC demo solicitado no existe");
+
+      if (action === "launch") {
+        await tx.update(schema.properties).set({ status: "trading", updatedAt: new Date() }).where(eq(schema.properties.id, propertyId));
+        await tx.insert(schema.auditLogs).values({ action: "PROPERTY_LAUNCHED", details: `PNC ${propertyId} habilitado para trading demo`, userId: investor.id });
+        return { action, propertyId, status: "trading" };
+      }
+
+      if (action === "vote") {
+        const voteId = randomUUID();
+        await tx.insert(schema.auditLogs).values({ action: "GOV_VOTE_CAST", details: `Voto demo ${voteId} emitido para PNC ${propertyId}`, userId: investor.id });
+        await tx.insert(schema.integrationEvents).values({
+          provider: "DEMO_GOVERNANCE",
+          eventType: "GOV_VOTE_CAST_SIMULATED",
+          payload: { voteId, propertyId, investorId: investor.id, decision: "approve" },
+          simulated: true,
+        });
+        return { action, propertyId, voteId, decision: "approve" };
+      }
+
+      const balance = await tx.query.balances.findFirst({ where: eq(schema.balances.investorId, investor.id) });
+      if (!balance) throw new Error("El saldo del inversor demo no está inicializado");
+
+      if (action === "borrow") {
+        const borrowedAmount = payload?.borrowedAmount ?? 30000;
+        const collateralReference = Number(property.totalValuationUsd);
+        const maxBorrow = Math.min(100000, collateralReference * 0.5);
+        if (borrowedAmount > maxBorrow) throw new Error(`El préstamo excede el LTV demo máximo de USD ${maxBorrow.toFixed(2)}`);
+
+        const [updatedBalance] = await tx.update(schema.balances)
+          .set({ availableUsd: sql`${schema.balances.availableUsd} + ${borrowedAmount}`, lastUpdatedAt: new Date() })
+          .where(eq(schema.balances.investorId, investor.id))
+          .returning({ availableUsd: schema.balances.availableUsd });
+
+        const reference = `borrow-${randomUUID()}`;
+        await tx.insert(schema.transactions).values({
+          receiverId: investor.id,
+          propertyId,
+          amount: borrowedAmount.toString(),
+          currency: "USD",
+          type: "deposit",
+          status: "completed",
+          paymentProvider: "DEMO_CREDIT_ENGINE",
+          paymentReference: reference,
+          isDemo: true,
+          metadata: { kind: "collateralized_borrow", ltv: borrowedAmount / collateralReference, collateralReference },
+        });
+        await tx.insert(schema.auditLogs).values({ action: "BORROW_POSITION_CREATED", details: `Crédito demo ${reference}: USD ${borrowedAmount} respaldado por PNC ${propertyId}`, userId: investor.id });
+        return { action, propertyId, reference, borrowedAmount, availableUsd: updatedBalance.availableUsd };
+      }
+
+      const amount = action === "perpetual" ? 8514 : (payload?.claimAmount ?? 23125);
+      const now = new Date();
+      const latestLedger = await tx.query.tokenLedger.findFirst({
+        where: eq(schema.tokenLedger.investorId, investor.id),
+        orderBy: [desc(schema.tokenLedger.timestamp)],
+      });
+      const previousHash = latestLedger?.currentHash ?? "0x0000000000000000000000000000000000000000000000000000000000000000";
+      const currentHash = ledgerHash(previousHash, action, investor.id, amount, now);
+      const txHash = `0x${createHash("sha256").update(`${action}:${randomUUID()}`).digest("hex")}`;
+
+      const [updatedBalance] = await tx.update(schema.balances)
+        .set({ availableTokens: sql`${schema.balances.availableTokens} + ${amount}`, lastUpdatedAt: now })
+        .where(eq(schema.balances.investorId, investor.id))
+        .returning({ availableTokens: schema.balances.availableTokens });
+
+      await tx.insert(schema.tokenLedger).values({ investorId: investor.id, amount: amount.toString(), operation: "mint", txHash, previousHash, currentHash, timestamp: now });
+      await tx.insert(schema.transactions).values({
+        receiverId: investor.id,
+        propertyId,
+        amount: amount.toString(),
+        currency: "PACHA",
+        type: "dividend",
+        status: "completed",
+        txHash,
+        isDemo: true,
+        metadata: { kind: action === "perpetual" ? "perpetual_yield_attestation" : "yield_claim", previousHash, currentHash },
+      });
+
+      const eventType = action === "perpetual" ? "YIELD_PERPETUAL_ATTEST" : "YIELD_CLAIMED_SIMULATED";
+      await tx.insert(schema.auditLogs).values({ action: eventType, details: `${amount} PACHA acreditados desde PNC ${propertyId}; tx ${txHash}`, userId: investor.id });
+      await tx.insert(schema.integrationEvents).values({ provider: action === "perpetual" ? "ORQ_DEMO_BRIDGE" : "DEMO_YIELD_ENGINE", eventType, payload: { propertyId, investorId: investor.id, amount, txHash, previousHash, currentHash }, txHash, simulated: true });
+
+      return { action, propertyId, amount, txHash, previousHash, currentHash, availableTokens: updatedBalance.availableTokens };
     });
 
-    if (!investor) {
-      return NextResponse.json({ success: false, error: "Default investor not found" }, { status: 404 });
-    }
-
-    if (action === "launch") {
-      await db.update(schema.properties)
-        .set({ status: "trading" })
-        .where(eq(schema.properties.id, propertyId));
-
-      await db.insert(schema.auditLogs).values({
-        action: "PROPERTY_LAUNCHED",
-        details: `Property ${propertyId} launched (Master Launch).`,
-        userId: investor.id
-      });
-
-      await db.insert(schema.integrationEvents).values({
-        provider: "DEMO_SYSTEM",
-        eventType: "PROPERTY_LAUNCHED_SIMULATED",
-        payload: { propertyId },
-        simulated: true
-      });
-
-      return NextResponse.json({ success: true, message: "Property launched successfully" });
-    }
-
-    if (action === "borrow") {
-      const borrowAmount = Number(payload?.borrowedAmount || 30000);
-
-      // Increment USD balance of investor
-      const balance = await db.query.balances.findFirst({
-        where: eq(schema.balances.investorId, investor.id)
-      });
-
-      if (balance) {
-        const currentUsd = Number(balance.availableUsd || 0);
-        await db.update(schema.balances)
-          .set({ availableUsd: (currentUsd + borrowAmount).toString() })
-          .where(eq(schema.balances.investorId, investor.id));
-      }
-
-      await db.insert(schema.auditLogs).values({
-        action: "BORROW_POSITION_CREATED",
-        details: `Investor borrowed $${borrowAmount.toLocaleString()} backed by property ${propertyId}`,
-        userId: investor.id
-      });
-
-      await db.insert(schema.integrationEvents).values({
-        provider: "DEMO_SYSTEM",
-        eventType: "BORROW_SIMULATED",
-        payload: { propertyId, investorId: investor.id, borrowAmount },
-        simulated: true
-      });
-
-      return NextResponse.json({ success: true, message: `Borrowed $${borrowAmount.toLocaleString()} successfully` });
-    }
-
-    if (action === "claim") {
-      const claimAmount = Number(payload?.claimAmount || 23125);
-
-      // Increment token balance of investor
-      const balance = await db.query.balances.findFirst({
-        where: eq(schema.balances.investorId, investor.id)
-      });
-
-      if (balance) {
-        const currentTokens = Number(balance.availableTokens || 0);
-        await db.update(schema.balances)
-          .set({ availableTokens: (currentTokens + claimAmount).toString() })
-          .where(eq(schema.balances.investorId, investor.id));
-      }
-
-      // Add to ledger
-      await db.insert(schema.tokenLedger).values({
-        investorId: investor.id,
-        amount: claimAmount.toString(),
-        operation: "mint",
-        txHash: `claim-${crypto.randomUUID().slice(0, 8)}`,
-        previousHash: "0x0000000000000000000000000000000000000000000000000000000000000000",
-        currentHash: crypto.randomUUID()
-      });
-
-      await db.insert(schema.auditLogs).values({
-        action: "YIELD_CLAIMED",
-        details: `Investor claimed ${claimAmount.toLocaleString()} PACHA yield from property ${propertyId}`,
-        userId: investor.id
-      });
-
-      await db.insert(schema.integrationEvents).values({
-        provider: "DEMO_SYSTEM",
-        eventType: "YIELD_CLAIMED_SIMULATED",
-        payload: { propertyId, investorId: investor.id, claimAmount },
-        simulated: true
-      });
-
-      return NextResponse.json({ success: true, message: `Claimed ${claimAmount.toLocaleString()} PACHA successfully` });
-    }
-
-    if (action === "vote") {
-      await db.insert(schema.auditLogs).values({
-        action: "GOV_VOTE_CAST",
-        details: `Investor voted on proposal for property ${propertyId}`,
-        userId: investor.id
-      });
-
-      await db.insert(schema.integrationEvents).values({
-        provider: "DEMO_SYSTEM",
-        eventType: "GOV_VOTE_CAST_SIMULATED",
-        payload: { propertyId, investorId: investor.id },
-        simulated: true
-      });
-
-      return NextResponse.json({ success: true, message: "Governance vote registered successfully" });
-    }
-
-    return NextResponse.json({ success: false, error: "Invalid action" }, { status: 400 });
-  } catch (err) {
-    console.error("Error executing property action API:", err);
-    return NextResponse.json({ success: false, error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ success: true, evidence });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error interno";
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

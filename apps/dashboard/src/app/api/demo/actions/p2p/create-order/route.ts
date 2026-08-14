@@ -1,35 +1,35 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
-import { schema } from '@pachanova/database';
-import { eq, sql } from 'drizzle-orm';
-import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
+import { DEFAULT_DEMO_INVESTOR, schema } from '@pachanova/database';
+import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
+import { assertDemoRequest } from '@/server/demoActions/demoRequestGuard';
 
 const bodySchema = z.object({
-  sellerInvestorId: z.string().uuid(),
-  quantity: z.number().positive(),
-  pricePerToken: z.number().positive(),
-  pncCode: z.string().optional(), // Fase 6: P2P landbank tie to 5PNC (e.g. PAR, VIV) - stored in payload/audit for rich demo, no schema change
+  quantity: z.number().positive().max(500000),
+  pricePerToken: z.number().positive().max(1000000),
+  pncCode: z.enum(['PAR', 'VIV', 'YLD', 'HTL', 'MIX']).optional(),
 });
 
 export async function POST(req: Request) {
   try {
-    if (process.env.DEMO_MODE !== 'true') return NextResponse.json({ error: 'DEMO_MODE=true required' }, { status: 403 });
-    validateDemoDatabaseUrl(process.env.DATABASE_URL || '');
+    assertDemoRequest(req);
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
     if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
 
-    const { sellerInvestorId, quantity, pricePerToken, pncCode } = result.data;
+    const { quantity, pricePerToken, pncCode } = result.data;
     const totalAmount = quantity * pricePerToken;
+    let sellerInvestorId = '';
 
     await db.transaction(async (tx) => {
       // 1. Check KYC
-      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.id, sellerInvestorId) });
+      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.email, DEFAULT_DEMO_INVESTOR.email) });
       if (!user || user.kycStatus !== 'approved') {
         throw new Error('User KYC must be approved to sell tokens');
       }
+      sellerInvestorId = user.id;
 
       // 2. Check and Reserve Tokens
       const balance = await tx.query.balances.findFirst({ where: eq(schema.balances.investorId, sellerInvestorId) });
@@ -37,14 +37,26 @@ export async function POST(req: Request) {
         throw new Error('Insufficient available PACHA tokens to sell');
       }
 
-      await tx.update(schema.balances)
+      const [reservedBalance] = await tx.update(schema.balances)
         .set({
           availableTokens: sql`${schema.balances.availableTokens} - ${quantity}`,
-          reservedTokens: sql`${schema.balances.reservedTokens} + ${quantity}`
+          reservedTokens: sql`${schema.balances.reservedTokens} + ${quantity}`,
+          lastUpdatedAt: new Date(),
         })
-        .where(eq(schema.balances.investorId, sellerInvestorId));
+        .where(and(
+          eq(schema.balances.investorId, sellerInvestorId),
+          sql`${schema.balances.availableTokens} >= ${quantity}`,
+        ))
+        .returning({ investorId: schema.balances.investorId });
+      if (!reservedBalance) throw new Error('Insufficient available PACHA tokens to sell');
 
-      const property = await tx.query.properties.findFirst();
+      const properties = await tx.query.properties.findMany();
+      const property = pncCode
+        ? properties.find((candidate) => {
+            const metadata = candidate.metadata;
+            return metadata && typeof metadata === 'object' && 'code' in metadata && metadata.code === pncCode;
+          })
+        : properties[0];
       if (!property) throw new Error("No property found");
 
       // 3. Create Order

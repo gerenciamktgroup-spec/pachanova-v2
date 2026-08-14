@@ -6,11 +6,14 @@
  */
 
 import { config } from 'dotenv';
+import { resolve } from 'path';
 import { createDemoEnvironmentManager } from '../DemoEnvironmentManager';
 
 // Cargar variables de entorno de demo
 config({ path: '.env.demo' });
 config({ path: '.env.demo.local' });
+config({ path: resolve(process.cwd(), '../../.env.demo') });
+config({ path: resolve(process.cwd(), '../../.env.demo.local'), override: true });
 
 async function main() {
   console.log('🌱 [demo-environment] Iniciando seed del entorno de demo...\n');

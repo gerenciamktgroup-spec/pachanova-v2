@@ -1,34 +1,37 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server/db';
-import { schema } from '@pachanova/database';
-import { eq, sql } from 'drizzle-orm';
-import { validateDemoDatabaseUrl } from '@pachanova/database/src/utils/demoValidation';
+import { DEFAULT_DEMO_INVESTOR, schema } from '@pachanova/database';
+import { createHash, randomUUID } from 'crypto';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { emitNotification } from '@/lib/notifications/emitNotification';
+import { assertDemoRequest } from '@/server/demoActions/demoRequestGuard';
 
 const bodySchema = z.object({
-  investorId: z.string().uuid(),
-  quantity: z.number().int().positive(),
+  quantity: z.number().int().positive().max(50000),
 });
 
 export async function POST(req: Request) {
   try {
-    if (process.env.DEMO_MODE !== 'true') return NextResponse.json({ error: 'DEMO_MODE=true required' }, { status: 403 });
-    validateDemoDatabaseUrl(process.env.DATABASE_URL || '');
+    assertDemoRequest(req);
 
     const body = await req.json();
     const result = bodySchema.safeParse(body);
     if (!result.success) return NextResponse.json({ error: 'Invalid parameters', details: result.error }, { status: 400 });
 
-    const { investorId, quantity } = result.data;
+    const { quantity } = result.data;
+    let investorId = '';
+    let orderId = '';
+    let updatedBalance: { availableUsd: string; availableTokens: string } | undefined;
 
     // Execute everything in a single transaction
     await db.transaction(async (tx) => {
       // 1. Check KYC
-      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.id, investorId) });
+      const user = await tx.query.investors.findFirst({ where: eq(schema.investors.email, DEFAULT_DEMO_INVESTOR.email) });
       if (!user || user.kycStatus !== 'approved') {
         throw new Error('User KYC must be approved');
       }
+      investorId = user.id;
 
       // 2. Check Balance
       const unitPrice = 8.40;
@@ -39,15 +42,22 @@ export async function POST(req: Request) {
         throw new Error(`Insufficient USD balance. Required: ${totalAmount}, Available: ${balance?.availableUsd || 0}`);
       }
 
-      const orderId = crypto.randomUUID();
+      orderId = crypto.randomUUID();
 
       // 3. Deduct USD, add PACHA
-      await tx.update(schema.balances)
+      const [balanceAfterPurchase] = await tx.update(schema.balances)
         .set({
           availableUsd: sql`${schema.balances.availableUsd} - ${totalAmount}`,
           availableTokens: sql`${schema.balances.availableTokens} + ${quantity}`,
+          lastUpdatedAt: new Date(),
         })
-        .where(eq(schema.balances.investorId, investorId));
+        .where(and(
+          eq(schema.balances.investorId, investorId),
+          sql`${schema.balances.availableUsd} >= ${totalAmount}`,
+        ))
+        .returning({ availableUsd: schema.balances.availableUsd, availableTokens: schema.balances.availableTokens });
+      if (!balanceAfterPurchase) throw new Error('Insufficient USD balance for this purchase');
+      updatedBalance = balanceAfterPurchase;
 
       const property = await tx.query.properties.findFirst();
       if (!property) throw new Error("No property found");
@@ -74,13 +84,22 @@ export async function POST(req: Request) {
       });
 
       // 6. Token Ledger
+      const latestLedger = await tx.query.tokenLedger.findFirst({
+        where: eq(schema.tokenLedger.investorId, investorId),
+        orderBy: [desc(schema.tokenLedger.timestamp)],
+      });
+      const previousHash = latestLedger?.currentHash ?? '0x0000000000000000000000000000000000000000000000000000000000000000';
+      const timestamp = new Date();
+      const txHash = `0x${createHash('sha256').update(`genesis:${orderId}:${randomUUID()}`).digest('hex')}`;
+      const currentHash = `0x${createHash('sha256').update(`${previousHash}:mint:${investorId}:${quantity}:${timestamp.toISOString()}`).digest('hex')}`;
       await tx.insert(schema.tokenLedger).values({
         investorId,
         amount: quantity.toString(),
         operation: 'mint',
-        txHash: `demo-${orderId}`,
-        previousHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-        currentHash: crypto.randomUUID(),
+        txHash,
+        previousHash,
+        currentHash,
+        timestamp,
       });
 
       // 7. Audit & Integration Events
@@ -107,7 +126,7 @@ export async function POST(req: Request) {
       isDemo: true,
     });
 
-    return NextResponse.json({ success: true, message: `Acquired ${quantity} PACHA in Genesis Demo` });
+    return NextResponse.json({ success: true, orderId, balance: updatedBalance, message: `Adquiridos ${quantity} PACHA en Genesis Demo` });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 400 });
   }

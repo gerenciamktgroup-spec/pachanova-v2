@@ -26,8 +26,6 @@ export const duplicateWebhookScenario: DemoScenario = {
     console.log('   → Simulando webhook duplicado...');
 
     await runner.withDb(async (db) => {
-      const holderId = `(SELECT id FROM investors WHERE email = 'demo.investor.holder@pachanova.local')`;
-
       // Creamos una compra completada (como si el primer webhook ya la hubiera procesado)
       await db.execute`
         INSERT INTO genesis_purchases (
@@ -40,7 +38,7 @@ export const duplicateWebhookScenario: DemoScenario = {
           timestamp
         )
         SELECT 
-          ${holderId},
+          (SELECT id FROM investors WHERE email = 'demo.investor.holder@pachanova.local'),
           250,
           8.40,
           2100.00,
@@ -55,7 +53,7 @@ export const duplicateWebhookScenario: DemoScenario = {
 
       // Primer webhook recibido (procesado correctamente)
       await db.execute`
-        INSERT INTO integration_events (provider, event_type, payload, simulated, created_at)
+        INSERT INTO integration_events (provider, event_type, payload, simulated, timestamp)
         VALUES (
           'MERCADOPAGO',
           'WEBHOOK_RECEIVED',
@@ -67,7 +65,7 @@ export const duplicateWebhookScenario: DemoScenario = {
 
       // Segundo webhook (duplicado) - el sistema debería detectarlo
       await db.execute`
-        INSERT INTO integration_events (provider, event_type, payload, simulated, created_at)
+        INSERT INTO integration_events (provider, event_type, payload, simulated, timestamp)
         VALUES (
           'MERCADOPAGO',
           'PAYMENT_DUPLICATE',

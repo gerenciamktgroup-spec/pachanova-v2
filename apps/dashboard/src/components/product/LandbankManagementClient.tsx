@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HologramPncCard, PNC } from "./HologramPncCard";
@@ -10,8 +10,7 @@ import { CommandButton } from "@/components/mission/CommandButton";
 /**
  * Phase 4 Visuals & Holograms — LandbankManagementClient
  * Single unified dashboard project.
- * Uses REAL orq demo numbers: 68112.5 / 31639 / 17.1% / 3250 / 23125 + Fases / product_configs / Master notes.
- * Replaces simple cards. Master sacred. DATOS REALES.
+ * Uses ORQ reference values: 68112.5 / 31639 / 17.1% / 3250 / 23125 + phases / product configs / Master notes.
  * Glassmorphic + SVG hologram effect + per-product attribution + flywheel.
  */
 
@@ -29,7 +28,7 @@ const DEMO_5_PNC: PNC[] = [
     yieldPct: 8.7,
     claim: 23125,
     orq: "SYNC",
-    masterNote: "Master: orq real inject 68112.5 base net",
+    masterNote: "Referencia Master/ORQ: base net 68112.5",
     color: "#7A9A7E",
   },
   {
@@ -103,6 +102,16 @@ const ATTRIBUTION_PRODUCTS = ["Vivienda", "Alquiler_Yield", "Hotel"] as const;
 
 type AttributionProduct = (typeof ATTRIBUTION_PRODUCTS)[number];
 
+type LandbankFlow = {
+  launched: boolean;
+  p2pOrdered: boolean;
+  borrowed: number;
+  yieldClaimed: number;
+  govVoted: boolean;
+  quorumPassed: boolean;
+  perpetual?: boolean;
+};
+
 const ATTRIBUTION_DATA: Record<
   AttributionProduct,
   { baseYield: number; masterDelta: number; finalYield: number; note: string; effExample: number; claim: number }
@@ -111,7 +120,7 @@ const ATTRIBUTION_DATA: Record<
     baseYield: 12.0,
     masterDelta: 5.1,
     finalYield: 17.1,
-    note: "Master: orq real 31639 eff + power 17.1% locked. No external yield promise.",
+    note: "Referencia Master/ORQ: 31639 eff + power 17.1%. No external yield promise.",
     effExample: 31639,
     claim: 8450,
   },
@@ -133,6 +142,12 @@ const ATTRIBUTION_DATA: Record<
   },
 };
 
+function formatLandbankNumber(value: number): string {
+  const [integer, decimal] = String(value).split(".");
+  const groupedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return decimal ? `${groupedInteger}.${decimal}` : groupedInteger;
+}
+
 export function LandbankManagementClient() {
   const router = useRouter();
   const [properties, setProperties] = useState<PNC[]>(DEMO_5_PNC);
@@ -141,12 +156,12 @@ export function LandbankManagementClient() {
   const [flywheelAnimating, setFlywheelAnimating] = useState(false);
 
   // Fase 6 Polish + E2E close: full identity/hub, cross-links, Master launch -> P2P 5PNC -> borrow -> claim yield -> gov vote
-  // Uses existing HologramPncCard + P2P landbank ties + borrow loop patterns (rich fallbacks from orq real data 68112.5/31639/3250/23125)
+  // Uses existing HologramPncCard + P2P landbank ties + borrow loop patterns with documented ORQ reference values.
   // Single project (dashboard landbanking), rich demo, no other sessions.
   const [selectedPncId, setSelectedPncId] = useState<string>(DEMO_5_PNC[0].id);
-  const [flowStatus, setFlowStatus] = useState<Record<string, { launched: boolean; p2pOrdered: boolean; borrowed: number; yieldClaimed: number; govVoted: boolean; quorumPassed: boolean }>>(() => {
+  const [flowStatus, setFlowStatus] = useState<Record<string, LandbankFlow>>(() => {
     // rich fallback init per 5PNC using orq demo numbers
-    const init: any = {};
+    const init: Record<string, LandbankFlow> = {};
     DEMO_5_PNC.forEach(p => {
       init[p.id] = { launched: false, p2pOrdered: false, borrowed: 0, yieldClaimed: 0, govVoted: false, quorumPassed: false };
     });
@@ -157,7 +172,7 @@ export function LandbankManagementClient() {
   const [govMessage, setGovMessage] = useState("");
 
   // Load properties from database
-  const loadProperties = async () => {
+  const loadProperties = useCallback(async () => {
     try {
       const res = await fetch("/api/properties");
       const data = await res.json();
@@ -167,11 +182,11 @@ export function LandbankManagementClient() {
     } catch (err) {
       console.warn("Error cargando propiedades desde la API, usando mockups locales:", err);
     }
-  };
+  }, []);
 
   React.useEffect(() => {
     loadProperties();
-  }, []);
+  }, [loadProperties]);
 
   const selectedPnc = properties.find(p => p.id === selectedPncId) || properties[0] || DEMO_5_PNC[0];
   const currentFlow = flowStatus[selectedPncId] || { launched: false, p2pOrdered: false, borrowed: 0, yieldClaimed: 0, govVoted: false, quorumPassed: false };
@@ -240,23 +255,13 @@ export function LandbankManagementClient() {
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setClaimMessage(`Simulación local ejecutada para ${pnc.code}.`);
-      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], launched: true } }));
+      setClaimMessage(`No se pudo registrar el lanzamiento de ${pnc.code}: ${err instanceof Error ? err.message : "error desconocido"}.`);
     }
   };
 
-  const doP2POrder = async (pnc: PNC) => {
-    try {
-      await fetch("/api/properties/actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ propertyId: pnc.id, action: "vote" })
-      });
-    } catch (err) {
-      console.warn("DB logging bypassed for P2P order link:", err);
-    }
+  const doP2POrder = (pnc: PNC) => {
     setFlowStatus(prev => ({
       ...prev,
       [pnc.id]: { ...prev[pnc.id], p2pOrdered: true }
@@ -278,14 +283,13 @@ export function LandbankManagementClient() {
           ...prev,
           [pnc.id]: { ...prev[pnc.id], borrowed: debt }
         }));
-        setClaimMessage(`Préstamo de $${debt.toLocaleString()} guardado en base de datos. USD disponible actualizado.`);
+        setClaimMessage(`Préstamo de $${formatLandbankNumber(debt)} guardado en base de datos. USD disponible actualizado.`);
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setClaimMessage(`Préstamo de $${debt.toLocaleString()} aprobado (simulado localmente).`);
-      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], borrowed: debt } }));
+      setClaimMessage(`No se pudo crear el préstamo: ${err instanceof Error ? err.message : "error desconocido"}.`);
     }
   };
 
@@ -303,16 +307,14 @@ export function LandbankManagementClient() {
           ...prev,
           [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + claimAmt }
         }));
-        setClaimMessage(`Renta de ${claimAmt.toLocaleString()} PACHA registrada en base de datos.`);
+        setClaimMessage(`Renta de ${formatLandbankNumber(claimAmt)} PACHA registrada en base de datos.`);
         runFlywheel();
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setClaimMessage(`Renta de ${claimAmt.toLocaleString()} PACHA cobrada (simulado offline).`);
-      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + claimAmt } }));
-      runFlywheel();
+      setClaimMessage(`No se pudo acreditar la renta: ${err instanceof Error ? err.message : "error desconocido"}.`);
     }
   };
 
@@ -335,10 +337,32 @@ export function LandbankManagementClient() {
       } else {
         throw new Error(data.error);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setGovMessage(`Voto procesado localmente.`);
-      setFlowStatus(prev => ({ ...prev, [pnc.id]: { ...prev[pnc.id], govVoted: true, quorumPassed: passed } }));
+      setGovMessage(`No se pudo registrar el voto: ${err instanceof Error ? err.message : "error desconocido"}.`);
+    }
+  };
+
+  const doPerpetualYield = async (pnc: PNC) => {
+    try {
+      const response = await fetch("/api/properties/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: pnc.id, action: "perpetual" }),
+      });
+      const data = await response.json() as { success?: boolean; error?: string; evidence?: { amount?: number; txHash?: string } };
+      if (!response.ok || !data.success) throw new Error(data.error || "No se recibió evidencia del motor de rendimiento");
+
+      const amount = data.evidence?.amount ?? 8514;
+      setClaimMessage(`Atestación perpetua registrada: ${formatLandbankNumber(amount)} PACHA • tx ${data.evidence?.txHash ?? "sin referencia"}.`);
+      setFlowStatus(prev => ({
+        ...prev,
+        [pnc.id]: { ...prev[pnc.id], yieldClaimed: (prev[pnc.id]?.yieldClaimed || 0) + amount, perpetual: true },
+      }));
+      runFlywheel();
+    } catch (err: unknown) {
+      console.error(err);
+      setClaimMessage(`No se pudo registrar la atestación perpetua: ${err instanceof Error ? err.message : "error desconocido"}.`);
     }
   };
 
@@ -400,7 +424,7 @@ export function LandbankManagementClient() {
                 {fs.borrowed > 0 && <span className="px-1.5 py-0.5 bg-[#4B8FF0]/20 text-[#4B8FF0] rounded">BORROW ${fs.borrowed}</span>}
                 {fs.yieldClaimed > 0 && <span className="px-1.5 py-0.5 bg-pn-sand/20 text-pn-sand rounded">CLAIMED</span>}
                 {fs.govVoted && <span className="px-1.5 py-0.5 bg-pn-gold/30 text-pn-text rounded">VOTED {fs.quorumPassed ? "✓Q" : ""}</span>}
-                <span className="px-1.5 py-0.5 bg-emerald-900/30 text-emerald-300 rounded">ORQ EXERCISED</span>
+                <span className="px-1.5 py-0.5 bg-emerald-900/30 text-emerald-300 rounded">ORQ DEMO BRIDGE</span>
               </div>
             </div>
           );
@@ -447,11 +471,11 @@ export function LandbankManagementClient() {
             <div className="flex-1 text-sm space-y-1 border-l border-pn-border pl-4 md:pl-4 text-pn-text-soft">
               <div>
                 <span className="text-pn-text-muted">Eficiencia Operativa:</span>{" "}
-                <span className="font-mono text-pn-text">{currentAttrib.effExample.toLocaleString()}</span>
+                <span className="font-mono text-pn-text">{formatLandbankNumber(currentAttrib.effExample)}</span>
               </div>
               <div>
                 <span className="text-pn-text-muted">Monto Reclamable:</span>{" "}
-                <span className="font-mono text-pn-text">{currentAttrib.claim.toLocaleString()} PACHA</span>
+                <span className="font-mono text-pn-text">{formatLandbankNumber(currentAttrib.claim)} PACHA</span>
               </div>
               <div className="text-[11px] pt-1 text-pn-sand/70 italic leading-tight">
                 Nota de actualización de precios del tasador de mercado.
@@ -492,7 +516,7 @@ export function LandbankManagementClient() {
                   >
                     <div className="text-[9px] text-pn-text-soft tracking-widest">{flywheelLabels[idx]}</div>
                     <div className="font-mono text-lg leading-none mt-px text-pn-text tabular-nums">
-                      {flywheelValues[idx].toLocaleString()}
+                      {formatLandbankNumber(flywheelValues[idx])}
                     </div>
                     <div className="text-[10px] text-pn-text-muted">{flywheelUnits[idx]}</div>
                     {idx === 0 && <div className="text-[9px] text-pn-gold mt-0.5">Ejemplo de cobro real</div>}
@@ -596,26 +620,16 @@ export function LandbankManagementClient() {
           </CommandButton>
         </div>
 
-        {/* Fase72 Phase6: explicit UI CTA wire to perpetual yield engine (orq local hook for rich demo).
-           Ties to runPerpetualYieldEngine stub + attest (YIELD_PERPETUAL_ATTEST + N+1/N+2 mutation).
-           Exercises real PNC refs from orq (68112.5/31639/17.1%/3250/23125 + Fase48 receipts). */}
+        {/* The perpetual action now persists a balance change, ledger hash and integration attestation. */}
         <div className="mt-3 pt-3 border-t border-pn-gold/10">
           <CommandButton
             variant="primary"
-            onClick={() => {
-              // Thin local orq hook for perpetual (demo window; in full: bridge/edge fn to core orq).
-              // For now: simulate call + update UI attest + flywheel (rich fallback matching orq --dry output).
-              const perpetualRef = { tx: '0x' + Math.random().toString(16).slice(2,10) + '@2525xxxx', perpetual: true, eff: 31639, power: 3250, note: 'YIELD_PERPETUAL_ATTEST Fase72 N+1 (orq exercised)' };
-              setClaimMessage(`Fase72 Perpetual Yield triggered for ${selectedPnc.code} (orq hook). ${perpetualRef.note} • tx ${perpetualRef.tx}. Real: 68112.5 net / 31639 eff 17.1% / 3250 pwr. Master sacred.`);
-              runFlywheel();
-              // Mark flow + add perpetual badge state (extendable).
-              setFlowStatus(prev => ({ ...prev, [selectedPncId]: { ...prev[selectedPncId], yieldClaimed: (prev[selectedPncId]?.yieldClaimed || 0) + 8514, perpetual: true } }));
-            }}
+            onClick={() => doPerpetualYield(selectedPnc)}
             className="text-xs h-8 px-3"
           >
-            Trigger Fase72 Perpetual Yield (orq hook • YIELD_PERPETUAL_ATTEST)
+            Registrar rendimiento perpetuo (YIELD_PERPETUAL_ATTEST)
           </CommandButton>
-          <span className="ml-2 text-[9px] text-pn-text-muted">Wires browser CTA → runPerpetualYieldEngine (local orq for this demo window). Full bridge/Supabase edge in core. See #35.</span>
+          <span className="ml-2 text-[9px] text-pn-text-muted">Persiste saldo, movimiento encadenado y evidencia de integración en el entorno demo.</span>
         </div>
 
         {/* Messages + cross links + identity/hub reminders */}
@@ -638,7 +652,7 @@ export function LandbankManagementClient() {
       </div>
 
       <div className="mt-4 pt-3 border-t border-pn-border/60 text-[9px] text-pn-text-soft flex gap-x-4 flex-wrap">
-        <span>5 PNC • DATOS REALES from orq (68112.5/31639/17.1%/3250/23125)</span>
+        <span>5 PNC • valores ORQ de referencia (68112.5/31639/17.1%/3250/23125)</span>
         <span>Master overrides glow sacred</span>
         <span>Hologram SVG + glassmorphic + CSS flywheel</span>
         <span className="text-pn-gold/70">Fase 4 visuals + Fase 6 E2E polish complete (interactive flows, P2P ties, identity/hub)</span>
