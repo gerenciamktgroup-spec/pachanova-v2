@@ -34,15 +34,15 @@ export default function ShowcasePage() {
                 Bienvenido al portal de demostración y simulación educativa de PachaNova. Aquí puedes experimentar de forma segura cómo funciona la inversión fraccionada de terrenos reales (RWA) mediante contratos digitales. Aprende a simular compras iniciales, transacciones de compra-venta entre usuarios, solicitud de préstamos y votaciones.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link href="#phase4-hologram-landbank">
-                  <CommandButton variant="primary" className="text-sm">Ver Simulador de Inversiones e Historial →</CommandButton>
-                </Link>
-                <Link href="#yields-surface">
-                  <CommandButton variant="ghost" className="text-sm">Módulo de Rendimientos (Rentas)</CommandButton>
-                </Link>
-                <Link href="#gov-surface">
-                  <CommandButton variant="ghost" className="text-sm">Módulo de Votaciones (Gobierno)</CommandButton>
-                </Link>
+                <CommandButton href="#phase4-hologram-landbank" variant="primary" className="text-sm">
+                  Ver Simulador de Inversiones e Historial →
+                </CommandButton>
+                <CommandButton href="#yields-surface" variant="ghost" className="text-sm">
+                  Módulo de Rendimientos (Rentas)
+                </CommandButton>
+                <CommandButton href="#gov-surface" variant="ghost" className="text-sm">
+                  Módulo de Votaciones (Gobierno)
+                </CommandButton>
               </div>
             </div>
           </div>
@@ -131,11 +131,9 @@ export default function ShowcasePage() {
                     </div>
                     <p className="text-sm text-pn-text-soft mb-6">{module.description}</p>
                   </div>
-                  <Link href={module.path || "#"}>
-                    <CommandButton variant="primary" className="w-full justify-center">
-                      {module.primaryAction || `Abrir ${module.label}`}
-                    </CommandButton>
-                  </Link>
+                  <CommandButton href={module.path || "#"} variant="primary" className="w-full justify-center">
+                    {module.primaryAction || `Abrir ${module.label}`}
+                  </CommandButton>
                 </MissionCard>
               ))}
             </div>
@@ -182,9 +180,9 @@ export default function ShowcasePage() {
                   <IntegrationStatusBadge status="NO-GO" />
                 </div>
                 <div className="pt-4 border-t border-pn-border">
-                  <Link href="/demo/integrations">
-                    <CommandButton variant="outline" className="w-full justify-center">Ver Matriz Completa</CommandButton>
-                  </Link>
+                  <CommandButton href="/demo/integrations" variant="outline" className="w-full justify-center">
+                    Ver Matriz Completa
+                  </CommandButton>
                 </div>
               </div>
             </MissionCard>

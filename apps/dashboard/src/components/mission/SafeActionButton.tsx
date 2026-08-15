@@ -38,10 +38,11 @@ export function SafeActionButton({
   const effectiveDisabledReason = disabledReason || (isDisablingIntent && intent ? getActionIntentHint(intent) : null) || plannedReason;
   const reasonText = effectiveDisabledReason;
 
-  const content = (
-    <div className={`flex flex-col items-center group ${className || ""}`}>
+  return (
+    <div className={`flex flex-col items-center group inline-block ${className || ""}`}>
       <CommandButton
         variant={variant}
+        href={isActuallyDisabled ? undefined : href}
         onClick={isActuallyDisabled ? undefined : onClick}
         disabled={isActuallyDisabled}
         isLoading={isLoading}
@@ -61,10 +62,4 @@ export function SafeActionButton({
       )}
     </div>
   );
-
-  if (href && !isActuallyDisabled) {
-    return <Link href={href} className="inline-block">{content}</Link>;
-  }
-
-  return <div className="inline-block">{content}</div>;
 }

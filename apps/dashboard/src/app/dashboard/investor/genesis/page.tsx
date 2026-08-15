@@ -175,7 +175,7 @@ export default function InvestorGenesisPage() {
                 </div>
 
                 <div className="pt-4 flex justify-end gap-3">
-                  <Link href="/dashboard/investor"><CommandButton variant="outline">Volver al Panel</CommandButton></Link>
+                  <CommandButton href="/dashboard/investor" variant="outline">Volver al Panel</CommandButton>
                   <CommandButton variant="ghost" onClick={() => { setCurrentStep(1); setResult(null); }}>Simular de Nuevo</CommandButton>
                 </div>
               </div>
@@ -183,7 +183,6 @@ export default function InvestorGenesisPage() {
           </div>
         </MissionCard>
       )}
-
     </div>
   );
 }

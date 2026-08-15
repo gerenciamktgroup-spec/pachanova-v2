@@ -210,7 +210,7 @@ export function InvestorGenesisClient({ kycStatus, availableUsd, investorId, pro
             )}
             
             <div className="pt-4 flex justify-end gap-3">
-              <Link href="/dashboard/investor"><CommandButton variant="primary">Ver mi Portfolio</CommandButton></Link>
+              <CommandButton href="/dashboard/investor" variant="primary">Ver mi Portfolio</CommandButton>
               <CommandButton variant="ghost" onClick={() => { setCurrentStep(1); setResult(null); }}>Simular de Nuevo</CommandButton>
             </div>
           </div>
