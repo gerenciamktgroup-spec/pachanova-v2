@@ -1,11 +1,41 @@
 'use client';
 
 import Link from "next/link";
-import { PrecisionHero3D } from "./components/3d/PrecisionHero";
-import { LandExplorer3D } from "./components/3d/LandExplorer3D";
-import { TrustStructure3D } from "./components/3d/TrustStructure3D";
+import dynamic from "next/dynamic";
 import { PrecisionNavbar } from "./components/PrecisionNavbar";
 import { PrecisionFooter } from "./components/PrecisionFooter";
+
+const PrecisionHero3D = dynamic(
+  () => import("./components/3d/PrecisionHero").then((mod) => mod.PrecisionHero3D),
+  {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 z-0 bg-[#0a111f]" />,
+  }
+);
+
+const LandExplorer3D = dynamic(
+  () => import("./components/3d/LandExplorer3D").then((mod) => mod.LandExplorer3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="relative w-full h-[420px] rounded-3xl overflow-hidden border border-white/10 bg-[#070d19] flex items-center justify-center">
+        <div className="text-white/40 text-sm font-mono tracking-widest">CARGANDO VISUALIZADOR 3D...</div>
+      </div>
+    ),
+  }
+);
+
+const TrustStructure3D = dynamic(
+  () => import("./components/3d/TrustStructure3D").then((mod) => mod.TrustStructure3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="relative w-full h-[460px] rounded-3xl overflow-hidden border border-white/10 bg-[#070d19] flex items-center justify-center">
+        <div className="text-white/40 text-sm font-mono tracking-widest">CARGANDO ESTRUCTURA FIDUCIARIA...</div>
+      </div>
+    ),
+  }
+);
 
 export default function PrecisionSpatialLanding() {
   return (

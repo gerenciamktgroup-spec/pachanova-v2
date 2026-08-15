@@ -1,8 +1,6 @@
-'use client';
-
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 
 function Terrain() {
   return (
@@ -39,6 +37,16 @@ function TokenField() {
 }
 
 export function PrecisionHero3D() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="absolute inset-0 z-0 bg-[#0a111f]" />;
+  }
+
   return (
     <div className="absolute inset-0 z-0">
       <Canvas 

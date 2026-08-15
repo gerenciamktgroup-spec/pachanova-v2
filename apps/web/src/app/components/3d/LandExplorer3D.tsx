@@ -2,7 +2,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
 // Terreno con ligera variación topográfica (San Bartolo feel)
@@ -109,6 +109,20 @@ function SpatialLabels() {
 }
 
 export function LandExplorer3D() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="relative w-full h-[420px] rounded-3xl overflow-hidden border border-white/10 bg-[#070d19] flex items-center justify-center">
+        <div className="text-white/40 text-sm font-mono tracking-widest">CARGANDO VISUALIZADOR 3D...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-[420px] rounded-3xl overflow-hidden border border-white/10 bg-[#070d19]">
       <Canvas 
