@@ -9,7 +9,6 @@ import { TimelineRail, TimelineItem } from "@/components/mission/TimelineRail";
 import { TokenAmount, SquareMeterAmount, UserStatusPill, DataGrid, DataGridRow, DataGridCell, ProductEmptyState } from "./SharedComponents";
 import { AdminDashboardView, UserAdminView } from "@/types/product";
 import { tokensToSquareMeters } from "@/lib/product/math";
-import Link from "next/link";
 import { ShieldCheck, Settings } from "lucide-react";
 
 export function AdminMissionOverview({ view }: { view: AdminDashboardView }) {
@@ -80,7 +79,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       });
       const data = await res.json();
       setResult(data);
-    } catch (e) {
+    } catch {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);
@@ -104,7 +103,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       } else {
         setResult({ ok: false, message: data.error || "Error al actualizar" });
       }
-    } catch (e) {
+    } catch {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);

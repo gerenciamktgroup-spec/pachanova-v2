@@ -16,7 +16,7 @@ async function getInvestorId() {
       try {
         const session = JSON.parse(demoSessionStr);
         email = session.email;
-      } catch (e) {}
+      } catch {}
     }
 
     const investor = await db.query.investors.findFirst({

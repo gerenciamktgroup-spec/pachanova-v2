@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { CommandButton } from "./CommandButton";
 import { Info, Lock } from "lucide-react";
 import { ActionIntent, getActionIntentHint } from "@/lib/product/actionIntent";
