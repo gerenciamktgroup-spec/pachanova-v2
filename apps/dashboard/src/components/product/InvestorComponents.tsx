@@ -6,7 +6,7 @@ import { IntegrationStatusBadge } from "@/components/mission/IntegrationStatusBa
 import { CommandButton } from "@/components/mission/CommandButton";
 import { SafeActionButton } from "@/components/mission/SafeActionButton";
 import { TokenAmount, SquareMeterAmount, MoneyAmount, UserStatusPill, DataGrid, DataGridRow, DataGridCell, ProductEmptyState } from "./SharedComponents";
-import { formatPacha, tokenOwnershipPercent, tokensToSquareMeters } from "@/lib/product/math";
+import { tokenOwnershipPercent, tokensToSquareMeters } from "@/lib/product/math";
 import { InvestorDashboardView } from "@/types/product";
 import { PRODUCT_COPY } from "@/lib/copy/productCopy";
 import Link from "next/link";
@@ -34,12 +34,16 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
           <p className="text-sm text-pn-text-muted max-w-xl">
             {PRODUCT_COPY.disclaimers.noRealMoney} Su cuenta usa datos de referencia persistidos en el entorno Demo Local; las integraciones externas mantienen su estado visible.
           </p>
-          {/* Per-PNC progress links and ORQ demo-reference badges. */}
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
-            <a href="/demo/showcase#phase4-hologram-landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Ver avances (Holograms + E2E 5PNC)</a>
-            <a href="/dashboard/investor/marketplace?pnc=PAR" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">P2P Orderbook (PAR tie)</a>
-            <a href="/dashboard/admin/landbank" className="px-2 py-0.5 bg-pn-gold/10 text-pn-gold rounded border border-pn-gold/30 hover:bg-pn-gold/20">Admin Landbank</a>
-            <span className="px-2 py-0.5 bg-emerald-900/30 text-emerald-300 rounded border border-emerald-700/50">ORQ DEMO BRIDGE • F16/21/36/47/51/53</span>
+            <CommandButton href="/demo/showcase#phase4-hologram-landbank" variant="ghost" className="text-xs">
+              Ver avances (Holograms + E2E 5PNC)
+            </CommandButton>
+            <CommandButton href="/dashboard/investor/marketplace?pnc=PAR" variant="ghost" className="text-xs">
+              P2P Orderbook (PAR tie)
+            </CommandButton>
+            <CommandButton href="/dashboard/admin/landbank" variant="ghost" className="text-xs">
+              Admin Landbank
+            </CommandButton>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -64,7 +68,11 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView })
         <div>
           <p className="text-xs text-pn-text-soft uppercase tracking-wider mb-1">Ownership Genesis</p>
           <span className="text-pn-text font-medium">{ownership.toFixed(2)}%</span>
-          <div className="mt-1"><a href="/demo/showcase#phase4-hologram-landbank" className="text-[10px] underline text-pn-gold/80">ver avances por PNC →</a></div>
+          <div className="mt-1">
+            <Link href="/demo/showcase#phase4-hologram-landbank" className="text-[10px] underline text-pn-gold/80">
+              ver avances por PNC →
+            </Link>
+          </div>
         </div>
       </div>
     </MissionCard>
@@ -159,9 +167,9 @@ export function InvestorKycStatusPanel({ view }: { view: InvestorDashboardView }
           <p className="text-xs text-pn-text-soft mb-4">
             El proveedor de identidad está configurado como {view.kycVerificationProvider}.
           </p>
-          <Link href="/demo/control-room">
-            <CommandButton variant="outline" fullWidth>Gestionar Identidad Demo</CommandButton>
-          </Link>
+          <CommandButton href="/demo/control-room" variant="outline" fullWidth>
+            Gestionar Identidad Demo
+          </CommandButton>
         </div>
       </div>
     </MissionCard>
@@ -243,7 +251,9 @@ export function InvestorWalletStatusPanel({ view }: { view: InvestorDashboardVie
       <div className="space-y-4">
         <div className="p-3 bg-pn-surface-strong rounded border border-pn-border">
           <p className="text-xs text-pn-text-soft mb-1">Saldo Disponible</p>
-          <p className="text-xl font-medium text-pn-gold">${formatPacha(Number(view.investor.balance.availableUsd))}</p>
+          <p className="text-xl font-medium text-pn-gold" suppressHydrationWarning>
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(view.investor.balance.availableUsd))}
+          </p>
         </div>
 
         <div className="space-y-2 mt-4 pt-4 border-t border-pn-border">

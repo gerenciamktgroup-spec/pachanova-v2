@@ -206,7 +206,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
   );
 }
 
-export function AuditLogTimeline({ view }: { view: AdminDashboardView }) {
+export function AuditLogTimeline({ view }: { view: Pick<AdminDashboardView, "recentAuditLogs"> }) {
   const items: TimelineItem[] = view.recentAuditLogs.map(log => ({
     id: log.id,
     title: log.action,
@@ -251,9 +251,9 @@ export function IntegrationEventsPanel({ view }: { view: AdminDashboardView }) {
         </div>
       )}
       <div className="mt-4 pt-4 border-t border-pn-border">
-        <Link href="/demo/integrations">
-          <CommandButton variant="outline" fullWidth icon={<Settings className="w-4 h-4"/>}>Administrar Proveedores</CommandButton>
-        </Link>
+        <CommandButton href="/demo/integrations" variant="outline" fullWidth icon={<Settings className="w-4 h-4"/>}>
+          Administrar Proveedores
+        </CommandButton>
       </div>
     </MissionCard>
   );

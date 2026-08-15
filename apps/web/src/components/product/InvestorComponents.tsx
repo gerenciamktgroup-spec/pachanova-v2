@@ -145,9 +145,7 @@ export function InvestorKycStatusPanel({ view }: { view: InvestorDashboardView }
           <p className="text-xs text-pn-text-soft mb-4">
             El proveedor de identidad está configurado como {view.kycVerificationProvider}.
           </p>
-          <Link href="/demo/control-room">
-            <CommandButton variant="outline" fullWidth>Gestionar Identidad Demo</CommandButton>
-          </Link>
+          <CommandButton href="/demo/control-room" variant="outline" fullWidth>Gestionar Identidad Demo</CommandButton>
         </div>
       </div>
     </MissionCard>

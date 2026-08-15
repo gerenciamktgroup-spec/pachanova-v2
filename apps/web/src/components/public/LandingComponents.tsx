@@ -24,9 +24,7 @@ export function PublicHeader() {
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/demo/showcase">
-                <CommandButton variant="primary">Entrar al Demo Mirror</CommandButton>
-              </Link>
+              <CommandButton href="/demo/showcase" variant="primary">Entrar al Demo Mirror</CommandButton>
             </div>
           </div>
         </div>

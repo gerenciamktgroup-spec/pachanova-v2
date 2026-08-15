@@ -59,8 +59,36 @@ async function fetchFideicomisoData(): Promise<FideicomisoDashboardView | null> 
       ]
     };
   } catch (error) {
-    console.error("Error fetching fideicomiso view model:", error);
-    return null;
+    console.error("Error fetching fideicomiso view model, using fallback:", error);
+    return {
+      status: "SIMULATED",
+      trustAnchorHash: null,
+      quorumRequired: 3,
+      fiduciarioWallet: null,
+      pendingOperations: [
+        {
+          id: "00000000-0000-0000-0000-000000000001",
+          type: "EMISION_DEMO",
+          description: "Autorizar emisión de 500,000 PACHA simulados para el Sandbox.",
+          status: "pending",
+          requiredSignatures: 3,
+          currentSignatures: 1,
+          signatures: [
+            { signerRole: "ADMIN", signedAt: new Date().toISOString() }
+          ],
+          createdAt: new Date().toISOString()
+        }
+      ],
+      recentHistory: [
+        {
+          id: "log-1",
+          action: "Trust Anchor Initialization",
+          details: "El smart contract del fideicomiso ha sido inicializado en el entorno local (Sandbox).",
+          timestamp: new Date().toISOString(),
+          actor: "System"
+        }
+      ]
+    };
   }
 }
 

@@ -80,7 +80,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       });
       const data = await res.json();
       setResult(data);
-    } catch {
+    } catch (e) {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);
@@ -104,7 +104,7 @@ export function AdminUsersDataGrid({ users }: { users: UserAdminView[] }) {
       } else {
         setResult({ ok: false, message: data.error || "Error al actualizar" });
       }
-    } catch {
+    } catch (e) {
       setResult({ ok: false, message: "Error de red local" });
     } finally {
       setIsSubmitting(false);
@@ -245,15 +245,15 @@ export function IntegrationEventsPanel({ view }: { view: AdminDashboardView }) {
                 </div>
                 <p className="text-xs text-pn-text-soft">{ev.event}</p>
               </div>
-              <span className="text-[10px] font-mono text-pn-text-muted">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+              <span suppressHydrationWarning className="text-[10px] font-mono text-pn-text-muted">{new Date(ev.timestamp).toLocaleTimeString()}</span>
             </div>
           ))}
         </div>
       )}
       <div className="mt-4 pt-4 border-t border-pn-border">
-        <Link href="/demo/integrations">
-          <CommandButton variant="outline" fullWidth icon={<Settings className="w-4 h-4"/>}>Administrar Proveedores</CommandButton>
-        </Link>
+        <CommandButton href="/demo/integrations" variant="outline" fullWidth icon={<Settings className="w-4 h-4"/>}>
+          Administrar Proveedores
+        </CommandButton>
       </div>
     </MissionCard>
   );
