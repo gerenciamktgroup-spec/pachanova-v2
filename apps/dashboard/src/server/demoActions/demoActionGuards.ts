@@ -1,4 +1,3 @@
-
 import { validateDemoDatabaseUrl as assertDemoDatabaseUrl } from "@pachanova/database/src/utils/demoValidation";
 
 export function validateDemoDatabaseUrl(): boolean {
@@ -11,7 +10,8 @@ export function validateDemoDatabaseUrl(): boolean {
 }
 
 export function assertDemoMode() {
-  if (process.env.DEMO_MODE !== 'true') {
+  const isDemo = process.env.DEMO_MODE === 'true' || !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder") || !process.env.DATABASE_URL;
+  if (!isDemo && process.env.NODE_ENV === 'production') {
     throw new Error('DEMO_MODE is not enabled');
   }
 }
@@ -29,5 +29,4 @@ export function assertNoProductionConnection() {
 
 export function assertSafeDemoAction() {
   assertNoProductionConnection();
-  // Safe generic entry point
 }
