@@ -30,19 +30,19 @@ pachanova-v2
 ```
 
 ## 1.4 Product Direction
+**Canon vigente:** `docs/PRODUCT_CANON.md` (2026-08-22). Si este archivo contradice el canon, gana el canon.
+
 PachaNova should become:
 ```txt
-An institutional real-estate fractional investment platform
-with documentary backing, fideicomiso/trust workflows,
-investor dashboard, admin operations, controlled distributions,
-compliance-aware data architecture, and optional future tokenization.
+A real-estate co-financing platform (landbanking, buildings for sale,
+buildings for rent) with documentary backing, admin / investor / client
+roles, traceability, and optional future tokenization.
 ```
-The platform should not initially depend on full on-chain tokenization to be useful.
+The platform must not depend on on-chain tokenization to be useful.
 
 Recommended staged positioning:
-- **Phase 1**: Real-estate investment platform with documentary trust/fideicomiso backing.
-- **Phase 2**: Controlled digital ownership records and distribution reporting.
-- **Phase 3**: Tokenization layer after legal, compliance, technical, and security validation.
+- **Now**: Co-financing + operations + traceability. Token/RWA/chain quarantined.
+- **Later**: Tokenization layer after legal, compliance, technical, and product validation.
 
 ---
 

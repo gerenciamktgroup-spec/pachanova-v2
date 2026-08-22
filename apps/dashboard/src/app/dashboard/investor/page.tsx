@@ -17,7 +17,6 @@ import { NextStepCard } from "@/components/product/NextStepCard";
 import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
 import { investorJourney } from "@/lib/navigation/userJourneys";
 import { fetchMaestroYields, fetchMaestroYieldForecast } from "@pachanova/integrations";
-import { YieldActionButtons } from "./YieldActionClient";
 
 import { createServerClient } from "@/utils/supabase/server";
 
@@ -116,15 +115,15 @@ async function InvestorDashboardContent() {
           { label: "Panel Inversor" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🌎 Marketplace P2P" href="/dashboard/investor/marketplace" variant="primary" />
-          <SafeActionButton label="💰 Préstamos DeFi" href="/dashboard/investor/borrow" variant="ghost" />
-          <SafeActionButton label="📚 Aprende" href="/dashboard/investor/learn" variant="ghost" />
+          <SafeActionButton label="📚 Cómo funciona" href="/dashboard/investor/learn" variant="primary" />
+          <SafeActionButton label="🪪 KYC" href="/dashboard/investor/kyc" variant="ghost" />
+          <SafeActionButton label="🏠 Soy cliente" href="/dashboard/client" variant="ghost" />
         </div>
       </div>
 
       {/* ── Landbanking Hub Banner ── */}
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
-        PACHA NOVA LANDBANKING HUB — Plataforma de Inversión en Tierras Tokenizadas
+        PACHANOVA — Cofinanciamiento inmobiliario (landbanking, venta, renta)
       </div>
 
       <GamificationHUD xp={userXP} level={userLevel} />
@@ -135,82 +134,21 @@ async function InvestorDashboardContent() {
       {/* ── Next Step Card ── */}
       <NextStepCard
         dataTestId="next-step-card-investor"
-        contextLabel="Landbanking Hub - Inversor"
-        title="Tu Portafolio Landbanking Completo"
-        explanation="Gestiona tu portafolio de inversiones en tierras tokenizadas. Consulta rendimientos, opera en el marketplace P2P y administra tus activos desde un solo lugar."
-        nextStep="Explora el Hub para ver tus propiedades, rendimientos acumulados y oportunidades de inversión."
-        primaryAction={{ label: "🏦 Hub Landbanking", href: "/dashboard/admin/landbank", intent: "navigate" }}
-        secondaryAction={{ label: "🌎 Marketplace P2P", href: "/dashboard/investor/marketplace", intent: "navigate" }}
+        contextLabel="Inversor — cofinanciamiento"
+        title="Tus participaciones"
+        explanation="Acá ves los proyectos que cofinanciás: landbanking, edificios en venta o en alquiler. El comprador o arrendatario usa el panel Cliente, no este."
+        nextStep="Completá KYC y revisá el estado de tus aportes. P2P, DeFi y tokens están en cuarentena."
+        primaryAction={{ label: "🪪 Completar KYC", href: "/dashboard/investor/kyc", intent: "navigate" }}
+        secondaryAction={{ label: "📚 Cómo funciona", href: "/dashboard/investor/learn", intent: "navigate" }}
         status="GO"
       />
 
-      {/* ── Optimizador de Rendimientos ── */}
-      <div className="p-4 border border-violet-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-[#8a8f9a] tracking-widest font-bold text-xs">OPTIMIZADOR DE RENDIMIENTOS</div>
-            <div className="text-violet-400 text-[10px]">Predicción y reinversión automática en los mejores activos</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-emerald-400 font-mono">
-          ✅ Motor de optimización activo — analizando oportunidades de reinversión para maximizar rendimientos.
-        </div>
-      </div>
-
-      {/* ── Auto-Orquestación (masiva post Fase 14) ── */}
-      <div className="p-4 border border-blue-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-blue-400 tracking-widest font-bold text-xs flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
-              AUTO-ORQUESTACIÓN (FASE 15)
-            </div>
-            <div className="text-blue-200/70 text-[10px]">Sincronización masiva de portafolio y RWA Tokenization activa</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-blue-300 font-mono">
-          ✅ Ejecución de ciclo autónomo completada. El portafolio de RWA ha sido tokenizado completamente y orquestado en la blockchain.
-        </div>
-      </div>
-
-      {/* ── Verificación Blockchain ── */}
-      <div className="p-4 border border-cyan-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(34,211,238,0.1)]">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-cyan-400 tracking-widest font-bold text-xs flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-              </span>
-              VERIFICACIÓN BLOCKCHAIN
-            </div>
-            <div className="text-cyan-200/70 text-[10px]">Verificación criptográfica de tus holdings en cadena</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">ESTADO</div>
-            <div className="text-xs text-cyan-300 font-mono">✅ Verificado</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">PROPIEDAD ON-CHAIN</div>
-            <div className="text-xs text-cyan-300 font-mono">Sincronizado</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">NODO RPC</div>
-            <div className="text-[10px] text-cyan-300 font-mono truncate">Public Node — Activo</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">ÚLTIMA VERIFICACIÓN</div>
-            <div className="text-[10px] text-cyan-300 font-mono truncate">{new Date().toLocaleDateString('es-PE')}</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-cyan-500/50 font-mono">
-          Los holdings se verifican contra la blockchain pública. Esta verificación respalda el cálculo de dividendos y préstamos.
-        </div>
+      <div className="p-4 border border-[#c5a46d]/30 rounded-xl bg-[#0a0b0f] text-sm">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-[#c5a46d] mb-1">Canon 2026-08-22</div>
+        <p className="text-white/70">
+          Cofinanciamiento de proyectos reales. Tokenización, P2P, DeFi y blockchain están en cuarentena.
+          Las cifras de esta pantalla pueden ser demo: no son una oferta ni un rendimiento prometido.
+        </p>
       </div>
 
       {/* ── Portfolio Hero ── */}
@@ -246,31 +184,18 @@ async function InvestorDashboardContent() {
           {(view.realHologramPncs || []).map((pnc: any, i: number) => (
             <div key={i} className="space-y-2">
               <HologramPncCard pnc={pnc as any} compact />
-              <a
-                href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`}
-                className="block w-full text-center px-3 py-1 text-xs border border-blue-700 rounded hover:bg-blue-900/20 text-blue-400"
-              >
-                Vender en Mercado Secundario
-              </a>
+              <p className="text-[10px] text-white/40 text-center">Participación de cofinanciamiento · sin mercado P2P en esta etapa</p>
             </div>
           ))}
         </div>
         {(!view.realHologramPncs || view.realHologramPncs.length === 0) && (
           <div className="text-xs text-[#5a5f6a] p-3 border border-dashed border-emerald-900/30 rounded">
-            No se encontraron inversiones activas. Explora el marketplace para adquirir propiedades tokenizadas.
+            Todavía no hay participaciones registradas en este entorno.
           </div>
         )}
       </div>
 
-      {/* ── Acciones de Rendimiento (Client Component) ── */}
-      <YieldActionButtons
-        maestroYield={maestroYield}
-        maestroForecast={maestroForecast}
-        email={view.investor.email}
-        orqProposals={[]}
-        claimables={[]}
-        onActionComplete={() => { try { (window as any).location.reload(); } catch {} }}
-      />
+      {/* YieldActionButtons (claim/compound token) remains in codebase, hidden from this stage */}
 
       {/* ── Bottom Grid: Land Card, Ledger, KYC, Wallet ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

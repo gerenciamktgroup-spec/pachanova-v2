@@ -14,7 +14,7 @@ export default function LearnPage() {
             Centro de <span className="font-semibold text-pn-gold">Aprendizaje</span>
           </h1>
           <p className="text-pn-text-muted mt-1 max-w-2xl">
-            Descubre cómo funciona la tokenización de activos del mundo real (RWA) y cómo PachaNova asegura tu capital con propiedades inmobiliarias.
+            Cómo funciona el cofinanciamiento: landbanking, edificios en venta y edificios en alquiler, con trazabilidad documental. La tokenización queda para después.
           </p>
         </div>
       </div>
@@ -28,10 +28,11 @@ export default function LearnPage() {
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-pn-gold/10 text-pn-gold border border-pn-gold/20">
                 Modelo Fundamental
               </span>
-              <h2 className="text-2xl font-semibold text-pn-text">¿Qué es el Landbanking Tokenizado?</h2>
+              <h2 className="text-2xl font-semibold text-pn-text">¿Qué es el landbanking?</h2>
               <p className="text-pn-text-muted leading-relaxed">
-                El Landbanking tradicional es el negocio de adquirir terrenos en zonas de alto crecimiento urbano para venderlos a desarrolladores inmobiliarios en el futuro, capturando la plusvalía. 
-                PachaNova tokeniza estas reservas de tierra, permitiéndote ser copropietario desde fracciones accesibles y garantizando tu inversión con un Fideicomiso.
+                Comprar tierra con tesis de plusvalía, cofinanciar la tenencia y vender más adelante.
+                En PachaNova el inversor aporta capital al proyecto; el cliente es quien compra el lote o la unidad al final.
+                El respaldo es documental y fiduciario, no un token.
               </p>
             </div>
             <div className="w-full md:w-1/3 aspect-video bg-black/40 border border-pn-border/50 rounded-lg flex items-center justify-center relative group overflow-hidden">
@@ -60,7 +61,7 @@ export default function LearnPage() {
           </div>
           <h3 className="text-lg font-medium text-pn-text mb-2">Plusvalía Compuesta</h3>
           <p className="text-sm text-pn-text-soft leading-relaxed">
-            A diferencia del crypto tradicional que fluctúa por especulación, los tokens RWA de PachaNova aprecian su valor basados en el desarrollo real de las zonas urbanas de Lima y el avance de obras.
+            El resultado depende del activo: plusvalía de la tierra, venta de unidades o renta cobrada. No hay rendimiento prometido ni token que “aprecie solo”.
           </p>
         </div>
 
@@ -68,9 +69,9 @@ export default function LearnPage() {
           <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-6">
             <Landmark className="w-6 h-6 text-purple-500" />
           </div>
-          <h3 className="text-lg font-medium text-pn-text mb-2">Liquidez Secundaria (P2P)</h3>
+          <h3 className="text-lg font-medium text-pn-text mb-2">Salida del proyecto</h3>
           <p className="text-sm text-pn-text-soft leading-relaxed">
-            No tienes que esperar 5 años para salir del proyecto. El Marketplace P2P te permite vender tus fracciones de terreno a otros inversores en cualquier momento de forma atómica y segura.
+            La salida la define el contrato del proyecto: venta del terreno, venta de unidades o flujo de renta. No hay mercado P2P de fracciones en esta etapa.
           </p>
         </div>
 
@@ -80,23 +81,23 @@ export default function LearnPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex flex-col gap-3">
               <div className="text-2xl font-bold text-pn-border-strong">01</div>
-              <h4 className="font-medium text-pn-text">Fondeo USD</h4>
-              <p className="text-sm text-pn-text-soft">Inyecta capital a tu Billetera PachaNova usando métodos de pago locales y regulados.</p>
+              <h4 className="font-medium text-pn-text">Onboarding y KYC</h4>
+              <p className="text-sm text-pn-text-soft">Identidad verificada antes de aportar capital a un proyecto.</p>
             </div>
             <div className="flex flex-col gap-3">
               <div className="text-2xl font-bold text-pn-border-strong">02</div>
-              <h4 className="font-medium text-pn-text">Adquisición</h4>
-              <p className="text-sm text-pn-text-soft">Compra tokens en emisiones primarias (Bóvedas) o en el mercado secundario P2P.</p>
+              <h4 className="font-medium text-pn-text">Aporte</h4>
+              <p className="text-sm text-pn-text-soft">Cofinanciás un proyecto de landbanking, venta o renta. No comprás tokens.</p>
             </div>
             <div className="flex flex-col gap-3">
               <div className="text-2xl font-bold text-pn-border-strong">03</div>
-              <h4 className="font-medium text-pn-text">Custodia</h4>
-              <p className="text-sm text-pn-text-soft">Visualiza el crecimiento de tu portafolio respaldado por el Fideicomiso en tiempo real.</p>
+              <h4 className="font-medium text-pn-text">Seguimiento</h4>
+              <p className="text-sm text-pn-text-soft">Hitos, documentos y trazabilidad de tu participación.</p>
             </div>
             <div className="flex flex-col gap-3">
               <div className="text-2xl font-bold text-pn-border-strong">04</div>
-              <h4 className="font-medium text-pn-text">Liquidación</h4>
-              <p className="text-sm text-pn-text-soft">Al venderse la propiedad a un desarrollador, recibes el capital y las ganancias directo en dólares.</p>
+              <h4 className="font-medium text-pn-text">Resultado</h4>
+              <p className="text-sm text-pn-text-soft">Distribución según el contrato: venta de tierra, venta de unidades o rentas cobradas. Sujeto al desempeño del activo.</p>
             </div>
           </div>
         </div>

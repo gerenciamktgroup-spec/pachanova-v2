@@ -1,3 +1,10 @@
+import { QuarantinedFeature } from "@/components/product/QuarantinedFeature";
+
 export default function StakingPage() {
-  return <div className="p-10 text-white font-medium">Staking en Mantenimiento (Transición a V2.0)</div>;
+  return (
+    <QuarantinedFeature
+      title="Staking"
+      summary="No hay bloqueo de tokens ni multiplicador de voto. Esa capa se reabre solo si se decide tokenizar más adelante."
+    />
+  );
 }

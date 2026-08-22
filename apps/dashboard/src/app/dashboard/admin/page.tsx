@@ -194,7 +194,7 @@ async function AdminDashboardContent() {
 
       {/* Full Project Banner - Landbanking Hub principal */}
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
-        PACHA NOVA LANDBANKING HUB — Panel Administrativo y Orquestador de Operaciones
+        PACHANOVA — Administración de proyectos de cofinanciamiento
       </div>
       
       {/* HologramPncCard in main admin hero */}
@@ -205,7 +205,7 @@ async function AdminDashboardContent() {
           {pncs.map((pnc: any, i: number) => (
             <div key={i}>
               <HologramPncCard pnc={pnc as any} compact />
-              <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+              <p className="mt-1 text-[10px] text-white/35 text-center">P2P en cuarentena</p>
             </div>
           ))}
         </div>
