@@ -22,7 +22,10 @@ export default function ComoFunciona() {
           </li>
         ))}
       </ol>
-      <Link href="/login" className="inline-block mt-12 bg-clay text-white rounded-lg px-5 py-2.5 text-sm">Entrar</Link>
+      <div className="flex gap-3 mt-12">
+        <Link href="/proyectos" className="inline-block border border-line rounded-lg px-5 py-2.5 text-sm">Ver portafolio</Link>
+        <Link href="/login" className="inline-block bg-clay text-white rounded-lg px-5 py-2.5 text-sm">Entrar</Link>
+      </div>
     </div>
   );
 }

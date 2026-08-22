@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button, Card, Field, PageTitle } from "@/components/ui";
+import { TYPE_LABEL, STATUS_LABEL, money } from "@/lib/labels";
 
 type Project = {
   code: string;
@@ -13,12 +14,6 @@ type Project = {
   roundStatus: string;
   targetCapital: string;
   raisedCapital: string;
-};
-
-const TYPES: Record<string, string> = {
-  landbanking: "Landbanking",
-  building_sale: "Edificio en venta",
-  building_rent: "Edificio en renta",
 };
 
 export default function ProyectosPage() {
@@ -79,10 +74,10 @@ export default function ProyectosPage() {
         {projects.map((p) => (
           <Link key={p.code} href={`/admin/proyectos/${p.code}`} className="block">
             <Card className="hover:border-ink transition-colors">
-              <p className="text-xs text-mute">{p.code} · {TYPES[p.type] || p.type}</p>
+              <p className="text-xs text-mute">{p.code} · {TYPE_LABEL[p.type] || p.type} · {STATUS_LABEL[p.roundStatus] || p.roundStatus}</p>
               <h2 className="text-xl mt-1">{p.name}</h2>
-              <p className="text-sm text-mute mt-1">{p.location || "Sin ubicación"} · ronda {p.roundStatus}</p>
-              <p className="text-sm mt-3">${Number(p.raisedCapital).toLocaleString()} / ${Number(p.targetCapital).toLocaleString()}</p>
+              <p className="text-sm text-mute mt-1">{p.location || "Sin ubicación"}</p>
+              <p className="text-sm mt-3">{money(p.raisedCapital)} / {money(p.targetCapital)}</p>
             </Card>
           </Link>
         ))}

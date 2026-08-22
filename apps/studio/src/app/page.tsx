@@ -19,9 +19,12 @@ export default function Home() {
           El administrador opera el proyecto. El inversor aporta capital. El cliente compra o arrienda el inmueble.
           Cada movimiento queda registrado. No hay tokens.
         </p>
-        <div className="mt-8 flex gap-3">
+        <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/login" className="bg-clay text-white rounded-lg px-5 py-2.5 text-sm">
             Entrar a la plataforma
+          </Link>
+          <Link href="/proyectos" className="border border-line rounded-lg px-5 py-2.5 text-sm">
+            Ver portafolio
           </Link>
           <Link href="/como-funciona" className="border border-line rounded-lg px-5 py-2.5 text-sm">
             Cómo funciona
