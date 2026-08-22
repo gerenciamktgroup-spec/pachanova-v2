@@ -25,7 +25,7 @@ export function PublicHeader() {
             </div>
             <div className="flex items-center gap-4">
               <Link href="/login">
-                <CommandButton variant="primary">Entrar al Demo Mirror</CommandButton>
+                <CommandButton variant="primary">Entrar</CommandButton>
               </Link>
             </div>
           </div>
@@ -45,7 +45,7 @@ export function PublicFooter() {
               PACHANOVA<span className="text-pn-text-muted font-normal text-xs ml-2 tracking-widest">V2.0</span>
             </Link>
             <p className="text-sm text-pn-text-soft max-w-md">
-              Demostración tecnológica institucional de fraccionalización de activos RWA.
+              Plataforma de cofinanciamiento inmobiliario: landbanking, venta y renta, con trazabilidad.
             </p>
           </div>
           <div>

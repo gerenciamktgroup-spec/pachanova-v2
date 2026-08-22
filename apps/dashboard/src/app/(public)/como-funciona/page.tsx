@@ -11,7 +11,7 @@ export default function ComoFuncionaPage() {
         <SectionHeader 
           eyebrow="Arquitectura"
           title="Cómo funciona PachaNova"
-          description="Descubre el ciclo de vida de un Activo del Mundo Real (RWA) tokenizado, desde su resguardo legal hasta la emisión simulada de PACHA."
+          description="Cómo se cofinancia un proyecto, cómo opera el administrador y cómo el cliente compra o arrienda el inmueble. Sin tokens."
         />
         
         <div className="mt-12">

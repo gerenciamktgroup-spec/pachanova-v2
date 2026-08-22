@@ -41,23 +41,23 @@ export function HowItWorksSteps() {
   const steps = [
     {
       icon: <Hexagon className="w-6 h-6 text-pn-gold" />,
-      title: "1. El Activo San Bartolo",
-      desc: "Un terreno físico de 5 hectáreas (50,000 m²) sirve como base de la simulación. En el entorno real, este activo estaría protegido legalmente por el fideicomiso."
+      title: "1. El proyecto",
+      desc: "Landbanking, edificio en venta o edificio en renta. El administrador carga tesis, documentos e hitos."
     },
     {
       icon: <Database className="w-6 h-6 text-pn-blue" />,
-      title: "2. División en Tokens (PACHA)",
-      desc: "El activo se divide matemáticamente en 500,000 unidades simuladas llamadas PACHA. Cada token representa el valor equivalente a 0.1 m² del terreno base."
+      title: "2. El inversor cofinancia",
+      desc: "Aporta capital a una ronda abierta. Queda una participación (monto y %). No compra tokens."
     },
     {
       icon: <Shield className="w-6 h-6 text-pn-text" />,
-      title: "3. Simulación de Fideicomiso",
-      desc: "Antes de cualquier movimiento o 'emisión', el sistema requiere firmas institucionales simuladas (quórum 2/3), garantizando transparencia y respaldo legal auditado."
+      title: "3. Operación y trazabilidad",
+      desc: "El admin concilia aportes, declara hitos y deja auditoría de cada movimiento."
     },
     {
       icon: <Wallet className="w-6 h-6 text-pn-warning" />,
-      title: "4. Flujo Genesis (Demo)",
-      desc: "Los usuarios simulan la adquisición de estos tokens. El registro se guarda inmutablemente en nuestro Ledger Local, sin conectar aún pasarelas financieras reales."
+      title: "4. El cliente compra o arrienda",
+      desc: "Se publican lotes, unidades o rentas. El cliente reserva y sigue su contrato, aparte del cap table."
     }
   ];
 

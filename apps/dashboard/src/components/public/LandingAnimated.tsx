@@ -178,7 +178,7 @@ export function BentoGrid() {
                   <CheckCircle2 className="w-5 h-5 text-[#c5a46d]" /> No tocamos tu dinero en transferencias secundarias.
                 </li>
                 <li className="flex items-center gap-3 text-sm text-white/80">
-                  <CheckCircle2 className="w-5 h-5 text-[#c5a46d]" /> Registro inmutable de propiedad digital.
+                  <CheckCircle2 className="w-5 h-5 text-[#c5a46d]" /> Trazabilidad documental de cada aporte y operación.
                 </li>
                 <li className="flex items-center gap-3 text-sm text-white/80">
                   <CheckCircle2 className="w-5 h-5 text-[#c5a46d]" /> Rentas generadas por alquileres reales de mercado.
@@ -240,7 +240,7 @@ export function DarkFooter() {
             <strong className="text-white/60">ADVERTENCIA DE RIESGO Y DESCARGO DE RESPONSABILIDAD LEGAL:</strong> La participación en proyectos inmobiliarios a través de esquemas de co-inversión o fideicomisos conlleva riesgos significativos, incluyendo la posible pérdida del capital aportado, la falta de liquidez inmediata y la fluctuación de los rendimientos proyectados. Los rendimientos históricos o estimados mostrados en esta plataforma no garantizan resultados futuros.
           </p>
           <p>
-            PachaNova es una plataforma tecnológica que facilita la estructuración y seguimiento de aportes a fideicomisos inmobiliarios administrados por fiduciarias debidamente reguladas. La adquisición de tokens fiduciarios representa la titularidad sobre derechos de participación fiduciaria (derechos de cobro y beneficios económicos) derivados del patrimonio autónomo de cada fideicomiso, y no constituye un título de propiedad directa inscrito en registros públicos de la propiedad raíz, ni una oferta pública de valores.
+            PachaNova es una plataforma tecnológica para estructurar y seguir cofinanciamiento inmobiliario (landbanking, edificios en venta y en renta). El inversor aporta capital a un proyecto. El cliente compra o arrienda el inmueble. Eso no es propiedad inscrita por token ni una oferta pública de valores.
           </p>
           <p>
             Esta plataforma no realiza intermediación financiera, captación de ahorro público, ni asesoramiento financiero, legal o fiscal. Se recomienda a los participantes realizar su propio análisis de diligencia y consultar con asesores profesionales independientes antes de realizar cualquier aporte.
