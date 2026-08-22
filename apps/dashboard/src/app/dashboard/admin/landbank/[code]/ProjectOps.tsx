@@ -22,6 +22,8 @@ type Bundle = {
   }>;
   listings: Array<{ id: string; title: string; kind: string; price: string; status: string; unitCode: string | null }>;
   capital: Array<{ id: string; amount: string; status: string; kind: string; notes: string | null }>;
+  orders: Array<{ order: { id: string; status: string }; listing: { title: string } }>;
+  payments: Array<{ id: string; amount: string; status: string; orderId: string }>;
 };
 
 export default function ProjectOps({ code }: { code: string }) {
@@ -200,6 +202,23 @@ export default function ProjectOps({ code }: { code: string }) {
           <div key={l.id} className="flex justify-between text-sm text-white/70">
             <span>{l.title} · {l.kind} · {l.unitCode || "—"}</span>
             <span>${Number(l.price).toLocaleString()} · {l.status}</span>
+          </div>
+        ))}
+      </section>
+
+      <section className="rounded-2xl border border-white/10 p-5 space-y-3">
+        <h3 className="text-sm uppercase tracking-widest text-[#c5a46d]">Reservas y pagos de clientes</h3>
+        {(data.orders || []).map((row) => (
+          <p key={row.order.id} className="text-sm text-white/70">{row.listing.title} · {row.order.status}</p>
+        ))}
+        {(data.payments || []).map((pay) => (
+          <div key={pay.id} className="flex justify-between text-sm">
+            <span>${Number(pay.amount).toLocaleString()} · {pay.status}</span>
+            {pay.status === "pending" && (
+              <button className="text-xs underline text-[#c5a46d]" onClick={() => fetch("/api/client/payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "reconcile", paymentId: pay.id }) }).then((r) => r.json()).then(() => load()).catch((err) => setError(String(err)))}>
+                Conciliar pago
+              </button>
+            )}
           </div>
         ))}
       </section>

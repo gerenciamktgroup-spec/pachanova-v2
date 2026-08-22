@@ -93,6 +93,9 @@ export async function POST(
       if (!investor || (investor.role !== "investor" && !isAdmin(session?.role))) {
         return NextResponse.json({ error: "Inversor no encontrado" }, { status: 404 });
       }
+      if (investor.kycStatus !== "approved" && !isAdmin(session?.role)) {
+        return NextResponse.json({ error: "KYC aprobado requerido para aportar" }, { status: 403 });
+      }
 
       const existing = await db
         .select()

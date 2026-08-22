@@ -1,5 +1,5 @@
 import { db, core } from "@/server/db";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export async function loadProjectByCode(code: string) {
   const [project] = await db
@@ -14,7 +14,7 @@ export async function loadProjectBundle(code: string) {
   const project = await loadProjectByCode(code);
   if (!project) return null;
 
-  const [documents, milestones, listings, capital, participationRows] = await Promise.all([
+  const [documents, milestones, listings, capital, participationRows, orderRows] = await Promise.all([
     db.select().from(core.projectDocuments).where(eq(core.projectDocuments.projectId, project.id)),
     db.select().from(core.projectMilestones).where(eq(core.projectMilestones.projectId, project.id)),
     db.select().from(core.listings).where(eq(core.listings.projectId, project.id)),
@@ -31,7 +31,29 @@ export async function loadProjectBundle(code: string) {
       .from(core.participations)
       .innerJoin(core.profiles, eq(core.participations.investorId, core.profiles.id))
       .where(eq(core.participations.projectId, project.id)),
+    db
+      .select({
+        order: core.clientOrders,
+        listing: core.listings,
+      })
+      .from(core.clientOrders)
+      .innerJoin(core.listings, eq(core.clientOrders.listingId, core.listings.id))
+      .where(eq(core.listings.projectId, project.id)),
   ]);
 
-  return { project, documents, milestones, listings, capital, participations: participationRows };
+  const orderIds = orderRows.map((r) => r.order.id);
+  const paymentsForProject = orderIds.length
+    ? await db.select().from(core.clientPayments).where(inArray(core.clientPayments.orderId, orderIds))
+    : [];
+
+  return {
+    project,
+    documents,
+    milestones,
+    listings,
+    capital,
+    participations: participationRows,
+    orders: orderRows,
+    payments: paymentsForProject,
+  };
 }

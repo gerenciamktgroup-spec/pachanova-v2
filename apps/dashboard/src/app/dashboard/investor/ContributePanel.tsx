@@ -63,7 +63,9 @@ export default function ContributePanel() {
         >
           <div>
             <p className="text-[10px] uppercase tracking-widest text-[#c5a46d]">{p.code} · {p.type}</p>
-            <h3 className="text-lg">{p.name}</h3>
+            <h3 className="text-lg">
+              <a href={`/dashboard/investor/projects/${p.code}`} className="hover:underline">{p.name}</a>
+            </h3>
             <p className="text-sm text-white/50">{p.location}</p>
             <p className="text-xs text-white/40 mt-1">
               ${Number(p.raisedCapital).toLocaleString()} / ${Number(p.targetCapital).toLocaleString()}

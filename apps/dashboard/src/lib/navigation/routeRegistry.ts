@@ -193,6 +193,16 @@ export const ROUTE_REGISTRY: AppRoute[] = [
     description: "Comprador o arrendatario del inmueble.",
   },
   {
+    id: "client-kyc",
+    label: "KYC",
+    path: "/dashboard/client/kyc",
+    section: "client",
+    role: "client",
+    icon: "file-signature",
+    status: "active",
+    description: "Identidad del comprador o arrendatario.",
+  },
+  {
     id: "client-listings",
     label: "Ofertas",
     path: "/dashboard/client/ofertas",

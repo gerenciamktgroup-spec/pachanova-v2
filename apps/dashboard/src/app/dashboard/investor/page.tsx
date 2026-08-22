@@ -78,7 +78,9 @@ export default async function InvestorDashboardPage() {
         {participations.map((p) => (
           <div key={p.projectCode} className="rounded-2xl border border-white/10 p-6 text-white">
             <p className="text-[10px] uppercase tracking-widest text-[#c5a46d]">{p.projectCode} · {p.projectType}</p>
-            <h2 className="text-xl mt-1">{p.projectName}</h2>
+            <h2 className="text-xl mt-1">
+              <Link href={`/dashboard/investor/projects/${p.projectCode}`} className="hover:underline">{p.projectName}</Link>
+            </h2>
             <p className="text-sm text-white/50">{p.location}</p>
             <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
               <div>

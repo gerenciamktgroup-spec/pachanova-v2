@@ -2,6 +2,7 @@ import { RouteBreadcrumbs } from "@/components/mission";
 import { db, core } from "@/server/db";
 import { eq, or } from "drizzle-orm";
 import ReserveButton from "./ReserveButton";
+import PayButton from "./PayButton";
 import { getSessionUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +69,7 @@ export default async function ClientHomePage() {
         <p className="text-white/60 max-w-2xl leading-relaxed">
           Acá ves lotes, unidades o alquileres. No es el panel del inversor.
         </p>
+        <a href="/dashboard/client/kyc" className="inline-block mt-4 text-sm underline text-white/60">Completar KYC</a>
       </div>
 
       {error && <p className="text-sm text-amber-200">{error}</p>}
@@ -94,7 +96,10 @@ export default async function ClientHomePage() {
           <h2 className="text-sm uppercase tracking-widest text-[#c5a46d] mb-3">Tus reservas</h2>
           <div className="space-y-2">
             {orders.map((o) => (
-              <p key={o.id} className="text-sm text-white/70">{o.title} · {o.status}</p>
+              <div key={o.id} className="border border-white/10 rounded-lg px-4 py-3">
+                <p className="text-sm text-white/70">{o.title} · {o.status}</p>
+                <PayButton orderId={o.id} />
+              </div>
             ))}
           </div>
         </section>
