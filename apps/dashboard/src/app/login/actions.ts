@@ -21,6 +21,8 @@ export async function login(formData: FormData) {
 
   if (role === 'admin' || role === 'operator') {
     redirect('/dashboard/admin')
+  } else if (role === 'client') {
+    redirect('/dashboard/client')
   } else if (!role || role === 'investor') {
     redirect('/dashboard/investor')
   } else {

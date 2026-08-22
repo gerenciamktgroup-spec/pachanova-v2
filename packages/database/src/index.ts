@@ -2,8 +2,10 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { createClient } from '@supabase/supabase-js'
 import * as schema from './schema/index'
+import * as core from './schema/core'
 
 export * as schema from './schema/index'
+export * as core from './schema/core'
 export * from './schema/index'
 export type DrizzleDB = ReturnType<typeof drizzle<typeof schema>>
 
@@ -32,6 +34,6 @@ export function getDb(): DrizzleDB {
     max: 1, // Crucial for serverless environments to avoid connection exhaustion (504 errors)
     ssl: useSsl ? { rejectUnauthorized: false } : undefined
   })
-  _db = drizzle(client, { schema })
+  _db = drizzle(client, { schema: { ...schema, ...core } })
   return _db
 }

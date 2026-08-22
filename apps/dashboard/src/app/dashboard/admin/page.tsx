@@ -166,11 +166,11 @@ async function AdminDashboardContent() {
   let pncs: any[] = [];
   try {
     const rawProps = await db.execute(sql`
-      SELECT id, name, location, property_type as "propertyType", status, 
-             total_valuation_usd as "totalValuationUsd", token_price_usd as "tokenPriceUsd", 
-             total_tokens as "totalTokens", available_tokens as "availableTokens", 
-             annual_yield_expected as "annualYieldExpected", metadata 
-      FROM public.properties 
+      SELECT id, name, location, type as "propertyType", status,
+             target_capital as "totalValuationUsd", raised_capital as "tokenPriceUsd",
+             code as "totalTokens", round_status as "availableTokens",
+             thesis as "annualYieldExpected", metadata
+      FROM public.projects
       LIMIT 4
     `);
     pncs = rawProps as any[];
@@ -186,9 +186,9 @@ async function AdminDashboardContent() {
           { label: "Consola Admin" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🏦 LANDBANKING HUB" href="/dashboard/admin/landbank" variant="primary" />
-          <SafeActionButton label="Aprobaciones (Maker/Checker)" href="/dashboard/admin/approvals" variant="ghost" />
-          <SafeActionButton label="Auditoría Ledger" href="/dashboard/admin/audit" variant="ghost" />
+          <SafeActionButton label="Proyectos" href="/dashboard/admin/landbank" variant="primary" />
+          <SafeActionButton label="Aprobaciones" href="/dashboard/admin/approvals" variant="ghost" />
+          <SafeActionButton label="Trazabilidad" href="/dashboard/admin/audit" variant="ghost" />
         </div>
       </div>
 

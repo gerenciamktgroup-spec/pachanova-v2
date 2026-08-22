@@ -1,63 +1,75 @@
 import { RouteBreadcrumbs } from "@/components/mission";
+import { db, core } from "@/server/db";
+import { eq, or } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientHomePage() {
+  let listings: Array<{
+    id: string;
+    title: string;
+    kind: string;
+    price: string;
+    currency: string;
+    status: string;
+    projectName: string;
+    location: string;
+  }> = [];
+  let error: string | null = null;
+
+  try {
+    const rows = await db
+      .select({
+        listing: core.listings,
+        project: core.projects,
+      })
+      .from(core.listings)
+      .innerJoin(core.projects, eq(core.listings.projectId, core.projects.id))
+      .where(or(eq(core.listings.status, "published"), eq(core.listings.status, "reserved")));
+
+    listings = rows.map((r) => ({
+      id: r.listing.id,
+      title: r.listing.title,
+      kind: r.listing.kind,
+      price: r.listing.price,
+      currency: r.listing.currency,
+      status: r.listing.status,
+      projectName: r.project.name,
+      location: r.project.location,
+    }));
+  } catch (e) {
+    error = e instanceof Error ? e.message : "No se pudieron cargar ofertas";
+  }
 
   return (
     <div className="space-y-8 pb-16">
       <RouteBreadcrumbs items={[{ label: "Dashboard" }, { label: "Cliente" }]} />
-
       <div className="rounded-3xl border border-white/10 bg-[#0a111f] p-8 text-white">
         <p className="text-[10px] uppercase tracking-[0.25em] text-[#c5a46d] mb-3">
           Rol cliente · comprador o arrendatario
         </p>
-        <h1 className="text-3xl font-light tracking-tight mb-3">
-          Tu operación inmobiliaria
-        </h1>
+        <h1 className="text-3xl font-light tracking-tight mb-3">Tu operación inmobiliaria</h1>
         <p className="text-white/60 max-w-2xl leading-relaxed">
-          Este panel es para quien compra un lote o una unidad, o arrienda un inmueble
-          del proyecto. No es el panel del inversor. El inversor cofinancia; vos
-          reservás, contratás y pagás el producto final.
+          Acá ves lotes, unidades o alquileres. No es el panel del inversor.
         </p>
       </div>
 
+      {error && <p className="text-sm text-amber-200">{error}</p>}
+
       <div className="grid gap-4 md:grid-cols-2">
-        {[
-          {
-            title: "Ofertas",
-            body: "Lotes de landbanking, departamentos en venta y unidades en alquiler publicados por el administrador.",
-            phase: "Fase 5",
-          },
-          {
-            title: "Reservas",
-            body: "Separación de una unidad o lote, con plazo y estado.",
-            phase: "Fase 5",
-          },
-          {
-            title: "Contratos",
-            body: "Minuta, compraventa o arrendamiento de tu operación. El cap table de inversores no se muestra aquí.",
-            phase: "Fase 5",
-          },
-          {
-            title: "Pagos y entrega",
-            body: "Cuotas, iniciales, renta y estado de escrituración o entrega.",
-            phase: "Fase 5",
-          },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-white"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-medium">{item.title}</h2>
-              <span className="text-[10px] uppercase tracking-wider text-white/40 border border-white/10 rounded-full px-2 py-0.5">
-                {item.phase}
-              </span>
-            </div>
-            <p className="text-sm text-white/55 leading-relaxed">{item.body}</p>
+        {listings.map((item) => (
+          <div key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-white">
+            <p className="text-[10px] uppercase tracking-widest text-[#c5a46d]">{item.kind} · {item.status}</p>
+            <h2 className="text-lg mt-1">{item.title}</h2>
+            <p className="text-sm text-white/50">{item.projectName} · {item.location}</p>
+            <p className="mt-3 text-white">
+              {item.currency} {Number(item.price).toLocaleString()}
+            </p>
           </div>
         ))}
+        {listings.length === 0 && !error && (
+          <p className="text-white/45 text-sm">No hay ofertas publicadas todavía.</p>
+        )}
       </div>
     </div>
   );
