@@ -1,19 +1,21 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:15
-    container_name: pachanova_demo_db
+    image: postgres:16
+    container_name: pachanova_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pachanova_demo
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: pachanova_dev
+      POSTGRES_DB: pachanova
     ports:
       - "5433:5432"
     volumes:
-      - pachanova_db_data:/var/lib/postgresql/data
+      - pachanova_cofinanciamiento_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pachanova"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
     restart: unless-stopped
 
 volumes:
-  pachanova_db_data:
+  pachanova_cofinanciamiento_data:

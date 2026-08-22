@@ -27,7 +27,7 @@ export default async function LoginPage({
             </h1>
           </Link>
           <p className="text-sm text-pn-text-muted mt-2 tracking-widest uppercase">
-            Plataforma Institucional RWA
+            Cofinanciamiento inmobiliario
           </p>
         </div>
 

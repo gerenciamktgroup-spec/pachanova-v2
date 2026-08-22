@@ -166,11 +166,11 @@ async function AdminDashboardContent() {
   let pncs: any[] = [];
   try {
     const rawProps = await db.execute(sql`
-      SELECT id, name, location, property_type as "propertyType", status, 
-             total_valuation_usd as "totalValuationUsd", token_price_usd as "tokenPriceUsd", 
-             total_tokens as "totalTokens", available_tokens as "availableTokens", 
-             annual_yield_expected as "annualYieldExpected", metadata 
-      FROM public.properties 
+      SELECT id, name, location, type as "propertyType", status,
+             target_capital as "totalValuationUsd", raised_capital as "tokenPriceUsd",
+             code as "totalTokens", round_status as "availableTokens",
+             thesis as "annualYieldExpected", metadata
+      FROM public.projects
       LIMIT 4
     `);
     pncs = rawProps as any[];
@@ -186,15 +186,15 @@ async function AdminDashboardContent() {
           { label: "Consola Admin" }
         ]} />
         <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🏦 LANDBANKING HUB" href="/dashboard/admin/landbank" variant="primary" />
-          <SafeActionButton label="Aprobaciones (Maker/Checker)" href="/dashboard/admin/approvals" variant="ghost" />
-          <SafeActionButton label="Auditoría Ledger" href="/dashboard/admin/audit" variant="ghost" />
+          <SafeActionButton label="Proyectos" href="/dashboard/admin/landbank" variant="primary" />
+          <SafeActionButton label="Aprobaciones" href="/dashboard/admin/approvals" variant="ghost" />
+          <SafeActionButton label="Trazabilidad" href="/dashboard/admin/audit" variant="ghost" />
         </div>
       </div>
 
       {/* Full Project Banner - Landbanking Hub principal */}
       <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
-        PACHA NOVA LANDBANKING HUB — Panel Administrativo y Orquestador de Operaciones
+        PACHANOVA — Administración de proyectos de cofinanciamiento
       </div>
       
       {/* HologramPncCard in main admin hero */}
@@ -205,7 +205,7 @@ async function AdminDashboardContent() {
           {pncs.map((pnc: any, i: number) => (
             <div key={i}>
               <HologramPncCard pnc={pnc as any} compact />
-              <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
+              <p className="mt-1 text-[10px] text-white/35 text-center">P2P en cuarentena</p>
             </div>
           ))}
         </div>

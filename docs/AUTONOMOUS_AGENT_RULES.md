@@ -51,3 +51,16 @@ Format: `product47(scope): short description`
 - Target branch for build fixes: `product47-build-stabilization`
 - Target branch for UX/copy fixes: `product47-ui-polish`
 - Never push directly to `main`. Always create a PR.
+
+---
+
+## 5. Canon lock (2026-08-22)
+
+Source of truth: `docs/PRODUCT_CANON.md`.
+
+Until Phase 4 of that canon is accepted in product:
+
+- Do **not** create or resume 15m / 30m / 60m schedulers that add yield, token, P2P, DeFi, governance, or on-chain features.
+- Do **not** expand Solidity, staking, borrow, P2P matching, or “verificación blockchain” as product surface.
+- New work follows the phase table in the canon. No improvisation.
+- Working branch pattern remains `product47-*`. Current reconstruction branch: `product47-cofinanciamiento`.

@@ -4,6 +4,7 @@ node_modules/
 # env files
 .env
 .env.local
+apps/studio/.env.local
 .env.demo.local
 apps/web/.env.local
 apps/dashboard/.env.local

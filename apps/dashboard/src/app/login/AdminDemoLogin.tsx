@@ -11,7 +11,7 @@ export function AdminDemoLogin() {
   // Eliminamos la restricción temporalmente para permitir Demo en Vercel de manera directa
   // if (process.env.NEXT_PUBLIC_IS_DEMO !== "true") return null;
 
-  const handleLogin = async (persona: "carlos" | "holder") => {
+  const handleLogin = async (persona: "admin" | "investor" | "client") => {
     setLoading(true);
     setActivePersona(persona);
     try {
@@ -44,7 +44,7 @@ export function AdminDemoLogin() {
       
       {/* Button for Admin / Operador */}
       <button
-        onClick={() => handleLogin("carlos")}
+        onClick={() => handleLogin("admin")}
         disabled={loading}
         className="w-full p-3 rounded-lg bg-pn-surface/50 border border-pn-border
                    hover:border-pn-gold/60 hover:bg-pn-surface-strong/60 text-sm text-pn-text text-left
@@ -58,14 +58,14 @@ export function AdminDemoLogin() {
             </span>
           </div>
           <span className="text-xs text-pn-gold font-medium">
-            {loading && activePersona === "carlos" ? "Iniciando..." : "Acceder →"}
+            {loading && activePersona === "admin" ? "Iniciando..." : "Acceder →"}
           </span>
         </div>
       </button>
 
       {/* Button for Investor / Holder */}
       <button
-        onClick={() => handleLogin("holder")}
+        onClick={() => handleLogin("investor")}
         disabled={loading}
         className="w-full p-3 rounded-lg bg-pn-surface/50 border border-pn-border
                    hover:border-pn-gold/60 hover:bg-pn-surface-strong/60 text-sm text-pn-text text-left
@@ -75,17 +75,37 @@ export function AdminDemoLogin() {
           <div>
             <span className="font-medium text-pn-text">Demo Holder</span>
             <span className="text-[10px] bg-pn-blue/10 text-pn-blue px-2 py-0.5 rounded border border-pn-blue/20 ml-2 inline-block">
-              Inversor (LTV & Préstamos)
+              Inversor
             </span>
           </div>
           <span className="text-xs text-pn-gold font-medium">
-            {loading && activePersona === "holder" ? "Iniciando..." : "Acceder →"}
+            {loading && activePersona === "investor" ? "Iniciando..." : "Acceder →"}
+          </span>
+        </div>
+      </button>
+
+      <button
+        onClick={() => handleLogin("client")}
+        disabled={loading}
+        className="w-full p-3 rounded-lg bg-pn-surface/50 border border-pn-border
+                   hover:border-pn-gold/60 hover:bg-pn-surface-strong/60 text-sm text-pn-text text-left
+                   transition-all duration-200 disabled:opacity-50 cursor-pointer"
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="font-medium text-pn-text">Cliente Demo</span>
+            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 ml-2 inline-block">
+              Comprador / arrendatario
+            </span>
+          </div>
+          <span className="text-xs text-pn-gold font-medium">
+            {loading && activePersona === "client" ? "Iniciando..." : "Acceder →"}
           </span>
         </div>
       </button>
 
       <p className="mt-4 text-[10px] text-pn-text-muted text-center italic">
-        Entorno simulado local · Conexión de datos offline activa
+        Demo local contra la base nueva de cofinanciamiento
       </p>
     </div>
   );

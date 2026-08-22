@@ -1,55 +1,71 @@
-# PachaNova V2.0 — Product Scope & Router Mapping
+# PachaNova — Alcance de producto y rutas
 
-This document maps all routes within the Next.js `apps/dashboard` application, classifying them as part of the MVP Scope or Out of Scope (Quarantined).
+Canon: `docs/PRODUCT_CANON.md`. Este archivo solo mapea rutas. Si hay conflicto, gana el canon.
 
-## 1. Routing Matrix
+Tokenización, RWA on-chain, P2P de fracciones, staking, DeFi y gobernanza DAO están **en cuarentena**. El código se conserva; la UI no los ofrece.
 
-| Path | Type | Role | Status | Action Required |
-| --- | --- | --- | --- | --- |
-| `/` | Public | Visitor landing page | **ACTIVE** | Keep & Polish Copy |
-| `/login` | Public | Authentication gate | **ACTIVE** | Keep & Verify |
-| `/auth/register` | Public | Authentication gate | **ACTIVE** | Keep & Verify |
-| `/como-funciona` | Public | Educational content | **ACTIVE** | Keep & Polish |
-| `/preguntas-frecuentes`| Public | Help/FAQ | **ACTIVE** | Keep & Polish |
-| `/unauthorized` | Public | Error page | **ACTIVE** | Keep |
-| `/dashboard/investor` | Protected | Investor home | **ACTIVE** | Keep & Verify DB queries |
-| `/dashboard/investor/kyc` | Protected | KYC Onboarding | **ACTIVE** | Keep & Verify |
-| `/dashboard/investor/learn` | Protected | Educational / Trust details | **ACTIVE** | Keep |
-| `/dashboard/investor/settings`| Protected | Profile & Settings | **ACTIVE** | Keep |
-| `/dashboard/investor/wallet` | Protected | Investor Wallet view | **ACTIVE** | Keep |
-| `/dashboard/investor/borrow` | Protected | Credits/Borrowing | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/investor/governance`| Protected| DAO Governance / Voting | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/investor/marketplace`| Protected| P2P Marketplace | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/investor/staking` | Protected | Staking / Yield | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/admin` | Protected | Admin home | **ACTIVE** | Keep |
-| `/dashboard/admin/kyc` | Protected | KYC Approval Panel | **ACTIVE** | Keep |
-| `/dashboard/admin/landbank` | Protected | Asset & Trust Management | **ACTIVE** | Keep |
-| `/dashboard/admin/approvals` | Protected | Fideicomiso / Audit validations | **ACTIVE** | Keep |
-| `/dashboard/admin/audit` | Protected | Audit log viewer | **ACTIVE** | Keep |
-| `/dashboard/admin/governance` | Protected | Admin governance manager | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/admin/treasury` | Protected | Admin treasury management | **QUARANTINED** | Redirect to "Coming Soon" |
-| `/dashboard/fideicomiso` | Protected | Fiduciary signoff & audit | **ACTIVE** | Keep |
+## 1. Matriz de rutas
 
----
+| Path | Rol | Estado | Nota |
+| --- | --- | --- | --- |
+| `/` | Visitante | **ACTIVO** | Landing institucional |
+| `/login` | Público | **ACTIVO** | |
+| `/auth/register` | Público | **ACTIVO** | |
+| `/como-funciona` | Público | **ACTIVO** | Cofinanciamiento, no token |
+| `/preguntas-frecuentes` | Público | **ACTIVO** | |
+| `/unauthorized` | Público | **ACTIVO** | |
+| `/dashboard/investor` | Inversor | **ACTIVO** | Portafolio de participaciones |
+| `/dashboard/investor/kyc` | Inversor | **ACTIVO** | |
+| `/dashboard/investor/learn` | Inversor | **ACTIVO** | Educativo de cofinanciamiento |
+| `/dashboard/investor/settings` | Inversor | **ACTIVO** | |
+| `/dashboard/investor/wallet` | Inversor | **ACTIVO** | Capital / aportes (no wallet EVM) |
+| `/dashboard/investor/borrow` | Inversor | **CUARENTENA** | DeFi |
+| `/dashboard/investor/governance` | Inversor | **CUARENTENA** | DAO |
+| `/dashboard/investor/marketplace` | Inversor | **CUARENTENA** | P2P fracciones |
+| `/dashboard/investor/staking` | Inversor | **CUARENTENA** | |
+| `/dashboard/admin` | Admin | **ACTIVO** | |
+| `/dashboard/admin/kyc` | Admin | **ACTIVO** | |
+| `/dashboard/admin/landbank` | Admin | **ACTIVO** | Hub de proyectos (landbanking + otros giros) |
+| `/dashboard/admin/approvals` | Admin | **ACTIVO** | |
+| `/dashboard/admin/audit` | Admin | **ACTIVO** | Trazabilidad |
+| `/dashboard/admin/governance` | Admin | **CUARENTENA** | |
+| `/dashboard/admin/treasury` | Admin | **CUARENTENA** | Tesorería token |
+| `/dashboard/fideicomiso` | Interno | **ACTIVO** | Rol fiduciario/comité (interno, no producto público) |
+| `/dashboard/client` | Cliente | **ACTIVO (shell)** | Comprador / arrendatario |
+| `/dashboard/client/ofertas` | Cliente | **PLANIFICADO** | Fase 5 |
+| `/dashboard/client/reservas` | Cliente | **PLANIFICADO** | Fase 5 |
+| `/dashboard/client/contratos` | Cliente | **PLANIFICADO** | Fase 5 |
+| `/dashboard/client/pagos` | Cliente | **PLANIFICADO** | Fase 5 |
 
-## 2. API Routes Mapping
+## 2. APIs
 
-The following API routes in `apps/dashboard/src/app/api` are mapped below:
+### Activas (se mantienen)
 
-### Active MVP APIs:
-- `/api/admin/kyc`: Onboarding approvals.
-- `/api/admin/users`: Manage user profiles.
-- `/api/landbank`: Manage assets & trust assets.
-- `/api/fideicomiso/status` & `/api/fideicomiso/audit`: Fiduciary document validation.
-- `/api/auth`: Next-auth or Supabase session bridge.
+- `/api/admin/kyc`
+- `/api/admin/users`
+- `/api/landbank`
+- `/api/fideicomiso/status` y `/api/fideicomiso/audit`
+- `/api/auth`
+- `/api/mercadopago/*` (sandbox, para aportes/cuotas en Fase 7)
 
-### Quarantined APIs (Legacy/Web3):
-- `/api/admin/compliance`: Web3 mock check.
-- `/api/admin/distribute/batch`: Legacy smart contract distribution execution.
-- `/api/admin/fleet-status`: Legacy system parameters.
-- `/api/admin/treasury/liquidate`: Web3 swap mock.
-- `/api/borrow`: Loan simulation/storage.
-- `/api/governance/*`: Votes and proposals.
-- `/api/p2p/*`: Order matching.
-- `/api/treasury/*`: Custom liquidity.
-- `/api/yield/*`: Yield injections and claims.
+### Cuarentena (no se exponen en UI; no se expanden)
+
+- `/api/admin/compliance`
+- `/api/admin/distribute/batch`
+- `/api/admin/treasury/liquidate`
+- `/api/borrow`
+- `/api/governance/*`
+- `/api/p2p/*`
+- `/api/treasury/*`
+- `/api/yield/*`
+- `/api/token-balance`
+- `/api/oracle/valuation`
+- `/api/perpetual`
+
+## 3. Roles de producto
+
+- `admin` — opera proyectos y la plataforma
+- `investor` — cofinancia
+- `client` — compra o arrienda el inmueble
+
+Roles internos de código legado: `operator`, `fiduciario`, `comite`. No se promocionan como producto público.

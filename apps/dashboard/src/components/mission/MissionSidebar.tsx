@@ -9,7 +9,7 @@ import {
   Activity, List, Users, FileSearch, FileSignature, 
   Terminal, Puzzle, Palette, History, AlertTriangle,
   FlaskConical, Scale, ShoppingCart, PenTool, Landmark,
-  Banknote, LucideIcon 
+  Banknote, Home, Lock, FileText, LucideIcon 
 } from "lucide-react";
 import { useMobileSidebar } from "./MobileSidebarContext";
 import { useEffect, useState } from "react";
@@ -37,6 +37,9 @@ const ICON_MAP: Record<string, LucideIcon> = {
   "pen-tool": PenTool,
   "landmark": Landmark,
   "banknote": Banknote,
+  "home": Home,
+  "lock": Lock,
+  "file-text": FileText,
 };
 
 export function MissionSidebar() {
@@ -76,6 +79,7 @@ export function MissionSidebar() {
       const path = window.location.pathname;
       if (path.includes('/admin')) setRole('admin');
       else if (path.includes('/investor')) setRole('investor');
+      else if (path.includes('/client')) setRole('client');
       else if (path.includes('/fideicomiso')) setRole('fiduciario');
       else setRole('public');
     }
@@ -85,8 +89,9 @@ export function MissionSidebar() {
   // Agrupar rutas por sección y filtrar por rol
   // Section label mapping
   const SECTION_LABELS: Record<string, string> = {
-    investor: "Mi Cuenta",
+    investor: "Inversor",
     experto: "Administración",
+    client: "Cliente",
   };
 
   // Strict role-based filtering: admin sees ONLY admin routes, investor sees ONLY investor routes
@@ -96,12 +101,16 @@ export function MissionSidebar() {
 
     let canSee = false;
 
-    if (role === "admin") {
-      // Admin sees only "experto" section (admin routes + fideicomiso)
+    if (route.status === "quarantined") {
+      canSee = false;
+    } else if (role === "admin" || role === "operator") {
       canSee = route.role === "admin" || route.role === "fiduciario";
     } else if (role === "investor") {
-      // Investor sees only "investor" section
       canSee = route.role === "investor";
+    } else if (role === "client") {
+      canSee = route.role === "client";
+    } else if (role === "fiduciario" || role === "comite") {
+      canSee = route.role === "fiduciario" || route.path.includes("fideicomiso") || route.path.includes("audit");
     }
 
     if (canSee) {

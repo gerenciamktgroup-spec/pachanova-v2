@@ -10,7 +10,7 @@ export type JourneyStep = {
 
 export type UserJourney = {
   id: string;
-  persona: "visitor" | "investor" | "admin" | "fiduciario" | "operator";
+  persona: "visitor" | "investor" | "client" | "admin" | "fiduciario" | "operator";
   title: string;
   description: string;
   startRoute: string;
@@ -67,11 +67,41 @@ export const visitorJourney: UserJourney = {
   ]
 };
 
+export const clientJourney: UserJourney = {
+  id: "client_journey",
+  persona: "client",
+  title: "Compra o arriendo",
+  description: "El cliente reserva, contrata y paga el inmueble. No cofinancia.",
+  startRoute: "/dashboard/client",
+  completionRoute: "/dashboard/client",
+  riskNote: "Panel en construcción (Fase 5). No es una oferta pública.",
+  steps: [
+    {
+      id: "c1",
+      label: "Mi operación",
+      route: "/dashboard/client",
+      purpose: "Entrar como comprador o arrendatario.",
+      expectedUserUnderstanding: "Este panel no es el del inversor.",
+      primaryAction: "Ver el home cliente",
+      status: "available"
+    },
+    {
+      id: "c2",
+      label: "Ofertas",
+      route: "/dashboard/client/ofertas",
+      purpose: "Elegir lote, unidad o renta.",
+      expectedUserUnderstanding: "Las ofertas las publica el admin.",
+      primaryAction: "Abrir ofertas",
+      status: "disabled"
+    }
+  ]
+};
+
 export const investorJourney: UserJourney = {
   id: "investor_journey",
   persona: "investor",
-  title: "Adquisición RWA",
-  description: "Simulación de compra y consulta de portafolio para el inversor.",
+  title: "Cofinanciamiento",
+  description: "El inversor aporta capital a un proyecto y sigue hitos y reportes.",
   startRoute: "/dashboard/investor",
   completionRoute: "/demo/integrations",
   riskNote: "Capital y saldos locales simulados. No se conecta a MercadoPago productivo.",

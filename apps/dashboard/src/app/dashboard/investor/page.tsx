@@ -1,297 +1,113 @@
-import { RouteBreadcrumbs, ErrorState, LoadingState } from "@/components/mission";
-import { SafeActionButton } from "@/components/mission/SafeActionButton";
-import { HologramPncCard } from "@/components/product/HologramPncCard";
-import {
-  InvestorPortfolioHero,
-  ProRataLandCardV2,
-  InvestorLedgerPanel,
-  InvestorKycStatusPanel,
-  InvestorWalletStatusPanel
-} from "@/components/product";
-import { InvestorDashboardView } from "@/types/product";
+import { RouteBreadcrumbs } from "@/components/mission";
+import { db, core } from "@/server/db";
+import { eq } from "drizzle-orm";
+import { getSessionUser } from "@/lib/auth/session";
+import Link from "next/link";
+import ContributePanel from "./ContributePanel";
 
-export const dynamic = 'force-dynamic';
-import { Suspense } from "react";
-import { PRODUCT_COPY } from "@/lib/copy/productCopy";
-import { NextStepCard } from "@/components/product/NextStepCard";
-import { JourneyProgressRail } from "@/components/product/JourneyProgressRail";
-import { investorJourney } from "@/lib/navigation/userJourneys";
-import { fetchMaestroYields, fetchMaestroYieldForecast } from "@pachanova/integrations";
-import { YieldActionButtons } from "./YieldActionClient";
+export const dynamic = "force-dynamic";
 
-import { createServerClient } from "@/utils/supabase/server";
+export default async function InvestorDashboardPage() {
+  const session = await getSessionUser();
+  const email = session?.email || "inversor@pachanova.local";
 
-async function fetchInvestorData(): Promise<any> {
-  let holdings: any[] = [{
-    pnc_codigo: 'PNC-PAR-001',
-    holdings_amount: 100,
-    effective_amount: 50000,
-    land_meta: { pncCode: 'PNC-PAR-001', hectares: 5 }
-  }];
+  let participations: Array<{
+    amount: string;
+    paid: string;
+    pct: string;
+    status: string;
+    projectName: string;
+    projectCode: string;
+    projectType: string;
+    location: string;
+  }> = [];
+  let error: string | null = null;
 
-  const portfolio = holdings.map((h: any) => ({
-    propertyId: h.pnc_codigo?.toLowerCase() || 'pnc-par-001',
-    propertyName: `Landbank Asset - ${h.pnc_codigo}`,
-    propertyType: "land",
-    location: "Perú",
-    imageUrl: null,
-    status: "trading",
-    availableTokens: String(h.holdings_amount || 0),
-    lockedTokens: "0",
-    availableUsd: String(h.effective_amount || 0),
-    lockedUsd: "0",
-    tokenPriceUsd: "500",
-    annualYieldExpected: "7.8",
-    lastUpdated: new Date().toISOString(),
-    metadata: {
-      pncCode: h.pnc_codigo,
-      hectares: 5,
-      net: h.net_yield || 0,
-      effectiveYield: h.effective_amount || 0,
+  try {
+    const [profile] = await db
+      .select()
+      .from(core.profiles)
+      .where(eq(core.profiles.email, email))
+      .limit(1);
+
+    if (profile) {
+      const rows = await db
+        .select({
+          participation: core.participations,
+          project: core.projects,
+        })
+        .from(core.participations)
+        .innerJoin(core.projects, eq(core.participations.projectId, core.projects.id))
+        .where(eq(core.participations.investorId, profile.id));
+
+      participations = rows.map((r) => ({
+        amount: r.participation.committedAmount,
+        paid: r.participation.paidAmount,
+        pct: r.participation.ownershipPct,
+        status: r.participation.status,
+        projectName: r.project.name,
+        projectCode: r.project.code,
+        projectType: r.project.type,
+        location: r.project.location,
+      }));
     }
-  }));
-
-  let realHologramPncs: any[] = [];
-  return {
-    investor: {
-      id: "real-investor",
-      fullName: "Inversor",
-      email: "investor@pachanova.local",
-      kycStatus: "approved",
-      isVerified: true,
-      portfolio,
-    },
-    recentTransactions: [],
-    realHologramPncs,
-    kycVerificationProvider: "SIMULATED",
-    paymentsReadiness: {
-      provider: "MERCADOPAGO",
-      status: "READY",
-      lastPing: new Date().toISOString(),
-      message: "Listo"
-    },
-    onchainSync: {
-      syncedAt: new Date().toISOString(),
-      status: "verified",
-    },
-  };
-}
-
-import { cookies } from "next/headers";
-import GamificationHUD from "@/components/dashboard/investor/GamificationHUD";
-async function InvestorDashboardContent() {
-  const view = await fetchInvestorData();
-
-  const maestroYield = await fetchMaestroYields(view?.investor?.email || 'investor@pachanova.local');
-  const maestroForecast = await fetchMaestroYieldForecast(view?.investor?.email || 'investor@pachanova.local');
-
-  if (!view) {
-    return <ErrorState title="Error" message="No se pudo cargar el panel del inversor." />;
-  }
-
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
-  let userXP = 0;
-  let userLevel = 1;
-
-  if (userId) {
-    try {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
-      if (isUuid) {
-        // Fallback genérico para V2.0 hasta migrar Gamification a SQL-First
-        userXP = 1500;
-        userLevel = 3;
-      }
-    } catch (e) {
-      console.error("Error setting up generic user XP:", e);
-    }
+  } catch (e) {
+    error = e instanceof Error ? e.message : "No se pudo leer participaciones";
   }
 
   return (
-    <div className="space-y-8 pb-24">
-      {/* ── Header: Breadcrumbs + Navigation ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-        <RouteBreadcrumbs items={[
-          { label: "Dashboard" },
-          { label: "Panel Inversor" }
-        ]} />
-        <div className="flex flex-wrap gap-2">
-          <SafeActionButton label="🌎 Marketplace P2P" href="/dashboard/investor/marketplace" variant="primary" />
-          <SafeActionButton label="💰 Préstamos DeFi" href="/dashboard/investor/borrow" variant="ghost" />
-          <SafeActionButton label="📚 Aprende" href="/dashboard/investor/learn" variant="ghost" />
-        </div>
+    <div className="space-y-8 pb-16">
+      <RouteBreadcrumbs items={[{ label: "Dashboard" }, { label: "Inversor" }]} />
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#c5a46d]">Rol inversor</p>
+        <h1 className="text-3xl font-light text-white mt-1">Tus participaciones</h1>
+        <p className="text-white/55 mt-2 max-w-2xl">
+          Cofinanciás proyectos. El comprador o arrendatario usa el panel Cliente.
+        </p>
       </div>
 
-      {/* ── Landbanking Hub Banner ── */}
-      <div className="text-xs uppercase tracking-[2px] text-[#c5a46d]/70 border-b border-[#c5a46d]/20 pb-1 mb-2">
-        PACHA NOVA LANDBANKING HUB — Plataforma de Inversión en Tierras Tokenizadas
-      </div>
+      {error && <p className="text-sm text-amber-200">{error}</p>}
 
-      <GamificationHUD xp={userXP} level={userLevel} />
+      <section>
+        <h2 className="text-sm uppercase tracking-widest text-[#c5a46d] mb-3">Rondas abiertas</h2>
+        <ContributePanel />
+      </section>
 
-      {/* ── Journey Progress ── */}
-      <JourneyProgressRail journey={investorJourney} currentStepId="i1" />
-
-      {/* ── Next Step Card ── */}
-      <NextStepCard
-        dataTestId="next-step-card-investor"
-        contextLabel="Landbanking Hub - Inversor"
-        title="Tu Portafolio Landbanking Completo"
-        explanation="Gestiona tu portafolio de inversiones en tierras tokenizadas. Consulta rendimientos, opera en el marketplace P2P y administra tus activos desde un solo lugar."
-        nextStep="Explora el Hub para ver tus propiedades, rendimientos acumulados y oportunidades de inversión."
-        primaryAction={{ label: "🏦 Hub Landbanking", href: "/dashboard/admin/landbank", intent: "navigate" }}
-        secondaryAction={{ label: "🌎 Marketplace P2P", href: "/dashboard/investor/marketplace", intent: "navigate" }}
-        status="GO"
-      />
-
-      {/* ── Optimizador de Rendimientos ── */}
-      <div className="p-4 border border-violet-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-[#8a8f9a] tracking-widest font-bold text-xs">OPTIMIZADOR DE RENDIMIENTOS</div>
-            <div className="text-violet-400 text-[10px]">Predicción y reinversión automática en los mejores activos</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-emerald-400 font-mono">
-          ✅ Motor de optimización activo — analizando oportunidades de reinversión para maximizar rendimientos.
-        </div>
-      </div>
-
-      {/* ── Auto-Orquestación (masiva post Fase 14) ── */}
-      <div className="p-4 border border-blue-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-blue-400 tracking-widest font-bold text-xs flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
-              AUTO-ORQUESTACIÓN (FASE 15)
+      <h2 className="text-sm uppercase tracking-widest text-[#c5a46d]">Tus participaciones</h2>
+      <div className="grid gap-4">
+        {participations.map((p) => (
+          <div key={p.projectCode} className="rounded-2xl border border-white/10 p-6 text-white">
+            <p className="text-[10px] uppercase tracking-widest text-[#c5a46d]">{p.projectCode} · {p.projectType}</p>
+            <h2 className="text-xl mt-1">
+              <Link href={`/dashboard/investor/projects/${p.projectCode}`} className="hover:underline">{p.projectName}</Link>
+            </h2>
+            <p className="text-sm text-white/50">{p.location}</p>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
+              <div>
+                <div className="text-white/40 text-xs">Comprometido</div>
+                <div>${Number(p.amount).toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-white/40 text-xs">Pagado</div>
+                <div>${Number(p.paid).toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-white/40 text-xs">% económico</div>
+                <div>{Number(p.pct).toLocaleString()}%</div>
+              </div>
             </div>
-            <div className="text-blue-200/70 text-[10px]">Sincronización masiva de portafolio y RWA Tokenization activa</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-blue-300 font-mono">
-          ✅ Ejecución de ciclo autónomo completada. El portafolio de RWA ha sido tokenizado completamente y orquestado en la blockchain.
-        </div>
-      </div>
-
-      {/* ── Verificación Blockchain ── */}
-      <div className="p-4 border border-cyan-900/50 rounded-xl bg-[#0a0b0f] text-sm col-span-full shadow-[0_0_15px_rgba(34,211,238,0.1)]">
-        <div className="flex items-center justify-between mb-2">
-          <div>
-            <div className="text-cyan-400 tracking-widest font-bold text-xs flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-              </span>
-              VERIFICACIÓN BLOCKCHAIN
-            </div>
-            <div className="text-cyan-200/70 text-[10px]">Verificación criptográfica de tus holdings en cadena</div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">ESTADO</div>
-            <div className="text-xs text-cyan-300 font-mono">✅ Verificado</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">PROPIEDAD ON-CHAIN</div>
-            <div className="text-xs text-cyan-300 font-mono">Sincronizado</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">NODO RPC</div>
-            <div className="text-[10px] text-cyan-300 font-mono truncate">Public Node — Activo</div>
-          </div>
-          <div className="bg-black/40 border border-cyan-900/50 p-2 rounded">
-            <div className="text-[9px] text-cyan-500/50">ÚLTIMA VERIFICACIÓN</div>
-            <div className="text-[10px] text-cyan-300 font-mono truncate">{new Date().toLocaleDateString('es-PE')}</div>
-          </div>
-        </div>
-        <div className="mt-2 text-[10px] text-cyan-500/50 font-mono">
-          Los holdings se verifican contra la blockchain pública. Esta verificación respalda el cálculo de dividendos y préstamos.
-        </div>
-      </div>
-
-      {/* ── Portfolio Hero ── */}
-      <InvestorPortfolioHero view={view} />
-
-      {/* ── Panel de Rendimientos (Maestro) ── */}
-      <div className="p-4 border border-[#b8a17a]/30 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="text-[#8a8f9a] tracking-widest text-xs font-bold mb-2">RENDIMIENTOS</div>
-        <div className="font-semibold text-emerald-400">
-          Total: ${maestroYield.rendimientosTotal.toLocaleString()}
-        </div>
-        {maestroYield.distribs.map((d: any, i: number) => (
-          <div key={i} className="text-xs text-[#b8a17a] mt-1">
-            {d.projectCode}: ${d.montoTotal.toLocaleString()} total • Tu participación {d.myPct}% = ${d.myShare.toLocaleString()}
+            <p className="mt-3 text-xs text-white/40">Estado: {p.status}</p>
           </div>
         ))}
-      </div>
-
-      {/* ── Predicción de Rendimiento (Maestro Forecast) ── */}
-      <div className="p-4 border border-violet-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="text-[#8a8f9a] tracking-widest text-xs font-bold mb-2">PREDICCIÓN DE RENDIMIENTO</div>
-        <div className="font-semibold text-violet-400">
-          Predicción próximo período: ${maestroForecast.predicted_next?.toLocaleString() || '—'}
-          {' '}(confianza: {(maestroForecast.confidence * 100).toFixed(0)}%)
-        </div>
-        <div className="text-xs text-[#b8a17a] mt-1">{maestroForecast.rationale}</div>
-      </div>
-
-      {/* ── Mis Inversiones (Hologram PNC Grid) ── */}
-      <div className="p-4 border border-emerald-900/40 rounded-xl bg-[#0a0b0f] text-sm col-span-full">
-        <div className="text-[#8a8f9a] tracking-widest text-xs font-bold mb-3">MIS INVERSIONES</div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {(view.realHologramPncs || []).map((pnc: any, i: number) => (
-            <div key={i} className="space-y-2">
-              <HologramPncCard pnc={pnc as any} compact />
-              <a
-                href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pnc.metadata?.pncCode || pnc.id)}`}
-                className="block w-full text-center px-3 py-1 text-xs border border-blue-700 rounded hover:bg-blue-900/20 text-blue-400"
-              >
-                Vender en Mercado Secundario
-              </a>
-            </div>
-          ))}
-        </div>
-        {(!view.realHologramPncs || view.realHologramPncs.length === 0) && (
-          <div className="text-xs text-[#5a5f6a] p-3 border border-dashed border-emerald-900/30 rounded">
-            No se encontraron inversiones activas. Explora el marketplace para adquirir propiedades tokenizadas.
-          </div>
+        {participations.length === 0 && !error && (
+          <p className="text-white/45 text-sm">Todavía no tenés participaciones en un proyecto.</p>
         )}
       </div>
 
-      {/* ── Acciones de Rendimiento (Client Component) ── */}
-      <YieldActionButtons
-        maestroYield={maestroYield}
-        maestroForecast={maestroForecast}
-        email={view.investor.email}
-        orqProposals={[]}
-        claimables={[]}
-        onActionComplete={() => { try { (window as any).location.reload(); } catch {} }}
-      />
-
-      {/* ── Bottom Grid: Land Card, Ledger, KYC, Wallet ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <ProRataLandCardV2 view={view} />
-          <InvestorLedgerPanel view={view} />
-        </div>
-
-        <div className="space-y-8">
-          <InvestorKycStatusPanel view={view} />
-          <InvestorWalletStatusPanel view={view} />
-        </div>
+      <div className="flex gap-3 text-sm">
+        <Link href="/dashboard/investor/kyc" className="underline text-white/70">KYC</Link>
+        <Link href="/dashboard/investor/learn" className="underline text-white/70">Cómo funciona</Link>
       </div>
     </div>
-  );
-}
-
-export default function InvestorDashboardPage() {
-  return (
-    <Suspense fallback={<LoadingState message="Cargando panel del inversor..." />}>
-      <InvestorDashboardContent />
-    </Suspense>
   );
 }

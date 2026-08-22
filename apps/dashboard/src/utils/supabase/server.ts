@@ -50,25 +50,20 @@ export async function createServerClient() {
     client.auth.signInWithPassword = async (credentials: any) => {
       const { email, password } = credentials;
       
-      if (email === 'carlos.mendoza@demo.pachanova.io' && password === 'Demo2026!') {
+      const demoUsers: Record<string, { id: string; role: string; full_name: string }> = {
+        'admin@pachanova.local': { id: '11111111-1111-1111-1111-111111111111', role: 'admin', full_name: 'Administrador' },
+        'inversor@pachanova.local': { id: '22222222-2222-2222-2222-222222222222', role: 'investor', full_name: 'Inversor Demo' },
+        'cliente@pachanova.local': { id: '33333333-3333-3333-3333-333333333333', role: 'client', full_name: 'Cliente Demo' },
+        'carlos.mendoza@demo.pachanova.io': { id: 'aaaa0000-0000-0000-0000-000000000000', role: 'admin', full_name: 'Carlos Mendoza' },
+        'investor@pachanova.local': { id: 'bbbb0000-0000-0000-0000-000000000000', role: 'investor', full_name: 'Demo Holder' },
+      };
+      const demo = demoUsers[email];
+      if (demo && (password === 'Demo2026!' || password === 'password123')) {
         const mockUser = {
-          id: 'aaaa0000-0000-0000-0000-000000000000',
-          email: 'carlos.mendoza@demo.pachanova.io',
-          app_metadata: { role: 'admin' },
-          user_metadata: { full_name: 'Carlos Mendoza', first_name: 'Carlos', last_name: 'Mendoza' },
-          aud: 'authenticated',
-          role: 'authenticated'
-        };
-        cookieStore.set('pachanova-mock-session', JSON.stringify(mockUser), { path: '/' });
-        return { data: { user: mockUser, session: { access_token: 'mock-token', user: mockUser } }, error: null };
-      }
-
-      if (email === 'investor@pachanova.local' && password === 'Demo2026!') {
-        const mockUser = {
-          id: 'bbbb0000-0000-0000-0000-000000000000',
-          email: 'investor@pachanova.local',
-          app_metadata: { role: 'investor' },
-          user_metadata: { full_name: 'Demo Holder', first_name: 'Demo', last_name: 'Holder' },
+          id: demo.id,
+          email,
+          app_metadata: { role: demo.role },
+          user_metadata: { full_name: demo.full_name },
           aud: 'authenticated',
           role: 'authenticated'
         };

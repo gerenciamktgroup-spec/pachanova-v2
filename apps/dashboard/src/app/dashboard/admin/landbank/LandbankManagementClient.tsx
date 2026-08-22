@@ -834,13 +834,7 @@ export default function LandbankManagementClient() {
                       finally { setActionLoading(null); }
                     }}
                   />
-                  {/* MACRO-FASE 141: Vender en Mercado Secundario P2P for landbank maestro holograms */}
-                  <a 
-                    href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(prop.metadata?.pncCode || prop.id || prop.name)}`} 
-                    className="block w-full text-center text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20"
-                  >
-                    Vender en Mercado Secundario (P2P)
-                  </a>
+
                 </div>
               );
             })}

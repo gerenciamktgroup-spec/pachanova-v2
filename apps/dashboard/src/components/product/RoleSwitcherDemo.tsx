@@ -23,6 +23,8 @@ function RoleSwitcherDemoInner() {
       setCurrentRole("operator");
     } else if (pathname.includes("/investor")) {
       setCurrentRole("investor");
+    } else if (pathname.includes("/client")) {
+      setCurrentRole("client");
     } else {
       setCurrentRole("visitor");
     }
@@ -31,9 +33,10 @@ function RoleSwitcherDemoInner() {
   const roles = [
     { id: "visitor", label: "Visitante", path: "/" },
     { id: "investor", label: "Inversor", path: "/dashboard/investor" },
+    { id: "client", label: "Cliente", path: "/dashboard/client" },
     { id: "admin", label: "Admin", path: "/dashboard/admin" },
-    { id: "fiduciario", label: "Fiduciario", path: "/dashboard/fideicomiso" },
-    { id: "operator", label: "Operador", path: "/dashboard/admin" }
+    { id: "fiduciario", label: "Fiduciario (interno)", path: "/dashboard/fideicomiso" },
+    { id: "operator", label: "Operador (interno)", path: "/dashboard/admin" }
   ];
 
   const handleSwitch = (path: string, id: string) => {

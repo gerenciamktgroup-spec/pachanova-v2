@@ -93,8 +93,6 @@ export function InvestorPortfolioHero({ view }: { view: InvestorDashboardView & 
               return (
                 <div key={i}>
                   <HologramPncCard pnc={pncForHolo as any} compact />
-                  {/* MACRO-FASE 141: Vender P2P from hero holograms */}
-                  <a href={`/dashboard/investor/marketplace?pnc=${encodeURIComponent(pncForHolo.metadata?.pncCode || pncForHolo.id)}`} className="mt-1 block text-xs px-2 py-0.5 border border-blue-600 text-blue-400 rounded hover:bg-blue-900/20 text-center">Vender en Mercado Secundario (P2P)</a>
                 </div>
               );
             })}

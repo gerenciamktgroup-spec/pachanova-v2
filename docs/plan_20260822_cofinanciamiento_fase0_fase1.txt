@@ -1,0 +1,35 @@
+PACHANOVA PLAN 2026-08-22
+product47-cofinanciamiento / Fase 0 + Fase 1
+Canon: docs/PRODUCT_CANON.md  (manda sobre este archivo si hay conflicto)
+
+DECISIONES CERRADAS
+- Copia canónica: Desktop/labotarorio lihue/pachanova
+- Cliente = comprador o arrendatario (no inversor)
+- Token / RWA on-chain / blockchain = después
+- Loops autónomos 15/30/60m PARADOS
+- Rama: product47-cofinanciamiento  (no push a main, no prod)
+
+FASE 0 (esta entrega)
+- Escribir PRODUCT_CANON.md
+- Congelar alcance en PRODUCT_SCOPE.md
+- Registrar lock de loops en AUTONOMOUS_AGENT_RULES.md
+- Confirmar scheduler_list vacío en esta sesión
+
+FASE 1 (esta entrega)
+- Cuarentena UI: P2P, borrow, staking, governance, treasury
+- Nav: admin / inversor / cliente
+- Shell /dashboard/client
+- Quitar CTAs token del home inversor y copy landbank
+- QuarantinedFeature compartido
+- PR contra product47-audit o main, NUNCA merge autónomo a main
+
+NO HACER EN ESTA ENTREGA
+- Migraciones destructivas
+- Schema nuevo de Participation/Listing (eso es Fase 2)
+- Borrar Solidity / DeFiBorrowClient / P2P clients
+- Deploy producción
+- Reactivar orquestadores de yield
+
+SIGUIENTE (Fase 2, requiere nueva aprobación de ejecución)
+- Dominio Project / Participation / Listing / ClientOrder / Audit
+- APIs sin hablar de tokens

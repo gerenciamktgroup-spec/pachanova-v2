@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/utils/supabase/server";
 
-type Role = "admin" | "operator" | "investor" | "fiduciario" | "comite" | string;
+type Role = "admin" | "operator" | "investor" | "client" | "fiduciario" | "comite" | string;
 
 export async function requireRole(
   allowedRoles: Role[],
