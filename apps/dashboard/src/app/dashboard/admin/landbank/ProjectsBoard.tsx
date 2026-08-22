@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 
 type Project = {
   id: string;
@@ -95,7 +96,11 @@ export default function ProjectsBoard() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-[#c5a46d]">{p.code}</p>
-                <h3 className="text-lg text-white">{p.name}</h3>
+                <h3 className="text-lg text-white">
+                  <Link href={`/dashboard/admin/landbank/${p.code}`} className="hover:underline">
+                    {p.name}
+                  </Link>
+                </h3>
                 <p className="text-sm text-white/50">{p.location || "Sin ubicación"}</p>
               </div>
               <div className="text-right text-xs text-white/60">

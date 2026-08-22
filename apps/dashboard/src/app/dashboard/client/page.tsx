@@ -1,6 +1,8 @@
 import { RouteBreadcrumbs } from "@/components/mission";
 import { db, core } from "@/server/db";
 import { eq, or } from "drizzle-orm";
+import ReserveButton from "./ReserveButton";
+import { getSessionUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +18,7 @@ export default async function ClientHomePage() {
     location: string;
   }> = [];
   let error: string | null = null;
+  let orders: Array<{ id: string; status: string; title: string }> = [];
 
   try {
     const rows = await db
@@ -26,6 +29,19 @@ export default async function ClientHomePage() {
       .from(core.listings)
       .innerJoin(core.projects, eq(core.listings.projectId, core.projects.id))
       .where(or(eq(core.listings.status, "published"), eq(core.listings.status, "reserved")));
+
+    const session = await getSessionUser();
+    if (session?.email) {
+      const [client] = await db.select().from(core.profiles).where(eq(core.profiles.email, session.email)).limit(1);
+      if (client) {
+        const mine = await db
+          .select({ order: core.clientOrders, listing: core.listings })
+          .from(core.clientOrders)
+          .innerJoin(core.listings, eq(core.clientOrders.listingId, core.listings.id))
+          .where(eq(core.clientOrders.clientId, client.id));
+        orders = mine.map((r) => ({ id: r.order.id, status: r.order.status, title: r.listing.title }));
+      }
+    }
 
     listings = rows.map((r) => ({
       id: r.listing.id,
@@ -65,12 +81,24 @@ export default async function ClientHomePage() {
             <p className="mt-3 text-white">
               {item.currency} {Number(item.price).toLocaleString()}
             </p>
+            {item.status === "published" && <ReserveButton listingId={item.id} />}
           </div>
         ))}
         {listings.length === 0 && !error && (
           <p className="text-white/45 text-sm">No hay ofertas publicadas todavía.</p>
         )}
       </div>
+
+      {orders.length > 0 && (
+        <section>
+          <h2 className="text-sm uppercase tracking-widest text-[#c5a46d] mb-3">Tus reservas</h2>
+          <div className="space-y-2">
+            {orders.map((o) => (
+              <p key={o.id} className="text-sm text-white/70">{o.title} · {o.status}</p>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

@@ -53,6 +53,10 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   return mock;
 }
 
+export function isAdmin(role?: AppRole | null): boolean {
+  return role === "admin" || role === "operator";
+}
+
 export function homeForRole(role: AppRole): string {
   if (role === "admin" || role === "operator") return "/dashboard/admin";
   if (role === "client") return "/dashboard/client";

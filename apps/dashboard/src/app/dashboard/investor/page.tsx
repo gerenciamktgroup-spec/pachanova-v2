@@ -3,6 +3,7 @@ import { db, core } from "@/server/db";
 import { eq } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth/session";
 import Link from "next/link";
+import ContributePanel from "./ContributePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,12 @@ export default async function InvestorDashboardPage() {
 
       {error && <p className="text-sm text-amber-200">{error}</p>}
 
+      <section>
+        <h2 className="text-sm uppercase tracking-widest text-[#c5a46d] mb-3">Rondas abiertas</h2>
+        <ContributePanel />
+      </section>
+
+      <h2 className="text-sm uppercase tracking-widest text-[#c5a46d]">Tus participaciones</h2>
       <div className="grid gap-4">
         {participations.map((p) => (
           <div key={p.projectCode} className="rounded-2xl border border-white/10 p-6 text-white">
