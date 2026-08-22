@@ -4,9 +4,9 @@
   "scripts": {
     "dashboard": "pnpm --filter dashboard dev",
     "dashboard:build": "pnpm --filter dashboard build",
-    "start": "pnpm --filter dashboard dev",
+    "start": "pnpm --filter studio dev",
     "build": "turbo run build",
-    "dev": "pnpm --filter dashboard dev",
+    "dev": "pnpm --filter studio dev",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",

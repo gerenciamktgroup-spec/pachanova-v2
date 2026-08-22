@@ -15,12 +15,15 @@ No es un exchange. No es un token. No es DeFi.
 
 ## Cómo entrar
 
+Producto vigente: **`apps/studio`**. El dashboard viejo no se usa para operar.
+
 ```bash
+docker compose up -d db
 pnpm install
-pnpm --filter dashboard dev
+pnpm start
 ```
 
-App: `apps/dashboard` (Next.js) en el puerto 3000.
+Abre http://localhost:3001
 
 ## Documentos que mandan
 

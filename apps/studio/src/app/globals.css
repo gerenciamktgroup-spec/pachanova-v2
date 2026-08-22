@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f3efe6;
+  --card: #fffdf8;
+  --ink: #1c1915;
+  --mute: #6f675d;
+  --line: #ddd4c6;
+  --clay: #b44a22;
+  --moss: #243f35;
+  --ok: #2f6b4f;
+  --bad: #9b2c2c;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-clay: var(--clay);
+  --color-moss: var(--moss);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1, h2, .serif {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+}
+
+input, select, textarea, button {
+  font: inherit;
+}
+
+input, select, textarea {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.65rem 0.8rem;
+  color: var(--ink);
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--clay) 35%, transparent);
+  border-color: var(--clay);
+}
